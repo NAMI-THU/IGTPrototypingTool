@@ -1,22 +1,21 @@
 package algorithm;
 
 public class DataProcessor {
-	
-	
-public void getAccuracy () {
-	 
-} 
 
+	public void getAccuracy() {
 
+	}
 
-public void getAverageMeasurement () {
-	 
-}
+	public void getAverageMeasurement() {
 
+	}
 
+	public void getJitter() {
 
-public void getJitter () {
-	 
-}
+	}
+
+	public void getDistance() {
+
+	}
 
 }
