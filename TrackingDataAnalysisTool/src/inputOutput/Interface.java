@@ -4,6 +4,9 @@ import java.util.Vector;
 
 public abstract class Interface {
 	
+	Vector tool = new Vector();
+	
+	
 	public Interface(){
 		
 		
@@ -13,7 +16,7 @@ public abstract class Interface {
 	
 	private Vector update(){
 		
-		Vector tool = new Vector();
+		read();
 		
 		
 		return tool;
