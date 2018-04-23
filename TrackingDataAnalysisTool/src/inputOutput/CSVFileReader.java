@@ -1,9 +1,9 @@
 package inputOutput;
 
-public class CSVFileReader {
+import java.io.*;
 
-	
-	
-	
-	
+public class CSVFileReader extends Interface {
+
+
 }
+
