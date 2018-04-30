@@ -1,94 +1,90 @@
 package userinterface;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+
 import javax.swing.*;
 
-import javax.swing.JPanel;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
+public class Gui extends JFrame implements ActionListener{
+	
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-public class Gui {//extends JFrame implements ActionListener {
-	/*
-	JFrame guiFrame = new JFrame();
+	private JButton b1= new JButton("Starte Messung");
+	private JButton b2= new JButton("Beende Messung");
+	private JCheckBox checkBox = new JCheckBox("Rauschen");
+	private JCheckBox checkBox2 = new JCheckBox("Genauigkeit");
+	private JCheckBox checkBox3 = new JCheckBox("Kalibrierung");
 	
-	guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-	guiFrame.setTitle("Tracking-System-Daten");
-	guiFrame.setSize(300,250);
+	/*private JComboBox cBox1= new JComboBox();
+	private JComboBox cBox2 = new JComboBox();
+	private JComboBox cBox3= new JComboBox();
+	private JComboBox cBox4= new JComboBox();*/
 	
-	private JPanel panel = new JPanel (); 
-	
-	private JButton button1 = new JButton("Starte Messung");
-	private JButton button2 = new JButton("Beende Messung");
-	
-	String[] messungOptions = {"Rauschen", "Genauigkeitsmessung", "Kalibrierung","Fehler"};
-
-	
-	private ComboBox messungen = new  ComboBox(messungOptions); 
-	
-	private CheckboxGroup Messungsart = new CheckboxGroup(); 
-	private Checkbox box1 = new Checkbox("Rauschen",Messungsart, false); 
-	private Checkbox box2 = new Checkbox("Genauigkeit", Messungsart, false); 
-	private Checkbox box3 = new Checkbox("Rauschen",Messungsart, false); 
-	private Checkbox box4 = new Checkbox("Fehler", Messungsart, false); 
-	
-	public Gui{
+	public Gui(){
+		//Fenster-Ereignisse zulassen
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
+		init();	
+	}
+	private void init(){
 		
-		// Fenster-Ereignisse zulassen:
-		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-		init();
-}
-
-	
-
-
-	//Initialisierung der Komponenten 
-	 private void init() {
-		 
-		 this.setSize(400, 300);  
-		 this.setTitle("Tracking-System-Daten");
-		 
-		 JPanel panel= new JPanel(); 
-		 panel.setLayout(new FlowLayout()); 
-		 
-		 button1.addActionListener(this);
-		 button2.addActionListener(this);
-		 
-		 panel.add(button1);
-		 panel.add(button2);
-		 
-		 
-		 this.setContentPane(panel);
-		 
-		 Choice choice = new Choice();
-		 choice.add("Rauschen"); 
-		 choice.add("Genauigkeit"); 
-		 choice.add("Kalibrierung "); 
-		 this.add(choice); 
-		 
-		 
-		 List list= new List(4); 
-		 list.add("Jitter");
-		 list.add("Fehlerwert");
-		 list.add("Genauigkeit"); 
-		 this.add(list);
-		 
-	
-			
+		JPanel mainPanel= new JPanel();
+		mainPanel.setLayout(null);
+		checkBox.setBounds(200,200,20,10);
+		b1.setBounds(800,600,40,60);
+		b2.setBounds(800,550, 40, 60);
 		
-    }
-	 //wird überschrieben, um das Fenster schliessen zu können
-	 protected void processWindowEvent(WindowEvent e) {
-		 if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-			 	System.exit(0);
-	 }
+		JPanel panelEast = new JPanel();
+		panelEast.setLayout(new FlowLayout());
+		panelEast.add(checkBox);
+		panelEast.add(checkBox2);
+		panelEast.add(checkBox3);
+		
+		List list= new List(3);
+		list.add("Jitter");
+		list.add("Fehlerwert");
+		list.add("Genauigkeit");
+		panelEast.add(list);
+	
+		//VerknÃ¼pft alle buttons,etc. mit dem Frame als ActionListener
+		b1.addActionListener(this);
+		b2.addActionListener(this);
+		checkBox.addActionListener(this);
+		checkBox2.addActionListener(this);
+		checkBox3.addActionListener(this);
+		list.addActionListener(this);
+		
+		/*add with panel
+		mainPanel.add(b1);
+		mainPanel.add(b2);
+		mainPanel.add(checkBox);
+		mainPanel.add(checkBox2);
+		mainPanel.add(checkBox3);
+		mainPanel.add(cBox1);*/	
+		
+		this.setContentPane(mainPanel);
+		this.setLayout(new BorderLayout());
+		this.setSize(1000,500);
+		this.setTitle("TrackingDaten");
+		this.add(panelEast, BorderLayout.EAST);
+		this.add(mainPanel, BorderLayout.EAST);
+	}
 
-}
-}*/
+	//Implementierung des Event Listeners durch die Methode actionPerformed
+	public void actionPerformed(ActionEvent e) {
+		//Object src = evt.getSource();	
+		
+	}
+	//Fenster schlieÃŸbar 
+	protected void processWindowsEvent(WindowEvent e){ 
+		//super.processWindowEvent(e);
+		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+			System.exit(0); //Prgm wird beendet
+		}
+	}
+
 
 }
