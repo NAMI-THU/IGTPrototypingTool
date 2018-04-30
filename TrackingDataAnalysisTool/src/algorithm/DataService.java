@@ -3,7 +3,11 @@ package algorithm;
 public class DataService {
 	
 	//Constructor 
-	public DataService() {}
+	public DataService() {
+		String DataManager = new String();
+		
+		String DataProcessor = new String(); 
+	}
 	
 	public void loadNextData() {}
 	
