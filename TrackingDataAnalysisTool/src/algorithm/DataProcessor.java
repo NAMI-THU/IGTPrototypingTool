@@ -8,12 +8,8 @@ public class DataProcessor {
 	
 	//Constructor
 	public DataProcessor() {}
-	
-	
-public void getAccuracy () {
-	 
-} 
-
+		
+	public void getAccuracy() {}
 
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
 		return tool;
