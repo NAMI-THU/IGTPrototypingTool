@@ -1,6 +1,8 @@
 package algorithm;
 
 public class DataService {
+	private DataManager dataManager;
+	private DataProcessor dataProcessor;
 	
 	public void loadNextData() {}
 	
