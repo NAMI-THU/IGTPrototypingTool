@@ -23,6 +23,9 @@ public class Gui extends JFrame implements ActionListener{
 		
 	public Gui(){
 		//Fenster-Ereignisse zulassen
+		super("My Window");
+		setSize(500,500);
+		setVisible(true);
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
 		init();	
 	}
@@ -83,7 +86,7 @@ public class Gui extends JFrame implements ActionListener{
 		this.setSize(1000,500);
 		this.setTitle("TrackingDaten");
 		this.add(panelEast, BorderLayout.EAST);
-		this.add(mainPanel, BorderLayout.EAST);
+		//this.add(mainPanel, BorderLayout.EAST);
 	}
 
 	//Implementierung des Event Listeners durch die Methode actionPerformed
