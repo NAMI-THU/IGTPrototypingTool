@@ -1,11 +1,11 @@
 package algorithm;
 
+import java.util.List;
+
 public class DataManager {
-	
-public void getNextData () {
-		
-	}   
-	
+	List<ToolMeasure> tools;
+
+	public void getNextData() {
+	}
+
 }
-
-
