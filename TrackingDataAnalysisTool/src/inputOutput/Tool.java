@@ -29,4 +29,12 @@ public class Tool {
 	
 	}
 
+	@Override
+	public String toString() {
+		return "Tool [coordinate_x=" + coordinate_x + ", coordinate_y=" + coordinate_y + ", coordinate_z="
+				+ coordinate_z + ", rotation_x=" + rotation_x + ", rotation_y=" + rotation_y + ", rotation_z="
+				+ rotation_z + ", rotation_r=" + rotation_r + ", valid=" + valid + ", timestamp=" + timestamp
+				+ ", name=" + name + "]";
+	}
+
 }
