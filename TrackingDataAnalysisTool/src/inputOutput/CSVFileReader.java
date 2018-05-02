@@ -29,8 +29,10 @@ public class CSVFileReader extends Interface {
 			for (int j = 0; j <= line_counter; j++) {
 				line = csv_file.readLine();
 				data = line.split(";");
-
+				
+				
 			}
+			
 
 			double[] data_new = new double[data.length];
 
@@ -57,9 +59,7 @@ public class CSVFileReader extends Interface {
 					System.out.println(toollist.get(index));
 				}
 			}
-			// for (int n = 0; n < data.length; n++) {
-			// System.out.println(data[n]);
-			// }
+		
 			line_counter++;
 		} catch (IOException e) {
 			System.out.println("Read error " + e);
@@ -70,7 +70,7 @@ public class CSVFileReader extends Interface {
 
 	public static void main(String[] args) {
 
-		for (int i = 0; i <= 5; i++) {
+		for (int i = 0; i <=1; i++) {
 
 			read();
 			System.out.println("____________________________________");
