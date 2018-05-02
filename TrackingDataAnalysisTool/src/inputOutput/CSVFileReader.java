@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 public class CSVFileReader extends Interface {
 
-	static int line_counter = 0;
-	static String line = null;
-	static String[] data = null;
-	static ArrayList<Tool> toollist = null;
+	private static int line_counter = 0;
+	private static String line = null;
+	private static String[] data = null;
+	private static ArrayList<Tool> toollist = null;
 	static int number_of_tools = 0;
 
 	private static void init() {
@@ -26,7 +26,7 @@ public class CSVFileReader extends Interface {
 
 		double[] data_new = new double[data.length];
 
-		if (line_counter >= 1) {
+		
 			for (int a = 0; a < data.length; a++) {
 
 				data_new[a] = Double.parseDouble(data[a]);
@@ -43,7 +43,7 @@ public class CSVFileReader extends Interface {
 			for (int index = 0; index < toollist.size(); index++) {
 				System.out.println(toollist.get(index));
 			}
-		}
+		
 
 		line_counter++;
 
