@@ -36,7 +36,7 @@ public class CSVFileReader extends Interface {
 
 			double[] data_new = new double[data.length];
 
-			if (line_counter == 1) {
+			if (line_counter >= 1) {
 				for (int a = 0; a < data.length; a++) {
 
 					data_new[a] = Double.parseDouble(data[a]);
@@ -70,7 +70,7 @@ public class CSVFileReader extends Interface {
 
 	public static void main(String[] args) {
 
-		for (int i = 0; i <=1; i++) {
+		for (int i = 0; i <5; i++) {
 
 			read();
 			System.out.println("____________________________________");
