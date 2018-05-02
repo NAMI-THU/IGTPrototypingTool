@@ -11,10 +11,22 @@ public class CSVFileReader extends Interface {
 	private static ArrayList<Tool> toollist = null;
 	static int number_of_tools = 0;
 
+	public static ArrayList update() {
+
+		if (line_counter == 0) {
+			init();
+		} else {
+			read();
+		}
+		return toollist;
+
+	}
+
 	private static void init() {
 
 		readline();
 		number_of_tools = (data.length) / 9;
+		line_counter++;
 		read();
 	}
 
@@ -76,7 +88,9 @@ public class CSVFileReader extends Interface {
 
 		for (int i = 0; i <= 5; i++) {
 
-			init();
+			ArrayList<Tool> testlist =  new ArrayList<Tool>();
+			testlist =  update();
+			
 			System.out.println("____________________________________");
 
 		}
