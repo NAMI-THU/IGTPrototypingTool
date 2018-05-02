@@ -3,30 +3,23 @@ package inputOutput;
 import java.util.Vector;
 
 public abstract class Interface {
-	
+
 	Vector tool = new Vector();
-	
-	
-	public Interface(){
-		
-		
-		
+
+	public Interface() {
+
 	}
-	
-	
-	private Vector update(){
-		
+
+	private Vector update() {
+
 		read();
-		
-		
+
 		return tool;
-		
+
 	}
-	
-	private void read(){
-		
-		
+
+	private void read() {
+
 	}
-	
 
 }
