@@ -26,24 +26,22 @@ public class CSVFileReader extends Interface {
 
 		double[] data_new = new double[data.length];
 
-		
-			for (int a = 0; a < data.length; a++) {
+		for (int a = 0; a < data.length; a++) {
 
-				data_new[a] = Double.parseDouble(data[a]);
-			}
+			data_new[a] = Double.parseDouble(data[a]);
+		}
 
-			for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
+		for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
 
-				Tool tool = new Tool(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-						data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + i);
+			Tool tool = new Tool(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
+					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + i);
 
-				toollist.add(tool);
-			}
+			toollist.add(tool);
+		}
 
-			for (int index = 0; index < toollist.size(); index++) {
-				System.out.println(toollist.get(index));
-			}
-		
+		for (int index = 0; index < toollist.size(); index++) {
+			System.out.println(toollist.get(index));
+		}
 
 		line_counter++;
 
