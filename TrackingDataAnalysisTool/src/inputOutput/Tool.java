@@ -6,13 +6,13 @@ public class Tool {
 
 	private double rotation_x, rotation_y, rotation_z, rotation_r;
 
-	private int valid;
+	private double valid;
 
-	private int timestamp;
+	private double timestamp;
 
 	private String name;
 
-	public Tool(int timestamp, int valid, double coordinate_x, double coordinate_y, double coordinate_z,
+	public Tool(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
 			double rotation_x, double rotation_y, double rotation_z, double rotation_r, String name) {
 
 		this.timestamp = timestamp;
@@ -25,6 +25,16 @@ public class Tool {
 		this.rotation_z = rotation_z;
 		this.rotation_r = rotation_r;
 		this.name = name;
+		
+	
+	}
+
+	@Override
+	public String toString() {
+		return "Tool [coordinate_x=" + coordinate_x + ", coordinate_y=" + coordinate_y + ", coordinate_z="
+				+ coordinate_z + ", rotation_x=" + rotation_x + ", rotation_y=" + rotation_y + ", rotation_z="
+				+ rotation_z + ", rotation_r=" + rotation_r + ", valid=" + valid + ", timestamp=" + timestamp
+				+ ", name=" + name + "]";
 	}
 
 }
