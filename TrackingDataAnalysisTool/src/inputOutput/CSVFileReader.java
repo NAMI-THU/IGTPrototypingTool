@@ -8,7 +8,7 @@ public class CSVFileReader extends Interface {
 	private static int line_counter = 0;
 	private static String line = null;
 	private static String[] data = null;
-	private static ArrayList<Tool> toollist = null;
+	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
 	static int number_of_tools = 0;
 
 	public static ArrayList update() {
@@ -32,8 +32,6 @@ public class CSVFileReader extends Interface {
 
 	private static void read() {
 
-		toollist = new ArrayList<Tool>();
-
 		readline();
 
 		double[] data_new = new double[data.length];
@@ -43,12 +41,21 @@ public class CSVFileReader extends Interface {
 			data_new[a] = Double.parseDouble(data[a]);
 		}
 
-		for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
+		if (line_counter == 1) {
+			for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
 
-			Tool tool = new Tool(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + i);
+				Tool tool = new Tool(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
+						data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + i);
 
-			toollist.add(tool);
+				toollist.add(tool);
+			}
+		} else {
+			for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
+
+				toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
+						data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + (i+1));
+
+			}
 		}
 
 		for (int index = 0; index < toollist.size(); index++) {
@@ -88,9 +95,9 @@ public class CSVFileReader extends Interface {
 
 		for (int i = 1; i <= 5; i++) {
 
-			ArrayList<Tool> testlist =  new ArrayList<Tool>();
-			testlist =  update();
-			
+			ArrayList<Tool> testlist = new ArrayList<Tool>();
+			testlist = update();
+
 			System.out.println("____________________________________");
 
 		}
