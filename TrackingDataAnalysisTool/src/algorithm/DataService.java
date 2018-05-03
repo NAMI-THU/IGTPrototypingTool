@@ -11,7 +11,12 @@ public class DataService {
 		String DataProcessor = new String(); 
 	}
 	
-	public void loadNextData() {}
+	public void loadNextData() {
+		
+		this.dataManager.getNextData();
+		
+		
+	}
 	
 	public void getAverageMeasurement() {
 		int average;
