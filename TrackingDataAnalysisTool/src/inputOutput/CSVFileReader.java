@@ -10,6 +10,7 @@ public class CSVFileReader extends Interface {
 	private static String[] data = null;
 	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
 	static int number_of_tools = 0;
+	private static String[] toolname = null;
 
 	public static ArrayList update() {
 
@@ -26,11 +27,13 @@ public class CSVFileReader extends Interface {
 
 		readline();
 		number_of_tools = (data.length) / 9;
+		toolname = new String[number_of_tools];
 
 		for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
 
 			Tool tool = new Tool();
 			toollist.add(tool);
+			getName(data[j], (i - 1));
 		}
 
 		line_counter++;
@@ -48,12 +51,10 @@ public class CSVFileReader extends Interface {
 			data_new[a] = Double.parseDouble(data[a]);
 		}
 
-		
-		
 		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
 
 			toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + (i + 1));
+					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], toolname[i]);
 
 		}
 
@@ -70,7 +71,7 @@ public class CSVFileReader extends Interface {
 		BufferedReader csv_file = null;
 		try {
 
-			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile_neu.csv")));
+			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile_nochmal_neu.csv")));
 
 		} catch (Exception e) {
 		}
@@ -87,6 +88,13 @@ public class CSVFileReader extends Interface {
 			System.out.println("Read error " + e);
 
 		}
+
+	}
+
+	private static void getName(String csv_name, int index_name) {
+
+		String[] name = csv_name.split("_");
+		toolname[index_name] = name[1];
 
 	}
 
