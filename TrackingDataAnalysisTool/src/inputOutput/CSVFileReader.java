@@ -82,7 +82,7 @@ public class CSVFileReader extends Interface {
 		try {
 
 			// reader for CSV-file
-			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile_nochmal_neu.csv")));
+			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile_neu.csv")));
 
 		} catch (Exception e) {
 		}
@@ -111,7 +111,7 @@ public class CSVFileReader extends Interface {
 
 	}
 
-	// Test method for checking the programm
+	// Test method for checking the program
 	public static void main(String[] args) {
 
 		for (int i = 1; i <= 5; i++) {
