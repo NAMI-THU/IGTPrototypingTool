@@ -1,105 +1,132 @@
 package userinterface;
 
+import algorithm.*;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.LayoutManager;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-
 import javax.swing.*;
 
 public class Gui extends JFrame implements ActionListener{
 	
 	private JButton b1= new JButton("Starte Messung");
 	private JButton b2= new JButton("Beende Messung");
-	private JCheckBox checkBox = new JCheckBox("Rauschen");
-	private JCheckBox checkBox2 = new JCheckBox("Genauigkeit");
-	private JCheckBox checkBox3 = new JCheckBox("Kalibrierung");
-	private JTextArea xEbene = new JTextArea(6, 20);
-	private JTextArea yEbene = new JTextArea(6, 20);
-	private JTextArea zEbene = new JTextArea(6, 20);
-		
+	private JButton b3 = new JButton("Lade Datei");
+	private JTextArea xEbene = new JTextArea(6, 50);
+	private JTextArea yEbene = new JTextArea(6, 50);
+	private JTextArea zEbene = new JTextArea(6, 50);
+	
+	
 	public Gui(){
 		//Fenster-Ereignisse zulassen
-		super("My Window");
-		setSize(500,500);
-		setVisible(true);
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
 		init();	
 	}
 	
 	private void init(){
 		
-		JPanel mainPanel= new JPanel();
-		mainPanel.setLayout(null);
-		checkBox.setBounds(200,200,20,10);
-		b1.setBounds(800,600,40,60);
-		b2.setBounds(800,550, 40, 60);
-		xEbene.setBounds(50,50,100,400); 
-		yEbene.setBounds(50,100,100,400);
-		zEbene.setBounds(50,150,100,400);
+		//Center-Panel erstellen 
+		JPanel mainPanel= new JPanel(); 
+		this.setVisible(true);
 		
+		//NorthPanel
 		JPanel panelNorth = new JPanel();
-		JLabel l0 = new JLabel("Dateiname der CSV_Datei:");
+		this.setContentPane(panelNorth); 
+		this.setVisible(true);
+		JLabel l0 = new JLabel("Dateiname der CSV-Datei:");
 		panelNorth.add(l0); 
 		JTextField adresse= new JTextField(15); 
 		panelNorth.add(adresse);
-		JButton b3 = new JButton("Lade Datei");
+		adresse.getText(); 
 		panelNorth.add(b3);
 		
-		JPanel panelEast = new JPanel();
-		panelEast.setLayout(new FlowLayout());
-		panelEast.add(checkBox);
-		panelEast.add(checkBox2);
-		panelEast.add(checkBox3);
-		
+		//WestPanel
 		JPanel panelWest = new JPanel();
-		panelWest.setLayout(new FlowLayout());
+		this.setContentPane(panelWest); 
+		this.setVisible(true);
+		
+		
+		//Center
+		JPanel panelCenter = new JPanel();
+		this.setVisible(true);
+		this.setContentPane(panelCenter); 	
 		JLabel l1= new JLabel("x-Ebene"); 
-		panelWest.add(l1);
-		panelWest.add(xEbene);
+		panelCenter.add(l1);
+		panelCenter.add(xEbene);
 		JLabel l2= new JLabel("y-Ebene");
-		panelWest.add(l2);
-		panelWest.add(yEbene);
+		panelCenter.add(l2);
+		panelCenter.add(yEbene);
 		JLabel l3= new JLabel("z-Ebene");
-		panelWest.add(l3);
-		panelWest.add(zEbene);
-	
+		panelCenter.add(l3);
+		panelCenter.add(zEbene);
+
+		//East
+		JPanel panelEast= new JPanel();
+		this.setVisible(true);
+		this.setContentPane(panelEast);
+		JLabel l5 = new JLabel("Messarten"); 
+		panelEast.add(l5); 
+		String[] messungen = {"Rauschen", "Genauigkeit", "Kalibrierung"}; 
+		JComboBox messarten = new JComboBox(messungen);
+		panelEast.add(messarten); 
+		panelEast.add(b1);
+		panelEast.add(b2);
 		List list= new List(3);
 		list.add("Jitter");
 		list.add("Fehlerwert");
 		list.add("Genauigkeit");
 		panelEast.add(list);
-	
+		JButton b4 = new JButton("Berechne");
+		panelEast.add(b4); 
+		
 		//Verknueft alle buttons,etc. mit dem Frame als ActionListener
 		b1.addActionListener(this);
 		b2.addActionListener(this);
-		checkBox.addActionListener(this);
-		checkBox2.addActionListener(this);
-		checkBox3.addActionListener(this);
+		b3.addActionListener(this);
+		b4.addActionListener(this);
+		messarten.addActionListener(this);
 		list.addActionListener(this);
 	
 		this.setContentPane(mainPanel);
 		this.setLayout(new BorderLayout());
-		this.setSize(1000,500);
-		this.setTitle("TrackingDaten");
+		this.setSize(1000, 600);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setTitle("TrackingDatenAnalysisTool");
 		this.add(panelEast, BorderLayout.EAST);
-		//this.add(mainPanel, BorderLayout.EAST);
+		this.add(panelCenter, BorderLayout.CENTER);
+		this.add(panelWest, BorderLayout.WEST);
+		this.add(panelNorth, BorderLayout.NORTH);
 	}
-
-	//Implementierung des Event Listeners durch die Methode actionPerformed
-	public void actionPerformed(ActionEvent e) {
-		//Object src = evt.getSource();			
-	}
-	//Fenster schließbar 
+	
+	//Fenster schliessbar 
 	protected void processWindowsEvent(WindowEvent e){ 
 		//super.processWindowEvent(e);
 		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
 			System.exit(0); //Prgm wird beendet
 		}
 	}
+	public void actionPerformed1(ActionEvent ae) {
+				if(ae.getSource() == this.b3){
+				//	DataService.loadNextData();	
+					while(true){
+				//	DataService.loadNextData();	
+					}
+				}else if(ae.getSource() == this.b1){
+					JOptionPane.showMessageDialog(null, "Bitte das Geraet jetzt ruhig liegen lassen!" , "Hinweis", JOptionPane.WARNING_MESSAGE,null); 
+				}
+					
+			}
 
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 
+	
+	
 }
