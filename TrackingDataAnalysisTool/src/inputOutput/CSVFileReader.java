@@ -70,7 +70,7 @@ public class CSVFileReader extends Interface {
 		BufferedReader csv_file = null;
 		try {
 
-			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile.csv")));
+			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream("Q:\\logfile_neu.csv")));
 
 		} catch (Exception e) {
 		}
