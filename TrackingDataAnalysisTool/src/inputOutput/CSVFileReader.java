@@ -26,6 +26,13 @@ public class CSVFileReader extends Interface {
 
 		readline();
 		number_of_tools = (data.length) / 9;
+
+		for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
+
+			Tool tool = new Tool();
+			toollist.add(tool);
+		}
+
 		line_counter++;
 		read();
 	}
@@ -41,21 +48,13 @@ public class CSVFileReader extends Interface {
 			data_new[a] = Double.parseDouble(data[a]);
 		}
 
-		if (line_counter == 1) {
-			for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
+		
+		
+		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
 
-				Tool tool = new Tool(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-						data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + i);
+			toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
+					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + (i + 1));
 
-				toollist.add(tool);
-			}
-		} else {
-			for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
-
-				toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-						data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], "tool" + (i+1));
-
-			}
 		}
 
 		for (int index = 0; index < toollist.size(); index++) {
