@@ -12,7 +12,9 @@ public class Tool {
 
 	private String name;
 
-	public Tool(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
+	
+
+	public void setData(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
 			double rotation_x, double rotation_y, double rotation_z, double rotation_r, String name) {
 
 		this.timestamp = timestamp;
@@ -25,8 +27,7 @@ public class Tool {
 		this.rotation_z = rotation_z;
 		this.rotation_r = rotation_r;
 		this.name = name;
-		
-	
+
 	}
 
 	@Override
