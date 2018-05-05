@@ -14,8 +14,7 @@ public class DataService {
 	public void loadNextData() {}
 	
 	public void getAverageMeasurement() {
-		int average;
-		average = ... / countToGetNext; 
+		 
 	}
 	
 	public void getJitter() {}

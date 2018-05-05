@@ -10,13 +10,46 @@ public class DataProcessor {
 	public DataProcessor() {}
 	
 	
-public void getAccuracy () {
+	public void getAccuracy () {
 	 
 } 
 
+//Methode zum Berechnen des Mittelwerts;
 
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
+		
+		
+		List<Measurement> measurements = tool.getMeasurement();
+		
+		Measurement averageMeasurement = new Measurement();
+		
+		
+		for(int j=0; j < measurements.get(0).getPoints().size() ; j++) {
+			
+			double averageX = 0.0;
+			double averageY = 0.0;
+			double averageZ = 0.0;
+			
+			
+			for(int i = 0; i < measurements.size(); i++) {
+				
+				Measurement measurement = measurements.get(i);
+				Point point = measurement.getPoints().get(j);
+				
+				averageX += point.getX();
+				averageY += point.getY();
+				averageZ += point.getZ();
+			}
+			
+			Point averagePoint = new Point((averageX / measurements.size()), (averageY / measurements.size()), (averageZ / measurements.size()));
+			averageMeasurement.addPoint(averagePoint);
+		}
+		
+		
 		return tool;
+		
+		
+		//System.out.println("Der Mittelwert beträgt: " + average);
 	}
 
 	public ToolMeasure getJitter(ToolMeasure tool) {
