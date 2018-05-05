@@ -12,8 +12,6 @@ public class Tool {
 
 	private String name;
 
-	
-
 	public void setData(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
 			double rotation_x, double rotation_y, double rotation_z, double rotation_r, String name) {
 
@@ -28,6 +26,46 @@ public class Tool {
 		this.rotation_r = rotation_r;
 		this.name = name;
 
+	}
+
+	public double getTimestamp() {
+		return timestamp;
+	}
+
+	public double getValid() {
+		return valid;
+	}
+
+	public double getCoordinate_x() {
+		return coordinate_x;
+	}
+
+	public double getCoordinate_y() {
+		return coordinate_y;
+	}
+
+	public double getCoordinate_z() {
+		return coordinate_z;
+	}
+
+	public double getRotation_x() {
+		return rotation_x;
+	}
+
+	public double getRotation_y() {
+		return rotation_y;
+	}
+
+	public double getRotation_z() {
+		return rotation_z;
+	}
+
+	public double getRotation_r() {
+		return rotation_r;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	@Override
