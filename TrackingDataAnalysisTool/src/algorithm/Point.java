@@ -6,6 +6,7 @@ public class Point {
 	private double y;
 	private double z;
 	private double jitter;
+	private double error;
 	
 	public Point(double x, double y, double z) {
 		this.x=x;
@@ -46,5 +47,12 @@ public class Point {
 		this.jitter=jitter;
 	}
 	
+	public double getError() {
+		return error;
+	}
+	
+	public void setError(double error) {
+		this.error = error;
+	}
 	
 }
