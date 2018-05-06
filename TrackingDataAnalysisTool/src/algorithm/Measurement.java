@@ -1,10 +1,11 @@
 package algorithm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Measurement {
 	
-	private List<Point> points;
+	private List<Point> points = new ArrayList<>();
 	private int timestamp;
 	private String toolname;
 	
