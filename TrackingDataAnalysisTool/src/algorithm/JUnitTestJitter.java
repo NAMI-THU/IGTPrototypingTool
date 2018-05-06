@@ -22,7 +22,7 @@ class JUnitTestJitter {
 		private ToolMeasure testTool;
 		
 		@Test
-		public void distanceCalculationIsCorrect() {
+		public void jitterCalculationIsCorrect() {
 			setUpData();
 			
 			ToolMeasure result = processor.getJitter(testTool);
