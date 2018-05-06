@@ -12,6 +12,10 @@ public class Measurement {
 		return points;
 	}
 	
+	public void addPoint(Point point) {
+		this.points.add(point);
+	}
+	
 	public void setPoints(List<Point> points) {
 		this.points=points;
 	}
