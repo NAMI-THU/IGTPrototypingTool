@@ -51,7 +51,7 @@ public class DataProcessor {
 			averageMeasurement.addPoint(averagePoint);
 		}
 		
-		
+		tool.setAverageMeasurement(averageMeasurement);
 		return tool;
 		
 		
