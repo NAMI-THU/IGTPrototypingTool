@@ -18,7 +18,7 @@ public class AlgorithmTest2 {
 	private ToolMeasure testTool;
 
 	@Test
-	public void getAverageMeasurementCalculationIsCorrect() {
+	public void getAverageMeasurementIsCorrect() {
 	
 
 	}

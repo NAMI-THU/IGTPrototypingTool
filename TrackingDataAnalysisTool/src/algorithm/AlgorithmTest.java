@@ -18,7 +18,7 @@ public class AlgorithmTest {
 	private ToolMeasure testTool;
 
 	@Test
-	public void distanceCalculationIsCorrect() {
+	public void getJitterIsCorrect() {
 		setUpData();
 
 		ToolMeasure result = processor.getJitter(testTool);
