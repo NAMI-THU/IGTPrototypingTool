@@ -19,8 +19,7 @@ public class DataService {
 	}
 	
 	public void getAverageMeasurement() {
-		int average;
-		average = ... / countToGetNext; 
+		 
 	}
 	
 	public void getJitter() {}
