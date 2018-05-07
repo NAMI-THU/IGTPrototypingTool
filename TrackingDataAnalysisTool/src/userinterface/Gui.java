@@ -52,15 +52,14 @@ public class Gui extends JFrame implements ActionListener{
 		JPanel panelEast= new JPanel();
 		JLabel l5 = new JLabel("Messarten"); 
 		panelEast.add(l5); 
-		String[] messungen = {"Rauschen", "Genauigkeit", "Kalibrierung"}; 
+		String[] messungen = {"Rauschen", "Genauigkeit", "Jitter"}; 
 		JComboBox messarten = new JComboBox(messungen);
 		panelEast.add(messarten); 
 		panelEast.add(b1);
 		panelEast.add(b2);
 		List list= new List(3);
+		list.add("Mittelwert");
 		list.add("Jitter");
-		list.add("Fehlerwert");
-		list.add("Genauigkeit");
 		panelEast.add(list);
 		JButton b4 = new JButton("Berechne");
 		panelEast.add(b4); 
@@ -118,7 +117,4 @@ public class Gui extends JFrame implements ActionListener{
 		// TODO Auto-generated method stub
 		
 	}
-
-	
-	
 }
