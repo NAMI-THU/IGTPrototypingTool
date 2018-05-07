@@ -1,24 +1,25 @@
 package inputOutput;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 public abstract class Interface {
 
-	Vector tool = new Vector();
+	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
 
 	public Interface() {
 
 	}
 
-	private Vector update() {
+	private static ArrayList update() {
 
 		read();
 
-		return tool;
+		return toollist;
 
 	}
 
-	private void read() {
+	private static void read() {
 
 	}
 
