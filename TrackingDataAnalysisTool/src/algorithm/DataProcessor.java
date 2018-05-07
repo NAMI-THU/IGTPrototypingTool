@@ -49,7 +49,6 @@ public class DataProcessor {
 		return tool;
 		
 		
-		//System.out.println("Der Mittelwert beträgt: " + average);
 	}
 
 	public ToolMeasure getJitter(ToolMeasure tool) {
