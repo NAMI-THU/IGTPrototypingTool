@@ -19,6 +19,7 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextArea xEbene = new JTextArea(6, 50);
 	private JTextArea yEbene = new JTextArea(6, 50);
 	private JTextArea zEbene = new JTextArea(6, 50);
+	private DataService dataS = new DataService();
 	
 	
 	public Gui(){
@@ -32,7 +33,7 @@ public class Gui extends JFrame implements ActionListener{
 		JPanel panelNorth = new JPanel();
 		JLabel l0 = new JLabel("Dateiname der CSV-Datei:");
 		panelNorth.add(l0); 
-		JTextField adresse= new JTextField(15); 
+		JTextField adresse= new JTextField(25); 
 		panelNorth.add(adresse); 
 		panelNorth.add(b3);
 
@@ -52,7 +53,7 @@ public class Gui extends JFrame implements ActionListener{
 		JPanel panelEast= new JPanel();
 		JLabel l5 = new JLabel("Messarten"); 
 		panelEast.add(l5); 
-		String[] messungen = {"Rauschen", "Genauigkeit", "Jitter"}; 
+		String[] messungen = {"Rauschen", "Korrektheit"}; 
 		JComboBox messarten = new JComboBox(messungen);
 		panelEast.add(messarten); 
 		panelEast.add(b1);
@@ -60,6 +61,8 @@ public class Gui extends JFrame implements ActionListener{
 		List list= new List(3);
 		list.add("Mittelwert");
 		list.add("Jitter");
+		list.add("Korrektheit");
+		
 		panelEast.add(list);
 		JButton b4 = new JButton("Berechne");
 		panelEast.add(b4); 
@@ -77,7 +80,7 @@ public class Gui extends JFrame implements ActionListener{
 	
 		this.setVisible(true);
 		this.setSize(1000, 800);
-		this.setTitle("TrackingDatenAnalysisTool");
+		this.setTitle("TrackingDataAnalysisTool");
 		this.setContentPane(panelNorth);
 		this.setContentPane(panelCenter);
 		this.setContentPane(panelEast);
@@ -98,10 +101,10 @@ public class Gui extends JFrame implements ActionListener{
 		}
 	}
 	public void actionPerformed1(ActionEvent ae) {
-				if(ae.getSource() == this.b3){
-				//	String[] data = DataService.loadNextData();
+				if(ae.getSource() == this.b3){	
+					String[] data = dataS.loadNextData();
 					while(true){
-					//	String.valueOf(data); 
+						String.valueOf(data); 
 						xEbene.setText("datei1");
 						yEbene.setText("datei2");
 						zEbene.setText("datei3");			
