@@ -9,17 +9,27 @@ public class DataService {
 	
 	}
 	
-	public void loadNextData() {
+	public String loadNextData() {
 		
 		this.dataManager.getNextData();
-		
+		 return null;
 		
 	}
 	
-	public void getAverageMeasurement() {}
+	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
+		this.dataProcessor.getAverageMeasurement(tool);
+		return tool;
+	}
 	
-	public void getJitter() {}
+	public ToolMeasure getJitter(ToolMeasure tool){
+		this.dataProcessor.getJitter(tool);
+		return tool;
+	}
 	
-	public void getAccuracy() {}
+	public double getAccuracy(double expectedDistance, List<Point> firstPoints, List<Point> secondPoints) {
+		return this.dataProcessor.getAccuracy(expectedDistance, firstPoints, secondPoints);
+		
+	}
+	
 	
 }
