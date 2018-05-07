@@ -28,32 +28,16 @@ public class Gui extends JFrame implements ActionListener{
 	}
 	
 	private void init(){
-		
-		//Center-Panel erstellen 
-		JPanel mainPanel= new JPanel(); 
-		this.setVisible(true);
-		
 		//NorthPanel
 		JPanel panelNorth = new JPanel();
-		this.setContentPane(panelNorth); 
-		this.setVisible(true);
 		JLabel l0 = new JLabel("Dateiname der CSV-Datei:");
 		panelNorth.add(l0); 
 		JTextField adresse= new JTextField(15); 
-		panelNorth.add(adresse);
-		adresse.getText(); 
+		panelNorth.add(adresse); 
 		panelNorth.add(b3);
-		
-		//WestPanel
-		JPanel panelWest = new JPanel();
-		this.setContentPane(panelWest); 
-		this.setVisible(true);
-		
-		
+
 		//Center
-		JPanel panelCenter = new JPanel();
-		this.setVisible(true);
-		this.setContentPane(panelCenter); 	
+		JPanel panelCenter = new JPanel(); 	
 		JLabel l1= new JLabel("x-Ebene"); 
 		panelCenter.add(l1);
 		panelCenter.add(xEbene);
@@ -66,8 +50,6 @@ public class Gui extends JFrame implements ActionListener{
 
 		//East
 		JPanel panelEast= new JPanel();
-		this.setVisible(true);
-		this.setContentPane(panelEast);
 		JLabel l5 = new JLabel("Messarten"); 
 		panelEast.add(l5); 
 		String[] messungen = {"Rauschen", "Genauigkeit", "Kalibrierung"}; 
@@ -83,6 +65,9 @@ public class Gui extends JFrame implements ActionListener{
 		JButton b4 = new JButton("Berechne");
 		panelEast.add(b4); 
 		
+		//WestPanel
+		JPanel panelWest = new JPanel();
+		
 		//Verknueft alle buttons,etc. mit dem Frame als ActionListener
 		b1.addActionListener(this);
 		b2.addActionListener(this);
@@ -91,15 +76,19 @@ public class Gui extends JFrame implements ActionListener{
 		messarten.addActionListener(this);
 		list.addActionListener(this);
 	
-		this.setContentPane(mainPanel);
-		this.setLayout(new BorderLayout());
-		this.setSize(1000, 600);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setVisible(true);
+		this.setSize(1000, 800);
 		this.setTitle("TrackingDatenAnalysisTool");
+		this.setContentPane(panelNorth);
+		this.setContentPane(panelCenter);
+		this.setContentPane(panelEast);
+		this.setContentPane(panelWest);
+		this.setLayout(new BorderLayout());
+		this.add(panelNorth, BorderLayout.NORTH);
 		this.add(panelEast, BorderLayout.EAST);
 		this.add(panelCenter, BorderLayout.CENTER);
 		this.add(panelWest, BorderLayout.WEST);
-		this.add(panelNorth, BorderLayout.NORTH);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	//Fenster schliessbar 
@@ -111,14 +100,17 @@ public class Gui extends JFrame implements ActionListener{
 	}
 	public void actionPerformed1(ActionEvent ae) {
 				if(ae.getSource() == this.b3){
-				//	DataService.loadNextData();	
+				//	String[] data = DataService.loadNextData();
 					while(true){
-				//	DataService.loadNextData();	
+					//	String.valueOf(data); 
+						xEbene.setText("datei1");
+						yEbene.setText("datei2");
+						zEbene.setText("datei3");			
 					}
 				}else if(ae.getSource() == this.b1){
-					JOptionPane.showMessageDialog(null, "Bitte das Geraet jetzt ruhig liegen lassen!" , "Hinweis", JOptionPane.WARNING_MESSAGE,null); 
+					JOptionPane.showMessageDialog(null, "Bitte das Geraet jetzt ruhig liegen lassen!" , 
+									"Hinweis", JOptionPane.WARNING_MESSAGE,null); 
 				}
-					
 			}
 
 	@Override
