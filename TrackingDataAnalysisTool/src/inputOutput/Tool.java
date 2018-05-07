@@ -12,6 +12,7 @@ public class Tool {
 
 	private String name;
 
+	// Set Method for match Values
 	public void setData(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
 			double rotation_x, double rotation_y, double rotation_z, double rotation_r, String name) {
 
@@ -28,6 +29,7 @@ public class Tool {
 
 	}
 
+	// Get-Method for getting the separate Values
 	public double getTimestamp() {
 		return timestamp;
 	}
@@ -68,6 +70,7 @@ public class Tool {
 		return name;
 	}
 
+	// Test output for correct matching
 	@Override
 	public String toString() {
 		return "Tool [coordinate_x=" + coordinate_x + ", coordinate_y=" + coordinate_y + ", coordinate_z="
