@@ -5,10 +5,10 @@ import java.util.List;
 
 public class DataProcessor {
 
+	// Constructor
+	public DataProcessor() {
+	}
 
-	//Constructor
-	public DataProcessor() {}
-	
 	public double getAccuracy(double expectedDistance, List<Point> firstPoints, List<Point> secondPoints) {
 		double appendedDistance = 0;
 		for (int i = 0; i < firstPoints.size(); i++) {
@@ -18,44 +18,38 @@ public class DataProcessor {
 		return avgDistance - expectedDistance;
 	}
 
-	
-
-
-	//Methode zum Berechnen des Mittelwerts;
+	// Methode zum Berechnen des Mittelwerts;
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
-		
-		
+
 		List<Measurement> measurements = tool.getMeasurement();
-		
+
 		Measurement averageMeasurement = new Measurement();
-		
-		
-		for(int j=0; j < measurements.get(0).getPoints().size() ; j++) {
-			
+
+		for (int j = 0; j < measurements.get(0).getPoints().size(); j++) {
+
 			double averageX = 0.0;
 			double averageY = 0.0;
 			double averageZ = 0.0;
-			
-			
-			for(int i = 0; i < measurements.size(); i++) {
-				
+
+			for (int i = 0; i < measurements.size(); i++) {
+
 				Measurement measurement = measurements.get(i);
 				Point point = measurement.getPoints().get(j);
-				
+
 				averageX += point.getX();
 				averageY += point.getY();
 				averageZ += point.getZ();
 			}
-			
-			Point averagePoint = new Point((averageX / measurements.size()), (averageY / measurements.size()), (averageZ / measurements.size()));
+
+			Point averagePoint = new Point((averageX / measurements.size()), (averageY / measurements.size()),
+					(averageZ / measurements.size()));
 			averageMeasurement.addPoint(averagePoint);
 		}
-		
+
 		tool.setAverageMeasurement(averageMeasurement);
 		return tool;
-		
-		
-		//System.out.println("Der Mittelwert beträgt: " + average);
+
+		// System.out.println("Der Mittelwert beträgt: " + average);
 	}
 
 	public ToolMeasure getJitter(ToolMeasure tool) {
