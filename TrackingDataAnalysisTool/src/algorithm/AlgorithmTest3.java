@@ -8,9 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 import algorithm.DataProcessor;
-import algorithm.Measurement;
 import algorithm.Point;
-import algorithm.ToolMeasure;
+
 
 public class AlgorithmTest3 {
 
@@ -46,4 +45,3 @@ public class AlgorithmTest3 {
 
 	}
 
-}
