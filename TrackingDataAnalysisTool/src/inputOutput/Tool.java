@@ -1,10 +1,6 @@
 package inputOutput;
 
 public class Tool {
-	
-	private double coordinate_x;
-	
-	
 
 	private double coordinate_x, coordinate_y, coordinate_z;
 
