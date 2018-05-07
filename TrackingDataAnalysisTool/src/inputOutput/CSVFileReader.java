@@ -111,17 +111,4 @@ public class CSVFileReader extends Interface {
 
 	}
 
-	// Test method for checking the program
-	public static void main(String[] args) {
-
-		for (int i = 1; i <= 5; i++) {
-
-			ArrayList<Tool> testlist = new ArrayList<Tool>();
-			testlist = update();
-
-			System.out.println("____________________________________");
-
-		}
-	}
-
 }
