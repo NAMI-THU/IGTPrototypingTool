@@ -5,6 +5,7 @@ import java.util.List;
 
 public class DataProcessor {
 
+
 	// Constructor
 	public DataProcessor() {
 	}
@@ -17,6 +18,17 @@ public class DataProcessor {
 		double avgDistance = appendedDistance / firstPoints.size();
 		return avgDistance - expectedDistance;
 	}
+
+	
+	
+
+		
+	
+
+
+//Methode zum Berechnen des Mittelwerts;
+
+
 
 	// Methode zum Berechnen des Mittelwerts;
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
@@ -49,7 +61,6 @@ public class DataProcessor {
 		tool.setAverageMeasurement(averageMeasurement);
 		return tool;
 
-		// System.out.println("Der Mittelwert beträgt: " + average);
 	}
 
 	public ToolMeasure getJitter(ToolMeasure tool) {
