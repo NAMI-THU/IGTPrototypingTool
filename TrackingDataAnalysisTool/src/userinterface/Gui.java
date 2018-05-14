@@ -104,6 +104,7 @@ public class Gui extends JFrame implements ActionListener{
 				if(ae.getSource() == this.b3){	
 					String data = dataS.loadNextData();
 					while(true){
+						String.valueOf(data);
 						xEbene.setText("datei1");
 						yEbene.setText("datei2");
 						zEbene.setText("datei3");			
