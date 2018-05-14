@@ -1,36 +1,75 @@
 package userinterface;
 
-public class Diagramm {
-/*
-	public static void main(String[] args) {
-		
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import javax.awing.*;
+import java.util.List;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.stage.Stage;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.application.*;
 
-public class Statistik extends JFrame {
-	class Diagramm extends JPanel {
-		private double maxWert;
-		private double doubleswert [];
+public class Diagramm extends Application{
+
 		
-		private void setMonatswerte (double monatswer []) {
-			
-			this.doublewert = doublewert;
-			maxWert = doublewert [0];
-			for (int i = l < 12; i ++) {
-				if (doublewert [i] > maxWert) {
-					maxWert = doublewert [i];
-					
-				}
-			}
-		}
+		Button add, start;
+		//@SupressWarnings("unchecked")
+		@Override public void start(Stage stage) throws InterruptedException {
+		
+		final NumberAxis xAxis = new NumberAxis(0, 200, 10);
+		final NumberAxis yAxis = new NumberAxis(0, 200, 10);
+		final NumberAxis zAxis = new NumberAxis(0, 200, 10);
+		
+		final ScatterChart <Number, Number> s1 = 
+				new ScatterChart<Number, Number>(xAxis, yAxis);
+		final ScatterChart <Number, Number> s2 = 
+				new ScatterChart<Number, Number>(xAxis, zAxis);
+		final ScatterChart <Number, Number> s3 = 
+				new ScatterChart<Number, Number>(yAxis, zAxis);
+		
 	
-		public void paintComponent (Graphics g) {
-			Graphics2D g2 = (Graphics2D) g ;
-			Dimension d = getSize (null);
-			
-		}
-g2.scale(d.getWidth () / 100.0, -d.getHeight () / 100.0);
-g2.translate(15, -90);*/
+XYChart.Series series1 = new XYChart.Series();
+
+s1.setPrefSize(100, 50);
+
+final VBox vbox = new VBox();
+final HBox hbox = new HBox();
+
+RadioButton radioB1 = new RadioButton("xyz");
+start = new Button("Start");
+
+try {
+	series1.getData().clear();
+		String choice = "xyz";
+		
+		List <String> line = null;
+		Coordinatesystem.drawAchsen(choice, line, series1, xAxis, yAxis);
 }
+catch(InterruptedException e){
+	e.printStackTrace();
+
+}
+
+	
+
+		hbox.setSpacing(10);
+hbox.getChildren().addAll(start, s1, s2, s3);
+
+vbox.getChildren().addAll(hbox);
+hbox.setPadding(new Insets(10, 10, 10, 50));
+}
+
+
+
+public static void main(String[]args){
+
+launch(args);}}
+
+
+
