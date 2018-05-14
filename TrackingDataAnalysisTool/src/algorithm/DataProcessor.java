@@ -5,7 +5,6 @@ import java.util.List;
 
 public class DataProcessor {
 
-
 	// Constructor
 	public DataProcessor() {
 	}
@@ -19,16 +18,24 @@ public class DataProcessor {
 		return avgDistance - expectedDistance;
 	}
 
-	
-	
+	public void getCalibration(ToolMeasure firstTool, ToolMeasure secondTool) {
+		List<Measurement> measurementsFirstTool = firstTool.getMeasurement();
+		List<Measurement> measurementsSecondTool = secondTool.getMeasurement();
 
-		
-	
+		for (int i = 0; i < measurementsFirstTool.get(0).getPoints().size(); i++) {
+			Point firstPoint = measurementsFirstTool.get(i).getPoints().get(i);
 
+			for (int f = 0; f < measurementsSecondTool.size(); f++) {
+				Measurement measurement = measurementsSecondTool.get(f);
+				Point secondPoint = measurement.getPoints().get(f);
 
-//Methode zum Berechnen des Mittelwerts;
+				double distance = getDistance(firstPoint, secondPoint);
 
+				firstPoint.setDistance(distance);
 
+			}
+		}
+	}
 
 	// Methode zum Berechnen des Mittelwerts;
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
