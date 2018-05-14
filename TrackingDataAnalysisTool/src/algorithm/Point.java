@@ -6,7 +6,7 @@ public class Point {
 	private double x;
 	private double y;
 	private double z;
-	private double jitter;
+	private double distance;
 	private double error;
 	
 	public Point(double x, double y, double z) {
@@ -39,14 +39,16 @@ public class Point {
 	public void setZ(double z) {
 		this.z = z;
 	}
+
 	
-	public double getJitter() {
-		return jitter;
+	public double getDistance() {
+		return distance;
 	}
-	
-	public void setJitter(double jitter) {
-		this.jitter=jitter;
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
+
 	
 	public double getError() {
 		return error;
