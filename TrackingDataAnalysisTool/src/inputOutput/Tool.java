@@ -1,8 +1,8 @@
 package inputOutput;
 
-public class Tool {
+import javafx.geometry.Point3D;
 
-	private double coordinate_x, coordinate_y, coordinate_z;
+public class Tool {
 
 	private double rotation_x, rotation_y, rotation_z, rotation_r;
 
@@ -12,15 +12,17 @@ public class Tool {
 
 	private String name;
 
+	Point3D coordinate;
+
 	// Set Method for match Values
 	public void setData(double timestamp, double valid, double coordinate_x, double coordinate_y, double coordinate_z,
 			double rotation_x, double rotation_y, double rotation_z, double rotation_r, String name) {
 
 		this.timestamp = timestamp;
 		this.valid = valid;
-		this.coordinate_x = coordinate_x;
-		this.coordinate_y = coordinate_y;
-		this.coordinate_z = coordinate_z;
+
+		coordinate = new Point3D(coordinate_x, coordinate_y, coordinate_z);
+
 		this.rotation_x = rotation_x;
 		this.rotation_y = rotation_y;
 		this.rotation_z = rotation_z;
@@ -38,16 +40,9 @@ public class Tool {
 		return valid;
 	}
 
-	public double getCoordinate_x() {
-		return coordinate_x;
-	}
+	public Point3D getPoint() {
+		return coordinate;
 
-	public double getCoordinate_y() {
-		return coordinate_y;
-	}
-
-	public double getCoordinate_z() {
-		return coordinate_z;
 	}
 
 	public double getRotation_x() {
@@ -68,15 +63,6 @@ public class Tool {
 
 	public String getName() {
 		return name;
-	}
-
-	// Test output for correct matching
-	@Override
-	public String toString() {
-		return "Tool [coordinate_x=" + coordinate_x + ", coordinate_y=" + coordinate_y + ", coordinate_z="
-				+ coordinate_z + ", rotation_x=" + rotation_x + ", rotation_y=" + rotation_y + ", rotation_z="
-				+ rotation_z + ", rotation_r=" + rotation_r + ", valid=" + valid + ", timestamp=" + timestamp
-				+ ", name=" + name + "]";
 	}
 
 }

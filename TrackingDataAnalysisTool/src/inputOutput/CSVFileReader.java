@@ -14,7 +14,7 @@ public class CSVFileReader extends Interface {
 	private static String[] toolname = null;
 
 	// interface for the other groups
-	public static ArrayList update() {
+	public static ArrayList<Tool> update() {
 
 		if (line_counter == 0) {
 			init();
@@ -65,10 +65,6 @@ public class CSVFileReader extends Interface {
 			toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
 					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], toolname[i]);
 
-		}
-		// print the tool list out
-		for (int index = 0; index < toollist.size(); index++) {
-			System.out.println(toollist.get(index));
 		}
 
 		// decrease line_counter because next line has to be read
