@@ -40,7 +40,7 @@ public class Tool {
 		return valid;
 	}
 
-	public Point3D getPoint() {
+	public Point3D getCoordinat() {
 		return coordinate;
 
 	}
