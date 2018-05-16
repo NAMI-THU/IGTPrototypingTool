@@ -2,6 +2,9 @@ package testInputOutput;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -14,24 +17,31 @@ public class CSVFileReaderTest {
 	ArrayList<Tool> testlist = new ArrayList<Tool>();
 
 	@Test
-	public void updateTest() {
+	public void updateTest() throws IOException {
+
+		Path path = Paths.get("Q:/logfile_neu.csv");
 
 		Tool testtool1 = new Tool();
-		testtool1.setData(188138.0, 1.0, 73.5664539062506, 75.3365062500002, -58.9611234374996, 0.0, 0.0, 0.0, 1.0,
-				"Mega");
+		testtool1.setData(188138.0, 1.0, 73.5664539062506, 75.3365062500002,
+				-58.9611234374996, 0.0, 0.0, 0.0, 1.0, "Mega");
 
 		Tool testtool2 = new Tool();
-		testtool2.setData(188150.0, 1.0, -127.2664015625, -194.487728906251, 34.1103312500008, 0.0, 0.0, 0.0, 1.0,
-				"Geiler");
+		testtool2.setData(188150.0, 1.0, -127.2664015625, -194.487728906251,
+				34.1103312500008, 0.0, 0.0, 0.0, 1.0, "Geiler");
 
 		Tool testtool3 = new Tool();
-		testtool3.setData(188162.0, 1.0, -54.7602851562496, -259.4175390625, 44.6227570312496, 0.0, 0.0, 0.0, 1.0,
-				"Typ");
+		testtool3.setData(188162.0, 1.0, -54.7602851562496, -259.4175390625,
+				44.6227570312496, 0.0, 0.0, 0.0, 1.0, "Typ");
 
 		// read csv-file
 		for (int i = 1; i <= 1; i++) {
 
-			testlist = CSVFileReader.update();
+			testlist = CSVFileReader.update(path);
+			if (testlist.get(0).getCoordinat().getX() == -100000) {
+				System.out.println("Update wurde " + i
+						+ " mal aufgerufen, da die Datei zu Ende ist.");
+				break;
+			}
 
 		}
 
@@ -50,41 +60,45 @@ public class CSVFileReaderTest {
 		boolean test = false;
 		boolean helptest = true;
 
-		if (testtool.getCoordinat().getX() != testlist.get(index).getCoordinat().getX()) {
+		if (testtool.getCoordinat().getX() != testlist.get(index)
+				.getCoordinat().getX()) {
 			helptest = false;
 
 		}
 
-		if (testtool.getCoordinat().getY() != testlist.get(index).getCoordinat().getY()) {
+		else if (testtool.getCoordinat().getY() != testlist.get(index)
+				.getCoordinat().getY()) {
 			helptest = false;
 		}
 
-		if (testtool.getCoordinat().getZ() != testlist.get(index).getCoordinat().getZ()) {
+		else if (testtool.getCoordinat().getZ() != testlist.get(index)
+				.getCoordinat().getZ()) {
 			helptest = false;
 		}
 
-		if (testtool.getRotation_x() != testlist.get(index).getRotation_x()) {
+		else if (testtool.getRotation_x() != testlist.get(index)
+				.getRotation_x()) {
 			helptest = false;
 		}
 
-		if (testtool.getRotation_y() != testlist.get(index).getRotation_y()) {
+		else if (testtool.getRotation_y() != testlist.get(index)
+				.getRotation_y()) {
 			helptest = false;
 		}
 
-		if (testtool.getRotation_z() != testlist.get(index).getRotation_z()) {
+		else if (testtool.getRotation_z() != testlist.get(index)
+				.getRotation_z()) {
 			helptest = false;
-		}
-		if (testtool.getRotation_r() != testlist.get(index).getRotation_r()) {
+		} else if (testtool.getRotation_r() != testlist.get(index)
+				.getRotation_r()) {
 			helptest = false;
 		}
 
-		if (testtool.getTimestamp() != testlist.get(index).getTimestamp()) {
+		else if (testtool.getTimestamp() != testlist.get(index).getTimestamp()) {
 			helptest = false;
-		}
-		if (testtool.getValid() != testlist.get(index).getValid()) {
+		} else if (testtool.getValid() != testlist.get(index).getValid()) {
 			helptest = false;
-		}
-		if (!testtool.getName().equals(testlist.get(index).getName())) {
+		} else if (!testtool.getName().equals(testlist.get(index).getName())) {
 			helptest = false;
 		}
 
