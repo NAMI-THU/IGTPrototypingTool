@@ -37,11 +37,6 @@ public class CSVFileReaderTest {
 		for (int i = 1; i <= 1; i++) {
 
 			testlist = CSVFileReader.update(path);
-			if (testlist.get(0).getCoordinat().getX() == -100000) {
-				System.out.println("Update wurde " + i
-						+ " mal aufgerufen, da die Datei zu Ende ist.");
-				break;
-			}
 
 		}
 
