@@ -22,14 +22,14 @@ public class Diagramm extends Application{
 		//@SupressWarnings("unchecked")
 		@Override public void start(Stage stage) throws InterruptedException {
 		
-		final NumberAxis xAxis = new NumberAxis(0, 200, 10);
-		final NumberAxis yAxis = new NumberAxis(0, 200, 10);
+		final NumberAxis xAxis = new NumberAxis(0, 30, 1);
+		final NumberAxis yAxis = new NumberAxis(0, 30, 1);
 		
-		final NumberAxis xAxis1 = new NumberAxis(0, 200, 10);
-		final NumberAxis yAxis1 = new NumberAxis(0, 200, 10);
+		final NumberAxis xAxis1 = new NumberAxis(0, 30, 1);
+		final NumberAxis yAxis1 = new NumberAxis(0, 30, 1);
 		
-		final NumberAxis xAxis2 = new NumberAxis(0, 200, 10);
-		final NumberAxis yAxis2 = new NumberAxis(0, 200, 10);
+		final NumberAxis xAxis2 = new NumberAxis(0, 30, 1);
+		final NumberAxis yAxis2 = new NumberAxis(0, 30, 1);
 		
 		final ScatterChart <Number, Number> s1 = 
 				new ScatterChart<Number, Number>(xAxis, yAxis);
@@ -50,8 +50,8 @@ s1.getData().addAll(series1);
 s2.setPrefSize(400, 400);
 s2.getData().addAll(series2);
 
-s2.setPrefSize(400, 400);
-s2.getData().addAll(series3);
+s3.setPrefSize(400, 400);
+s3.getData().addAll(series3);
 
 Scene scene = new Scene(new Group());
 final VBox vbox = new VBox();
@@ -86,7 +86,7 @@ hbox.setSpacing(10);
 hbox.getChildren().addAll(start, s1, s2, s3);
 
 vbox.getChildren().addAll(hbox);
-hbox.setPadding(new Insets(10, 10, 10, 50));
+hbox.setPadding(new Insets(50, 10, 50, 20));
 
 ((Group)scene.getRoot()).getChildren().add(vbox);
 stage.setScene(scene);
