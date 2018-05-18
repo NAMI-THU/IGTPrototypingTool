@@ -23,20 +23,26 @@ public class CSVFileReader extends Interface {
 		// was könnte man hier returnen, falls die datei zu ende ist?
 
 		abspath = path;
+		// reader for CSV-file
+		csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(abspath.toString())));
 
-		if (line_counter == 0) {
-			init();
+		if (csv_file.readLine() != null) {
+			if (line_counter == 0) {
+
+				init();
+			} else {
+				match();
+			}
+			// return value of tool list
+			return toollist;
 		} else {
-			read();
+			return toollist;
 		}
-		// return value of tool list
-		return toollist;
-
 	}
 
 	private static void init() throws IOException {
 
-		readline();
+		read();
 		// find the number of the tools
 		number_of_tools = (data.length) / 9;
 		toolname = new String[number_of_tools];
@@ -54,12 +60,12 @@ public class CSVFileReader extends Interface {
 
 		// decrease line_counter because next line has to be read
 		line_counter++;
-		read();
+		match();
 	}
 
-	private static void read() throws IOException {
+	private static void match() throws IOException {
 
-		readline();
+		read();
 
 		double[] data_new = new double[data.length];
 
@@ -70,10 +76,8 @@ public class CSVFileReader extends Interface {
 
 		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
 			// set the Values of the Csv-File to the Object
-			toollist.get(i).setData(data_new[j], data_new[j + 1],
-					data_new[j + 2], data_new[j + 3], data_new[j + 4],
-					data_new[j + 5], data_new[j + 6], data_new[j + 7],
-					data_new[j + 8], toolname[i]);
+			toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
+					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], toolname[i]);
 
 		}
 
@@ -88,14 +92,13 @@ public class CSVFileReader extends Interface {
 		}
 	}
 
-	private static void readline() {
+	private static void read() {
 		// create the file reader for the CSV data
 		csv_file = null;
 		try {
 
 			// reader for CSV-file
-			csv_file = new BufferedReader(new InputStreamReader(
-					new FileInputStream(abspath.toString())));
+			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(abspath.toString())));
 
 		} catch (Exception e) {
 		}

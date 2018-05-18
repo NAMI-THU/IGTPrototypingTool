@@ -15,6 +15,7 @@ import inputOutput.Tool;
 public class CSV_File_is_Over_Test {
 
 	ArrayList<Tool> testlist = new ArrayList<Tool>();
+	int help = testlist.size();
 
 	@Test
 	public void updateTest() throws IOException {
