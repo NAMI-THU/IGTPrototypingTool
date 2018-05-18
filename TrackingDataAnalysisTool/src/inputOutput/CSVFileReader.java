@@ -13,18 +13,17 @@ public class CSVFileReader extends Interface {
 	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
 	private static int number_of_tools = 0;
 	private static String[] toolname = null;
-	private static Path abspath;
+	private static String path;
 
 	private static BufferedReader csv_file = null;
 
 	// interface for the other groups
-	public static ArrayList<Tool> update(Path path) throws IOException {
+	public static ArrayList<Tool> update() throws IOException {
 
 		// was könnte man hier returnen, falls die datei zu ende ist?
 
-		abspath = path;
 		// reader for CSV-file
-		csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(abspath.toString())));
+		csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
 
 		if (csv_file.readLine() != null) {
 			if (line_counter == 0) {
@@ -98,7 +97,7 @@ public class CSVFileReader extends Interface {
 		try {
 
 			// reader for CSV-file
-			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(abspath.toString())));
+			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
 
 		} catch (Exception e) {
 		}
@@ -127,6 +126,10 @@ public class CSVFileReader extends Interface {
 		String[] name = csv_name.split("_");
 		toolname[index_name] = name[1];
 
+	}
+
+	public static void setPath(String abspath) {
+		path = abspath;
 	}
 
 }

@@ -20,11 +20,13 @@ public class CSV_File_is_Over_Test {
 	@Test
 	public void updateTest() throws IOException {
 
-		Path path = Paths.get("Q:/logfile_neu.csv");
+		String path = "Q:/logfile_neu.csv";
+		CSVFileReader.setPath(path);
+		
 
 		for (int i = 1; i <= 200; i++) {
 
-			testlist = CSVFileReader.update(path);
+			testlist = CSVFileReader.update();
 			if (testlist.get(0).getCoordinat().getX() == -100000) {
 				System.out.println("Update wurde " + i
 						+ " mal aufgerufen, da die Datei zu Ende ist.");
