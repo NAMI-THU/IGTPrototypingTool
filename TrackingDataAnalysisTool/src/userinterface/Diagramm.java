@@ -24,45 +24,73 @@ public class Diagramm extends Application{
 		
 		final NumberAxis xAxis = new NumberAxis(0, 200, 10);
 		final NumberAxis yAxis = new NumberAxis(0, 200, 10);
-		final NumberAxis zAxis = new NumberAxis(0, 200, 10);
+		
+		final NumberAxis xAxis1 = new NumberAxis(0, 200, 10);
+		final NumberAxis yAxis1 = new NumberAxis(0, 200, 10);
+		
+		final NumberAxis xAxis2 = new NumberAxis(0, 200, 10);
+		final NumberAxis yAxis2 = new NumberAxis(0, 200, 10);
 		
 		final ScatterChart <Number, Number> s1 = 
 				new ScatterChart<Number, Number>(xAxis, yAxis);
 		final ScatterChart <Number, Number> s2 = 
-				new ScatterChart<Number, Number>(xAxis, zAxis);
+				new ScatterChart<Number, Number>(xAxis1, yAxis1);
 		final ScatterChart <Number, Number> s3 = 
-				new ScatterChart<Number, Number>(yAxis, zAxis);
+				new ScatterChart<Number, Number>(xAxis2, yAxis2);
 		
 	
 XYChart.Series series1 = new XYChart.Series();
+XYChart.Series series2 = new XYChart.Series();
+XYChart.Series series3 = new XYChart.Series();
 
-s1.setPrefSize(100, 50);
 
+s1.setPrefSize(400, 400);
+s1.getData().addAll(series1);
+
+s2.setPrefSize(400, 400);
+s2.getData().addAll(series2);
+
+s2.setPrefSize(400, 400);
+s2.getData().addAll(series3);
+
+Scene scene = new Scene(new Group());
 final VBox vbox = new VBox();
 final HBox hbox = new HBox();
 
 RadioButton radioB1 = new RadioButton("xyz");
 start = new Button("Start");
 
-try {
+	start.setOnAction((event)->{
 	series1.getData().clear();
+	
 		String choice = "xyz";
 		
-		List <String> line = null;
-		Coordinatesystem.drawAchsen(choice, line, series1, xAxis, yAxis);
-}
-catch(InterruptedException e){
-	e.printStackTrace();
+		if (radioB1.isSelected()) {
+    		choice = "xyz";
+            series1.setName("XY-Diagramm");
+            series2.setName("XZ-Diagramm");
+		}
 
-}
+		
+		//List <String> line = null;
+		List <String> line = Test.testMethod();
+		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series1, xAxis, yAxis);
+		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series2, xAxis1, yAxis1);
+		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series3, xAxis2, yAxis2);
 
-	
+ 	});
 
-		hbox.setSpacing(10);
+
+
+hbox.setSpacing(10);
 hbox.getChildren().addAll(start, s1, s2, s3);
 
 vbox.getChildren().addAll(hbox);
 hbox.setPadding(new Insets(10, 10, 10, 50));
+
+((Group)scene.getRoot()).getChildren().add(vbox);
+stage.setScene(scene);
+stage.show();
 }
 
 
