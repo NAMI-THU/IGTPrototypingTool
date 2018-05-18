@@ -64,10 +64,6 @@ public class Tool {
 	public String getName() {
 		return name;
 	}
-	public void setCoordinate_X(double x){
-		
-		Point3D help = new Point3D(x,0,0);
-		coordinate = help;
-	}
+	
 
 }

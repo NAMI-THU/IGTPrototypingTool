@@ -86,7 +86,7 @@ public class CSVFileReader extends Interface {
 
 			line_counter++;
 		} else {
-			toollist.get(0).setCoordinate_X(-100000);
+			toollist.removeAll(toollist);
 
 		}
 	}
@@ -132,4 +132,7 @@ public class CSVFileReader extends Interface {
 		path = abspath;
 	}
 
+	public static int getLine_counter(){
+		return line_counter;
+	}
 }

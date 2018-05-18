@@ -15,7 +15,7 @@ import inputOutput.Tool;
 public class CSV_File_is_Over_Test {
 
 	ArrayList<Tool> testlist = new ArrayList<Tool>();
-	int help = testlist.size();
+	
 
 	@Test
 	public void updateTest() throws IOException {
@@ -24,12 +24,16 @@ public class CSV_File_is_Over_Test {
 		CSVFileReader.setPath(path);
 		
 
-		for (int i = 1; i <= 200; i++) {
+		for (int i = 1; i <= 150; i++) {
 
 			testlist = CSVFileReader.update();
-			if (testlist.get(0).getCoordinat().getX() == -100000) {
-				System.out.println("Update wurde " + i
-						+ " mal aufgerufen, da die Datei zu Ende ist.");
+			if (testlist.isEmpty()) {
+				if(CSVFileReader.getLine_counter()==0){
+					System.out.println("Data is empty!");
+				}else{
+					System.out.println("Update Method was only called " + i +" times because the file is finish");
+				}
+				
 				break;
 			}
 
