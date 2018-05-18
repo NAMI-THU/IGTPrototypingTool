@@ -9,6 +9,8 @@ import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
+
 import javax.swing.*;
 
 public class Gui extends JFrame implements ActionListener{
@@ -16,10 +18,15 @@ public class Gui extends JFrame implements ActionListener{
 	private JButton b1= new JButton("Starte Messung");
 	private JButton b2= new JButton("Beende Messung");
 	private JButton b3 = new JButton("Lade Datei");
+	JButton b4 = new JButton("Berechne");
 	private JTextArea xEbene = new JTextArea(6, 50);
 	private JTextArea yEbene = new JTextArea(6, 50);
 	private JTextArea zEbene = new JTextArea(6, 50);
 	private DataService dataS = new DataService();
+	JTextField adresse= new JTextField(25); 
+	String[] messungen = {"Rauschen", "Korrektheit"}; 
+	JComboBox messarten = new JComboBox(messungen);
+	JPanel pCenter = new JPanel(); 	
 	
 	
 	public Gui(){
@@ -33,7 +40,6 @@ public class Gui extends JFrame implements ActionListener{
 		JPanel panelNorth = new JPanel();
 		JLabel l0 = new JLabel("Dateiname der CSV-Datei:");
 		panelNorth.add(l0); 
-		JTextField adresse= new JTextField(25); 
 		panelNorth.add(adresse); 
 		panelNorth.add(b3);
 
@@ -53,8 +59,6 @@ public class Gui extends JFrame implements ActionListener{
 		JPanel panelEast= new JPanel();
 		JLabel l5 = new JLabel("Messarten"); 
 		panelEast.add(l5); 
-		String[] messungen = {"Rauschen", "Korrektheit"}; 
-		JComboBox messarten = new JComboBox(messungen);
 		panelEast.add(messarten); 
 		panelEast.add(b1);
 		panelEast.add(b2);
@@ -64,7 +68,6 @@ public class Gui extends JFrame implements ActionListener{
 		list.add("Korrektheit");
 		
 		panelEast.add(list);
-		JButton b4 = new JButton("Berechne");
 		panelEast.add(b4); 
 		
 		//WestPanel
@@ -93,31 +96,71 @@ public class Gui extends JFrame implements ActionListener{
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
-	//Fenster schliessbar 
-	protected void processWindowsEvent(WindowEvent e){ 
-		//super.processWindowEvent(e);
-		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-			System.exit(0); //Prgm wird beendet
-		}
-	}
 	public void actionPerformed1(ActionEvent ae) {
-				if(ae.getSource() == this.b3){	
-					String data = dataS.loadNextData();
-					while(true){
-						String.valueOf(data);
-						xEbene.setText("datei1");
-						yEbene.setText("datei2");
-						zEbene.setText("datei3");			
-					}
-				}else if(ae.getSource() == this.b1){
-					JOptionPane.showMessageDialog(null, "Bitte das Geraet jetzt ruhig liegen lassen!" , 
-									"Hinweis", JOptionPane.WARNING_MESSAGE,null); 
+		
+			Object src = ae.getSource();
+			File f = new File(adresse.getText());
+			String pfad = f.getAbsolutePath();
+
+			//statt TestMethod dann loadNextData();
+			String data = Test.testMethod(); 
+
+			//nach int umformen 
+			int z1 = Integer.parseInt(data);
+			int z2 = Integer.parseInt(data);
+			int z3 = Integer.parseInt(data);
+
+			try{ 
+				if(src == b3){ 
+					while (data !=null){  
+						return;
+					} 
+				}else if(src ==b1){
+						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
+						//Koordinatensystem einzeichnen
+
+				}else if(src == b2){
+					//in Feld reinschreiben 
+					String resX = ""+z1;
+					xEbene.setText(resX);
+					String resY = ""+z2;
+					yEbene.setText(resY);
+					String resZ = ""+z3;
+					zEbene.setText(resZ);
+				}else if(src == messarten){
+					if( src == "Genauigkeit"){
+					JButton starte2 = new JButton("Starte 2.Messung");
+					pCenter.add(starte2);
+					JButton ende2 = new JButton("Ende 2.Messung"); 
+					pCenter.add(ende2);
+					this.getContentPane();
+					this.setVisible(true);
+					starte2.addActionListener(this);
+					ende2.addActionListener(this);
+					} 
+				}else if(src == b4){
+				JLabel berechne = new JLabel("Errechneter Wert");
+				pCenter.add(berechne);
+				JTextField tFeld = new JTextField(30); 
+				pCenter.add(tFeld);
+				this.getContentPane();
+				this.setVisible(true);
 				}
+				
+			}catch(Exception e){
+				System.out.println("Fehler");
 			}
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+
+		}
+
+			//Fenster schliessbar
+			protected void processWindowsEvent(WindowEvent e){
+			super.processWindowEvent(e);
+			if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+			System.exit(0); //Prgm wird beendet
+			}
+
 	}
+	
 }
