@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Test {
-	
-	public static List<String> testMethod (){
+	public static String testMethod(){
 		
-		java.util.List<String> data = Arrays.asList("1", "2", "3");
+		String example = new String ("2");
+		return example ;
 		
-		return data;
 	}
+	
 	
 	
 }
