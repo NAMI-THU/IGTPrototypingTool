@@ -14,29 +14,42 @@ public class CSVFileReader extends Interface {
 	private static int number_of_tools = 0;
 	private static String[] toolname = null;
 	private static String path;
+	private static Exception_Window frame;
 
 	private static BufferedReader csv_file = null;
 
 	// interface for the other groups
-	public static ArrayList<Tool> update() throws IOException {
+	public static ArrayList<Tool> update() {
 
 		// was könnte man hier returnen, falls die datei zu ende ist?
 
 		// reader for CSV-file
-		csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
+		try {
+			csv_file = new BufferedReader(new InputStreamReader(
+					new FileInputStream(path)));
 
-		if (csv_file.readLine() != null) {
-			if (line_counter == 0) {
+			if (csv_file.readLine() != null) {
+				if (line_counter == 0) {
 
-				init();
+					init();
+				} else {
+					match();
+				}
+				// return value of tool list
+				return toollist;
 			} else {
-				match();
+				return toollist;
 			}
-			// return value of tool list
-			return toollist;
-		} else {
+
+		} catch (IOException e) {
+
+			frame = new Exception_Window();
+			frame.validate();
+			frame.setVisible(true);
+
 			return toollist;
 		}
+
 	}
 
 	private static void init() throws IOException {
@@ -75,8 +88,10 @@ public class CSVFileReader extends Interface {
 
 		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
 			// set the Values of the Csv-File to the Object
-			toollist.get(i).setData(data_new[j], data_new[j + 1], data_new[j + 2], data_new[j + 3], data_new[j + 4],
-					data_new[j + 5], data_new[j + 6], data_new[j + 7], data_new[j + 8], toolname[i]);
+			toollist.get(i).setData(data_new[j], data_new[j + 1],
+					data_new[j + 2], data_new[j + 3], data_new[j + 4],
+					data_new[j + 5], data_new[j + 6], data_new[j + 7],
+					data_new[j + 8], toolname[i]);
 
 		}
 
@@ -97,7 +112,8 @@ public class CSVFileReader extends Interface {
 		try {
 
 			// reader for CSV-file
-			csv_file = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
+			csv_file = new BufferedReader(new InputStreamReader(
+					new FileInputStream(path)));
 
 		} catch (Exception e) {
 		}
@@ -132,7 +148,7 @@ public class CSVFileReader extends Interface {
 		path = abspath;
 	}
 
-	public static int getLine_counter(){
+	public static int getLine_counter() {
 		return line_counter;
 	}
 }
