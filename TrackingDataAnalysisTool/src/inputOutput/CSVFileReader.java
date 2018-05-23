@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import testInputOutput.Exception_Window;
+
 public class CSVFileReader extends Interface {
 	// initialize variable
 	private static int line_counter = 0;
@@ -14,7 +16,7 @@ public class CSVFileReader extends Interface {
 	private static int number_of_tools = 0;
 	private static String[] toolname = null;
 	private static String path;
-	private static Exception_Window frame;
+	
 
 	private static BufferedReader csv_file = null;
 
@@ -42,10 +44,8 @@ public class CSVFileReader extends Interface {
 			}
 
 		} catch (IOException e) {
-
-			frame = new Exception_Window();
-			frame.validate();
-			frame.setVisible(true);
+			//must be changed to the right methodname of group userinterface when implemented
+			testInputOutput.Exception_Window.startExceptionWindow();
 
 			return toollist;
 		}

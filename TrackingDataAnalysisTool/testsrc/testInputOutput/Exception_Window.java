@@ -1,10 +1,9 @@
-package inputOutput;
+package testInputOutput;
 
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-
 
 public class Exception_Window extends JFrame implements ActionListener{
 
@@ -43,6 +42,13 @@ public class Exception_Window extends JFrame implements ActionListener{
 		this.dispose();
 		
 		
+	}
+	
+	public static void startExceptionWindow(){
+		Exception_Window frame;
+		frame = new Exception_Window();
+		frame.validate();
+		frame.setVisible(true);
 	}
 
 }
