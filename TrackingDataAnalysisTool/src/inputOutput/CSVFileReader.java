@@ -16,6 +16,7 @@ public class CSVFileReader extends Interface {
 	private static int number_of_tools = 0;
 	private static String[] toolname = null;
 	private static String path;
+	private static int exception_number = 0;
 	
 
 	private static BufferedReader csv_file = null;
@@ -44,8 +45,8 @@ public class CSVFileReader extends Interface {
 			}
 
 		} catch (IOException e) {
-			//must be changed to the right methodname of group userinterface when implemented
-			testInputOutput.Exception_Window.startExceptionWindow();
+			exception_number = 1;
+			ExceptionData.checkException();
 
 			return toollist;
 		}
@@ -151,4 +152,7 @@ public class CSVFileReader extends Interface {
 	public static int getLine_counter() {
 		return line_counter;
 	}
+	public static int getException_number(){
+		return exception_number;
+		}
 }

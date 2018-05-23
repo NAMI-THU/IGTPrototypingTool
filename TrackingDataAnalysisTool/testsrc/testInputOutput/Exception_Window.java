@@ -8,8 +8,8 @@ import javax.swing.*;
 public class Exception_Window extends JFrame implements ActionListener{
 
 	private JButton ok = new JButton("OK");
-	private JLabel lable = new JLabel("Data was not found!");
-	
+	private static String exceptionName = "Something went wrong";
+	private JLabel lable = new JLabel(exceptionName);
 	
 	public Exception_Window() {
 		
@@ -50,5 +50,17 @@ public class Exception_Window extends JFrame implements ActionListener{
 		frame.validate();
 		frame.setVisible(true);
 	}
+	
+	public static void setExceptionText(String name){
+		
+		exceptionName = name;
+		
+		startExceptionWindow();
+		
+		
+		
+	}
+	
+	
 
 }

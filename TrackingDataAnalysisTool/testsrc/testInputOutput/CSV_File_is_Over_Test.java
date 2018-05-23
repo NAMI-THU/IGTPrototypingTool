@@ -20,7 +20,7 @@ public class CSV_File_is_Over_Test {
 	@Test
 	public void updateTest() throws IOException {
 
-		String path = "Q:/logfile_neu.csv";
+		String path = "C:\\Studium\\DSM4\\Projekt\\logfile.csv";
 		CSVFileReader.setPath(path);
 		
 
@@ -28,17 +28,21 @@ public class CSV_File_is_Over_Test {
 
 			testlist = CSVFileReader.update();
 			if (testlist.isEmpty()) {
-				if(CSVFileReader.getLine_counter()==0){
-					System.out.println("Data is empty!");
-				}else{
-					System.out.println("Update Method was only called " + i +" times because the file is finish");
-				}
+				inputOutput.ExceptionData.checkException();
 				
 				break;
 			}
 
 		}
 
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 
 }
