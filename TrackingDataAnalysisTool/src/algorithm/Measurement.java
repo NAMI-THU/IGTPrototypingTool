@@ -1,24 +1,37 @@
 package algorithm;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.math3.complex.Quaternion;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+
+import inputOutput.Tool;
+import javafx.geometry.Point3D;
 
 public class Measurement {
 
-	private List<Point> points = new ArrayList<>();
+	// public Measurement(Tool tool) {
+	// //this.setPoint(tool.getPoint())
+	// }
+
+	private Point3D point;
+	private double error;
 	private int timestamp;
 	private String toolname;
+	private Rotation rotation;
 
-	public List<Point> getPoints() {
-		return points;
+	public Rotation getRotation() {
+		return rotation;
 	}
 
-	public void addPoint(Point point) {
-		this.points.add(point);
+	public void setRotation(Rotation rotation) {
+		this.rotation = rotation;
 	}
 
-	public void setPoints(List<Point> points) {
-		this.points = points;
+	public Point3D getPoint() {
+		return point;
+	}
+
+	public void setPoint(Point3D point) {
+		this.point = point;
 	}
 
 	public int getTimestamp() {
@@ -35,6 +48,14 @@ public class Measurement {
 
 	public void setToolname(String toolname) {
 		this.toolname = toolname;
+	}
+
+	public double getError() {
+		return error;
+	}
+
+	public void setError(double error) {
+		this.error = error;
 	}
 
 }
