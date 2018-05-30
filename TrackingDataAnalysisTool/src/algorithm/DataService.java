@@ -3,20 +3,9 @@ package algorithm;
 import java.util.List;
 
 public class DataService {
-	private DataManager dataManager;
 	private DataProcessor dataProcessor;
 	
-	//Constructor 
-	public DataService() {
 	
-	}
-	
-	public String loadNextData() {
-		
-		this.dataManager.getNextData();
-		 return null;
-		
-	}
 	
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
 		this.dataProcessor.getAverageMeasurement(tool);
@@ -28,10 +17,13 @@ public class DataService {
 		return tool;
 	}
 	
-	public double getAccuracy(double expectedDistance, List<Point> firstPoints, List<Point> secondPoints) {
-		return this.dataProcessor.getAccuracy(expectedDistance, firstPoints, secondPoints);
+	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement, AverageMeasurement secondAverangeMeasurement) {
+		return this.dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 		
 	}
 	
+	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement, Measurement secondMeasurement) {
+		return this.dataProcessor.getAccuracyRotation(expectedAngle, firstMeasurement, secondMeasurement);
+	}
 	
 }

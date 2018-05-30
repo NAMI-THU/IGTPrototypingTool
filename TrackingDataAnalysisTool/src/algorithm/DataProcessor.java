@@ -2,6 +2,10 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.geometry.Point3D;
+
+import org.apache.commons.math3.complex.Quaternion;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 public class DataProcessor {
 
@@ -9,111 +13,104 @@ public class DataProcessor {
 	public DataProcessor() {
 	}
 
-	public double getAccuracy(double expectedDistance, List<Point> firstPoints, List<Point> secondPoints) {
-		double appendedDistance = 0;
-		for (int i = 0; i < firstPoints.size(); i++) {
-			appendedDistance += getDistance(firstPoints.get(i), secondPoints.get(i));
-		}
-		double avgDistance = appendedDistance / firstPoints.size();
-		return avgDistance - expectedDistance;
+	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement, AverageMeasurement secondAverangeMeasurement) {	
+		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint()) - expectedDistance;
 	}
 
-	public void getCalibration(ToolMeasure firstTool, ToolMeasure secondTool) {
-		List<Measurement> measurementsFirstTool = firstTool.getMeasurement();
-		List<Measurement> measurementsSecondTool = secondTool.getMeasurement();
-
-		for (int i = 0; i < measurementsFirstTool.get(0).getPoints().size(); i++) {
-			Point firstPoint = measurementsFirstTool.get(i).getPoints().get(i);
-
-			for (int f = 0; f < measurementsSecondTool.size(); f++) {
-				Measurement measurement = measurementsSecondTool.get(f);
-				Point secondPoint = measurement.getPoints().get(f);
-
-				double distance = getDistance(firstPoint, secondPoint);
-
-				firstPoint.setDistance(distance);
-
-			}
-		}
+	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement, Measurement secondMeasurement) {
+		
+		return (firstMeasurement.getRotation().getAngle() - secondMeasurement.getRotation().getAngle()) - expectedAngle;
+		
 	}
+	
+	
+//	public Measurement getCalibration(Point referencePoint, Measurement mainToolMeasurement) {
+//
+//		for (int f = 0; f < mainToolMeasurement.getPoints().size(); f++) {
+//			Point mainPoint = mainToolMeasurement.getPoints().get(f);
+//			double distance = getDistance(referencePoint, mainPoint);
+//			mainPoint.setDistanceToPike(distance);
+//		}
+//		return mainToolMeasurement;
+//	}
 
 	// Methode zum Berechnen des Mittelwerts;
 	public ToolMeasure getAverageMeasurement(ToolMeasure tool) {
 
 		List<Measurement> measurements = tool.getMeasurement();
+		int measureSize = measurements.size();
+		Point3D addPoint = new Point3D(0,0,0);
+		Point3D addRotationPoint = new Point3D(0,0,0);
+		double scalar = 0;
 
-		Measurement averageMeasurement = new Measurement();
-
-		for (int j = 0; j < measurements.get(0).getPoints().size(); j++) {
-
-			double averageX = 0.0;
-			double averageY = 0.0;
-			double averageZ = 0.0;
-
-			for (int i = 0; i < measurements.size(); i++) {
-
-				Measurement measurement = measurements.get(i);
-				Point point = measurement.getPoints().get(j);
-
-				averageX += point.getX();
-				averageY += point.getY();
-				averageZ += point.getZ();
-			}
-
-			Point averagePoint = new Point((averageX / measurements.size()), (averageY / measurements.size()),
-					(averageZ / measurements.size()));
-			averageMeasurement.addPoint(averagePoint);
+		for (int i = 0; i < measureSize; i++) {
+			Measurement measurement = measurements.get(i);
+			Point3D point = measurement.getPoint();
+			addPoint = addPoint.add(point);
+			Rotation rotation = measurement.getRotation();
+			Point3D rotationPoint = new Point3D(rotation.getQ1(), rotation.getQ2(), rotation.getQ3());
+			addRotationPoint = addRotationPoint.add(rotationPoint);
+			scalar += rotation.getQ0();
 		}
-
+			
+		double averageX = addPoint.getX() / measureSize;
+		double averageY = addPoint.getY() / measureSize;
+		double averageZ = addPoint.getZ() / measureSize;
+		
+		double avgRotationS = scalar / measureSize;
+		double avgRotationX = addRotationPoint.getX() / measureSize;
+		double avgRotationY = addRotationPoint.getY() / measureSize;
+		double avgRotationZ = addRotationPoint.getZ() / measureSize;
+		
+		AverageMeasurement averageMeasurement = new AverageMeasurement();
+		Point3D averagePoint = new Point3D(averageX, averageY, averageZ);
+		Rotation averageRotation = new Rotation(avgRotationS, avgRotationX, avgRotationY, avgRotationZ, true);
+		
+		averageMeasurement.setPoint(averagePoint);
+		averageMeasurement.setRotation(averageRotation);
 		tool.setAverageMeasurement(averageMeasurement);
 		return tool;
-
 	}
+	
+	
 
 	public ToolMeasure getJitter(ToolMeasure tool) {
-
 		List<Measurement> measurements = tool.getMeasurement(); // measurements of the tool
-		Measurement averageMeasurement = tool.getAverageMeasurement(); // average measurement of the tool
+		AverageMeasurement averageMeasurement = tool.getAverageMeasurement(); // average measurement of the tool
 
-		for (int f = 0; f < averageMeasurement.getPoints().size(); f++) {
-			Point avgPoint = averageMeasurement.getPoints().get(f); // point of average measurement
-			List<Double> errors = new ArrayList<>();
-			for (int i = 0; i < measurements.size(); i++) {
-				Measurement measurement = measurements.get(i);
-				Point point = measurement.getPoints().get(f);
-
-				double distance = getDistance(point, avgPoint);
-
-				errors.add(distance);
-			}
-			avgPoint.setError(getRMSE(errors));
+		Point3D avgPoint = averageMeasurement.getPoint();
+		Rotation avgRotation = averageMeasurement.getRotation();
+		List<Double> errors = new ArrayList<>();
+		List<Double> rotationErrors = new ArrayList<>();
+		
+		for (int i = 0; i < measurements.size(); i++) {
+			
+			Point3D point = measurements.get(i).getPoint();
+			Rotation rotation = measurements.get(i).getRotation();
+			double distance = getDistance(point, avgPoint);
+			double distanceRotation = Rotation.distance(rotation, avgRotation);
+			
+			
+			rotationErrors.add(distanceRotation);
+			errors.add(distance);
 		}
-
+		averageMeasurement.setError(getRMSE(errors));
+		averageMeasurement.setRotationError(getRMSE(rotationErrors));
 		return tool;
 	}
 
 	// root mean square error
-
 	private double getRMSE(List<Double> errors) {
-
 		double additionalPowError = 0;
 
 		for (double error : errors) {
 			additionalPowError += Math.pow(error, 2);
 		}
-
 		return Math.sqrt(additionalPowError / errors.size());
 	}
 
 	// calculate distance of two points
-
-	private double getDistance(Point firstPoint, Point secondPoint) {
-
-		double dX = Math.pow(firstPoint.getX() - secondPoint.getX(), 2);
-		double dY = Math.pow(firstPoint.getY() - secondPoint.getY(), 2);
-		double dZ = Math.pow(firstPoint.getZ() - secondPoint.getZ(), 2);
-
-		return Math.sqrt(dX + dY + dZ);
-
+	private double getDistance(Point3D firstPoint, Point3D secondPoint) {
+		return firstPoint.distance(secondPoint);
 	}
 }
