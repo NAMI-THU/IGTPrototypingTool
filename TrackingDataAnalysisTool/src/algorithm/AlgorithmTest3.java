@@ -8,23 +8,25 @@ import java.util.List;
 import org.junit.Test;
 
 import algorithm.DataProcessor;
-import algorithm.Point;
+import javafx.geometry.Point3D;
 
 
 public class AlgorithmTest3 {
 
 
 		private DataProcessor processor;
-		List<Point> firstPoints;
-		List<Point> secondPoints;
+		AverageMeasurement firstAverangeMeasurement;
+		AverageMeasurement secondAverangeMeasurement;
+		
+		
 
 		@Test
-		public void getAccuracyCalculationIsCorrect() {
+		public void getAccuracyIsCorrect() {
 
 			setUpData();
 			double expectedDistance = 1.7320508075688772;
 
-			double result = processor.getAccuracy(expectedDistance, firstPoints, secondPoints);
+			double result = processor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 
 			// keine Abweichung erwartet
 			assertTrue(result == 0);
@@ -32,15 +34,17 @@ public class AlgorithmTest3 {
 
 		private void setUpData() {
 			processor = new DataProcessor();
+			
+			firstAverangeMeasurement = new AverageMeasurement();
+			secondAverangeMeasurement = new AverageMeasurement();
+			
+			Point3D p1 = new Point3D(1, 1, 1);
+			Point3D p2 = new Point3D(2, 2, 2);
+			
+			firstAverangeMeasurement.setPoint(p1);
+			secondAverangeMeasurement.setPoint(p2);
 
-			firstPoints = new ArrayList<>();
-			secondPoints = new ArrayList<>();
-
-			Point p1 = new Point(1, 1, 1);
-			Point p4 = new Point(2, 2, 2);
-
-			firstPoints.add(p1);
-			secondPoints.add(p4);
+		
 		}
 
 	}
