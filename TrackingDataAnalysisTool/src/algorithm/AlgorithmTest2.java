@@ -11,6 +11,7 @@ import algorithm.DataProcessor;
 import algorithm.Measurement;
 import algorithm.Point;
 import algorithm.ToolMeasure;
+import javafx.geometry.Point3D;
 
 public class AlgorithmTest2 {
 
@@ -24,11 +25,21 @@ public class AlgorithmTest2 {
 
 		ToolMeasure result = processor.getAverageMeasurement(testTool);
 
-		Point expectedPoint = new Point(2,2,2);
-		Point avgPoint = result.getAverageMeasurement().getPoints().get(0);
+		Point3D expectedPoint = new Point3D(2,2,2);
+		Point3D avgPoint = result.getAverageMeasurement().getPoint();
 		assertTrue(avgPoint.getX() == expectedPoint.getX());
 		assertTrue(avgPoint.getY() == expectedPoint.getY());
 		assertTrue(avgPoint.getZ() == expectedPoint.getZ());
+
+	}
+	
+	@Test
+	public void getJitterIsCorrect() {
+		setUpData();
+
+		ToolMeasure result = processor.getJitter(testTool);
+
+		assertTrue(result.getAverageMeasurement().getError() == 1.414213562373095);
 
 	}
 
@@ -37,29 +48,27 @@ public class AlgorithmTest2 {
 		processor = new DataProcessor();
 		testTool = new ToolMeasure("TestTool");
 
-		List<Point> points1 = new ArrayList<>();
-		List<Point> points2 = new ArrayList<>();
-		List<Point> points3 = new ArrayList<>();
-
 		Measurement measurement1 = new Measurement();
 		Measurement measurement2 = new Measurement();
 		Measurement measurement3 = new Measurement();
+		
+		AverageMeasurement avgM = new AverageMeasurement();
 
-		Point p1 = new Point(1, 1, 1);
-		Point p2 = new Point(2, 2, 2);
-		Point p3 = new Point(3, 3, 3);
+		Point3D p1 = new Point3D(1, 1, 1);
+		Point3D p2 = new Point3D(2, 2, 2);
+		Point3D p3 = new Point3D(3, 3, 3);
 
-		points1.add(p1);
-		points2.add(p2);
-		points3.add(p3);
-
-		measurement1.setPoints(points1);
-		measurement2.setPoints(points2);
-		measurement3.setPoints(points3);
+		measurement1.setPoint(p1);
+		measurement2.setPoint(p2);
+		measurement3.setPoint(p3);
+		
+		avgM.setPoint(p2);
 
 		testTool.addMeasurement(measurement1);
 		testTool.addMeasurement(measurement2);
 		testTool.addMeasurement(measurement3);
+		
+		testTool.setAverageMeasurement(avgM);
 
 	}
 
