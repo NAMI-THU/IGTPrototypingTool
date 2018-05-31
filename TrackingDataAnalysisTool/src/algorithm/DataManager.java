@@ -1,12 +1,11 @@
-package algorithm;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import inputOutput.Interface;
 import inputOutput.Tool;
 
 public class DataManager {
-	List<ToolMeasure> tools;
+	List<ToolMeasure> toolMeasures;
 	int countToGetNext;
 	
 	//Constructor
@@ -14,34 +13,32 @@ public class DataManager {
 		this.countToGetNext = countToGetNext;
 	}
 	
-public void getNextData (int countToGetNext) {
+	public void getNextData (int countToGetNext) {
 		
 		for(double i = 0; i< countToGetNext; i++) {
-			
 		//aus rückgabe von update neue messung erstellen
-		Measurement measurement = new Measurement(Team3Service.update());
+		List<Tool> tools = new ArrayList<>();
 		
-		 for(ToolMeasure tool : tools) {
-		        if(tool.getName().equals(measurement.getToolName())) {
-		            tool.addMeasurement(measurement);
-		        }else {
-		        	ToolMeasure newTool = new ToolMeasure(measurement.getToolName());
-		        	newTool.addMeasurement(measurement);
-		        	tools.add(newTool);
-		        }
-		    }
+			for(Tool tool : tools) {
+//				Measurement measurement = new Measurement(tool);
+//				addMeasurementToTool(measurement);
+			}
+		
 		}
-	}   
+	} 
 	
-	   
-	
-}
+	private void addMeasurementToTool(Measurement measurement) {
+		for(ToolMeasure toolMeasure : toolMeasures) {
+			if(toolMeasure.getName().equals(measurement.getToolname())) {
+				toolMeasure.addMeasurement(measurement);
+			}else {
+				ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
+				newTool.addMeasurement(measurement);
+				toolMeasures.add(newTool);
+			}
+		}
+	}
 
-		
-
-		
-	}   
-	
 }
 	
 
