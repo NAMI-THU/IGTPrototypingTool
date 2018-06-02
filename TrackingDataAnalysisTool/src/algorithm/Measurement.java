@@ -8,13 +8,23 @@ import javafx.geometry.Point3D;
 
 public class Measurement {
 
-	// public Measurement(Tool tool) {
-	// //this.setPoint(tool.getPoint())
-	// }
+	public Measurement(Tool tool) {
+//		this.setPoint(tool.getPoint);
+		this.setPoint(new Point3D(tool.getCoordinate_x(), tool.getCoordinate_y(), tool.getCoordinate_z()));
+//		this.setRotation(new Rotation(tool.getRotation_r(), tool.getRotation_x(), tool.getRotation_y(), tool.getRotation_z()));
+		this.setTimestamp(tool.getTimestamp());
+		this.setToolname(tool.getName());
+	 
+	 
+	 }
+
+	public Measurement() {
+		
+	}
 
 	private Point3D point;
 	private double error;
-	private int timestamp;
+	private double timestamp;
 	private String toolname;
 	private Rotation rotation;
 
@@ -34,11 +44,11 @@ public class Measurement {
 		this.point = point;
 	}
 
-	public int getTimestamp() {
+	public double getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(int timestamp) {
+	public void setTimestamp(double timestamp) {
 		this.timestamp = timestamp;
 	}
 
