@@ -10,13 +10,32 @@ import javafx.geometry.Point3D;
 
 public class AverageMeasurement extends Measurement{
 
-//	AverageMeasurement(){
-//		super();
-//	}
+	AverageMeasurement(){
+		super();
+	}
 	
 	private double error;
-	private double rotationError;
+	private RotationError rotationError;
+	private List<Double> errors = new ArrayList<>();
+	private BoxPlot boxPlot;
 	
+	
+	public BoxPlot getBoxPlot() {
+		return boxPlot;
+	}
+
+	public void setBoxPlot(BoxPlot boxPlot) {
+		this.boxPlot = boxPlot;
+	}
+
+	public List<Double> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<Double> errors) {
+		this.errors = errors;
+	}
+
 	public double getError() {
 		return error;
 	}
@@ -25,11 +44,11 @@ public class AverageMeasurement extends Measurement{
 		this.error = error;
 	}
 
-	public double getRotationError() {
+	public RotationError getRotationError() {
 		return rotationError;
 	}
 
-	public void setRotationError(double rotationError) {
+	public void setRotationError(RotationError rotationError) {
 		this.rotationError = rotationError;
 	}
 	
