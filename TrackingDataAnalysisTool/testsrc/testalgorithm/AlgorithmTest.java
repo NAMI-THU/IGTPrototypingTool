@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import algorithm.AverageMeasurement;
 import algorithm.BoxPlot;
+import algorithm.DataManager;
 import algorithm.DataProcessor;
 import algorithm.DataService;
 import algorithm.Measurement;
@@ -23,6 +24,7 @@ public class AlgorithmTest {
 
 	private DataProcessor processor;
 	private DataService dataService;
+	private DataManager dataManager;
 	private ToolMeasure testTool;
 	AverageMeasurement firstAverangeMeasurement;
 	AverageMeasurement secondAverangeMeasurement;
@@ -80,6 +82,15 @@ public class AlgorithmTest {
 		firstAverangeMeasurement.setRotation(r1);
 		secondAverangeMeasurement.setRotation(r2);
 	}
+	
+	//public void loadNextDataIsCorrect() {
+	
+	// int countToGetNext = 3;
+	// setupData();
+	
+	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
+	// assertTrue(result.size() > 0 9);
+	//}
 
 	private void setUpData() {
 
@@ -114,6 +125,8 @@ public class AlgorithmTest {
 		testTool.addMeasurement(measurement3);
 
 		testTool.setAverageMeasurement(avgM);
+		
+		// dataManager = new DataManager();
 
 	}
 	

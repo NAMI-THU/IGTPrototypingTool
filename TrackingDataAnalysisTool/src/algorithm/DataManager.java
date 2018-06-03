@@ -1,30 +1,33 @@
+package algorithm;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import inputOutput.CSVFileReader;
-import inputOutput.Interface;
+
 import inputOutput.Tool;
 
 public class DataManager {
-	List<ToolMeasure> toolMeasures;
-	int countToGetNext;
+	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	
-	//Constructor
-	public DataManager (int countToGetNext) {
-		this.countToGetNext = countToGetNext;
+	public List<ToolMeasure> getToolMeasures(){
+		return toolMeasures;
 	}
 	
-	public void getNextData (int countToGetNext) {
+	public List<ToolMeasure> getNextData (int countToGetNext) {
 		
 		for(double i = 0; i< countToGetNext; i++) {
 		//aus rückgabe von update neue messung erstellen
 		List<Tool> tools = inputOutput.CSVFileReader.update();
 		
 			for(Tool tool : tools) {
-//				Measurement measurement = new Measurement(tool);
-//				addMeasurementToTool(measurement);
-			}
+				Measurement measurement = new Measurement(tool);
+				addMeasurementToTool(measurement);
+			} 
 		
 		}
+		
+		return toolMeasures;
 	} 
 	
 	private void addMeasurementToTool(Measurement measurement) {
@@ -40,9 +43,3 @@ public class DataManager {
 	}
 
 }
-	
-
-
-	
-
-
