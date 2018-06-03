@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-
+import inputOutput.CSVFileReader;
 import inputOutput.Interface;
 import inputOutput.Tool;
 
@@ -17,7 +17,7 @@ public class DataManager {
 		
 		for(double i = 0; i< countToGetNext; i++) {
 		//aus rückgabe von update neue messung erstellen
-		List<Tool> tools = new ArrayList<>();
+		List<Tool> tools = inputOutput.CSVFileReader.update();
 		
 			for(Tool tool : tools) {
 //				Measurement measurement = new Measurement(tool);
