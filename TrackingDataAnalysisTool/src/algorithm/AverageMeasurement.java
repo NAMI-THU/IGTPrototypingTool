@@ -10,7 +10,7 @@ import javafx.geometry.Point3D;
 
 public class AverageMeasurement extends Measurement{
 
-	AverageMeasurement(){
+	public AverageMeasurement(){
 		super();
 	}
 	
