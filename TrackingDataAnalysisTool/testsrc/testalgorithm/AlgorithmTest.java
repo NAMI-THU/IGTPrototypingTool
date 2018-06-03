@@ -116,5 +116,18 @@ public class AlgorithmTest {
 		testTool.setAverageMeasurement(avgM);
 
 	}
+	
+	@Test
+	public void getRotationJitterIsCorrect() {
+		setUpData();
+
+		RotationError result = processor.getRotationJitter(testTool.getMeasurement(),
+				testTool.getAverageMeasurement().getRotation());
+
+		assertTrue(result.getRotationAngleError() == 0.11271591504667608);
+		assertTrue(result.getRotationPositionError() == 0.11271591504667536);
+
+	}
+
 
 }
