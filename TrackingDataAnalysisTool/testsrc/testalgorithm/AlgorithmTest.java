@@ -69,7 +69,7 @@ public class AlgorithmTest {
 
 	@Test
 	public void getRotationJitterIsCorrect() {
-		setUpDataAccuracy();
+		setUpData();
 
 		RotationError result = processor.getRotationJitter(testTool.getMeasurement(),
 				testTool.getAverageMeasurement().getRotation());
@@ -82,10 +82,10 @@ public class AlgorithmTest {
 	@Test
 	public void getAccuracyRotationIsCorrect() {
 
-		setUpData();
-		double expectedAngle = 1.7320508075688772;
+		setUpDataAccuracy();
+		double expectedAngle = 0.1713531280418792;
 
-		double result = processor.getAccuracyRotation(expectedAngle, firstAverageMeasurement, secondAverageMeasurement);
+		double result = processor.getAccuracyRotation(expectedAngle, firstAverangeMeasurement, secondAverangeMeasurement);
 
 		// keine Abweichung erwartet
 		assertTrue(result == 0);
