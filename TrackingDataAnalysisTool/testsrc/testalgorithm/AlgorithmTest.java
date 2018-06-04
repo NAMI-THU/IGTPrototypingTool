@@ -87,6 +87,24 @@ public class AlgorithmTest {
 	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
 	// assertTrue(result.size() > 0 );
 	// }
+	
+	@Test
+	public void getToolByNameCorrect() {
+
+		dataService = new DataService();
+		setUpData();
+
+		ToolMeasure result = null;
+
+		try {
+			result = dataService.getToolByName("TestTool");
+
+		} catch (Exception e) {
+
+			assertTrue(e.getMessage().equals("Tool not found: TestTool"));
+		}
+
+	}
 
 	private void setUpDataAccuracy() {
 		processor = new DataProcessor();
