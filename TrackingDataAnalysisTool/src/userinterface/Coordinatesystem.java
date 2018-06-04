@@ -24,8 +24,7 @@ public static void drawAchsen(String choice, List<String>l,
 			
 			
 			
-xAxis.setLabel("X-Achse");
-yAxis.setLabel("Y-Achse");
+
 		for (int i=0; i<l.size(); i=i+3) {
 			x = Integer.parseInt(l.get(i));
 			//System.out.println(x);

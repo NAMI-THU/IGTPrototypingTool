@@ -21,6 +21,12 @@ public class Diagramm extends Application{
 		Button add, start;
 		//@SupressWarnings("unchecked")
 		@Override public void start(Stage stage) throws InterruptedException {
+			
+			String x = "X-Achse";
+			String y = "Y-Achse";
+			String z = "Z-Achse";
+			
+			stage.setTitle("x-y-z-Ebene");
 		
 		final NumberAxis xAxis = new NumberAxis(0, 30, 1);
 		final NumberAxis yAxis = new NumberAxis(0, 30, 1);
@@ -31,12 +37,26 @@ public class Diagramm extends Application{
 		final NumberAxis xAxis2 = new NumberAxis(0, 30, 1);
 		final NumberAxis yAxis2 = new NumberAxis(0, 30, 1);
 		
+		
+		xAxis.setLabel(x);
+		yAxis.setLabel(y);
+		
+		xAxis1.setLabel(x);
+		yAxis1.setLabel(z);
+		
+		xAxis2.setLabel(z);
+		yAxis2.setLabel(y);
+		
 		final ScatterChart <Number, Number> s1 = 
 				new ScatterChart<Number, Number>(xAxis, yAxis);
 		final ScatterChart <Number, Number> s2 = 
 				new ScatterChart<Number, Number>(xAxis1, yAxis1);
 		final ScatterChart <Number, Number> s3 = 
 				new ScatterChart<Number, Number>(xAxis2, yAxis2);
+		
+		s1.setTitle("XY-Ebene");
+		s2.setTitle("XZ-Ebene");
+		s3.setTitle("ZY-Ebene");
 		
 	
 XYChart.Series series1 = new XYChart.Series();
@@ -57,7 +77,7 @@ Scene scene = new Scene(new Group());
 final VBox vbox = new VBox();
 final HBox hbox = new HBox();
 
-RadioButton radioB1 = new RadioButton("xyz");
+//RadioButton radioB1 = new RadioButton("xyz");
 start = new Button("Start");
 
 	start.setOnAction((event)->{
@@ -65,27 +85,27 @@ start = new Button("Start");
 	
 		String choice = "xyz";
 		
-		if (radioB1.isSelected()) {
-    		choice = "xyz";
-            series1.setName("XY-Diagramm");
-            series2.setName("XZ-Diagramm");
-		}
+//		if (radioB1.isSelected()) {
+//    		choice = "xyz";
+//            series1.setName("XY-Diagramm");
+//            series2.setName("XZ-Diagramm");
+//		}
 
 		
 		//List <String> line = null;
 		List <String> line = Test.testMethod();
-		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series1, xAxis, yAxis);
-		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series2, xAxis1, yAxis1);
-		Coordinatesystem.drawAchsen(choice, Test.testMethod(), series3, xAxis2, yAxis2);
+		Coordinatesystem.drawAchsen("xy", line, series1, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("xz", line, series2, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("zy", line, series3, xAxis, yAxis);
 
  	});
 
 
 
 hbox.setSpacing(10);
-hbox.getChildren().addAll(start, s1, s2, s3);
+hbox.getChildren().addAll(s1, s2, s3);
 
-vbox.getChildren().addAll(hbox);
+vbox.getChildren().addAll(start, hbox);
 hbox.setPadding(new Insets(50, 10, 50, 20));
 
 ((Group)scene.getRoot()).getChildren().add(vbox);
