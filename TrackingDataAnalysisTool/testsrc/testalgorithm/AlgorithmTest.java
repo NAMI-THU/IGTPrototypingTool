@@ -48,12 +48,12 @@ public class AlgorithmTest {
 	public void getJitterIsCorrect() {
 		setUpData();
 
-		double result = processor.getJitter(testTool.getAverageMeasurement().getErrors());
+		double result = processor.getJitter(processor.getErrors(testTool.getMeasurement(),testTool.getAverageMeasurement().getPoint()));
 
 		assertTrue(result == 1.414213562373095);
 
 	}
-
+	
 	@Test
 	public void getAccuracyIsCorrect() {
 
@@ -96,7 +96,8 @@ public class AlgorithmTest {
 
 		processor = new DataProcessor();
 		testTool = new ToolMeasure("TestTool");
-
+		List<Measurement> measurements = new ArrayList<>();
+		
 		Measurement measurement1 = new Measurement();
 		Measurement measurement2 = new Measurement();
 		Measurement measurement3 = new Measurement();
@@ -119,6 +120,12 @@ public class AlgorithmTest {
 
 		avgM.setPoint(p2);
 		avgM.setRotation(r2);
+		
+		measurements.add(measurement1);
+		measurements.add(measurement2);
+		measurements.add(measurement3);
+		
+		
 
 		testTool.addMeasurement(measurement1);
 		testTool.addMeasurement(measurement2);
