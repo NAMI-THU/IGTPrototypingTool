@@ -11,13 +11,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
+//import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.net.*;
+
 
 public class Gui extends JFrame implements ActionListener{
 	
@@ -27,13 +38,12 @@ public class Gui extends JFrame implements ActionListener{
 	private JButton finish2 = new JButton("Ende 2.Messung"); 
 	private JButton loadData = new JButton("Lade Datei");
 	private JButton calculate = new JButton("Berechne");
-	private JTextArea xEbene = new JTextArea(6, 50);
-	private JTextArea yEbene = new JTextArea(6, 50);
-	private JTextArea zEbene = new JTextArea(6, 50);
+	private JTextField xEbene = new JTextField(25);
+	private JTextField yEbene = new JTextField(25);
+	private JTextField zEbene = new JTextField(25);
 	private JTextField adresse= new JTextField(25); 
 	private String[] messungen = {"Rauschen", "Korrektheit"}; 
 	private JComboBox messarten = new JComboBox(messungen);
-	private JTextField tField = new JTextField(15); 
 	private JCheckBox cBJitter = new JCheckBox("Jitter", false);
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
@@ -41,8 +51,11 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
 	JMenuBar bar; JMenu menu ; 
 	JMenuItem openItem; JMenuItem closeItem;
-	JLabel lValue = new JLabel();  
-
+	JLabel lValue = new JLabel();
+	JLabel lCalcJ = new JLabel();  
+	JLabel lCalcC = new JLabel();  
+	JLabel lCalcA = new JLabel();  
+	File f; 
 	//private DataService dataS = new DataService();
 	public Gui(){
 		//allow window
@@ -72,19 +85,19 @@ public class Gui extends JFrame implements ActionListener{
 		xAxis.setText("x-Ebene"); 
 		xAxis.setBounds(150, 130, 100, 20);
 		add(xAxis);
-		xEbene.setBounds(150, 150, 150, 150);
+		xEbene.setBounds(90, 150, 350, 150);
 		add(xEbene);
 		
 		yAxis.setText("y-Achse");
 		yAxis.setBounds(150, 300, 100, 20);
 		add(yAxis);
-		yEbene.setBounds(150, 320, 150, 150);
+		yEbene.setBounds(90, 320, 350, 150);
 		add(yEbene);
 		
 		zAxis.setText("z-Achse");
 		zAxis.setBounds(150, 490, 100, 20);
 		add(zAxis);
-		zEbene.setBounds(150, 510, 150, 150);
+		zEbene.setBounds(90, 510, 350, 150);
 		add(zEbene);
 
 		JLabel measuredTyp = new JLabel("Messarten"); 
@@ -116,7 +129,6 @@ public class Gui extends JFrame implements ActionListener{
 		loadData.addActionListener(this);
 		calculate.addActionListener(this);
 		messarten.addActionListener(this);
-		tField.addActionListener(this);
 		start2.addActionListener(this);
 		finish2.addActionListener(this);
 		cBJitter.addActionListener(this);
@@ -133,34 +145,41 @@ public class Gui extends JFrame implements ActionListener{
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
 	            //gets path from selected data
 	        try{
+	        	FileFilter filter = new FileNameExtensionFilter("Testreihe", "rtf", "docx");
 	            JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+	            fc.addChoosableFileFilter(filter);
 	            int returnValue = fc.showOpenDialog(null);
 	            if (returnValue == JFileChooser.APPROVE_OPTION){
 		            File selctedFile = fc.getSelectedFile();
 		            String path2 = selctedFile.getAbsolutePath();
 		            System.out.println(selctedFile.getAbsolutePath());
 		            
-		            FileInputStream input = new FileInputStream(path2);
-		            double value;
-		            while (true){
-		            	while ((value = input.read()) != -1) {
-		            		System.out.println(value);
-		            	}
+		            FileReader fin = new FileReader(path2);
+		            BufferedReader read = new BufferedReader(fin);
+		            String line;
+		            // while(true){
+		            while((line=read.readLine())!=null)
+		            	//System.out.println(line);
+		            	for(int i = 0; i<= 3; i++){
+		            		xEbene.setText(line);
+		            		yEbene.setText(line);
+		            		zEbene.setText(line);
 		            }
-	            }
-	            } catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-	            }finally{  
-	            }
-	            }});	
+	          }
+	        }catch (FileNotFoundException e2){ 
+	        		e2.printStackTrace();
+	        }catch (IOException e1) {
+	            	e1.printStackTrace();
 	        }
+	        }});}
+
 	
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
 				
-				File f; FileReader reader; FileInputStream input;
-				String path;
+				FileFilter filter; 
+				String path, text;
+				byte[]b; double z=4.5;
 				//String data = DataService.loadNextData();
 				int z1 ;int z2 ;int z3 ;
 				try{ 
@@ -168,61 +187,77 @@ public class Gui extends JFrame implements ActionListener{
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
 						System.out.println(path);
+						if( f.exists()== true){
+							System.out.println(path); 
+						}
 						//setpath from group3 
 						//permanent data 
-						input = new FileInputStream(path);
-						double value;
-						while (true){
-							while ((value = input.read()) != -1) {
-								System.out.println(value);
+						if (path.endsWith(".rtf")){ 
+							FileInputStream is= new FileInputStream(path);
+							b = new byte[is.available()];
+							is.read(b);
+							text = new String(b);
+							while(true){
+						            System.out.println(text);
+							} 
+							}else{
+								JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
+										"Warnung", JOptionPane.WARNING_MESSAGE);
 							}
-						} 	
+						
 					}else if(src == start || src == start2  ){
 							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
 							//Coordinatensystem
 							
 					}else if(src == finish || src == finish2 ){
 						System.out.println("Finish angeklickt");
-						
-						//in Feld reinschreiben 
-						/* z1 = Integer.parseInt(data);
-						 z2 = Integer.parseInt(data);
-						 z3 = Integer.parseInt(data);
-						String resX = ""+z1;
-						xEbene.setText(resX);
-						String resY = ""+z2;
-						yEbene.setText(resY);
-						String resZ = ""+z3;
-						zEbene.setText(resZ);*/	
+						//Coordinatensystem with x,y,z-value
+							
 					}else if(src == messarten){
 						String selected = (String) messarten.getSelectedItem();
 						if("Korrektheit".equals(selected)){
 							start2.setBounds(650, 280, 130, 60);
 							add(start2);
 							start2.setForeground(Color.GREEN);
+							start2.setEnabled(true);
 							finish2.setBounds(800, 280, 130, 60);
 							add(finish2);
 							finish2.setForeground(Color.RED);
-						} 
+							finish2.setEnabled(true);
+						}if("Rauschen".equals(selected)){							
+							start2.setEnabled(false);
+							finish2.setEnabled(false);
+						}
+ 
 					}else if(src == calculate ){
 						lValue.setText("Errechneter Wert");
 						lValue.setBounds(650, 510, 130, 30);
 						add(lValue);
 						lValue.setForeground(Color.BLUE);
 						//validate();
-						tField.setBounds(800, 510, 150, 30);
-						add(tField);
-						tField.setForeground(Color.WHITE); 
-						
-					}else if(src == cBJitter){
-				        System.out.println("Checkbox #1 is clicked");
-				    }else if (src == cBCorrectness) {
-				        System.out.println("Checkbox #2 is clicked");
-				    }else if (src == cBAccuracy) {
-				      System.out.println("Checkbox #3 is clicked");
-				    }
+						lCalcJ.setBounds(800, 510, 200, 30);
+						add(lCalcJ);
+						lCalcC.setBounds(800, 540, 200, 30);
+						add(lCalcC);
+						lCalcA.setBounds(800, 570, 200, 40);
+						add(lCalcA);
+						if(cBJitter.isSelected()){
+							lCalcJ.setText(" Jitter = " + z);  
+						}if(cBCorrectness.isSelected()){
+							lCalcC.setText(" Korrektheit  = " + z+1);  
+						}if(cBAccuracy.isSelected()){
+							lCalcA.setText(" Genauigkeit= " + z+2); 
+						} 
+						} 	
 				}catch(Exception ep){
-					System.out.println("Fehler");
+					if(f.exists()==false){
+						JOptionPane.showMessageDialog(null,"Datei existiert nicht",
+								"Fenstertitel",JOptionPane.ERROR_MESSAGE);
+					}else{
+						//ExceptionReporting.registerExceptionReporter();
+						JOptionPane.showMessageDialog(null,"Fehlermeldung","Fenstertitel",JOptionPane.ERROR_MESSAGE);
+					} 
+
 				}					
 			};	
 	
