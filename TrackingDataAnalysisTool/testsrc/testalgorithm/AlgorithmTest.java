@@ -79,8 +79,6 @@ public class AlgorithmTest {
 
 	}
 
-}
-
 	@Test
 	public void getAccuracyRotationIsCorrect() {
 
@@ -93,17 +91,28 @@ public class AlgorithmTest {
 		assertTrue(result == 0);
 	}
 
-}
+	@Test
+	public void getBoxPlotIsCorrect() {
 
-	// public void loadNextDataIsCorrect() {
+		processor = new DataProcessor();
 
-	// int countToGetNext = 3;
-	// setupData();
+		List<Double> values = new ArrayList<>();
+		values.add(1.0);
+		values.add(2.0);
+		values.add(3.0);
+		values.add(4.0);
+		values.add(5.0);
 
-	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
-	// assertTrue(result.size() > 0 );
-	// }
-	
+		BoxPlot result = processor.getBoxPlot(values);
+
+		// keine Abweichung erwartet
+		assertTrue(result.getMin() == 1);
+		assertTrue(result.getQ1() == 1.5);
+		assertTrue(result.getMedian() == 3);
+		assertTrue(result.getQ3() == 4.5);
+		assertTrue(result.getMax() == 5);
+	}
+
 	@Test
 	public void getToolByNameCorrect() {
 
@@ -121,6 +130,15 @@ public class AlgorithmTest {
 		}
 
 	}
+
+	// public void loadNextDataIsCorrect() {
+
+	// int countToGetNext = 3;
+	// setupData();
+
+	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
+	// assertTrue(result.size() > 0 );
+	// }
 
 	private void setUpDataAccuracy() {
 		processor = new DataProcessor();
