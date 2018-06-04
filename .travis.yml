@@ -10,7 +10,7 @@ addons:
       - language-pack-de
 
 script:
-- cd src/algorithm
+- cd /src/algorithm
 - javac *.java
 - cd ../inputOutput
 - javac *.java
