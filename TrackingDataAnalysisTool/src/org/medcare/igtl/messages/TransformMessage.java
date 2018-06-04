@@ -21,6 +21,7 @@ import org.medcare.igtl.util.Header;
 //import com.neuronrobotics.sdk.common.ByteList;
 
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 
 /**
  *** This class create an Transform object from bytes received or help to generate
@@ -242,6 +243,11 @@ public class TransformMessage extends OpenIGTMessage {
     		for(int i = 0; i < o.length; i++){
         		
         		System.out.println(o[i]);
+//        		PositionMessage test = new PositionMessage("Paul");
+//        		RotationNR text = new RotationNR();
+//        		text = test.getQuaternion();
+//        		
+//        		System.out.println(text);
         	}
             return o;
         }

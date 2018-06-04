@@ -55,6 +55,13 @@ public class PositionMessage extends OpenIGTMessage {
          * @param quaternion2 
          * @param ds 
          **/
+        
+     
+        	
+        	
+      
+        
+        
         public PositionMessage(String deviceName, double[] ds, RotationNR RotationNR) {
                 super(deviceName);           
                 setPositionData(ds, RotationNR, 4);        		
