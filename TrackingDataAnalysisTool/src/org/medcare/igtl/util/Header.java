@@ -254,6 +254,7 @@ public class Header {
         	s+=" Timestamp: "+getTimeStamp();
         	s+=" Body Size:"+getBody_size();
         	s+=" CRC: "+getCrc();
+
         	//s+=" bytes: "+new ByteList(getBytes());
         	return s;
         }

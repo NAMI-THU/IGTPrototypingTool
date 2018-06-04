@@ -238,6 +238,11 @@ public class TransformMessage extends OpenIGTMessage {
     			//System.out.print(origin[i]+" ");
     		}
     		//System.out.print("]\n");
+
+    		for(int i = 0; i < o.length; i++){
+        		
+        		System.out.println(o[i]);
+        	}
             return o;
         }
 
