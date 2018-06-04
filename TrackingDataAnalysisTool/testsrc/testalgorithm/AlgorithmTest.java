@@ -48,8 +48,7 @@ public class AlgorithmTest {
 	public void getJitterIsCorrect() {
 		setUpData();
 
-		double result = processor
-				.getJitter(processor.getErrors(testTool.getMeasurement(), testTool.getAverageMeasurement().getPoint()));
+		double result = processor.getJitter(processor.getErrors(testTool.getMeasurement(), testTool.getAverageMeasurement().getPoint()));
 
 		assertTrue(result == 1.414213562373095);
 
@@ -79,6 +78,27 @@ public class AlgorithmTest {
 
 	}
 
+	@Test
+	public void getBoxPlotIsCorrect() {
+
+		processor = new DataProcessor();
+
+		List<Double> values = new ArrayList<>();
+		values.add(1.0);
+		values.add(2.0);
+		values.add(3.0);
+		values.add(4.0);
+		values.add(5.0);
+
+		BoxPlot result = processor.getBoxPlot(values);
+
+		// keine Abweichung erwartet
+		assertTrue(result.getMin() == 1);
+		assertTrue(result.getQ1() == 1.5);
+		assertTrue(result.getMedian() == 3);
+		assertTrue(result.getQ3() == 4.5);
+		assertTrue(result.getMax() == 5);
+	}
 	// public void loadNextDataIsCorrect() {
 
 	// int countToGetNext = 3;
