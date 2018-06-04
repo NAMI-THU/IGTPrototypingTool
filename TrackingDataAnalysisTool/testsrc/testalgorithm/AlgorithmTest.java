@@ -48,12 +48,13 @@ public class AlgorithmTest {
 	public void getJitterIsCorrect() {
 		setUpData();
 
-		double result = processor.getJitter(processor.getErrors(testTool.getMeasurement(),testTool.getAverageMeasurement().getPoint()));
+		double result = processor
+				.getJitter(processor.getErrors(testTool.getMeasurement(), testTool.getAverageMeasurement().getPoint()));
 
 		assertTrue(result == 1.414213562373095);
 
 	}
-	
+
 	@Test
 	public void getAccuracyIsCorrect() {
 
@@ -65,6 +66,27 @@ public class AlgorithmTest {
 		// keine Abweichung erwartet
 		assertTrue(result == 0);
 	}
+
+	@Test
+	public void getRotationJitterIsCorrect() {
+		setUpData();
+
+		RotationError result = processor.getRotationJitter(testTool.getMeasurement(),
+				testTool.getAverageMeasurement().getRotation());
+
+		assertTrue(result.getRotationAngleError() == 0.11271591504667608);
+		assertTrue(result.getRotationPositionError() == 0.11271591504667536);
+
+	}
+
+	// public void loadNextDataIsCorrect() {
+
+	// int countToGetNext = 3;
+	// setupData();
+
+	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
+	// assertTrue(result.size() > 0 );
+	// }
 
 	private void setUpDataAccuracy() {
 		processor = new DataProcessor();
@@ -82,22 +104,13 @@ public class AlgorithmTest {
 		firstAverangeMeasurement.setRotation(r1);
 		secondAverangeMeasurement.setRotation(r2);
 	}
-	
-	//public void loadNextDataIsCorrect() {
-	
-	// int countToGetNext = 3;
-	// setupData();
-	
-	// List <ToolMeasure> result = dataManager.getNextData(countToGetNext);
-	// assertTrue(result.size() > 0 9);
-	//}
 
 	private void setUpData() {
 
 		processor = new DataProcessor();
 		testTool = new ToolMeasure("TestTool");
 		List<Measurement> measurements = new ArrayList<>();
-		
+
 		Measurement measurement1 = new Measurement();
 		Measurement measurement2 = new Measurement();
 		Measurement measurement3 = new Measurement();
@@ -120,34 +133,19 @@ public class AlgorithmTest {
 
 		avgM.setPoint(p2);
 		avgM.setRotation(r2);
-		
+
 		measurements.add(measurement1);
 		measurements.add(measurement2);
 		measurements.add(measurement3);
-		
-		
 
 		testTool.addMeasurement(measurement1);
 		testTool.addMeasurement(measurement2);
 		testTool.addMeasurement(measurement3);
 
 		testTool.setAverageMeasurement(avgM);
-		
+
 		// dataManager = new DataManager();
 
 	}
-	
-	@Test
-	public void getRotationJitterIsCorrect() {
-		setUpData();
-
-		RotationError result = processor.getRotationJitter(testTool.getMeasurement(),
-				testTool.getAverageMeasurement().getRotation());
-
-		assertTrue(result.getRotationAngleError() == 0.11271591504667608);
-		assertTrue(result.getRotationPositionError() == 0.11271591504667536);
-
-	}
-
 
 }
