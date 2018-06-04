@@ -14,56 +14,58 @@ import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 
 public class DataProcessor {
 
-	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement, AverageMeasurement secondAverangeMeasurement) {	
-		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint()) - expectedDistance;
+	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
+			AverageMeasurement secondAverangeMeasurement) {
+		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
+				- expectedDistance;
 	}
 
-	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement, Measurement secondMeasurement) {
+	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement,
+			Measurement secondMeasurement) {
 		return (firstMeasurement.getRotation().getAngle() - secondMeasurement.getRotation().getAngle()) - expectedAngle;
 	}
-	
+
 	public BoxPlot getBoxPlot(List<Double> values) {
-		
+
 		BoxPlot boxPlot = new BoxPlot();
 		Collections.sort(values);
 		Percentile percentile = new Percentile();
 		percentile.setData(toDoubleArray(values));
-		
+
 		boxPlot.setMax(Collections.max(values));
 		boxPlot.setMin(Collections.min(values));
 		boxPlot.setQ1(percentile.evaluate(25));
 		boxPlot.setMedian(percentile.evaluate(50));
 		boxPlot.setQ3(percentile.evaluate(75));
-		
+
 		return boxPlot;
 	}
-	
-	
-	double[] toDoubleArray(List<Double> list)  {
-	    double[] ret = new double[list.size()];
-	    int i = 0;
-	    for (Double e : list)  
-	        ret[i++] = e.intValue();
-	    return ret;
+
+	double[] toDoubleArray(List<Double> list) {
+		double[] ret = new double[list.size()];
+		int i = 0;
+		for (Double e : list)
+			ret[i++] = e.intValue();
+		return ret;
 	}
-	
-	
-//	public Measurement getCalibration(Point referencePoint, Measurement mainToolMeasurement) {
-//
-//		for (int f = 0; f < mainToolMeasurement.getPoints().size(); f++) {
-//			Point mainPoint = mainToolMeasurement.getPoints().get(f);
-//			double distance = getDistance(referencePoint, mainPoint);
-//			mainPoint.setDistanceToPike(distance);
-//		}
-//		return mainToolMeasurement;
-//	}
+
+	// public Measurement getCalibration(Point referencePoint, Measurement
+	// mainToolMeasurement) {
+	//
+	// for (int f = 0; f < mainToolMeasurement.getPoints().size(); f++) {
+	// Point mainPoint = mainToolMeasurement.getPoints().get(f);
+	// double distance = getDistance(referencePoint, mainPoint);
+	// mainPoint.setDistanceToPike(distance);
+	// }
+	// return mainToolMeasurement;
+	// }
 
 	// Methode zum Berechnen des Mittelwerts;
 	public AverageMeasurement getAverageMeasurement(List<Measurement> measurements) {
 
 		int measureSize = measurements.size();
-		Point3D addPoint = new Point3D(0,0,0);
-		Point3D addRotationPoint = new Point3D(0,0,0);
+		Point3D addPoint = new Point3D(0, 0, 0);
+		Point3D addRotationPoint = new Point3D(0, 0, 0);
 		double scalar = 0;
 
 		for (int i = 0; i < measureSize; i++) {
@@ -75,28 +77,28 @@ public class DataProcessor {
 			addRotationPoint = addRotationPoint.add(rotationPoint);
 			scalar += rotation.getQ0();
 		}
-			
+
 		double averageX = addPoint.getX() / measureSize;
 		double averageY = addPoint.getY() / measureSize;
 		double averageZ = addPoint.getZ() / measureSize;
-		
+
 		double avgRotationS = scalar / measureSize;
 		double avgRotationX = addRotationPoint.getX() / measureSize;
 		double avgRotationY = addRotationPoint.getY() / measureSize;
 		double avgRotationZ = addRotationPoint.getZ() / measureSize;
-		
+
 		AverageMeasurement averageMeasurement = new AverageMeasurement();
 		Point3D averagePoint = new Point3D(averageX, averageY, averageZ);
 		Rotation averageRotation = new Rotation(avgRotationS, avgRotationX, avgRotationY, avgRotationZ, true);
-		
+
 		averageMeasurement.setPoint(averagePoint);
 		averageMeasurement.setRotation(averageRotation);
 		return averageMeasurement;
 	}
-	
-	public List<Double> getErrors(List<Measurement> measurements, Point3D avgPoint){
+
+	public List<Double> getErrors(List<Measurement> measurements, Point3D avgPoint) {
 		List<Double> errors = new ArrayList<>();
-		
+
 		for (int i = 0; i < measurements.size(); i++) {
 			Point3D point = measurements.get(i).getPoint();
 			double distance = getDistance(point, avgPoint);
@@ -104,7 +106,6 @@ public class DataProcessor {
 		}
 		return errors;
 	}
-	
 
 	public double getJitter(List<Double> errors) {
 		return getRMSE(errors);
@@ -113,26 +114,25 @@ public class DataProcessor {
 	public RotationError getRotationJitter(List<Measurement> measurements, Rotation avgRotation) {
 		List<Double> rotationPositionErrors = new ArrayList<>();
 		List<Double> rotationAngleErrors = new ArrayList<>();
-		
+
 		RotationError rotationError = new RotationError();
-		
+
 		for (int i = 0; i < measurements.size(); i++) {
 			Rotation rotationPosition = measurements.get(i).getRotation();
 			double angle = measurements.get(i).getRotation().getAngle();
-			
+
 			double angleRotation = angle - avgRotation.getAngle();
 			double distanceRotation = Rotation.distance(rotationPosition, avgRotation);
 			rotationPositionErrors.add(distanceRotation);
 			rotationAngleErrors.add(angleRotation);
 		}
-		
+
 		rotationError.setRotationPositionError(getRMSE(rotationPositionErrors));
 		rotationError.setRotationAngleError(getRMSE(rotationAngleErrors));
-		
+
 		return rotationError;
 	}
-	
-	
+
 	// root mean square error
 	private double getRMSE(List<Double> errors) {
 		double additionalPowError = 0;

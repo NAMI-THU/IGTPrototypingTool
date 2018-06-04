@@ -13,6 +13,7 @@ public class ToolMeasure {
 		this.name = name;
 		this.measurements = new ArrayList<>();
 	}
+
 	public ToolMeasure() {
 		this.measurements = new ArrayList<>();
 	}

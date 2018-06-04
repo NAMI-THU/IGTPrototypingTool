@@ -8,18 +8,17 @@ import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 import javafx.geometry.Point3D;
 
-public class AverageMeasurement extends Measurement{
+public class AverageMeasurement extends Measurement {
 
-	public AverageMeasurement(){
+	public AverageMeasurement() {
 		super();
 	}
-	
+
 	private double error;
 	private RotationError rotationError;
 	private List<Double> errors = new ArrayList<>();
 	private BoxPlot boxPlot;
-	
-	
+
 	public BoxPlot getBoxPlot() {
 		return boxPlot;
 	}
@@ -39,7 +38,7 @@ public class AverageMeasurement extends Measurement{
 	public double getError() {
 		return error;
 	}
-	
+
 	public void setError(double error) {
 		this.error = error;
 	}
@@ -51,7 +50,5 @@ public class AverageMeasurement extends Measurement{
 	public void setRotationError(RotationError rotationError) {
 		this.rotationError = rotationError;
 	}
-	
-	
 
 }
