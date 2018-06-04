@@ -79,6 +79,22 @@ public class AlgorithmTest {
 
 	}
 
+}
+
+	@Test
+	public void getAccuracyRotationIsCorrect() {
+
+		setUpData();
+		double expectedAngle = 1.7320508075688772;
+
+		double result = processor.getAccuracyRotation(expectedAngle, firstAverageMeasurement, secondAverageMeasurement);
+
+		// keine Abweichung erwartet
+		assertTrue(result == 0);
+	}
+
+}
+
 	// public void loadNextDataIsCorrect() {
 
 	// int countToGetNext = 3;
