@@ -69,7 +69,7 @@ public class AlgorithmTest {
 
 	@Test
 	public void getRotationJitterIsCorrect() {
-		setUpData();
+		setUpDataAccuracy();
 
 		RotationError result = processor.getRotationJitter(testTool.getMeasurement(),
 				testTool.getAverageMeasurement().getRotation());
