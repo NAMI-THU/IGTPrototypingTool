@@ -1,31 +1,54 @@
 package algorithm;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.math3.complex.Quaternion;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+
+import inputOutput.Tool;
+import javafx.geometry.Point3D;
 
 public class Measurement {
 
-	private List<Point> points = new ArrayList<>();
-	private int timestamp;
+	public Measurement(Tool tool) {
+		// this.setPoint(tool.getPoint);
+		this.setPoint(new Point3D(tool.getCoordinate_x(), tool.getCoordinate_y(), tool.getCoordinate_z()));
+		// this.setRotation(new Rotation(tool.getRotation_r(), tool.getRotation_x(),
+		// tool.getRotation_y(), tool.getRotation_z()));
+		this.setTimestamp(tool.getTimestamp());
+		this.setToolname(tool.getName());
+
+	}
+
+	public Measurement() {
+
+	}
+
+	private Point3D point;
+	private double error;
+	private double timestamp;
 	private String toolname;
+	private Rotation rotation;
 
-	public List<Point> getPoints() {
-		return points;
+	public Rotation getRotation() {
+		return rotation;
 	}
 
-	public void addPoint(Point point) {
-		this.points.add(point);
+	public void setRotation(Rotation rotation) {
+		this.rotation = rotation;
 	}
 
-	public void setPoints(List<Point> points) {
-		this.points = points;
+	public Point3D getPoint() {
+		return point;
 	}
 
-	public int getTimestamp() {
+	public void setPoint(Point3D point) {
+		this.point = point;
+	}
+
+	public double getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(int timestamp) {
+	public void setTimestamp(double timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -35,6 +58,14 @@ public class Measurement {
 
 	public void setToolname(String toolname) {
 		this.toolname = toolname;
+	}
+
+	public double getError() {
+		return error;
+	}
+
+	public void setError(double error) {
+		this.error = error;
 	}
 
 }
