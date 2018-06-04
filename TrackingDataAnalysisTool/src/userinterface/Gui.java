@@ -82,7 +82,7 @@ public class Gui extends JFrame implements ActionListener{
 		panelNorth.add(loadData);
 		
 		//Coordinate
-		xAxis.setText("x-Ebene"); 
+		xAxis.setText("x-Achse"); 
 		xAxis.setBounds(150, 130, 100, 20);
 		add(xAxis);
 		xEbene.setBounds(90, 150, 350, 150);
@@ -197,9 +197,9 @@ public class Gui extends JFrame implements ActionListener{
 							b = new byte[is.available()];
 							is.read(b);
 							text = new String(b);
-							while(true){
+							//while(true){
 						            System.out.println(text);
-							} 
+							//} 
 							}else{
 								JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
 										"Warnung", JOptionPane.WARNING_MESSAGE);
