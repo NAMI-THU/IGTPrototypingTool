@@ -1,5 +1,7 @@
 package mainMethod;
 
+import javax.swing.JFrame;
+
 import algorithm.*;
 import inputOutput.*;
 import userinterface.*;
