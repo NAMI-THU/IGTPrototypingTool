@@ -40,7 +40,7 @@ public class PositionMessage extends OpenIGTMessage {
         public static int ALL = 4;
         private int quaternionSize = ALL;
 
-        public double position[] = new double[3]; // float 32bits
+        public static double position[] = new double[3]; // float 32bits
         public RotationNR quaternion; // float 32bits
         private byte position_data[];
         private int bodyLength;
@@ -77,6 +77,9 @@ public class PositionMessage extends OpenIGTMessage {
         public PositionMessage(Header header, byte body[]) throws Exception {
                 super(header, body);
         }
+        
+        
+
 
         /**
          *** To create body from body array

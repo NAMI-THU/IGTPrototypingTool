@@ -25,7 +25,7 @@ public class ClientSample implements IOpenIgtPacketListener {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		String msg = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
 
 		ClientSample.parseXMLStringMessage(msg);

@@ -240,15 +240,15 @@ public class TransformMessage extends OpenIGTMessage {
     		}
     		//System.out.print("]\n");
 
-    		for(int i = 0; i < o.length; i++){
-        		
-        		System.out.println(o[i]);
+//    		for(int i = 0; i < o.length; i++){
+//        		
+//        		System.out.println(o[i]);
 //        		PositionMessage test = new PositionMessage("Paul");
 //        		RotationNR text = new RotationNR();
 //        		text = test.getQuaternion();
 //        		
 //        		System.out.println(text);
-        	}
+//        	}
             return o;
         }
 
