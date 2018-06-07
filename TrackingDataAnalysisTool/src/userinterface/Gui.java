@@ -143,24 +143,17 @@ public class Gui extends JFrame implements ActionListener{
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 	        //opens actionPerformed by clicking openItem
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
-	            //gets path from selected data
-	        try{
-	        	FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
-	            JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-	            fc.addChoosableFileFilter(filter);
-	            int returnValue = fc.showOpenDialog(null);
-	            if (returnValue == JFileChooser.APPROVE_OPTION){
-		            File selctedFile = fc.getSelectedFile();
-		            String path2 = selctedFile.getAbsolutePath();
-		            CSVFileReader.setPath(path2);
-		            ExceptionWindow.startExceptionWindow();
-		           
-	          }
-	        }catch (FileNotFoundException e2){ 
-	        		e2.printStackTrace();
-	        }catch (IOException e1) {
-	            	e1.printStackTrace();
-	        }
+	        FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
+			JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+			fc.addChoosableFileFilter(filter);
+			int returnValue = fc.showOpenDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION){
+			    File selctedFile = fc.getSelectedFile();
+			    String path2 = selctedFile.getAbsolutePath();
+			    CSVFileReader.setPath(path2);
+			    ExceptionWindow.startExceptionWindow();
+			   
+			}
 	        }});}
 
 	
