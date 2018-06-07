@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.net.*;
-
+import inputOutput.*;
 
 public class Gui extends JFrame implements ActionListener{
 	
@@ -145,26 +145,15 @@ public class Gui extends JFrame implements ActionListener{
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
 	            //gets path from selected data
 	        try{
-	        	FileFilter filter = new FileNameExtensionFilter("Testreihe", "rtf", "docx");
+	        	FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
 	            JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 	            fc.addChoosableFileFilter(filter);
 	            int returnValue = fc.showOpenDialog(null);
 	            if (returnValue == JFileChooser.APPROVE_OPTION){
 		            File selctedFile = fc.getSelectedFile();
 		            String path2 = selctedFile.getAbsolutePath();
-		            System.out.println(selctedFile.getAbsolutePath());
+		            CSVFileReader.setPath(path2);
 		            
-		            FileReader fin = new FileReader(path2);
-		            BufferedReader read = new BufferedReader(fin);
-		            String line;
-		            // while(true){
-		            while((line=read.readLine())!=null)
-		            	//System.out.println(line);
-		            	for(int i = 0; i<= 3; i++){
-		            		xEbene.setText(line);
-		            		yEbene.setText(line);
-		            		zEbene.setText(line);
-		            }
 	          }
 	        }catch (FileNotFoundException e2){ 
 	        		e2.printStackTrace();
@@ -186,20 +175,13 @@ public class Gui extends JFrame implements ActionListener{
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
-						System.out.println(path);
+						
 						if( f.exists()== true){
 							System.out.println(path); 
 						}
-						//setpath from group3 
-						//permanent data 
-						if (path.endsWith(".rtf")){ 
-							FileInputStream is= new FileInputStream(path);
-							b = new byte[is.available()];
-							is.read(b);
-							text = new String(b);
-							//while(true){
-						            System.out.println(text);
-							//} 
+						
+						if (path.endsWith(".csv")){ 
+							CSVFileReader.setPath(path);
 							}else{
 								JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
 										"Warnung", JOptionPane.WARNING_MESSAGE);
@@ -251,7 +233,7 @@ public class Gui extends JFrame implements ActionListener{
 						} 	
 				}catch(Exception ep){
 					if(f.exists()==false){
-						JOptionPane.showMessageDialog(null,"Datei existiert nicht",
+						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
 								"Fenstertitel",JOptionPane.ERROR_MESSAGE);
 					}else{
 						//ExceptionReporting.registerExceptionReporter();
