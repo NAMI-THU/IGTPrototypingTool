@@ -10,7 +10,7 @@ addons:
       - language-pack-de
 
 script:
-- cd /src/algorithm
+- cd TrackingDataAnalysisTool/src/algorithm
 - javac *.java
 - cd ../inputOutput
 - javac *.java
