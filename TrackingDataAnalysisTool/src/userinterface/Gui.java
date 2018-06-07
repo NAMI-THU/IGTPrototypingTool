@@ -153,7 +153,8 @@ public class Gui extends JFrame implements ActionListener{
 		            File selctedFile = fc.getSelectedFile();
 		            String path2 = selctedFile.getAbsolutePath();
 		            CSVFileReader.setPath(path2);
-		            
+		            ExceptionWindow.startExceptionWindow();
+		           
 	          }
 	        }catch (FileNotFoundException e2){ 
 	        		e2.printStackTrace();
@@ -168,28 +169,29 @@ public class Gui extends JFrame implements ActionListener{
 				
 				FileFilter filter; 
 				String path, text;
-				byte[]b; double z=4.5;
-				//String data = DataService.loadNextData();
-				int z1 ;int z2 ;int z3 ;
+				double z=4.5;
+				
 				try{ 
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
-						
 						if( f.exists()== true){
 							System.out.println(path); 
 						}
 						
 						if (path.endsWith(".csv")){ 
 							CSVFileReader.setPath(path);
-							}else{
-								JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
-										"Warnung", JOptionPane.WARNING_MESSAGE);
-							}
+							ExceptionWindow.startExceptionWindow();
+							
+						}else{
+							JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+						}
 						
 					}else if(src == start || src == start2  ){
 							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
-							//Coordinatensystem
+							//String data = DataService.loadNextData();
+							
 							
 					}else if(src == finish || src == finish2 ){
 						System.out.println("Finish angeklickt");
