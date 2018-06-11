@@ -30,7 +30,8 @@ public static void drawAchsen(String choice, List<Measurement> l,
 			case "xy":
 			
 			
-
+			xAxis.setLabel("X-Achse");                
+		    yAxis.setLabel("Y-Achse");
 		for (int i=0; i<l.size(); i=i+3) {
 			x = l.get(i).getPoint().getX();
 			//System.out.println(x);

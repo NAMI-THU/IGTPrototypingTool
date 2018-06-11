@@ -68,8 +68,11 @@ public class Diagramm extends Application{
 		
 	
 XYChart.Series series1 = new XYChart.Series();
+//series1.setName("XY-Diagramm");
 XYChart.Series series2 = new XYChart.Series();
+//series2.setName("XZ-Diagramm");
 XYChart.Series series3 = new XYChart.Series();
+//series3.setName("ZY-Diagramm");
 
 
 s1.setPrefSize(400, 300);
@@ -141,7 +144,6 @@ hbox.setPadding(new Insets(50, 10, 50, 20));
 stage.setScene(scene);
 stage.show();
 }
-
 
 
 public static void main(String[]args){
