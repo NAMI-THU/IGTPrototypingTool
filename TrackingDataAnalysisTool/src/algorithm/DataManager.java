@@ -7,7 +7,7 @@ import inputOutput.CSVFileReader;
 
 import inputOutput.Tool;
 
-public class DataManager {
+public class DataManager  {
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 
 	public List<ToolMeasure> getToolMeasures() {
