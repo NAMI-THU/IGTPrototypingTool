@@ -69,8 +69,8 @@ public class Gui extends JFrame implements ActionListener{
 		//Searching for data file
 		bar = new JMenuBar();
 		menu = new JMenu("Dateisuche ");
-		openItem = new JMenuItem("Öffnen");
-	    closeItem = new JMenuItem("Schließen"); 
+		openItem = new JMenuItem("Oeffnen");
+	    closeItem = new JMenuItem("Schliessen"); 
 	    menu.add(openItem);
 	    menu.add(closeItem);
 	    bar.add(menu);
@@ -177,12 +177,12 @@ public class Gui extends JFrame implements ActionListener{
 							ExceptionWindow.startExceptionWindow();
 							
 						}else{
-							JOptionPane.showMessageDialog(null, "Ungültiger Dateityp", 
+							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 						}
 						
 					}else if(src == start || src == start2  ){
-							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
 							//String data = DataService.loadNextData();
 							
 							

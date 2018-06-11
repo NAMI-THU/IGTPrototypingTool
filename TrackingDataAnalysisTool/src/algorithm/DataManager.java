@@ -17,7 +17,7 @@ public class DataManager  {
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
 		for (double i = 0; i < countToGetNext; i++) {
-			// aus rückgabe von update neue messung erstellen
+			// aus rueckgabe von update neue messung erstellen
 			List<Tool> tools = inputOutput.CSVFileReader.update();
 
 			for (Tool tool : tools) {

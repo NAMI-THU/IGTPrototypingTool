@@ -24,7 +24,7 @@ public class CSVFileReader extends Interface {
 	// interface for the other groups
 	public static ArrayList<Tool> update() {
 
-		// was könnte man hier returnen, falls die datei zu ende ist?
+		// was koennte man hier returnen, falls die datei zu ende ist?
 
 		// reader for CSV-file
 		try {
