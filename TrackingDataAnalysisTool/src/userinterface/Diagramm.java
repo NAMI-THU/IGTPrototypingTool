@@ -1,6 +1,8 @@
 package userinterface;
 
 import java.util.List;
+
+import algorithm.Measurement;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
+import algorithm.ToolMeasure;
 
 public class Diagramm extends Application{
 
@@ -56,7 +59,7 @@ public class Diagramm extends Application{
 		
 		s1.setTitle("XY-Ebene");
 		s2.setTitle("XZ-Ebene");
-		s3.setTitle("ZY-Ebene");
+		s3.setTitle("YZ-Ebene");
 		
 	
 XYChart.Series series1 = new XYChart.Series();
@@ -93,10 +96,14 @@ start = new Button("Start");
 
 		
 		//List <String> line = null;
-		List <String> line = Test.testMethod();
-		Coordinatesystem.drawAchsen("xy", line, series1, xAxis, yAxis);
-		Coordinatesystem.drawAchsen("xz", line, series2, xAxis, yAxis);
-		Coordinatesystem.drawAchsen("zy", line, series3, xAxis, yAxis);
+		// List<Measurement> line = algorithm.ToolMeasure.getMeasurement();
+		
+		ToolMeasure l = new ToolMeasure();
+		l.getMeasurement();
+
+		Coordinatesystem.drawAchsen("xy", (List<Measurement>) l, series1, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("xz", (List<Measurement>) l, series2, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("zy", (List<Measurement>) l, series3, xAxis, yAxis);
 
  	});
 
