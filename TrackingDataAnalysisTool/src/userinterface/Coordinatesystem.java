@@ -30,13 +30,14 @@ public static void drawAchsen(String choice, List<Measurement> l,
 			case "xy":
 			
 			
-
-		for (int i=0; i<((List<Measurement>) l).size(); i=i+3) {
-			x = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getX();
+			xAxis.setLabel("X-Achse");                
+		    yAxis.setLabel("Y-Achse");
+		for (int i=0; i<l.size(); i=i+3) {
+			x = l.get(i).getPoint().getX();
 			//System.out.println(x);
 		
-			for(int j=1; j<((List<Measurement>) l).size(); j=j+3) {
-				y = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getY();
+			for(int j=1; j<l.size(); j=j+3) {
+				y = l.get(i).getPoint().getY();
 				System.out.println(y);
 				s.getData().add(new XYChart.Data(x, y));
 			}
@@ -48,28 +49,28 @@ public static void drawAchsen(String choice, List<Measurement> l,
 
 		xAxis.setLabel("X-Achse");                
         yAxis.setLabel("Z-Achse");
-		for (int i=0; i<((List<Measurement>) l).size(); i=i+3) {
-			x = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getX();;
+		for (int i=0; i<l.size(); i=i+3) {
+			x = l.get(i).getPoint().getX();;
 			System.out.println(x);
 		
-			for(int j=2; j<((List<Measurement>) l).size(); j=j+3) {
-				z = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getZ();;
+			for(int j=2; j<l.size(); j=j+3) {
+				z = l.get(i).getPoint().getZ();;
 				s.getData().add(new XYChart.Data(x, z));
 			}
 		}
 		break;
 
 		
-			case "yz":
+			case "zy":
 		
 		xAxis.setLabel("Z-Achse");                
         yAxis.setLabel("Y-Achse");
-		for (int i=1; i<((List<Measurement>) l).size(); i=i+3) {
-			y = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getY();;
+		for (int i=1; i<l.size(); i=i+3) {
+			y = l.get(i).getPoint().getY();;
 			System.out.println(y);
 		
-			for(int j=2; j<((List<Measurement>) l).size(); j=j+3) {
-				z = ((ToolMeasure) l).getMeasurement().get(i).getPoint().getZ();;
+			for(int j=2; j<l.size(); j=j+3) {
+				z = l.get(i).getPoint().getZ();;
 				s.getData().add(new XYChart.Data(z, y));
 			}
 		}

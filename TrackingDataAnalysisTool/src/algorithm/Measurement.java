@@ -9,12 +9,11 @@ import javafx.geometry.Point3D;
 public class Measurement {
 
 	public Measurement(Tool tool) {
-		// this.setPoint(tool.getPoint);
-		this.setPoint(new Point3D(tool.getCoordinate_x(), tool.getCoordinate_y(), tool.getCoordinate_z()));
-		// this.setRotation(new Rotation(tool.getRotation_r(), tool.getRotation_x(),
-		// tool.getRotation_y(), tool.getRotation_z()));
+		this.setPoint(new Point3D(tool.getCoordinat().getX(), tool.getCoordinat().getY(), tool.getCoordinat().getZ()));
+		this.setRotation(new Rotation(tool.getRotation_r(), tool.getRotation_x(), tool.getRotation_y(), tool.getRotation_z(), true));
 		this.setTimestamp(tool.getTimestamp());
 		this.setToolname(tool.getName());
+
 
 	}
 
