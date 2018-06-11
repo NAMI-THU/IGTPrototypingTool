@@ -10,23 +10,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.File;
-//import java.io.FileFilter;
+import java.io.File;//import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.net.*;
 import inputOutput.*;
 
@@ -56,7 +52,8 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel lCalcC = new JLabel();  
 	JLabel lCalcA = new JLabel();  
 	File f; 
-	//private DataService dataS = new DataService();
+	DataService dataS = new DataService();
+	 
 	public Gui(){
 		//allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
@@ -143,17 +140,17 @@ public class Gui extends JFrame implements ActionListener{
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 	        //opens actionPerformed by clicking openItem
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
-	        FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
+	      
+	            FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
 			JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 			fc.addChoosableFileFilter(filter);
 			int returnValue = fc.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION){
 			    File selctedFile = fc.getSelectedFile();
 			    String path2 = selctedFile.getAbsolutePath();
-			    CSVFileReader.setPath(path2);
-			    ExceptionWindow.startExceptionWindow();
-			   
+			    CSVFileReader.setPath(path2);     
 			}
+
 	        }});}
 
 	
@@ -163,18 +160,14 @@ public class Gui extends JFrame implements ActionListener{
 				FileFilter filter; 
 				String path, text;
 				double z=4.5;
+				Diagramm Diag = new Diagramm();
 				
 				try{ 
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
-						if( f.exists()== true){
-							System.out.println(path); 
-						}
-						
-						if (path.endsWith(".csv")){ 
+						if( f.exists()== true && path.endsWith(".csv")){
 							CSVFileReader.setPath(path);
-							ExceptionWindow.startExceptionWindow();
 							
 						}else{
 							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
@@ -182,12 +175,12 @@ public class Gui extends JFrame implements ActionListener{
 						}
 						
 					}else if(src == start || src == start2  ){
-							JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
-							//String data = DataService.loadNextData();
-							
-							
+
+							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
+							//dataS.loadNextData(countToGetNext);
+
 					}else if(src == finish || src == finish2 ){
-						System.out.println("Finish angeklickt");
+						//Diag.start(stage);
 						//Coordinatensystem with x,y,z-value
 							
 					}else if(src == messarten){
