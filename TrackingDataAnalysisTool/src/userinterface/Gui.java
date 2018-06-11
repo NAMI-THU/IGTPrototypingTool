@@ -41,11 +41,15 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextField adresse= new JTextField(25); 
 	private String[] messungen = {"Rauschen", "Korrektheit"}; 
 	private JComboBox messarten = new JComboBox(messungen);
-	private JCheckBox cBJitter = new JCheckBox("Jitter", false);
+	private JCheckBox cBJitterP = new JCheckBox("Jitterposition", false);
+	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
+	private JCheckBox cBRotation = new JCheckBox("Rotation", false);
+	
 	JPanel pCenter = new JPanel();
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
+	JLabel LabelDataValue = new JLabel(); private JTextField ValueData = new JTextField(15);
 	JMenuBar bar; JMenu menu ; 
 	JMenuItem openItem; JMenuItem closeItem;
 	JLabel lValue = new JLabel();
@@ -54,7 +58,7 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel lCalcA = new JLabel();  
 	File f; 
 	DataService dataS = new DataService();
-	
+	double correctness, accuracy, jitterR, jitterP;
 	
 	public Gui(){
 		//allow window
@@ -98,7 +102,10 @@ public class Gui extends JFrame implements ActionListener{
 		add(zAxis);
 		zEbene.setBounds(90, 510, 350, 150);
 		add(zEbene);
-
+		
+		LabelDataValue.setBounds(650,300, 120, 80);
+		add(ValueData);
+		
 		JLabel measuredTyp = new JLabel("Messarten"); 
 		measuredTyp.setBounds(650, 80, 120, 60);
 		add(measuredTyp);
@@ -111,11 +118,17 @@ public class Gui extends JFrame implements ActionListener{
 		finish.setBounds(800, 170, 130, 60);
 		add(finish);
 		finish.setForeground(Color.RED);
-
-		cBJitter.setBounds(650, 400, 150, 30);
+		
+		JLabel Rotation = new JLabel("Rotation"); 
+		Rotation.setBounds(800, 80, 120, 60);
+		add(Rotation);
+		
+		cBJitterR.setBounds(650, 380, 150, 30);
+		add(cBJitterR);
+		cBJitterP.setBounds(650, 400, 150, 30);
 		cBCorrectness.setBounds(650, 420, 150, 30);
 		cBAccuracy.setBounds(650, 440, 150, 30);
-		add(cBJitter);
+		add(cBJitterP);
 		add(cBCorrectness);
 		add(cBAccuracy);
 		setLayout(null);
@@ -130,7 +143,8 @@ public class Gui extends JFrame implements ActionListener{
 		messarten.addActionListener(this);
 		start2.addActionListener(this);
 		finish2.addActionListener(this);
-		cBJitter.addActionListener(this);
+		cBJitterR.addActionListener(this);
+		cBJitterP.addActionListener(this);
 		cBCorrectness.addActionListener(this);
 		cBAccuracy.addActionListener(this);
 		
@@ -144,23 +158,22 @@ public class Gui extends JFrame implements ActionListener{
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
 	      
 	            FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
-			JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-			fc.addChoosableFileFilter(filter);
-			int returnValue = fc.showOpenDialog(null);
-			if (returnValue == JFileChooser.APPROVE_OPTION){
-			    File selctedFile = fc.getSelectedFile();
-			    String path2 = selctedFile.getAbsolutePath();
-			    CSVFileReader.setPath(path2);     
-			}
-
-	        }});}
+				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				fc.addChoosableFileFilter(filter);
+				int returnValue = fc.showOpenDialog(null);
+				if (returnValue == JFileChooser.APPROVE_OPTION){
+				    File selctedFile = fc.getSelectedFile();
+				    String path2 = selctedFile.getAbsolutePath();
+				    CSVFileReader.setPath(path2);     
+				}
+	
+		        }});}
 
 	
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
 				FileFilter filter; 
-				String path, text;
-				double correctness, accuracy;
+				String path;  
 				AverageMeasurement aM2; 
 				Diagramm Diag = new Diagramm();
 				DataProcessor dP = new DataProcessor(); 
@@ -171,16 +184,15 @@ public class Gui extends JFrame implements ActionListener{
 						path = f.getAbsolutePath();
 						if( f.exists()== true && path.endsWith(".csv")){
 							CSVFileReader.setPath(path);
-							
+						
 						}else{
 							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 						}
 						
 					}else if(src == start || src == start2  ){
-							
-							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
-							
+						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
+				//		dataS.loadNextData(countToGetNext); 
 							//accuracy= dataS.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);  
 							
 					}else if(src == finish || src == finish2 ){
@@ -203,17 +215,16 @@ public class Gui extends JFrame implements ActionListener{
 							finish2.setEnabled(false);
 						}
  
-					}else if(src == calculate ){
-						int countToGetNext= 5; 
-						List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
-						double jitter = 0; 
-						for(int i =0 ; i< toolMeas.size(); i++){
-							ToolMeasure tool = toolMeas.get(i); 
-							tool.getMeasurement(); 
-							AverageMeasurement aM = tool.getAverageMeasurement(); 
-							jitter = aM.getError();
-						//	boxplot = aM.getBoxPlot(); 
-							//firstMeas = aM.g
+					}else if(src == calculate){
+					//	ValueData = countToGetNext; 
+						//List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
+					//	for(int i =0 ; i< toolMeas.size(); i++){
+						//	ToolMeasure tool = toolMeas.get(i); 
+							//tool.getMeasurement(); 
+							//AverageMeasurement aM = tool.getAverageMeasurement(); 
+						//	jitter = aM.getError();
+						  //boxplot = aM.getBoxPlot(); 
+						  //firstMeas = aM.g
 						}
 						
 						lValue.setText("Errechneter Wert");
@@ -227,12 +238,14 @@ public class Gui extends JFrame implements ActionListener{
 						add(lCalcC);
 						lCalcA.setBounds(800, 570, 200, 40);
 						add(lCalcA);
-						if(cBJitter.isSelected()){
-							lCalcJ.setText(" Jitter = " + jitter);  
+						if(cBJitterR.isSelected()){
+							lCalcJ.setText(" Jitter = " +jitterR );  
+						}if(cBJitterP.isSelected()){
+							lCalcJ.setText(" Jitter = " +jitterP );  
 						}if(cBCorrectness.isSelected()){
 							lCalcC.setText(" Korrektheit  = ");  
 						}
-					} 	
+				//	} 	
 				}catch(Exception ep){
 					if(f.exists()==false){
 						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
