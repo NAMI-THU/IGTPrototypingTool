@@ -19,20 +19,22 @@ import org.xml.sax.InputSource;
 
 import Jama.Matrix;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.*;
 
 public class Networkconnection implements IOpenIgtPacketListener {
 	/**
 	 * @param args
 	 */
 	public static void Connection() {
+		
+		
 		String msg = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
 
 		Networkconnection.parseXMLStringMessage(msg);
 		GenericIGTLinkClient client;
 		try {
-		Log.enableDebugPrint(true);
-			Log.enableSystemPrint(true);
+			Log.enableDebugPrint(false);
+			Log.enableSystemPrint(false);
 			
 			Log.debug("Starting client");
 			client = new GenericIGTLinkClient ("127.0.0.1",18944);
@@ -57,22 +59,42 @@ public class Networkconnection implements IOpenIgtPacketListener {
 
 	@Override
 	public void onRxTransform(String name, TransformNR t) {
-		//Log.debug("Received Transform: "+t);  
+		Log.debug("Received Transform: "+t);  
+		double x_Wert = t.getX();
+		double y_Wert = t.getY();
+		double z_Wert = t.getZ();
+		double w_quartornion = t.getRotation().getRotationMatrix2QuaturnionW();
+		double x_quartornion = t.getRotation().getRotationMatrix2QuaturnionX();
+		double y_quartornion = t.getRotation().getRotationMatrix2QuaturnionY();
+		double z_quartornion = t.getRotation().getRotationMatrix2QuaturnionZ();
+		
+		
+		System.out.println(x_Wert);
+		System.out.println(y_Wert);
+		System.out.println(z_Wert);	
+		System.out.println(w_quartornion);
+		System.out.println(x_quartornion);
+		System.out.println(y_quartornion);
+		System.out.println(z_quartornion);
+		
+		
+		
+		
 		if(name.equals("RegistrationTransform") || name.equals("CALIBRATION")){
 			System.err.println("Received Registration Transform");
 			Log.debug("Setting fiducial registration matrix: "+t); 
 			return;
 		}else if(name.equals("TARGET")){
 			System.err.println("Received RAS Transform: TARGET");
-//			Log.debug("Setting task space pose: "+t); 
+			Log.debug("Setting task space pose: "+t); 
 			
 		}else if(name.equals("myTransform")){
 			System.err.println("Received Transformation Matrix: myTransform");
-//			Log.debug("Setting task space pose: "+t); 
+			Log.debug("Setting task space pose: "+t); 
 			
 		}else{
 			System.err.println("Received unidentified transform matrix");
-//			Log.debug("Setting task space pose: "+t); 
+			Log.debug("Setting task space pose: "+t); 
 		}
 	}
 

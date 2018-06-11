@@ -1,6 +1,6 @@
 package inputOutput;
 
-public class OpenIGTLinkConnection {
+public class OpenIGTLinkConnection  {
 	
 
 	

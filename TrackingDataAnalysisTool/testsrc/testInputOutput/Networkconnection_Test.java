@@ -10,7 +10,7 @@ public class Networkconnection_Test {
 
 	@Test
 	public void test() {
-		
+	
 		Networkconnection.Connection();
 	
 		

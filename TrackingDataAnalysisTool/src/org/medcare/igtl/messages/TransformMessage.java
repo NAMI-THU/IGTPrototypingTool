@@ -211,7 +211,7 @@ public class TransformMessage extends OpenIGTMessage {
         		return;
         	}
         	if(origin == null){
-        		System.err.println("Origin was null, creating new one");
+//        		System.err.println("Origin was null, creating new one");
         		origin = new double[3];
         	}
         	//System.out.print("\nSetting Origins: [");
