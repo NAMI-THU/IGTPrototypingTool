@@ -2,12 +2,13 @@ package mainMethod;
 
 import javax.swing.JFrame;
 
+import algorithm.*;
+import inputOutput.*;
 import userinterface.*;
 
 public class main {
 
 	public static void main(String[] args) {
-		
 		Gui myGui = new Gui();
 		myGui.setSize(1200, 1000);
 		myGui.setTitle("TrackingDataAnalysisTool");

@@ -7,10 +7,14 @@ public class ToolMeasure {
 
 	private String name;
 	private List<Measurement> measurements;
-	private Measurement averageMeasurement;
+	private AverageMeasurement averageMeasurement;
 
 	public ToolMeasure(String name) {
 		this.name = name;
+		this.measurements = new ArrayList<>();
+	}
+
+	public ToolMeasure() {
 		this.measurements = new ArrayList<>();
 	}
 
@@ -34,11 +38,11 @@ public class ToolMeasure {
 		measurements.add(measurement);
 	}
 
-	public Measurement getAverageMeasurement() {
+	public AverageMeasurement getAverageMeasurement() {
 		return averageMeasurement;
 	}
 
-	public void setAverageMeasurement(Measurement averageMeasurement) {
+	public void setAverageMeasurement(AverageMeasurement averageMeasurement) {
 		this.averageMeasurement = averageMeasurement;
 	}
 
