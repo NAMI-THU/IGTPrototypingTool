@@ -72,13 +72,13 @@ XYChart.Series series2 = new XYChart.Series();
 XYChart.Series series3 = new XYChart.Series();
 
 
-s1.setPrefSize(400, 400);
+s1.setPrefSize(400, 300);
 s1.getData().addAll(series1);
 
-s2.setPrefSize(400, 400);
+s2.setPrefSize(400, 300);
 s2.getData().addAll(series2);
 
-s3.setPrefSize(400, 400);
+s3.setPrefSize(400, 300);
 s3.getData().addAll(series3);
 
 Scene scene = new Scene(new Group());
@@ -130,9 +130,11 @@ start = new Button("Start");
 
 
 hbox.setSpacing(10);
-hbox.getChildren().addAll(s1, s2, s3);
+//hbox.getChildren().addAll(s1, s2, s3);
+hbox.getChildren().addAll(vbox);
 
-vbox.getChildren().addAll(start, hbox);
+//vbox.getChildren().addAll(start, hbox);
+vbox.getChildren().addAll(start, s1, s2, s3);
 hbox.setPadding(new Insets(50, 10, 50, 20));
 
 ((Group)scene.getRoot()).getChildren().add(vbox);
