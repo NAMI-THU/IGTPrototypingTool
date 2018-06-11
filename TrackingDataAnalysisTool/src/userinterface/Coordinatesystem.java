@@ -8,58 +8,74 @@ import java.util.Arrays;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
+import algorithm.Measurement;
+import algorithm.ToolMeasure;
 
 
-
-//@SuppressWarnings("unused")	
+@SuppressWarnings("unused")	
 public class Coordinatesystem{
 
 	
 
 //@SupressWarnings({"unchecked", "rawtypes"})
 
-public static void drawAchsen(String choice, List<String>l,
+public static void drawAchsen(String choice, List<Measurement> l,
 		XYChart.Series s, NumberAxis xAxis, NumberAxis yAxis) {
-			int x, y, z;
+			double x;
+			double y;
+			double z;
+			
+			switch (choice){
+			
+			case "xy":
 			
 			
-			
-xAxis.setLabel("X-Achse");
-yAxis.setLabel("Y-Achse");
+			xAxis.setLabel("X-Achse");                
+		    yAxis.setLabel("Y-Achse");
 		for (int i=0; i<l.size(); i=i+3) {
-			x = Integer.parseInt(l.get(i));
+			x = l.get(i).getPoint().getX();
 			//System.out.println(x);
 		
 			for(int j=1; j<l.size(); j=j+3) {
-				y = Integer.parseInt(l.get(j));
+				y = l.get(i).getPoint().getY();
 				System.out.println(y);
 				s.getData().add(new XYChart.Data(x, y));
 			}
 		}
+		break;
+		
+		
+			case "xz":
 
 		xAxis.setLabel("X-Achse");                
         yAxis.setLabel("Z-Achse");
 		for (int i=0; i<l.size(); i=i+3) {
-			x = Integer.parseInt(l.get(i));
+			x = l.get(i).getPoint().getX();;
 			System.out.println(x);
 		
 			for(int j=2; j<l.size(); j=j+3) {
-				z = Integer.parseInt(l.get(j));
+				z = l.get(i).getPoint().getZ();;
 				s.getData().add(new XYChart.Data(x, z));
 			}
 		}
+		break;
 
+		
+			case "zy":
+		
 		xAxis.setLabel("Z-Achse");                
         yAxis.setLabel("Y-Achse");
 		for (int i=1; i<l.size(); i=i+3) {
-			y = Integer.parseInt(l.get(i));
+			y = l.get(i).getPoint().getY();;
 			System.out.println(y);
 		
 			for(int j=2; j<l.size(); j=j+3) {
-				z = Integer.parseInt(l.get(j));
+				z = l.get(i).getPoint().getZ();;
 				s.getData().add(new XYChart.Data(z, y));
 			}
 		}
+		
+		break;
 }}
-
+}
 		
