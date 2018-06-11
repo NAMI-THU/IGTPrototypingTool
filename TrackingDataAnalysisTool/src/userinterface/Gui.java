@@ -5,7 +5,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.LayoutManager;
-import java.awt.List;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -24,7 +24,8 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.net.*;
-import inputOutput.*;
+import inputOutput.*; 
+
 
 public class Gui extends JFrame implements ActionListener{
 	
@@ -53,7 +54,8 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel lCalcA = new JLabel();  
 	File f; 
 	DataService dataS = new DataService();
-	 
+	
+	
 	public Gui(){
 		//allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
@@ -156,11 +158,12 @@ public class Gui extends JFrame implements ActionListener{
 	
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
-				
 				FileFilter filter; 
 				String path, text;
-				double z=4.5;
+				double correctness, accuracy;
+				AverageMeasurement aM2; 
 				Diagramm Diag = new Diagramm();
+				DataProcessor dP = new DataProcessor(); 
 				
 				try{ 
 					if(src == loadData){ 
@@ -175,10 +178,11 @@ public class Gui extends JFrame implements ActionListener{
 						}
 						
 					}else if(src == start || src == start2  ){
-
+							
 							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
-							//dataS.loadNextData(countToGetNext);
-
+							
+							//accuracy= dataS.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);  
+							
 					}else if(src == finish || src == finish2 ){
 						//Diag.start(stage);
 						//Coordinatensystem with x,y,z-value
@@ -200,6 +204,18 @@ public class Gui extends JFrame implements ActionListener{
 						}
  
 					}else if(src == calculate ){
+						int countToGetNext= 5; 
+						List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
+						double jitter = 0; 
+						for(int i =0 ; i< toolMeas.size(); i++){
+							ToolMeasure tool = toolMeas.get(i); 
+							tool.getMeasurement(); 
+							AverageMeasurement aM = tool.getAverageMeasurement(); 
+							jitter = aM.getError();
+						//	boxplot = aM.getBoxPlot(); 
+							//firstMeas = aM.g
+						}
+						
 						lValue.setText("Errechneter Wert");
 						lValue.setBounds(650, 510, 130, 30);
 						add(lValue);
@@ -212,13 +228,11 @@ public class Gui extends JFrame implements ActionListener{
 						lCalcA.setBounds(800, 570, 200, 40);
 						add(lCalcA);
 						if(cBJitter.isSelected()){
-							lCalcJ.setText(" Jitter = " + z);  
+							lCalcJ.setText(" Jitter = " + jitter);  
 						}if(cBCorrectness.isSelected()){
-							lCalcC.setText(" Korrektheit  = " + z+1);  
-						}if(cBAccuracy.isSelected()){
-							lCalcA.setText(" Genauigkeit= " + z+2); 
-						} 
-						} 	
+							lCalcC.setText(" Korrektheit  = ");  
+						}
+					} 	
 				}catch(Exception ep){
 					if(f.exists()==false){
 						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
