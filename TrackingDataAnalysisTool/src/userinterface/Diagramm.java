@@ -1,5 +1,6 @@
 package userinterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import algorithm.Measurement;
@@ -17,14 +18,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
 import algorithm.ToolMeasure;
+import algorithm.DataProcessor;
+import algorithm.DataService;
 
 public class Diagramm extends Application{
+
 
 		
 		Button add, start;
 		//@SupressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		@Override public void start(Stage stage) throws InterruptedException {
-			
+
 			String x = "X-Achse";
 			String y = "Y-Achse";
 			String z = "Z-Achse";
@@ -59,7 +64,7 @@ public class Diagramm extends Application{
 		
 		s1.setTitle("XY-Ebene");
 		s2.setTitle("XZ-Ebene");
-		s3.setTitle("YZ-Ebene");
+		s3.setTitle("ZY-Ebene");
 		
 	
 XYChart.Series series1 = new XYChart.Series();
@@ -86,7 +91,7 @@ start = new Button("Start");
 	start.setOnAction((event)->{
 	series1.getData().clear();
 	
-		String choice = "xyz";
+		//String choice = "xyz";
 		
 //		if (radioB1.isSelected()) {
 //    		choice = "xyz";
@@ -94,17 +99,32 @@ start = new Button("Start");
 //            series2.setName("XZ-Diagramm");
 //		}
 
-		
-		//List <String> line = null;
-		// List<Measurement> line = algorithm.ToolMeasure.getMeasurement();
-		
-		ToolMeasure l = new ToolMeasure();
-		l.getMeasurement();
 
-		Coordinatesystem.drawAchsen("xy", (List<Measurement>) l, series1, xAxis, yAxis);
-		Coordinatesystem.drawAchsen("xz", (List<Measurement>) l, series2, xAxis, yAxis);
-		Coordinatesystem.drawAchsen("zy", (List<Measurement>) l, series3, xAxis, yAxis);
-
+		
+		// Objekt erstellen
+		DataService da = new DataService();
+		
+		//wie oft 
+		int countGoToNext =  34;
+		
+		// alle Tools mit allen Messungen
+		List<ToolMeasure> tools = da.loadNextData(countGoToNext);
+		
+		//List<Measurement> l = new ArrayList();
+		
+		//ToolMeasure tx = new ToolMeasure();
+		
+		for(int i = 0; i<tools.size(); i++){
+			ToolMeasure tool = tools.get(i);
+			
+			//alle Messungen von einem Tool
+			List<Measurement> li = tool.getMeasurement();
+			
+			
+		Coordinatesystem.drawAchsen("xy", li , series1, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
+		Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
+	}
  	});
 
 
