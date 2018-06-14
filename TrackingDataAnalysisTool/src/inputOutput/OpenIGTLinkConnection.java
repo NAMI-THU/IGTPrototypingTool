@@ -19,20 +19,22 @@ public class OpenIGTLinkConnection {
 	private static double valid = 1;
 	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
 	private static int counter = 0;
+	private static int counter1 = 1;
+	private static String helpname;
 
-	public static ArrayList<Tool> update() {
+	public static void update() {
 
 		if (counter == 0) {
 			init();
-			counter++;
+
 		}
 
-		return toollist;
+		testInputOutput.Networkconnection_Test.setTestlist(toollist);
 
 	}
 
 	public static void init() {
-
+		counter++;
 		Networkconnection.Connection();
 
 	}
@@ -51,27 +53,30 @@ public class OpenIGTLinkConnection {
 		rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
 		rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
 
-//		Tool tool = new Tool();
-//
-//		tool.setData(timestamp, valid, coordinate_x, coordinate_y, coordinate_z, rotation_x, rotation_y, rotation_z,
-//				rotation_r, name);
-//
-//		setArraylist(tool);
+		if (counter1 == 1) {
 
-		System.out.println(name);
-		System.out.println(timestamp);
+			helpname = name;
 
-		System.out.println(coordinate_x);
-		System.out.println(coordinate_y);
-		System.out.println(coordinate_z);
-		System.out.println(rotation_r);
-		System.out.println(rotation_x);
-		System.out.println(rotation_y);
-		System.out.println(rotation_z);
+		}
+
+		Tool tool = new Tool();
+
+		tool.setData(timestamp, valid, coordinate_x, coordinate_y, coordinate_z, rotation_x, rotation_y, rotation_z,
+				rotation_r, name);
+
+		setArraylist(tool);
+
+		counter1++;
 
 	}
 
 	public void setArraylist(Tool tool) {
+
+		if (helpname.equals(name) && counter1 != 1) {
+			testInputOutput.Networkconnection_Test.setTestlist(toollist);
+			toollist.clear();
+			counter1 = 1;
+		}
 
 		toollist.add(tool);
 

@@ -11,23 +11,34 @@ import org.junit.Test;
 
 public class Networkconnection_Test {
 
-	ArrayList<Tool> testlist = new ArrayList<Tool>();
+	static ArrayList<Tool> testlist = new ArrayList<Tool>();
 
 	@Test
 	public void test() {
 
-		testlist = OpenIGTLinkConnection.update();
+		OpenIGTLinkConnection.update();
+
+	}
+
+	public static void setTestlist(ArrayList<Tool> test) {
+		testlist = test;
 
 		int testsize = testlist.size();
 
 		for (int i = 0; i < testsize; i++) {
-			System.out.println(testlist.get(i).getTimestamp() + "\n" + testlist.get(i).getName() + "\n"
+			System.out.println("\n"+testlist.get(i).getTimestamp() + "\n" + testlist.get(i).getName() + "\n"
 					+ testlist.get(i).getValid() + "\n" + testlist.get(i).getCoordinat() + "\n"
 					+ testlist.get(i).getRotation_r() + "\n" + testlist.get(i).getRotation_x() + "\n"
 					+ testlist.get(i).getRotation_y() + "\n" + testlist.get(i).getRotation_z());
-
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
-
 	}
 
 }
