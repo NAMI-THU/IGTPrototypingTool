@@ -30,7 +30,7 @@ public class Header {
         long version; // unsigned int 16bits
         String dataType; // char 12 bits
         String deviceName; // char 20 bits
-        long timestamp; // unsigned int 64 bits
+        static long timestamp; // unsigned int 64 bits
         long body_size; // unsigned int 64 bits
         long crc; // unsigned int 64 bits
         BytesArray bytesArray;
@@ -198,8 +198,8 @@ public class Header {
          *** 
          * @return The time stamp at the creation of the header
          **/
-        public double getTimeStamp() {
-                return this.timestamp;
+        public static double getTimeStamp() {
+                return timestamp;
         }
 
         // ------------------------------------------------------------------------

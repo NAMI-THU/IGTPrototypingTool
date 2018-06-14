@@ -60,40 +60,26 @@ public class Networkconnection implements IOpenIgtPacketListener {
 	@Override
 	public void onRxTransform(String name, TransformNR t) {
 		Log.debug("Received Transform: "+t);  
-		double x_Wert = t.getX();
-		double y_Wert = t.getY();
-		double z_Wert = t.getZ();
-		double w_quartornion = t.getRotation().getRotationMatrix2QuaturnionW();
-		double x_quartornion = t.getRotation().getRotationMatrix2QuaturnionX();
-		double y_quartornion = t.getRotation().getRotationMatrix2QuaturnionY();
-		double z_quartornion = t.getRotation().getRotationMatrix2QuaturnionZ();
 		
-		
-		System.out.println(x_Wert);
-		System.out.println(y_Wert);
-		System.out.println(z_Wert);	
-		System.out.println(w_quartornion);
-		System.out.println(x_quartornion);
-		System.out.println(y_quartornion);
-		System.out.println(z_quartornion);
-		
-		
+		 
+		OpenIGTLinkConnection igt = new OpenIGTLinkConnection();
+		igt.setValues(name, t);
 		
 		
 		if(name.equals("RegistrationTransform") || name.equals("CALIBRATION")){
-			System.err.println("Received Registration Transform");
+//			System.err.println("Received Registration Transform");
 			Log.debug("Setting fiducial registration matrix: "+t); 
 			return;
 		}else if(name.equals("TARGET")){
-			System.err.println("Received RAS Transform: TARGET");
+//			System.err.println("Received RAS Transform: TARGET");
 			Log.debug("Setting task space pose: "+t); 
 			
 		}else if(name.equals("myTransform")){
-			System.err.println("Received Transformation Matrix: myTransform");
+//			System.err.println("Received Transformation Matrix: myTransform");
 			Log.debug("Setting task space pose: "+t); 
 			
 		}else{
-			System.err.println("Received unidentified transform matrix");
+//			System.err.println("Received unidentified transform matrix");
 			Log.debug("Setting task space pose: "+t); 
 		}
 	}
