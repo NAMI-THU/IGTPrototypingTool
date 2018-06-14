@@ -1,6 +1,9 @@
 package testInputOutput;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
 import inputOutput.*;
 import org.medcare.igtl.messages.*;
 
@@ -8,17 +11,23 @@ import org.junit.Test;
 
 public class Networkconnection_Test {
 
+	ArrayList<Tool> testlist = new ArrayList<Tool>();
+
 	@Test
 	public void test() {
-	
-		Networkconnection.Connection();
-	
-		
-		
-		
-		
-		
-		
+
+		testlist = OpenIGTLinkConnection.update();
+
+		int testsize = testlist.size();
+
+		for (int i = 0; i < testsize; i++) {
+			System.out.println(testlist.get(i).getTimestamp() + "\n" + testlist.get(i).getName() + "\n"
+					+ testlist.get(i).getValid() + "\n" + testlist.get(i).getCoordinat() + "\n"
+					+ testlist.get(i).getRotation_r() + "\n" + testlist.get(i).getRotation_x() + "\n"
+					+ testlist.get(i).getRotation_y() + "\n" + testlist.get(i).getRotation_z());
+
+		}
+
 	}
 
 }

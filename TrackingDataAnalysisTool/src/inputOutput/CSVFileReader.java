@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import testInputOutput.Exception_Window;
 
-public class CSVFileReader extends Interface {
+public class CSVFileReader {
 	// initialize variable
 	private static int line_counter = 0;
 	private static String line = null;
