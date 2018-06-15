@@ -10,9 +10,11 @@ import javax.swing.*;
 
 public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
+	private boolean value = true;
+
 	private JButton start = new JButton("Start");
 	private JButton stop = new JButton("Stop");
-	
+
 	private JLabel lable = new JLabel("OPENIGTLINK CONNECTION");
 
 	public Start_Stop_IGTLink() {
@@ -27,7 +29,6 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		this.setLayout(null);
 		this.setLocationRelativeTo(null);
 		this.setSize(new Dimension(800, 300));
-		
 
 		lable.setBounds(250, 20, 300, 100);
 		lable.setFont(new Font("Arial", Font.BOLD, 20));
@@ -35,13 +36,10 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		start.setBounds(200, 100, 100, 100);
 		start.setFont(new Font("Arial", Font.BOLD, 20));
 		start.addActionListener(this);
-		
+
 		stop.setBounds(500, 100, 100, 100);
 		stop.setFont(new Font("Arial", Font.BOLD, 20));
 		stop.addActionListener(this);
-		
-		
-		
 
 		this.add(lable);
 		this.add(start);
@@ -50,30 +48,34 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent evt){
+	public void actionPerformed(ActionEvent evt) {
 		Object src = evt.getSource();
-		
-		if(src==start){
-			 Networkconnection begin = new  Networkconnection();
-			 begin.start();
-			
-			
+
+		if (src == start) {
+
+			if (value == true) {
+				value = false;
+				Networkconnection begin = new Networkconnection();
+				begin.start();
+
+			} else {
+				inputOutput.Networkconnection.setBreak(true);
+			}
+
 		}
-		
-		if(src==stop){
-			inputOutput.Networkconnection.setBreak();
-			
+
+		if (src == stop) {
+			inputOutput.Networkconnection.setBreak(false);
+
 		}
-		
-		
+
 	}
-	
-	public static void startIGTWindow(){
+
+	public static void startIGTWindow() {
 		Start_Stop_IGTLink frame;
 		frame = new Start_Stop_IGTLink();
 		frame.validate();
 		frame.setVisible(true);
 	}
 
-	
 }

@@ -1,4 +1,5 @@
 package inputOutput;
+
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,15 +25,16 @@ import Jama.Matrix;
 import com.neuronrobotics.sdk.addons.kinematics.math.*;
 
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
-	
+
 	private static boolean exit = true;
+
 	/**
 	 * @param args
 	 */
 	public static void Connection() {
-		
-		
-		
+
+		exit = true;
+
 		String msg = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
 
 		Networkconnection.parseXMLStringMessage(msg);
@@ -40,64 +42,61 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		try {
 			Log.enableDebugPrint(false);
 			Log.enableSystemPrint(false);
-			
+
 			Log.debug("Starting client");
-			client = new GenericIGTLinkClient ("127.0.0.1",18944);
-			
-			
-			
-			client.addIOpenIgtOnPacket(new Networkconnection());	
-			
-			while(exit==true){
+			client = new GenericIGTLinkClient("127.0.0.1", 18944);
+
+			client.addIOpenIgtOnPacket(new Networkconnection());
+
+			while (exit == true) {
 				Thread.sleep(1000);
 			}
-			client.stopClient();
-			Log.debug("Client disconnected");
-			System.exit(0);
-			
+			// client.stopClient();
+			// Log.debug("Client disconnected");
+			// System.exit(0);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public void onRxTransform(String name, TransformNR t) {
-		Log.debug("Received Transform: "+t);  
-		
-		 
-		OpenIGTLinkConnection igt = new OpenIGTLinkConnection();
-		igt.setValues(name, t);
-		
-		
-		if(name.equals("RegistrationTransform") || name.equals("CALIBRATION")){
-//			System.err.println("Received Registration Transform");
-			Log.debug("Setting fiducial registration matrix: "+t); 
+		Log.debug("Received Transform: " + t);
+
+		if (exit == true) {
+
+			OpenIGTLinkConnection igt = new OpenIGTLinkConnection();
+			igt.setValues(name, t);
+		}
+
+		if (name.equals("RegistrationTransform") || name.equals("CALIBRATION")) {
+			// System.err.println("Received Registration Transform");
+			Log.debug("Setting fiducial registration matrix: " + t);
 			return;
-		}else if(name.equals("TARGET")){
-//			System.err.println("Received RAS Transform: TARGET");
-			Log.debug("Setting task space pose: "+t); 
-			
-		}else if(name.equals("myTransform")){
-//			System.err.println("Received Transformation Matrix: myTransform");
-			Log.debug("Setting task space pose: "+t); 
-			
-		}else{
-//			System.err.println("Received unidentified transform matrix");
-			Log.debug("Setting task space pose: "+t); 
+		} else if (name.equals("TARGET")) {
+			// System.err.println("Received RAS Transform: TARGET");
+			Log.debug("Setting task space pose: " + t);
+
+		} else if (name.equals("myTransform")) {
+			// System.err.println("Received Transformation Matrix: myTransform");
+			Log.debug("Setting task space pose: " + t);
+
+		} else {
+			// System.err.println("Received unidentified transform matrix");
+			Log.debug("Setting task space pose: " + t);
 		}
 	}
-	
-	
-	public static void setBreak(){
-		exit = false;
+
+	public static void setBreak(boolean value) {
+		exit = value;
 	}
-	
-	public void run(){
+
+	public void run() {
 		Connection();
 	}
-	
 
 	@Override
 	public TransformNR getTxTransform(String name) {
@@ -113,12 +112,11 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 
 	@Override
 	public void onRxString(String name, String body) {
-	}	
+	}
 
-	public static void parseXMLStringMessage(String msg){
+	public static void parseXMLStringMessage(String msg) {
 		// TODO Auto-generated method stub
 	}
-	
 
 	@Override
 	public String onTxString(String name) {
@@ -129,7 +127,7 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 	@Override
 	public void onRxDataArray(String name, Matrix data) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -141,20 +139,20 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 	@Override
 	public void onRxImage(String name, ImageMessage image) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTxNDArray(String name) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onRxNDArray(String name, float[] data) {
 		// TODO Auto-generated method stub
 		Log.debug("Name" + name);
-		for(int i=0;i<data.length;i++){
+		for (int i = 0; i < data.length; i++) {
 			Log.debug("Data[" + i + "]=" + data[i]);
 		}
 	}

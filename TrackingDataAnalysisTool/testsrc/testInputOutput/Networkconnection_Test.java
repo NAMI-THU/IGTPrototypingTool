@@ -42,7 +42,7 @@ public class Networkconnection_Test {
 					+ testlist.get(i).getRotation_z());
 
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(800);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
