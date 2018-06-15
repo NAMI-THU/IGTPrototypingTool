@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.neuronrobotics.sdk.common.Log;
+
 import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.network.GenericIGTLinkClient;
 import org.medcare.igtl.network.IOpenIgtPacketListener;
@@ -17,15 +18,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import testInputOutput.Exception_Window;
 import Jama.Matrix;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.*;
 
-public class Networkconnection implements IOpenIgtPacketListener {
+public class Networkconnection extends Thread implements IOpenIgtPacketListener {
+	
+	private static boolean exit = true;
 	/**
 	 * @param args
 	 */
 	public static void Connection() {
+		
 		
 		
 		String msg = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
@@ -43,7 +48,7 @@ public class Networkconnection implements IOpenIgtPacketListener {
 			
 			client.addIOpenIgtOnPacket(new Networkconnection());	
 			
-			for(int i=0;i<50;i++){
+			while(exit==true){
 				Thread.sleep(1000);
 			}
 			client.stopClient();
@@ -83,6 +88,16 @@ public class Networkconnection implements IOpenIgtPacketListener {
 			Log.debug("Setting task space pose: "+t); 
 		}
 	}
+	
+	
+	public static void setBreak(){
+		exit = false;
+	}
+	
+	public void run(){
+		Connection();
+	}
+	
 
 	@Override
 	public TransformNR getTxTransform(String name) {

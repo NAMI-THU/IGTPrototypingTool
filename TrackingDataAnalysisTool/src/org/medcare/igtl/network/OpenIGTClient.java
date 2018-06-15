@@ -136,8 +136,8 @@ public abstract class OpenIGTClient extends Thread {
 		} catch (UnknownHostException e) {
 			errorManager.error("OpenIGTClient Don't know about host" + host, e, ErrorManager.OPENIGTCLIENT_UNKNOWNHOST_EXCEPTION);
 		} catch (IOException e) {
-			errorManager.error("OpenIGTClient Couldn't get I/O for the connection to: "
-					+ host + " port " + port, e, ErrorManager.OPENIGTCLIENT_IO_EXCEPTION);
+//			errorManager.error("OpenIGTClient Couldn't get I/O for the connection to: "
+//					+ host + " port " + port, e, ErrorManager.OPENIGTCLIENT_IO_EXCEPTION);
 		} finally {
 			try {
 				outstr.close();
