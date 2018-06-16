@@ -27,6 +27,9 @@ import com.neuronrobotics.sdk.addons.kinematics.math.*;
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
 
 	private static boolean exit = true;
+	private static boolean stop = true;
+
+	private static GenericIGTLinkClient client;
 
 	/**
 	 * @param args
@@ -38,7 +41,7 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		String msg = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
 
 		Networkconnection.parseXMLStringMessage(msg);
-		GenericIGTLinkClient client;
+
 		try {
 			Log.enableDebugPrint(false);
 			Log.enableSystemPrint(false);
@@ -48,9 +51,12 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 
 			client.addIOpenIgtOnPacket(new Networkconnection());
 
-			while (exit == true) {
-				Thread.sleep(1000);
-			}
+			// while (exit == true) {
+			// Thread.sleep(1000);
+			//
+			//
+			// }
+
 			// client.stopClient();
 			// Log.debug("Client disconnected");
 			// System.exit(0);
@@ -66,10 +72,12 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 	public void onRxTransform(String name, TransformNR t) {
 		Log.debug("Received Transform: " + t);
 
-		if (exit == true) {
+		if (exit == true && stop == true) {
 
 			OpenIGTLinkConnection igt = new OpenIGTLinkConnection();
 			igt.setValues(name, t);
+		} else if (exit == false) {
+			client.stopClient();
 		}
 
 		if (name.equals("RegistrationTransform") || name.equals("CALIBRATION")) {
@@ -90,13 +98,19 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		}
 	}
 
-	public static void setBreak(boolean value) {
+	public void setExit(boolean value) {
 		exit = value;
+	}
+
+	public void setBreak(boolean value) {
+		stop = value;
 	}
 
 	public void run() {
 		Connection();
 	}
+
+	
 
 	@Override
 	public TransformNR getTxTransform(String name) {

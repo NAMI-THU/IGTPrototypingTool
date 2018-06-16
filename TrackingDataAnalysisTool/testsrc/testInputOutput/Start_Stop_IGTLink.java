@@ -11,9 +11,12 @@ import javax.swing.*;
 public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 	private boolean value = true;
+	Networkconnection begin;
 
 	private JButton start = new JButton("Start");
 	private JButton stop = new JButton("Stop");
+	private JButton close = new JButton("Close Application");
+	private JButton exit_connection = new JButton("Exit Connection");
 
 	private JLabel lable = new JLabel("OPENIGTLINK CONNECTION");
 
@@ -28,7 +31,7 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 		this.setLayout(null);
 		this.setLocationRelativeTo(null);
-		this.setSize(new Dimension(800, 300));
+		this.setSize(new Dimension(800, 600));
 
 		lable.setBounds(250, 20, 300, 100);
 		lable.setFont(new Font("Arial", Font.BOLD, 20));
@@ -41,12 +44,23 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		stop.setFont(new Font("Arial", Font.BOLD, 20));
 		stop.addActionListener(this);
 
+		close.setBounds(500, 300, 200, 100);
+		close.setFont(new Font("Arial", Font.BOLD, 20));
+		close.addActionListener(this);
+
+		exit_connection.setBounds(200, 300, 200, 100);
+		exit_connection.setFont(new Font("Arial", Font.BOLD, 20));
+		exit_connection.addActionListener(this);
+
+		this.add(exit_connection);
+		this.add(close);
 		this.add(lable);
 		this.add(start);
 		this.add(stop);
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		Object src = evt.getSource();
@@ -55,20 +69,29 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 			if (value == true) {
 				value = false;
-				Networkconnection begin = new Networkconnection();
+				begin = new Networkconnection();
 				begin.start();
 
 			} else {
-				inputOutput.Networkconnection.setBreak(true);
+				value = true;
+				begin.setBreak(true);
+
 			}
 
 		}
 
 		if (src == stop) {
-			inputOutput.Networkconnection.setBreak(false);
+			begin.setBreak(false);
 
 		}
 
+		if (src == close) {
+			System.exit(0);
+		}
+
+		if (src == exit_connection) {
+			begin.setExit(false);
+		}
 	}
 
 	public static void startIGTWindow() {
