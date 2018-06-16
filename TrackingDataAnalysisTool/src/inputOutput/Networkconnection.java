@@ -110,8 +110,6 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		Connection();
 	}
 
-	
-
 	@Override
 	public TransformNR getTxTransform(String name) {
 		// TODO Auto-generated method stub

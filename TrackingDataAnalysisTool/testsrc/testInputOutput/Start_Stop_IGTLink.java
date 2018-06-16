@@ -72,8 +72,8 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 				begin = new Networkconnection();
 				begin.start();
 
-			} else {
-				value = true;
+			} else if(value==false){
+				
 				begin.setBreak(true);
 
 			}
@@ -81,6 +81,7 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		}
 
 		if (src == stop) {
+			
 			begin.setBreak(false);
 
 		}

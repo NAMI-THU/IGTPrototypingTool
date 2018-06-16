@@ -22,22 +22,22 @@ public class OpenIGTLinkConnection {
 	private static int counter1 = 1;
 	private static String helpname;
 
-	public static void update() {
-
-		if (counter == 0) {
-			init();
-
-		}
-
-		testInputOutput.Networkconnection_Test.setTestlist(toollist);
-
-	}
-
-	public static void init() {
-		counter++;
-		Networkconnection.Connection();
-
-	}
+//	public static void update() {
+//
+//		if (counter == 0) {
+//			init();
+//
+//		}
+//
+//		testInputOutput.Networkconnection_Test.setTestlist(toollist);
+//
+//	}
+//
+//	public static void init() {
+//		counter++;
+//		Networkconnection.Connection();
+//
+//	}
 
 	public void setValues(String n, TransformNR t) {
 
