@@ -46,23 +46,25 @@ public class Gui extends JFrame implements ActionListener{
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
 	private JCheckBox cBRotation = new JCheckBox("Rotation", false);
-	JLabel distanz = new JLabel();
-	JPanel pCenter = new JPanel();
+	JLabel distanz = new JLabel(); JPanel pCenter = new JPanel();
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
 	JLabel LabelDataValue = new JLabel(); private JTextField ValueData = new JTextField(15);
 	JMenuBar bar; JMenu menu ; 
 	JMenuItem openItem; JMenuItem closeItem;
-	JLabel lValue = new JLabel();
-	JLabel lCalcJ = new JLabel();  
-	JLabel lCalcC = new JLabel();  
-	JLabel lCalcA = new JLabel();  
-	File f; 
+	JLabel lValue = new JLabel(); JLabel lCalcJ = new JLabel();  
+	JLabel lCalcC = new JLabel(); JLabel lCalcA = new JLabel();  
+	File f; String valueL, valueD;  
 	DataService dataS = new DataService();
+	DataProcessor dataP = new DataProcessor(); 
 	double correctness, accuracy, jitterR, jitterP;
-	
 	JTextField toLoadField = new JTextField(5); JLabel toLoad = new JLabel();
 	JTextField distanceF = new JTextField(5); JLabel distance = new JLabel();
 	JTextField rotationAngel = new JTextField(5); JLabel rotationL = new JLabel();
+	JTextField openIGTf = new JTextField(25); JLabel openIGTl = new JLabel();
+	JButton openIGTB = new JButton("Connect");
+	
+	ToolMeasure firstMeasurement; ToolMeasure secondMeasurement;
+	ToolMeasure firstAverageMeasurement; ToolMeasure secondAverageMeasurement;
 	
 	public Gui(){
 		//allow window
@@ -87,34 +89,21 @@ public class Gui extends JFrame implements ActionListener{
 		panelNorth.add(l0); 
 		panelNorth.add(adresse); 
 		panelNorth.add(loadData);
+		openIGTf.setBounds(120, 120, 120, 90);
+		add(openIGTf);
+		openIGTl.setBounds(90, 120, 120, 90);
+		add(openIGTl);
+		openIGTB.setBounds(250, 120, 120, 90);
+		add(openIGTB); 
 		
 		toLoad.setText("Anzahl der zu ladende Dateien");
 		panelNorth.add(toLoad);
+		valueL = toLoadField.getText(); 
 		panelNorth.add("n", toLoadField);
 		distance.setText("Distanzangabe");
 		distance.setBounds(1000, 170, 120, 20);
 		rotationAngel.setText("Winkel");
 		rotationAngel.setBounds(1000, 450, 120, 20);
-			
-		/*Coordinate
-		xAxis.setText("x-Achse"); 
-		xAxis.setBounds(150, 130, 100, 20);
-		add(xAxis);
-		xEbene.setBounds(90, 150, 350, 150);
-		add(xEbene);
-		
-		yAxis.setText("y-Achse");
-		yAxis.setBounds(150, 300, 100, 20);
-		add(yAxis);
-		yEbene.setBounds(90, 320, 350, 150);
-		add(yEbene);
-		
-		zAxis.setText("z-Achse");
-		zAxis.setBounds(150, 490, 100, 20);
-		add(zAxis);
-		zEbene.setBounds(90, 510, 350, 150);
-		add(zEbene);*/
-		
 		LabelDataValue.setBounds(650,300, 120, 80);
 		add(ValueData);
 		
@@ -187,8 +176,7 @@ public class Gui extends JFrame implements ActionListener{
 				String path, valueD, valueR ;  
 				AverageMeasurement aM2; 
 				Diagramm Diag = new Diagramm();
-				DataProcessor dP = new DataProcessor(); 	
-				distance.getText(); 
+				DataProcessor dP = new DataProcessor(); 
 				
 				try{ 
 					if(src == loadData){ 
@@ -201,11 +189,13 @@ public class Gui extends JFrame implements ActionListener{
 							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 						}
-						
-					}else if(src == start || src == start2  ){
+						 
+							for(int i=0; i<valueD.length(); i++){
+								//Diag.start(stage);	
+							}
+							
+					}else if(src == start || src == start2 ){
 						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
-						valueD; 
-						valueR; 
 						
 						//Selection
 						
@@ -227,14 +217,14 @@ public class Gui extends JFrame implements ActionListener{
 							add(finish2);
 							finish2.setForeground(Color.RED);
 							finish2.setEnabled(true);
+								
 						}if("Rauschen".equals(selected)){							
 							start2.setEnabled(false);
 							finish2.setEnabled(false);
 						}
  
 					}else if(src == calculate){
-						ValueData = countToGetNext; 
-						List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
+						/*
 						for(int i =0 ; i< toolMeas.size(); i++){
 							ToolMeasure tool = toolMeas.get(i); 
 								tool.getMeasurement(); 
@@ -243,6 +233,13 @@ public class Gui extends JFrame implements ActionListener{
 						    boxplot = aM.getBoxPlot(); 
 						    firstMeas = aM.g;
 						}
+						
+						/*
+						List<Measurement> mesL = toolMeasure.getMeasurement();
+						AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mesL);
+						dataS.getAccuracyRotation(valueR, firstMeasurement.getMeasurement(), secondMeasurement.getMeasurement()); 
+						dataS.getAccuracy(valueD, firstAverageMeasurement.getAverageMeasurement(), secondAverageMeasurement.getAverageMeasurement()) ;
+						*/
 						
 						lValue.setText("Errechneter Wert");
 						lValue.setBounds(650, 510, 130, 30);
@@ -256,7 +253,7 @@ public class Gui extends JFrame implements ActionListener{
 						lCalcA.setBounds(800, 570, 200, 40);
 						add(lCalcA);
 						if(cBJitterR.isSelected()){
-							lCalcJ.setText(" Jitter = " +jitterR );  
+							lCalcJ.setText(" Jitter = " +jitterR ); 	
 						}if(cBJitterP.isSelected()){
 							lCalcJ.setText(" Jitter = " +jitterP );  
 						}if(cBCorrectness.isSelected()){
@@ -264,11 +261,9 @@ public class Gui extends JFrame implements ActionListener{
 						}
 						if(cBRotation.isSelected()){
 							valueR = rotationAngel.getText();  
-						}
-						
-						if(distanceF.isSelected()){
-							lCalcC.setText(" Korrektheit  = ");  
-						
+						}if(openIGTB.isSelected()){
+							  testInputOutput.Start_Stop_IGTLink.startIGTWindow();
+						}	
 						
 					} 	
 				}catch(Exception ep){
@@ -282,7 +277,6 @@ public class Gui extends JFrame implements ActionListener{
 
 				}					
 			};	
-	
 		//close window
 				protected void processWindowsEvent(WindowEvent e){
 				super.processWindowEvent(e);
