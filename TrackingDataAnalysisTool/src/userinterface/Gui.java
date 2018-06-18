@@ -179,7 +179,7 @@ public class Gui extends JFrame implements ActionListener{
 						
 					}else if(src == start || src == start2  ){
 							
-							JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
 							
 							//accuracy= dataS.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);  
 							
