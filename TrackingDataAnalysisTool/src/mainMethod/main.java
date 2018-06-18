@@ -10,7 +10,7 @@ public class main {
 
 	public static void main(String[] args) {
 		Gui myGui = new Gui();
-		myGui.setSize(1200, 1000);
+		myGui.setSize(2000, 1000);
 		myGui.setTitle("TrackingDataAnalysisTool");
 		myGui.setLocation(250,30);
 		myGui.setVisible(true);
