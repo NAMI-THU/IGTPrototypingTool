@@ -22,9 +22,8 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.net.*;
-import inputOutput.*; 
+import inputOutput.*;  
 
 
 public class Gui extends JFrame implements ActionListener{
@@ -54,8 +53,6 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel lValue = new JLabel(); JLabel lCalcJ = new JLabel();  
 	JLabel lCalcC = new JLabel(); JLabel lCalcA = new JLabel();  
 	File f; String valueL, valueD;  
-	DataService dataS = new DataService();
-	DataProcessor dataP = new DataProcessor(); 
 	double correctness, accuracy, jitterR, jitterP;
 	JTextField toLoadField = new JTextField(5); JLabel toLoad = new JLabel();
 	JTextField distanceF = new JTextField(5); JLabel distance = new JLabel();
@@ -65,6 +62,9 @@ public class Gui extends JFrame implements ActionListener{
 	
 	ToolMeasure firstMeasurement; ToolMeasure secondMeasurement;
 	ToolMeasure firstAverageMeasurement; ToolMeasure secondAverageMeasurement;
+	
+	DataService dataS = new DataService();
+	DataProcessor dataP = new DataProcessor();
 	
 	public Gui(){
 		//allow window
@@ -189,11 +189,6 @@ public class Gui extends JFrame implements ActionListener{
 							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 						}
-						 
-							for(int i=0; i<valueD.length(); i++){
-								//Diag.start(stage);	
-							}
-							
 					}else if(src == start || src == start2 ){
 						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
 						
@@ -201,6 +196,7 @@ public class Gui extends JFrame implements ActionListener{
 						
 					}else if(src == finish || src == finish2 ){
 					//	Diag.start(stage);
+						
 							
 					}else if(src == messarten){
 						String selected = (String) messarten.getSelectedItem();
@@ -233,7 +229,6 @@ public class Gui extends JFrame implements ActionListener{
 						    boxplot = aM.getBoxPlot(); 
 						    firstMeas = aM.g;
 						}
-						
 						/*
 						List<Measurement> mesL = toolMeasure.getMeasurement();
 						AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mesL);
@@ -262,7 +257,7 @@ public class Gui extends JFrame implements ActionListener{
 						if(cBRotation.isSelected()){
 							valueR = rotationAngel.getText();  
 						}if(openIGTB.isSelected()){
-							  testInputOutput.Start_Stop_IGTLink.startIGTWindow();
+							new testInputOutput.Start_Stop_IGTLink.startIGTWindow();		
 						}	
 						
 					} 	
