@@ -91,7 +91,7 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 			data.setCount();
 
-			testInputOutput.Networkconnection_Test.setCount();
+			testInputOutput.Networkconnection_test_app.setCount();
 
 		}
 
@@ -104,7 +104,7 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 			begin.setExit(false);
 
 			data.setCount();
-			testInputOutput.Networkconnection_Test.setCount();
+			testInputOutput.Networkconnection_test_app.setCount();
 		}
 	}
 

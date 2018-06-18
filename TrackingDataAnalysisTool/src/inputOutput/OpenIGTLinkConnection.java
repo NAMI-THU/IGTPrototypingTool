@@ -67,10 +67,12 @@ public class OpenIGTLinkConnection {
 
 		if (helpname.equals(name) && counter1 != 1) {
 
-			// Change setMethod to the Method of group 2
+			// set toollist in DataManager from group2
 			algorithm.DataManager data = new algorithm.DataManager();
 			data.setList(toollist);
-			testInputOutput.Networkconnection_Test.setTestlist(toollist);
+			
+			//call method to get output in console
+			testInputOutput.Networkconnection_test_app.setTestlist(toollist);
 			
 			
 			
