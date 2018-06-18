@@ -7,10 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import javafx.geometry.Point3D;
 
-import org.apache.commons.math3.complex.Quaternion;
+//import org.apache.commons.math3.complex.Quaternion;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+
+import com.jme3.math.Quaternion;
 
 public class DataProcessor {
 
@@ -72,7 +74,13 @@ public class DataProcessor {
 			Measurement measurement = measurements.get(i);
 			Point3D point = measurement.getPoint();
 			addPoint = addPoint.add(point);
+			
 			Rotation rotation = measurement.getRotation();
+			
+//			Quaternion quat = new Quaternion();
+//			quat.add(q)
+//			quat.slerp(quat, quat, 0.5f);
+			
 			Point3D rotationPoint = new Point3D(rotation.getQ1(), rotation.getQ2(), rotation.getQ3());
 			addRotationPoint = addRotationPoint.add(rotationPoint);
 			scalar += rotation.getQ0();
