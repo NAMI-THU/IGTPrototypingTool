@@ -9,13 +9,13 @@ import inputOutput.*;
 import org.medcare.igtl.messages.*;
 import org.junit.Test;
 
-public class Networkconnection_Test {
+public class Networkconnection_test_app {
 
 	static ArrayList<Tool> testlist = new ArrayList<Tool>();
 	private static boolean count = false;
 
-	@Test
-	public void test() {
+	
+	public static void main(String[] args) {
 
 		Start_Stop_IGTLink.startIGTWindow();
 
@@ -46,7 +46,7 @@ public class Networkconnection_Test {
 						+ testlist.get(i).getRotation_z());
 
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
