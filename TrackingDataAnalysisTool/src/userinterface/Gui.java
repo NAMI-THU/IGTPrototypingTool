@@ -5,26 +5,29 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.LayoutManager;
-import java.util.List;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.File;//import java.io.FileFilter;
+import java.io.File;
+//import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.net.*;
-import inputOutput.*; 
 
 
 public class Gui extends JFrame implements ActionListener{
@@ -41,15 +44,11 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextField adresse= new JTextField(25); 
 	private String[] messungen = {"Rauschen", "Korrektheit"}; 
 	private JComboBox messarten = new JComboBox(messungen);
-	private JCheckBox cBJitterP = new JCheckBox("Jitterposition", false);
-	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
+	private JCheckBox cBJitter = new JCheckBox("Jitter", false);
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
-	private JCheckBox cBRotation = new JCheckBox("Rotation", false);
-	JLabel distanz = new JLabel();
 	JPanel pCenter = new JPanel();
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
-	JLabel LabelDataValue = new JLabel(); private JTextField ValueData = new JTextField(15);
 	JMenuBar bar; JMenu menu ; 
 	JMenuItem openItem; JMenuItem closeItem;
 	JLabel lValue = new JLabel();
@@ -57,13 +56,7 @@ public class Gui extends JFrame implements ActionListener{
 	JLabel lCalcC = new JLabel();  
 	JLabel lCalcA = new JLabel();  
 	File f; 
-	DataService dataS = new DataService();
-	double correctness, accuracy, jitterR, jitterP;
-	
-	JTextField toLoadField = new JTextField(5); JLabel toLoad = new JLabel();
-	JTextField distanceF = new JTextField(5); JLabel distance = new JLabel();
-	JTextField rotationAngel = new JTextField(5); JLabel rotationL = new JLabel();
-	
+	//private DataService dataS = new DataService();
 	public Gui(){
 		//allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
@@ -76,27 +69,19 @@ public class Gui extends JFrame implements ActionListener{
 		//Searching for data file
 		bar = new JMenuBar();
 		menu = new JMenu("Dateisuche ");
-		openItem = new JMenuItem("Oeffnen");
-	    closeItem = new JMenuItem("Schliessen"); 
+		openItem = new JMenuItem("÷ffnen");
+	    closeItem = new JMenuItem("Schlieﬂen"); 
 	    menu.add(openItem);
 	    menu.add(closeItem);
 	    bar.add(menu);
 	    panelNorth.add(bar);
 	    
-	 	JLabel l0 = new JLabel(" CSV-Dateipfad:");
+		JLabel l0 = new JLabel(" CSV-Dateipfad:");
 		panelNorth.add(l0); 
 		panelNorth.add(adresse); 
 		panelNorth.add(loadData);
 		
-		toLoad.setText("Anzahl der zu ladende Dateien");
-		panelNorth.add(toLoad);
-		panelNorth.add("n", toLoadField);
-		distance.setText("Distanzangabe");
-		distance.setBounds(1000, 170, 120, 20);
-		rotationAngel.setText("Winkel");
-		rotationAngel.setBounds(1000, 450, 120, 20);
-			
-		/*Coordinate
+		//Coordinate
 		xAxis.setText("x-Achse"); 
 		xAxis.setBounds(150, 130, 100, 20);
 		add(xAxis);
@@ -113,11 +98,8 @@ public class Gui extends JFrame implements ActionListener{
 		zAxis.setBounds(150, 490, 100, 20);
 		add(zAxis);
 		zEbene.setBounds(90, 510, 350, 150);
-		add(zEbene);*/
-		
-		LabelDataValue.setBounds(650,300, 120, 80);
-		add(ValueData);
-		
+		add(zEbene);
+
 		JLabel measuredTyp = new JLabel("Messarten"); 
 		measuredTyp.setBounds(650, 80, 120, 60);
 		add(measuredTyp);
@@ -130,15 +112,11 @@ public class Gui extends JFrame implements ActionListener{
 		finish.setBounds(800, 170, 130, 60);
 		add(finish);
 		finish.setForeground(Color.RED);
-		
-		cBRotation.setBounds(800, 80, 120, 60);
-		add(cBRotation);
-		cBJitterR.setBounds(650, 380, 150, 30);
-		add(cBJitterR);
-		cBJitterP.setBounds(650, 400, 150, 30);
+
+		cBJitter.setBounds(650, 400, 150, 30);
 		cBCorrectness.setBounds(650, 420, 150, 30);
 		cBAccuracy.setBounds(650, 440, 150, 30);
-		add(cBJitterP);
+		add(cBJitter);
 		add(cBCorrectness);
 		add(cBAccuracy);
 		setLayout(null);
@@ -153,13 +131,9 @@ public class Gui extends JFrame implements ActionListener{
 		messarten.addActionListener(this);
 		start2.addActionListener(this);
 		finish2.addActionListener(this);
-		cBJitterR.addActionListener(this);
-		cBJitterP.addActionListener(this);
+		cBJitter.addActionListener(this);
 		cBCorrectness.addActionListener(this);
 		cBAccuracy.addActionListener(this);
-		toLoadField.addActionListener(this);
-		distanceF.addActionListener(this);
-		rotationAngel.addActionListener(this);
 		
 		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -169,56 +143,79 @@ public class Gui extends JFrame implements ActionListener{
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 	        //opens actionPerformed by clicking openItem
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
-	      
-	            FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
-				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-				fc.addChoosableFileFilter(filter);
-				int returnValue = fc.showOpenDialog(null);
-				if (returnValue == JFileChooser.APPROVE_OPTION){
-				    File selctedFile = fc.getSelectedFile();
-				    String path2 = selctedFile.getAbsolutePath();
-				    CSVFileReader.setPath(path2);     
-				}
-		        }});}
+	            //gets path from selected data
+	        try{
+	        	FileFilter filter = new FileNameExtensionFilter("Testreihe", "rtf", "docx");
+	            JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+	            fc.addChoosableFileFilter(filter);
+	            int returnValue = fc.showOpenDialog(null);
+	            if (returnValue == JFileChooser.APPROVE_OPTION){
+		            File selctedFile = fc.getSelectedFile();
+		            String path2 = selctedFile.getAbsolutePath();
+		            System.out.println(selctedFile.getAbsolutePath());
+		            
+		            FileReader fin = new FileReader(path2);
+		            BufferedReader read = new BufferedReader(fin);
+		            String line;
+		            // while(true){
+		            while((line=read.readLine())!=null)
+		            	//System.out.println(line);
+		            	for(int i = 0; i<= 3; i++){
+		            		xEbene.setText(line);
+		            		yEbene.setText(line);
+		            		zEbene.setText(line);
+		            }
+	          }
+	        }catch (FileNotFoundException e2){ 
+	        		e2.printStackTrace();
+	        }catch (IOException e1) {
+	            	e1.printStackTrace();
+	        }
+	        }});}
 
+	
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
-				FileFilter filter; 
-				String path, valueD, valueR ;  
-				AverageMeasurement aM2; 
-				Diagramm Diag = new Diagramm();
-				DataProcessor dP = new DataProcessor(); 	
-				distance.getText(); 
 				
+				FileFilter filter; 
+				String path, text;
+				byte[]b; double z=4.5;
+				//String data = DataService.loadNextData();
+				int z1 ;int z2 ;int z3 ;
 				try{ 
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
-						if( f.exists()== true && path.endsWith(".csv")){
-							CSVFileReader.setPath(path);
-						
-						}else{
-							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
-									"Warnung", JOptionPane.WARNING_MESSAGE);
+						System.out.println(path);
+						if( f.exists()== true){
+							System.out.println(path); 
 						}
+						//setpath from group3 
+						//permanent data 
+						if (path.endsWith(".rtf")){ 
+							FileInputStream is= new FileInputStream(path);
+							b = new byte[is.available()];
+							is.read(b);
+							text = new String(b);
+							//while(true){
+						            System.out.println(text);
+							//} 
+							}else{
+								JOptionPane.showMessageDialog(null, "Ung¸ltiger Dateityp", 
+										"Warnung", JOptionPane.WARNING_MESSAGE);
+							}
 						
 					}else if(src == start || src == start2  ){
-						JOptionPane.showMessageDialog(null, "Jetzt das Ger‰t ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
-						valueD; 
-						valueR; 
-						
-						//Selection
-						
+							JOptionPane.showMessageDialog(null, "Jetzt das Ger‰t ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);
+							//Coordinatensystem
+							
 					}else if(src == finish || src == finish2 ){
-					//	Diag.start(stage);
+						System.out.println("Finish angeklickt");
+						//Coordinatensystem with x,y,z-value
 							
 					}else if(src == messarten){
 						String selected = (String) messarten.getSelectedItem();
 						if("Korrektheit".equals(selected)){
-							distanz.setText("Zu erwartende Distanz");
-							distanz.setBounds(800, 120, 100, 20);
-							add(distanz);
-							valueD = distanz.getText(); 
 							start2.setBounds(650, 280, 130, 60);
 							add(start2);
 							start2.setForeground(Color.GREEN);
@@ -232,18 +229,7 @@ public class Gui extends JFrame implements ActionListener{
 							finish2.setEnabled(false);
 						}
  
-					}else if(src == calculate){
-						ValueData = countToGetNext; 
-						List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
-						for(int i =0 ; i< toolMeas.size(); i++){
-							ToolMeasure tool = toolMeas.get(i); 
-								tool.getMeasurement(); 
-								AverageMeasurement aM = tool.getAverageMeasurement(); 
-							jitter = aM.getError();
-						    boxplot = aM.getBoxPlot(); 
-						    firstMeas = aM.g;
-						}
-						
+					}else if(src == calculate ){
 						lValue.setText("Errechneter Wert");
 						lValue.setBounds(650, 510, 130, 30);
 						add(lValue);
@@ -255,25 +241,17 @@ public class Gui extends JFrame implements ActionListener{
 						add(lCalcC);
 						lCalcA.setBounds(800, 570, 200, 40);
 						add(lCalcA);
-						if(cBJitterR.isSelected()){
-							lCalcJ.setText(" Jitter = " +jitterR );  
-						}if(cBJitterP.isSelected()){
-							lCalcJ.setText(" Jitter = " +jitterP );  
+						if(cBJitter.isSelected()){
+							lCalcJ.setText(" Jitter = " + z);  
 						}if(cBCorrectness.isSelected()){
-							lCalcC.setText(" Korrektheit  = ");  
-						}
-						if(cBRotation.isSelected()){
-							valueR = rotationAngel.getText();  
-						}
-						
-						if(distanceF.isSelected()){
-							lCalcC.setText(" Korrektheit  = ");  
-						
-						
-					} 	
+							lCalcC.setText(" Korrektheit  = " + z+1);  
+						}if(cBAccuracy.isSelected()){
+							lCalcA.setText(" Genauigkeit= " + z+2); 
+						} 
+						} 	
 				}catch(Exception ep){
 					if(f.exists()==false){
-						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
+						JOptionPane.showMessageDialog(null,"Datei existiert nicht",
 								"Fenstertitel",JOptionPane.ERROR_MESSAGE);
 					}else{
 						//ExceptionReporting.registerExceptionReporter();

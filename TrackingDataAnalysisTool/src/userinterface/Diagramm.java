@@ -109,8 +109,10 @@ start = new Button("Start");
 		// Objekt erstellen
 		DataService da = new DataService();
 		
+//		Gui dx = new Gui();
+	
 		//wie oft 
-		int countGoToNext =  34;
+		int countGoToNext = 34;
 		
 		// alle Tools mit allen Messungen
 		List<ToolMeasure> tools = da.loadNextData(countGoToNext);
