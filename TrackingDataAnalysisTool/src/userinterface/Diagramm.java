@@ -28,6 +28,8 @@ public class Diagramm extends Application{
 		Button add, start;
 		//@SupressWarnings("unchecked")
 		@SuppressWarnings("unchecked")
+		
+		
 		@Override public void start(Stage stage) throws InterruptedException {
 
 			String x = "X-Achse";
@@ -64,15 +66,15 @@ public class Diagramm extends Application{
 		
 		s1.setTitle("XY-Ebene");
 		s2.setTitle("XZ-Ebene");
-		s3.setTitle("ZY-Ebene");
+		s3.setTitle("YZ-Ebene");
 		
 	
 XYChart.Series series1 = new XYChart.Series();
-//series1.setName("XY-Diagramm");
+series1.setName("XY-Diagramm");
 XYChart.Series series2 = new XYChart.Series();
-//series2.setName("XZ-Diagramm");
+series2.setName("XZ-Diagramm");
 XYChart.Series series3 = new XYChart.Series();
-//series3.setName("ZY-Diagramm");
+series3.setName("YZ-Diagramm");
 
 
 s1.setPrefSize(400, 300);
@@ -130,7 +132,7 @@ start = new Button("Start");
 	}
  	});
 
-
+	
 
 hbox.setSpacing(10);
 //hbox.getChildren().addAll(s1, s2, s3);
@@ -143,9 +145,14 @@ hbox.setPadding(new Insets(50, 10, 50, 20));
 ((Group)scene.getRoot()).getChildren().add(vbox);
 stage.setScene(scene);
 stage.show();
+
+
+//public static getStage(){
+//	return stage;}
+
 }
 
-
+	
 public static void main(String[]args){
 
 launch(args);}}
