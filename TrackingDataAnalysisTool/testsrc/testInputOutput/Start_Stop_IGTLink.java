@@ -64,19 +64,21 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		Object src = evt.getSource();
+		algorithm.DataManager data = new algorithm.DataManager();
 
 		if (src == start) {
 
 			if (value == true) {
 				value = false;
 				begin = new Networkconnection();
-			
-				//	If group 2 want to start openigtlink then create a Thread for OpenIGTLinkConnection
-				//	OpenIGTLinkConnection.update();
+
+				// If group 2 want to start openigtlink then create a Thread for
+				// OpenIGTLinkConnection
+				// OpenIGTLinkConnection.update();
 				begin.start();
 
-			} else if(value==false){
-				
+			} else if (value == false) {
+
 				begin.setBreak(true);
 
 			}
@@ -84,8 +86,12 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		}
 
 		if (src == stop) {
-			
+
 			begin.setBreak(false);
+
+			data.setCount();
+
+			testInputOutput.Networkconnection_Test.setCount();
 
 		}
 
@@ -94,8 +100,11 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		}
 
 		if (src == exit_connection) {
-			value=true;
+			value = true;
 			begin.setExit(false);
+
+			data.setCount();
+			testInputOutput.Networkconnection_Test.setCount();
 		}
 	}
 

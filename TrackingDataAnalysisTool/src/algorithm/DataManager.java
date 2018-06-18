@@ -57,4 +57,8 @@ public class DataManager  {
 			count=true;
 		}
 	}
+	
+	public void setCount(){
+		count=false;
+	}
 }
