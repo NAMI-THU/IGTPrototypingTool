@@ -70,6 +70,9 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 			if (value == true) {
 				value = false;
 				begin = new Networkconnection();
+			
+				//	If group 2 want to start openigtlink then create a Thread for OpenIGTLinkConnection
+				//	OpenIGTLinkConnection.update();
 				begin.start();
 
 			} else if(value==false){
@@ -91,6 +94,7 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 		}
 
 		if (src == exit_connection) {
+			value=true;
 			begin.setExit(false);
 		}
 	}

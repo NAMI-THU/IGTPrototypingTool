@@ -17,6 +17,7 @@ public class Networkconnection_Test {
 	public void test() {
 
 		Start_Stop_IGTLink.startIGTWindow();
+		
 		try {
 			Thread.sleep(100000000);
 		} catch (InterruptedException e) {
@@ -42,7 +43,7 @@ public class Networkconnection_Test {
 					+ testlist.get(i).getRotation_z());
 
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -50,6 +51,8 @@ public class Networkconnection_Test {
 
 		}
 		System.out.println("#############################################################");
+		
+		//Fix Problem after Start again most times the first toollist is not correct. 
 	}
 
 }

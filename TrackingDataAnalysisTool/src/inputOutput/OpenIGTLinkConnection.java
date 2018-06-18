@@ -24,17 +24,6 @@ public class OpenIGTLinkConnection {
 
 //	public static void update() {
 //
-//		if (counter == 0) {
-//			init();
-//
-//		}
-//
-//		testInputOutput.Networkconnection_Test.setTestlist(toollist);
-//
-//	}
-//
-//	public static void init() {
-//		counter++;
 //		Networkconnection.Connection();
 //
 //	}
@@ -61,8 +50,9 @@ public class OpenIGTLinkConnection {
 
 		Tool tool = new Tool();
 
-		tool.setData(timestamp, valid, coordinate_x, coordinate_y, coordinate_z, rotation_x, rotation_y, rotation_z,
-				rotation_r, name);
+		tool.setData(timestamp, valid, coordinate_x, coordinate_y,
+				coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
+				name);
 
 		setArraylist(tool);
 
@@ -73,6 +63,8 @@ public class OpenIGTLinkConnection {
 	public void setArraylist(Tool tool) {
 
 		if (helpname.equals(name) && counter1 != 1) {
+
+			// Change setMethod to the Method of group 2
 			testInputOutput.Networkconnection_Test.setTestlist(toollist);
 			toollist.clear();
 			counter1 = 1;
