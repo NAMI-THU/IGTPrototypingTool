@@ -68,8 +68,8 @@ public class OpenIGTLinkConnection {
 		if (helpname.equals(name) && counter1 != 1) {
 
 			// Change setMethod to the Method of group 2
-			
-		//	algorithm.DataManager.setList(toollist);
+			algorithm.DataManager data = new algorithm.DataManager();
+			data.setList(toollist);
 			testInputOutput.Networkconnection_Test.setTestlist(toollist);
 			
 			
