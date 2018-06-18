@@ -46,7 +46,7 @@ public class Gui extends JFrame implements ActionListener{
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
 	private JCheckBox cBRotation = new JCheckBox("Rotation", false);
-	
+	JLabel distanz = new JLabel();
 	JPanel pCenter = new JPanel();
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
 	JLabel LabelDataValue = new JLabel(); private JTextField ValueData = new JTextField(15);
@@ -59,6 +59,10 @@ public class Gui extends JFrame implements ActionListener{
 	File f; 
 	DataService dataS = new DataService();
 	double correctness, accuracy, jitterR, jitterP;
+	
+	JTextField toLoadField = new JTextField(5); JLabel toLoad = new JLabel();
+	JTextField distanceF = new JTextField(5); JLabel distance = new JLabel();
+	JTextField rotationAngel = new JTextField(5); JLabel rotationL = new JLabel();
 	
 	public Gui(){
 		//allow window
@@ -79,12 +83,20 @@ public class Gui extends JFrame implements ActionListener{
 	    bar.add(menu);
 	    panelNorth.add(bar);
 	    
-		JLabel l0 = new JLabel(" CSV-Dateipfad:");
+	 	JLabel l0 = new JLabel(" CSV-Dateipfad:");
 		panelNorth.add(l0); 
 		panelNorth.add(adresse); 
 		panelNorth.add(loadData);
 		
-		//Coordinate
+		toLoad.setText("Anzahl der zu ladende Dateien");
+		panelNorth.add(toLoad);
+		panelNorth.add("n", toLoadField);
+		distance.setText("Distanzangabe");
+		distance.setBounds(1000, 170, 120, 20);
+		rotationAngel.setText("Winkel");
+		rotationAngel.setBounds(1000, 450, 120, 20);
+			
+		/*Coordinate
 		xAxis.setText("x-Achse"); 
 		xAxis.setBounds(150, 130, 100, 20);
 		add(xAxis);
@@ -101,7 +113,7 @@ public class Gui extends JFrame implements ActionListener{
 		zAxis.setBounds(150, 490, 100, 20);
 		add(zAxis);
 		zEbene.setBounds(90, 510, 350, 150);
-		add(zEbene);
+		add(zEbene);*/
 		
 		LabelDataValue.setBounds(650,300, 120, 80);
 		add(ValueData);
@@ -119,10 +131,8 @@ public class Gui extends JFrame implements ActionListener{
 		add(finish);
 		finish.setForeground(Color.RED);
 		
-		JLabel Rotation = new JLabel("Rotation"); 
-		Rotation.setBounds(800, 80, 120, 60);
-		add(Rotation);
-		
+		cBRotation.setBounds(800, 80, 120, 60);
+		add(cBRotation);
 		cBJitterR.setBounds(650, 380, 150, 30);
 		add(cBJitterR);
 		cBJitterP.setBounds(650, 400, 150, 30);
@@ -147,6 +157,9 @@ public class Gui extends JFrame implements ActionListener{
 		cBJitterP.addActionListener(this);
 		cBCorrectness.addActionListener(this);
 		cBAccuracy.addActionListener(this);
+		toLoadField.addActionListener(this);
+		distanceF.addActionListener(this);
+		rotationAngel.addActionListener(this);
 		
 		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -166,17 +179,16 @@ public class Gui extends JFrame implements ActionListener{
 				    String path2 = selctedFile.getAbsolutePath();
 				    CSVFileReader.setPath(path2);     
 				}
-	
 		        }});}
 
-	
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
 				FileFilter filter; 
-				String path;  
+				String path, valueD, valueR ;  
 				AverageMeasurement aM2; 
 				Diagramm Diag = new Diagramm();
-				DataProcessor dP = new DataProcessor(); 
+				DataProcessor dP = new DataProcessor(); 	
+				distance.getText(); 
 				
 				try{ 
 					if(src == loadData){ 
@@ -192,16 +204,21 @@ public class Gui extends JFrame implements ActionListener{
 						
 					}else if(src == start || src == start2  ){
 						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
-				//		dataS.loadNextData(countToGetNext); 
-							//accuracy= dataS.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);  
-							
+						valueD; 
+						valueR; 
+						
+						//Selection
+						
 					}else if(src == finish || src == finish2 ){
-						//Diag.start(stage);
-						//Coordinatensystem with x,y,z-value
+					//	Diag.start(stage);
 							
 					}else if(src == messarten){
 						String selected = (String) messarten.getSelectedItem();
 						if("Korrektheit".equals(selected)){
+							distanz.setText("Zu erwartende Distanz");
+							distanz.setBounds(800, 120, 100, 20);
+							add(distanz);
+							valueD = distanz.getText(); 
 							start2.setBounds(650, 280, 130, 60);
 							add(start2);
 							start2.setForeground(Color.GREEN);
@@ -216,15 +233,15 @@ public class Gui extends JFrame implements ActionListener{
 						}
  
 					}else if(src == calculate){
-					//	ValueData = countToGetNext; 
-						//List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
-					//	for(int i =0 ; i< toolMeas.size(); i++){
-						//	ToolMeasure tool = toolMeas.get(i); 
-							//tool.getMeasurement(); 
-							//AverageMeasurement aM = tool.getAverageMeasurement(); 
-						//	jitter = aM.getError();
-						  //boxplot = aM.getBoxPlot(); 
-						  //firstMeas = aM.g
+						ValueData = countToGetNext; 
+						List<ToolMeasure> toolMeas = dataS.loadNextData(countToGetNext);
+						for(int i =0 ; i< toolMeas.size(); i++){
+							ToolMeasure tool = toolMeas.get(i); 
+								tool.getMeasurement(); 
+								AverageMeasurement aM = tool.getAverageMeasurement(); 
+							jitter = aM.getError();
+						    boxplot = aM.getBoxPlot(); 
+						    firstMeas = aM.g;
 						}
 						
 						lValue.setText("Errechneter Wert");
@@ -245,7 +262,15 @@ public class Gui extends JFrame implements ActionListener{
 						}if(cBCorrectness.isSelected()){
 							lCalcC.setText(" Korrektheit  = ");  
 						}
-				//	} 	
+						if(cBRotation.isSelected()){
+							valueR = rotationAngel.getText();  
+						}
+						
+						if(distanceF.isSelected()){
+							lCalcC.setText(" Korrektheit  = ");  
+						
+						
+					} 	
 				}catch(Exception ep){
 					if(f.exists()==false){
 						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
