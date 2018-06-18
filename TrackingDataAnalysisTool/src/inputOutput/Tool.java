@@ -64,6 +64,5 @@ public class Tool {
 	public String getName() {
 		return name;
 	}
-	
 
 }
