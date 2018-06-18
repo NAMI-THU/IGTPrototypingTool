@@ -61,11 +61,19 @@ public class OpenIGTLinkConnection {
 	}
 
 	public void setArraylist(Tool tool) {
+		
+		
+		
 
 		if (helpname.equals(name) && counter1 != 1) {
 
 			// Change setMethod to the Method of group 2
+			
+		//	algorithm.DataManager.setList(toollist);
 			testInputOutput.Networkconnection_Test.setTestlist(toollist);
+			
+			
+			
 			toollist.clear();
 			counter1 = 1;
 		}

@@ -12,6 +12,7 @@ import org.junit.Test;
 public class Networkconnection_Test {
 
 	static ArrayList<Tool> testlist = new ArrayList<Tool>();
+	
 
 	@Test
 	public void test() {
@@ -28,6 +29,8 @@ public class Networkconnection_Test {
 	}
 
 	public static void setTestlist(ArrayList<Tool> test) {
+		
+		
 		testlist = test;
 
 		int testsize = testlist.size();
