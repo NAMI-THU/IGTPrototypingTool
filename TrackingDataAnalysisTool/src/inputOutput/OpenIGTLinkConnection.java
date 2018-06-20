@@ -21,12 +21,13 @@ public class OpenIGTLinkConnection {
 	private static int counter = 0;
 	private static int counter1 = 1;
 	private static String helpname;
+	private static boolean testapp = false;
 
-//	public static void update() {
-//
-//		Networkconnection.Connection();
-//
-//	}
+	// public static void update() {
+	//
+	// Networkconnection.Connection();
+	//
+	// }
 
 	public void setValues(String n, TransformNR t) {
 
@@ -61,27 +62,30 @@ public class OpenIGTLinkConnection {
 	}
 
 	public void setArraylist(Tool tool) {
-		
-		
-		
 
 		if (helpname.equals(name) && counter1 != 1) {
 
 			// set toollist in DataManager from group2
 			algorithm.DataManager data = new algorithm.DataManager();
 			data.setList(toollist);
-			
-			//call method to get output in console
-			testInputOutput.Networkconnection_test_app.setTestlist(toollist);
-			
-			
-			
+
+			// call method to get output in console
+			if (testapp == true) {
+				testInputOutput.Networkconnection_test_app
+						.setTestlist(toollist);
+			}
+
 			toollist.clear();
 			counter1 = 1;
 		}
 
 		toollist.add(tool);
 
+	}
+
+	//use for Networkconnection_test_app
+	public static void setTestappValue() {
+		testapp = true;
 	}
 
 }
