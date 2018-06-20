@@ -9,6 +9,7 @@ import inputOutput.Tool;
 
 public class DataManager  {
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
+	private boolean count = false;
 
 	public List<ToolMeasure> getToolMeasures() {
 		return toolMeasures;
@@ -42,4 +43,22 @@ public class DataManager  {
 		}
 	}
 
+	public void setList(ArrayList<Tool> test) {
+
+		if (count == true) {
+
+			List<Tool> tools = test;
+			for (Tool tool : tools) {
+				Measurement measurement = new Measurement(tool);
+				addMeasurementToTool(measurement);
+			}
+
+		} else {
+			count=true;
+		}
+	}
+	
+	public void setCount(){
+		count=false;
+	}
 }
