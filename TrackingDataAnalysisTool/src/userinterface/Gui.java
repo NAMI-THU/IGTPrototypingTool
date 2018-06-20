@@ -27,44 +27,62 @@ import inputOutput.*;
 
 
 public class Gui extends JFrame implements ActionListener{
-	
+	// Declarations of Buttons for measurements, loading data, compute:
 	private JButton start = new JButton("Starte Messung");
 	private JButton finish = new JButton("Beende Messung");
 	private JButton start2 = new JButton("Starte 2.Messung");
 	private JButton finish2 = new JButton("Ende 2.Messung"); 
 	private JButton loadData = new JButton("Lade Datei");
 	private JButton calculate = new JButton("Berechne");
-	private JTextField xEbene = new JTextField(25);
-	private JTextField yEbene = new JTextField(25);
-	private JTextField zEbene = new JTextField(25);
+	
+	// Textfield for data source to load CSV- data:
 	private JTextField adresse= new JTextField(25); 
+	
+	// choose measurement:
 	private String[] messungen = {"Rauschen", "Korrektheit"}; 
 	private JComboBox messarten = new JComboBox(messungen);
+	
+	// Checkbox for Jitter, correctness, accuracy, rotation
 	private JCheckBox cBJitterP = new JCheckBox("Jitterposition", false);
 	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
 	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
 	private JCheckBox cBAccuracy = new JCheckBox("Genauigkeit", false);
 	private JCheckBox cBRotation = new JCheckBox("Rotation", false);
+	
+	//Label
 	JLabel distanz = new JLabel(); JPanel pCenter = new JPanel();
 	JLabel xAxis = new JLabel(); JLabel zAxis = new JLabel();JLabel yAxis = new JLabel();
 	JLabel LabelDataValue = new JLabel(); private JTextField ValueData = new JTextField(15);
+	
+	//Jfile Chooser
 	JMenuBar bar; JMenu menu ; 
 	JMenuItem openItem; JMenuItem closeItem;
+	
+	//Label
 	JLabel lValue = new JLabel(); JLabel lCalcJ = new JLabel();  
 	JLabel lCalcC = new JLabel(); JLabel lCalcA = new JLabel();  
 	File f; String valueL, valueD;  
 	double correctness, accuracy, jitterR, jitterP;
+	
+	
+	//Textfield, Label
 	JTextField toLoadField = new JTextField(5); JLabel toLoad = new JLabel();
 	JTextField distanceF = new JTextField(5); JLabel distance = new JLabel();
 	JTextField rotationAngel = new JTextField(5); JLabel rotationL = new JLabel();
 	JTextField openIGTf = new JTextField(25); JLabel openIGTl = new JLabel();
+	
+	// Button for connection to openIGTB
 	JButton openIGTB = new JButton("Connect");
 	
+	// Tool Measurement first and second
 	ToolMeasure firstMeasurement; ToolMeasure secondMeasurement;
 	ToolMeasure firstAverageMeasurement; ToolMeasure secondAverageMeasurement;
 	
+	// Data Service, Data Processor Object
 	DataService dataS = new DataService();
 	DataProcessor dataP = new DataProcessor();
+	
+	
 	
 	public Gui(){
 		//allow window
@@ -72,6 +90,8 @@ public class Gui extends JFrame implements ActionListener{
 		init();	
 	}
 	
+	
+	//
 	private void init(){
 		//NorthPanel
 		JPanel panelNorth = new JPanel();
@@ -85,9 +105,9 @@ public class Gui extends JFrame implements ActionListener{
 	    bar.add(menu);
 	    panelNorth.add(bar);
 	    
-	 	JLabel l0 = new JLabel(" CSV-Dateipfad:");
+	 	JLabel l0 = new JLabel(" CSV-Dateipfad:");//  Label for CSV file path
 		panelNorth.add(l0); 
-		panelNorth.add(adresse); 
+		panelNorth.add(adresse);
 		panelNorth.add(loadData);
 		openIGTf.setBounds(120, 120, 120, 90);
 		add(openIGTf);
@@ -96,30 +116,31 @@ public class Gui extends JFrame implements ActionListener{
 		openIGTB.setBounds(250, 120, 120, 90);
 		add(openIGTB); 
 		
-		toLoad.setText("Anzahl der zu ladende Dateien");
+		toLoad.setText("Anzahl der zu ladende Dateien"); //Number of files to load
 		panelNorth.add(toLoad);
 		valueL = toLoadField.getText(); 
 		panelNorth.add("n", toLoadField);
-		distance.setText("Distanzangabe");
+		distance.setText("Distanzangabe");// distance indication
 		distance.setBounds(1000, 170, 120, 20);
-		rotationAngel.setText("Winkel");
+		rotationAngel.setText("Winkel");//corner
 		rotationAngel.setBounds(1000, 450, 120, 20);
 		LabelDataValue.setBounds(650,300, 120, 80);
 		add(ValueData);
 		
-		JLabel measuredTyp = new JLabel("Messarten"); 
+		JLabel measuredTyp = new JLabel("Messarten"); //measuredtyp
 		measuredTyp.setBounds(650, 80, 120, 60);
 		add(measuredTyp);
 		messarten.setEditable(true);
-		messarten.setBounds(800, 100, 120, 20);
+		messarten.setBounds(800, 100, 120, 20);// setBounds for position measured typ
 		add(messarten); 
 		start.setBounds(650, 170, 130, 60);
 		add(start);
-		start.setForeground(Color.GREEN);
+		start.setForeground(Color.GREEN); // set button "start" green
 		finish.setBounds(800, 170, 130, 60);
 		add(finish);
-		finish.setForeground(Color.RED);
+		finish.setForeground(Color.RED); // set button "finish" red
 		
+		// setbounds for cBJitter,cBJitterP, cBCorrectness, cBAccuracy
 		cBRotation.setBounds(800, 80, 120, 60);
 		add(cBRotation);
 		cBJitterR.setBounds(650, 380, 150, 30);
@@ -127,11 +148,13 @@ public class Gui extends JFrame implements ActionListener{
 		cBJitterP.setBounds(650, 400, 150, 30);
 		cBCorrectness.setBounds(650, 420, 150, 30);
 		cBAccuracy.setBounds(650, 440, 150, 30);
+		
+		// adding cBJitter, cBCorrectness, cBAccuracy
 		add(cBJitterP);
 		add(cBCorrectness);
 		add(cBAccuracy);
-		setLayout(null);
-		calculate.setBounds(800, 400, 130, 60);
+		setLayout(null); //null-layout
+		calculate.setBounds(800, 400, 130, 60);// setBounds for calculate
 		add(calculate);
 
 		//Connection with ActionListener
@@ -151,7 +174,7 @@ public class Gui extends JFrame implements ActionListener{
 		rotationAngel.addActionListener(this);
 		
 		this.setLayout(new BorderLayout());
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);// for closing
 		this.getContentPane();
 		this.add(panelNorth, BorderLayout.NORTH);
 	
