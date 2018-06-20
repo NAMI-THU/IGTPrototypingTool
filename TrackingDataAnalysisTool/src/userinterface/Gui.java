@@ -155,6 +155,7 @@ public class Gui extends JFrame implements ActionListener{
 		this.getContentPane();
 		this.add(panelNorth, BorderLayout.NORTH);
 	
+		//Open with ActionsListener
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 	        //opens actionPerformed by clicking openItem
 	        public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -179,6 +180,7 @@ public class Gui extends JFrame implements ActionListener{
 				DataProcessor dP = new DataProcessor(); 
 				
 				try{ 
+					//button loaddata pressed 
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
@@ -189,17 +191,18 @@ public class Gui extends JFrame implements ActionListener{
 							JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", 
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 						}
+						//button start pressed 	
 					}else if(src == start || src == start2 ){
 						JOptionPane.showMessageDialog(null, "Jetzt das Gerät ruhig liegen lassen", "Warnung", JOptionPane.WARNING_MESSAGE);	
 						
-						//Selection
-						
+					//button finish pressed 
 					}else if(src == finish || src == finish2 ){
 					//	Diag.start(stage);
 						
-							
+					//button measured species pressed 		
 					}else if(src == messarten){
 						String selected = (String) messarten.getSelectedItem();
+						//button correctness pressed
 						if("Korrektheit".equals(selected)){
 							distanz.setText("Zu erwartende Distanz");
 							distanz.setBounds(800, 120, 100, 20);
@@ -213,12 +216,12 @@ public class Gui extends JFrame implements ActionListener{
 							add(finish2);
 							finish2.setForeground(Color.RED);
 							finish2.setEnabled(true);
-								
+						//button sough pressed	
 						}if("Rauschen".equals(selected)){							
 							start2.setEnabled(false);
 							finish2.setEnabled(false);
 						}
- 
+					//button calculate pressed
 					}else if(src == calculate){
 						/*
 						for(int i =0 ; i< toolMeas.size(); i++){
@@ -247,15 +250,19 @@ public class Gui extends JFrame implements ActionListener{
 						add(lCalcC);
 						lCalcA.setBounds(800, 570, 200, 40);
 						add(lCalcA);
+						//JCheckBox cBJitterR pressed
 						if(cBJitterR.isSelected()){
-							lCalcJ.setText(" Jitter = " +jitterR ); 	
+							lCalcJ.setText(" Jitter = " +jitterR );
+						//JCheckBox cBJitterP pressed
 						}if(cBJitterP.isSelected()){
-							lCalcJ.setText(" Jitter = " +jitterP );  
+							lCalcJ.setText(" Jitter = " +jitterP ); 
+						//JCheckBox cBCorrectness pressed
 						}if(cBCorrectness.isSelected()){
 							lCalcC.setText(" Korrektheit  = ");  
-						}
-						if(cBRotation.isSelected()){
+						//	JCheckBox cBRotation pressed
+						}if(cBRotation.isSelected()){
 							valueR = rotationAngel.getText();  
+						//button openIGTB pressed
 						}if(openIGTB.isSelected()){
 							new testInputOutput.Start_Stop_IGTLink.startIGTWindow();		
 						}	
@@ -272,7 +279,7 @@ public class Gui extends JFrame implements ActionListener{
 
 				}					
 			};	
-		//close window
+			//close window
 				protected void processWindowsEvent(WindowEvent e){
 				super.processWindowEvent(e);
 					if (e.getID() == WindowEvent.WINDOW_CLOSING) {
