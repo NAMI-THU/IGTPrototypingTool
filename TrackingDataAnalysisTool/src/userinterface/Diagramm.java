@@ -24,20 +24,30 @@ import algorithm.DataService;
 public class Diagramm extends Application{
 
 
-		
+		/*create a button named "add"
+		 *create a button named "start"*/
 		Button add, start;
-		//@SupressWarnings("unchecked")
+		
+		
 		@SuppressWarnings("unchecked")
 		
-		
+		/*create a method which contains the stage
+		 * stage is the main window 
+		 * all elements of the window are entered there  */
 		@Override public void start(Stage stage) throws InterruptedException {
-
+			
+			/*create variables x, y and z from type string to store each axis */
+			
 			String x = "X-Achse";
 			String y = "Y-Achse";
 			String z = "Z-Achse";
 			
+			/*
+			 * the stage is named "x-y-z-Ebene"
+			 */
 			stage.setTitle("x-y-z-Ebene");
 		
+		/*fix the scale for the axis: plotting a range of numbers */
 		final NumberAxis xAxis = new NumberAxis(0, 30, 1);
 		final NumberAxis yAxis = new NumberAxis(0, 30, 1);
 		
@@ -47,7 +57,9 @@ public class Diagramm extends Application{
 		final NumberAxis xAxis2 = new NumberAxis(0, 30, 1);
 		final NumberAxis yAxis2 = new NumberAxis(0, 30, 1);
 		
-		
+		/*
+		 * set labels for each axis 
+		 */
 		xAxis.setLabel(x);
 		yAxis.setLabel(y);
 		
@@ -64,11 +76,16 @@ public class Diagramm extends Application{
 		final ScatterChart <Number, Number> s3 = 
 				new ScatterChart<Number, Number>(xAxis2, yAxis2);
 		
+		/*
+		 * set title for the scatter-charts
+		 */
 		s1.setTitle("XY-Ebene");
 		s2.setTitle("XZ-Ebene");
 		s3.setTitle("YZ-Ebene");
 		
-	
+	/*
+	 * create new series for the cordinatesystem
+	 */
 XYChart.Series series1 = new XYChart.Series();
 series1.setName("XY-Diagramm");
 XYChart.Series series2 = new XYChart.Series();
@@ -76,7 +93,10 @@ series2.setName("XZ-Diagramm");
 XYChart.Series series3 = new XYChart.Series();
 series3.setName("YZ-Diagramm");
 
-
+/*
+ * set size for each scatter-chart and 
+ * add series on the scatter-charts
+ */
 s1.setPrefSize(400, 300);
 s1.getData().addAll(series1);
 
@@ -87,12 +107,21 @@ s3.setPrefSize(400, 300);
 s3.getData().addAll(series3);
 
 Scene scene = new Scene(new Group());
+
+/*
+ * create vbox and hbox for the scatter-charts
+ */
+
 final VBox vbox = new VBox();
 final HBox hbox = new HBox();
 
 //RadioButton radioB1 = new RadioButton("xyz");
 start = new Button("Start");
-
+	
+/*add action on the button "start"
+ * if the button is clicked, there will be shown the values x, y and z
+ * 
+ */
 	start.setOnAction((event)->{
 	series1.getData().clear();
 	
@@ -106,25 +135,29 @@ start = new Button("Start");
 
 
 		
-		// Objekt erstellen
+		// create an object from the class "DataService" in package algorithm
 		DataService da = new DataService();
 		
-//		Gui dx = new Gui();
+
 	
-		//wie oft 
+		//number of passes 
 		int countGoToNext = 34;
 		
-		// alle Tools mit allen Messungen
+		// all Tools with all measurements
 		List<ToolMeasure> tools = da.loadNextData(countGoToNext);
 		
 		//List<Measurement> l = new ArrayList();
 		
 		//ToolMeasure tx = new ToolMeasure();
 		
+		/*
+		 * the for statement picks the tools from the 
+		 * List <ToolMeasure> until the size of the tools
+		 */
 		for(int i = 0; i<tools.size(); i++){
 			ToolMeasure tool = tools.get(i);
 			
-			//alle Messungen von einem Tool
+			//all measurements from one Tool 
 			List<Measurement> li = tool.getMeasurement();
 			
 			
@@ -141,6 +174,10 @@ hbox.setSpacing(10);
 hbox.getChildren().addAll(vbox);
 
 //vbox.getChildren().addAll(start, hbox);
+
+/*
+ * the button start and the scatter-charts added to the vbox
+ */
 vbox.getChildren().addAll(start, s1, s2, s3);
 hbox.setPadding(new Insets(50, 10, 50, 20));
 
