@@ -262,7 +262,7 @@ public class Gui extends JFrame implements ActionListener{
 						if(cBRotation.isSelected()){
 							valueR = rotationAngel.getText();  
 						}if(openIGTB.isSelected()){
-							  testInputOutput.Start_Stop_IGTLink.startIGTWindow();
+							  userinterface.Start_Stop_IGTLink.startIGTWindow();
 						}	
 						
 					} 	
