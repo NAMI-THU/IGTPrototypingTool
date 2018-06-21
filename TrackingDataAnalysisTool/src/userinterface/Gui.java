@@ -5,7 +5,9 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Label;
 import java.awt.LayoutManager;
+import java.awt.TextField;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +29,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
-import inputOutput.*;  
+import inputOutput.*; 
+import testInputOutput.*;
 
 
 public class Gui extends JFrame implements ActionListener{
@@ -60,16 +63,18 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextField rotationAngel = new JTextField(5); private JLabel rotationL = new JLabel();
 	private JTextField openIGTf = new JTextField(25); private JLabel openIGTl = new JLabel();
 	
+	TextField positionJitter = new TextField();
 	File f; String valueP, valueD, valueR, valueL ;  
 	//double correctness, accuracy, jitterR, jitterP;
 	
-	ToolMeasure firstMeasurement; ToolMeasure secondMeasurement;
-	ToolMeasure firstAverageMeasurement; ToolMeasure secondAverageMeasurement;
+	private final java.awt.List toolList = new java.awt.List(); 
+	private final Label label2 = new Label("Available Tools");
 	
 	DataService dataS = new DataService();
 	DataProcessor dataP = new DataProcessor();
 	JPanel panel1 = new JPanel();
 	JPanel panel2 = new JPanel();
+	int toloadvalue;
 	
 	public Gui(){
 		//allow window
@@ -111,6 +116,7 @@ public class Gui extends JFrame implements ActionListener{
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 		valueL = toLoadField.getText(); 
+		toloadvalue = Integer.parseInt(valueL);  
 		
 		distance.setText("Distant indication");
 		distance.setBounds(20, 240, 130, 20);
@@ -253,8 +259,16 @@ public class Gui extends JFrame implements ActionListener{
  
 					}else if(src == calculate){
 
-						List <ToolMeasure> toolMeasures = dataS.loadNextData(valueL);
 
+
+						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
+						for (ToolMeasure tm : toolMeasures){
+							toolList.add(tm.getName());
+							
+						}
+						
+						
+					
 
 						lValue.setText("Calculatet Value");
 						lValue.setBounds(650, 510, 130, 30);
@@ -283,13 +297,22 @@ public class Gui extends JFrame implements ActionListener{
 						}
 						if(cBJitterR.isSelected()){
 							valueR = rotationAngel.getText();  
-						}if(openIGTB.isSelected()){
-							  userinterface.Start_Stop_IGTLink.startIGTWindow();
-						}	
-							lCalcC.setText(" Korrektheit  = "); 
-								
 						}
+
+					
 						
+
+			
+					else if (openIGTB.isSelected()) {
+							Start_Stop_IGTLink.startIGTWindow();
+						}
+
+					else if(src == toolList){
+							ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
+							AverageMeasurement avgMes = tool.getAverageMeasurement();
+							positionJitter.setText(String.valueOf(avgMes.getError()));
+					}
+			}
 					
 				}catch(Exception ep){
 					if(f.exists()==false){
