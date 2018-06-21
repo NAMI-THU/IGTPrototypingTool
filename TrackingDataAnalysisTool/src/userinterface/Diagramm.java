@@ -134,7 +134,7 @@ public class Diagramm extends Application {
 
 			// number of passes
 			Gui myGui = new Gui();
-			int countGoToNext = myGui.valueL;  
+			int countGoToNext = myGui.toloadvalue;  
 
 			// all Tools with all measurements
 			List<ToolMeasure> tools = da.loadNextData(countGoToNext);
