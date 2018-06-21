@@ -35,12 +35,13 @@ public class DataManager  {
 		for (ToolMeasure toolMeasure : toolMeasures) {
 			if (toolMeasure.getName().equals(measurement.getToolname())) {
 				toolMeasure.addMeasurement(measurement);
-			} else {
-				ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
-				newTool.addMeasurement(measurement);
-				toolMeasures.add(newTool);
+				return;
 			}
 		}
+		
+		ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
+		newTool.addMeasurement(measurement);
+		toolMeasures.add(newTool);
 	}
 
 	public void setList(ArrayList<Tool> test) {

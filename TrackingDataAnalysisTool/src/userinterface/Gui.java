@@ -29,7 +29,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
-import inputOutput.*;  
+import inputOutput.*; 
+import testInputOutput.*;
 
 
 public class Gui extends JFrame implements ActionListener{
@@ -115,7 +116,6 @@ public class Gui extends JFrame implements ActionListener{
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 		valueL = toLoadField.getText(); 
-		toloadvalue = Integer.parseInt(valueL);  
 		
 		distance.setText("Distant indication");
 		distance.setBounds(20, 240, 130, 20);
@@ -258,6 +258,8 @@ public class Gui extends JFrame implements ActionListener{
  
 					}else if(src == calculate){
 
+
+						toloadvalue = Integer.parseInt(valueL);
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
 						for (ToolMeasure tm : toolMeasures){
 							toolList.add(tm.getName());
@@ -266,6 +268,7 @@ public class Gui extends JFrame implements ActionListener{
 						
 						
 					
+
 						lValue.setText("Calculatet Value");
 						lValue.setBounds(650, 510, 130, 30);
 						panel1.add(lValue);
@@ -279,6 +282,7 @@ public class Gui extends JFrame implements ActionListener{
 						panel1.add(lCalcJP);
 						
 						if(cBJitterR.isSelected()){
+							  
 							//valueR = rotationAngel.getText(); 
 							lCalcJR.setText(" Jitterrotation = " ); //+valueR
 							
@@ -288,17 +292,27 @@ public class Gui extends JFrame implements ActionListener{
 							lCalcJP.setText(" Jitterposition = "  );  //+valueP
 							
 						}if(cBCorrectness.isSelected()){
-							lCalcC.setText(" Korrektheit  = "); 
-								
-						}if (openIGTB.isSelected()) {
-							testInputOutput.Start_Stop_IGTLink.startIGTWindow();
+
+							lCalcC.setText(" Korrektheit  = ");  
+						}
+						if(cBJitterR.isSelected()){
+							valueR = rotationAngel.getText();  
 						}
 
-					}else if(src == toolList){
+					
+						
+
+			
+					else if (openIGTB.isSelected()) {
+							Start_Stop_IGTLink.startIGTWindow();
+						}
+
+					else if(src == toolList){
 							ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
 							AverageMeasurement avgMes = tool.getAverageMeasurement();
 							positionJitter.setText(String.valueOf(avgMes.getError()));
 					}
+			}
 					
 				}catch(Exception ep){
 					if(f.exists()==false){
@@ -308,9 +322,9 @@ public class Gui extends JFrame implements ActionListener{
 						//ExceptionReporting.registerExceptionReporter();
 						JOptionPane.showMessageDialog(null,"Fehlermeldung","Fenstertitel",JOptionPane.ERROR_MESSAGE);
 					} 
-
+				}
 				}					
-			};	
+			
 		//close window
 				protected void processWindowsEvent(WindowEvent e){
 				super.processWindowEvent(e);
