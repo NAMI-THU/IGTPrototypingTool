@@ -50,7 +50,8 @@ public class Gui extends JFrame implements ActionListener{
 	private JComboBox measurementtyp = new JComboBox(messungen);
 	private JCheckBox cBJitterP = new JCheckBox("Jitterposition", false);
 	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
-	private JCheckBox cBCorrectness = new JCheckBox("Korrektheit", false);
+	private JCheckBox cBCorrectnessR = new JCheckBox("Accuracy-Rotation", false);
+	private JCheckBox cBCorrectnessP = new JCheckBox("Accuracy-Position", false);
 	
 	private  JLabel LabelDataValue = new JLabel(); private  JLabel openITGL = new JLabel(); 
 	private JLabel lValue = new JLabel(); private JLabel lCalcJR = new JLabel();  
@@ -75,7 +76,7 @@ public class Gui extends JFrame implements ActionListener{
 	JPanel panel1 = new JPanel();
 	JPanel panel2 = new JPanel();
 	int toloadvalue;
-	
+	double toR, toD; 
 	public Gui(){
 		//allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK); 
@@ -115,22 +116,19 @@ public class Gui extends JFrame implements ActionListener{
 		panel1.add(toLoad);
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
-		valueL = toLoadField.getText(); 
+	 
 		
 		distance.setText("Distant indication");
 		distance.setBounds(20, 240, 130, 20);
 		panel1.add(distance);
 		distanceF.setBounds(210, 240, 180, 20);
 		panel1.add(distanceF);
-		valueD = distanceF.getText();
-		distanceF.setEnabled(false);
 		
 		rotationL.setText("Angel indication");
 		rotationL.setBounds(20, 340, 170, 20);
 		panel1.add(rotationL);
 		rotationAngel.setBounds(210,340, 180, 20);
 		panel1.add(rotationAngel);
-		valueR = rotationAngel.getText();
 		
 	//	LabelDataValue.setBounds(20,150, 120, 20);
 		//panel1.add(LabelDataValue);
@@ -165,10 +163,15 @@ public class Gui extends JFrame implements ActionListener{
 		cBJitterP.setBounds(650, 420, 150, 30);
 		panel1.add(cBJitterP);
 		//cBJitterP.setEnabled(false);
-		cBCorrectness.setBounds(650, 440, 150, 30);
-		panel1.add(cBCorrectness);
+		cBCorrectnessR.setBounds(650, 440, 180, 30);
+		panel1.add(cBCorrectnessR);
+		cBCorrectnessP.setBounds(650, 470, 180, 30);
+		panel1.add(cBCorrectnessP);
 		calculate.setBounds(800, 400, 130, 60);
 		panel1.add(calculate);
+		
+		toolList.setBounds(100, 700, 120, 50);
+		panel1.add(toolList);
 
 		//Connection with ActionListener
 		start.addActionListener(this);
@@ -180,10 +183,13 @@ public class Gui extends JFrame implements ActionListener{
 		finish2.addActionListener(this);
 		cBJitterR.addActionListener(this);
 		cBJitterP.addActionListener(this);
-		cBCorrectness.addActionListener(this);
+		cBCorrectnessR.addActionListener(this);
+		cBCorrectnessP.addActionListener(this);
 		toLoadField.addActionListener(this);
 		distanceF.addActionListener(this);
 		rotationAngel.addActionListener(this);
+		toolList.addActionListener(this);
+		openIGTB.addActionListener(this);
 		
 		panel1.setLayout(null);
 		this.setLayout(new BorderLayout());
@@ -215,6 +221,19 @@ public class Gui extends JFrame implements ActionListener{
 				DataProcessor dP = new DataProcessor(); 
 				
 				try{ 
+					
+					
+					 if (src == openIGTB ) {
+						 
+//							Start_Stop_IGTLink link = new Start_Stop_IGTLink();
+//							link.startIGTWindow();
+								Start_Stop_IGTLink.setTestappValue();
+								OpenIGTLinkConnection.setTestappValue();
+								Start_Stop_IGTLink.startIGTWindow();
+//								Start_Stop_IGTLink.startIGTWindow();
+								
+						}
+						
 					if(src == loadData){ 
 						f = new File(adresse.getText());
 						path = f.getAbsolutePath();
@@ -239,8 +258,8 @@ public class Gui extends JFrame implements ActionListener{
 						if("Correctness".equals(selected)){
 							
 							distanceF.setEnabled(true);
-							valueD = distance.getText(); 
 							
+							rotationAngel.setEnabled(true);
 							start2.setBounds(650, 280, 160, 60);
 							panel1.add(start2);
 							start2.setForeground(Color.GREEN);
@@ -254,21 +273,34 @@ public class Gui extends JFrame implements ActionListener{
 							start2.setEnabled(false);
 							finish2.setEnabled(false);
 							distanceF.setEnabled(false);
+							rotationAngel.setEnabled(false);
 						}
  
 					}else if(src == calculate){
-
-
+						
+						valueL = toLoadField.getText();
 						toloadvalue = Integer.parseInt(valueL);
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
+						List <ToolMeasure> firstMeasurement = toolMeasures ;
+						List <ToolMeasure> secondMeasurement = toolMeasures ;
+						
 						for (ToolMeasure tm : toolMeasures){
 							toolList.add(tm.getName());
-							
+							firstMeasurement = toolMeasures ;
+							if (toolMeasures.contains(firstMeasurement)){
+								toolMeasures.clear();
+								
+								for (ToolMeasure tm2 : toolMeasures){
+									toolList.add(tm2.getName());
+									secondMeasurement = toolMeasures ;
+							}
 						}
 						
+						}
 						
+						ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
+						AverageMeasurement avgMes = tool.getAverageMeasurement();
 					
-
 						lValue.setText("Calculatet Value");
 						lValue.setBounds(650, 510, 130, 30);
 						panel1.add(lValue);
@@ -282,44 +314,48 @@ public class Gui extends JFrame implements ActionListener{
 						panel1.add(lCalcJP);
 						
 						if(cBJitterR.isSelected()){
-							  
-							//valueR = rotationAngel.getText(); 
-							lCalcJR.setText(" Jitterrotation = " ); //+valueR
 							
+							lCalcJR.setText(String.valueOf(avgMes.getRotationError()));
 							
-						}if(cBJitterP.isSelected()){
-							// valueP;
-							lCalcJP.setText(" Jitterposition = "  );  //+valueP
-							
-						}if(cBCorrectness.isSelected()){
-
-							lCalcC.setText(" Korrektheit  = ");  
-						}
-						if(cBJitterR.isSelected()){
-							valueR = rotationAngel.getText();  
-						}
-
-					
 						
-
-			
-					else if (openIGTB.isSelected()) {
-							Start_Stop_IGTLink.startIGTWindow();
+						
+						}if(cBJitterP.isSelected()){
+							
+							lCalcJP.setText(String.valueOf(avgMes.getError()));
+							
+						}if(cBCorrectnessR.isSelected()){
+							valueR = rotationAngel.getText(); 
+							toR = Double.parseDouble(valueR);
+							lCalcC.setText(String.valueOf( dataS.getAccuracyRotation(toR, firstMeasurement.get(0).getMeasurement().get(0), secondMeasurement.get(0).getMeasurement().get(0))));
+							
 						}
-
-					else if(src == toolList){
-							ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
-							AverageMeasurement avgMes = tool.getAverageMeasurement();
-							positionJitter.setText(String.valueOf(avgMes.getError()));
+						if(cBCorrectnessP.isSelected()){
+							
+							valueD = distance.getText();
+							toD = Double.parseDouble(valueD);
+							lCalcC.setText(String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),  secondMeasurement.get(0).getAverageMeasurement())));
+						}
 					}
-			}
+					
+//				 if (src == openIGTB ) {
+//					 
+//						Start_Stop_IGTLink link = new Start_Stop_IGTLink();
+//						link.startIGTWindow();
+////							Start_Stop_IGTLink.setTestappValue();
+////							OpenIGTLinkConnection.setTestappValue();
+////							Start_Stop_IGTLink.startIGTWindow();
+////							Start_Stop_IGTLink.startIGTWindow();
+//							
+//					}
+//					
+						
 					
 				}catch(Exception ep){
 					if(f.exists()==false){
 						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
 								"Fenstertitel",JOptionPane.ERROR_MESSAGE);
 					}else{
-						//ExceptionReporting.registerExceptionReporter();
+
 						JOptionPane.showMessageDialog(null,"Fehlermeldung","Fenstertitel",JOptionPane.ERROR_MESSAGE);
 					} 
 				}
