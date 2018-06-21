@@ -42,6 +42,7 @@ public class Gui extends JFrame implements ActionListener{
 	private JButton loadData = new JButton("Load Data");
 	private JButton calculate = new JButton("Calculate");
 	private JButton openIGTB = new JButton("Connect");
+	private JButton loadTool = new JButton("Tool");
 	
 	private JTextField adresse= new JTextField(25); 
 	private JTextField ValueData = new JTextField(15);
@@ -172,6 +173,8 @@ public class Gui extends JFrame implements ActionListener{
 		
 		toolList.setBounds(100, 700, 120, 50);
 		panel1.add(toolList);
+		loadTool.setBounds(250, 700, 150, 25);
+		panel1.add(loadTool);
 
 		//Connection with ActionListener
 		start.addActionListener(this);
@@ -189,6 +192,7 @@ public class Gui extends JFrame implements ActionListener{
 		distanceF.addActionListener(this);
 		rotationAngel.addActionListener(this);
 		toolList.addActionListener(this);
+		loadTool.addActionListener(this);
 		openIGTB.addActionListener(this);
 		
 		panel1.setLayout(null);
@@ -280,6 +284,10 @@ public class Gui extends JFrame implements ActionListener{
 						
 						valueL = toLoadField.getText();
 						toloadvalue = Integer.parseInt(valueL);
+						
+				
+							
+						
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
 						List <ToolMeasure> firstMeasurement = toolMeasures ;
 						List <ToolMeasure> secondMeasurement = toolMeasures ;
@@ -335,9 +343,11 @@ public class Gui extends JFrame implements ActionListener{
 							toD = Double.parseDouble(valueD);
 							lCalcC.setText(String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),  secondMeasurement.get(0).getAverageMeasurement())));
 						}
+						else if(src == loadTool){
+							
+						}
 					}
-					
-//				 if (src == openIGTB ) {
+				//	else if (src == openIGTB ) {
 //					 
 //						Start_Stop_IGTLink link = new Start_Stop_IGTLink();
 //						link.startIGTWindow();
