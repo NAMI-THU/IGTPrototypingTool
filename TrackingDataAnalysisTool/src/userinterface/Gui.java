@@ -73,7 +73,7 @@ public class Gui extends JFrame implements ActionListener{
 	DataProcessor dataP = new DataProcessor();
 	JPanel panel1 = new JPanel();
 	JPanel panel2 = new JPanel();
-	
+	int toloadvalue;
 	
 	public Gui(){
 		//allow window
@@ -115,6 +115,7 @@ public class Gui extends JFrame implements ActionListener{
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 		valueL = toLoadField.getText(); 
+		toloadvalue = Integer.parseInt(valueL);  
 		
 		distance.setText("Distant indication");
 		distance.setBounds(20, 240, 130, 20);
@@ -257,7 +258,7 @@ public class Gui extends JFrame implements ActionListener{
  
 					}else if(src == calculate){
 
-						List <ToolMeasure> toolMeasures = dataS.loadNextData(valueL);
+						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
 						for (ToolMeasure tm : toolMeasures){
 							toolList.add(tm.getName());
 							
@@ -289,9 +290,10 @@ public class Gui extends JFrame implements ActionListener{
 						}if(cBCorrectness.isSelected()){
 							lCalcC.setText(" Korrektheit  = "); 
 								
-						}//if(openIGTB.isSelected()){
-							//testInputOutput.Start_Stop_IGTLink.startIGTWindow();		
-						//}	
+						}if (openIGTB.isSelected()) {
+							testInputOutput.Start_Stop_IGTLink.startIGTWindow();
+						}
+
 					}else if(src == toolList){
 							ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
 							AverageMeasurement avgMes = tool.getAverageMeasurement();
