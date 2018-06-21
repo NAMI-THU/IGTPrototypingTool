@@ -102,6 +102,7 @@ public class Gui extends JFrame implements ActionListener{
 	    menu.add(openItem);
 	    menu.add(closeItem);
 	    bar.add(menu);
+	    bar.setBounds(5, 20, 120, 20);
 	    panel1.add(bar);
 	    
 	 	JLabel l0 = new JLabel(" CSV-Datafile:");
@@ -130,9 +131,6 @@ public class Gui extends JFrame implements ActionListener{
 		panel1.add(rotationL);
 		rotationAngel.setBounds(210,340, 180, 20);
 		panel1.add(rotationAngel);
-		
-	//	LabelDataValue.setBounds(20,150, 120, 20);
-		//panel1.add(LabelDataValue);
 		
 		openITGL.setText("Online IGT-Link");
 		openITGL.setBounds(40, 120, 170, 20);
@@ -164,16 +162,16 @@ public class Gui extends JFrame implements ActionListener{
 		cBJitterP.setBounds(650, 420, 150, 30);
 		panel1.add(cBJitterP);
 		//cBJitterP.setEnabled(false);
-		cBCorrectnessR.setBounds(650, 440, 180, 30);
+		cBCorrectnessR.setBounds(650, 440, 150, 30);
 		panel1.add(cBCorrectnessR);
-		cBCorrectnessP.setBounds(650, 470, 180, 30);
+		cBCorrectnessP.setBounds(650, 460, 150, 30);
 		panel1.add(cBCorrectnessP);
 		calculate.setBounds(800, 400, 130, 60);
 		panel1.add(calculate);
 		
-		toolList.setBounds(100, 700, 120, 50);
+		toolList.setBounds(20, 700, 120, 80);
 		panel1.add(toolList);
-		loadTool.setBounds(250, 700, 150, 25);
+		loadTool.setBounds(200, 700, 150, 25);
 		panel1.add(loadTool);
 
 		//Connection with ActionListener
@@ -218,23 +216,12 @@ public class Gui extends JFrame implements ActionListener{
 
 		public void actionPerformed(ActionEvent e) {
 				Object src = e.getSource();
-				
-				String path ;  
-				AverageMeasurement aM2; 
-				Diagramm Diag = new Diagramm();
-				DataProcessor dP = new DataProcessor(); 
-				
+				String path ;   	
 				try{ 
-					
-					
 					 if (src == openIGTB ) {
-						 
-//							Start_Stop_IGTLink link = new Start_Stop_IGTLink();
-//							link.startIGTWindow();
 								Start_Stop_IGTLink.setTestappValue();
 								OpenIGTLinkConnection.setTestappValue();
 								Start_Stop_IGTLink.startIGTWindow();
-//								Start_Stop_IGTLink.startIGTWindow();
 								
 						}
 						
@@ -262,7 +249,6 @@ public class Gui extends JFrame implements ActionListener{
 						if("Correctness".equals(selected)){
 							
 							distanceF.setEnabled(true);
-							
 							rotationAngel.setEnabled(true);
 							start2.setBounds(650, 280, 160, 60);
 							panel1.add(start2);
@@ -284,9 +270,6 @@ public class Gui extends JFrame implements ActionListener{
 						
 						valueL = toLoadField.getText();
 						toloadvalue = Integer.parseInt(valueL);
-						
-				
-							
 						
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
 						List <ToolMeasure> firstMeasurement = toolMeasures ;
@@ -324,11 +307,8 @@ public class Gui extends JFrame implements ActionListener{
 						if(cBJitterR.isSelected()){
 							
 							lCalcJR.setText(String.valueOf(avgMes.getRotationError()));
-							
-						
 						
 						}if(cBJitterP.isSelected()){
-							
 							lCalcJP.setText(String.valueOf(avgMes.getError()));
 							
 						}if(cBCorrectnessR.isSelected()){
@@ -338,12 +318,13 @@ public class Gui extends JFrame implements ActionListener{
 							
 						}
 						if(cBCorrectnessP.isSelected()){
-							
 							valueD = distance.getText();
 							toD = Double.parseDouble(valueD);
 							lCalcC.setText(String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),  secondMeasurement.get(0).getAverageMeasurement())));
+							
 						}
 						else if(src == loadTool){
+							
 							
 						}
 					}
