@@ -116,7 +116,6 @@ public class Gui extends JFrame implements ActionListener{
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 		valueL = toLoadField.getText(); 
-		toloadvalue = Integer.parseInt(valueL);  
 		
 		distance.setText("Distant indication");
 		distance.setBounds(20, 240, 130, 20);
@@ -260,7 +259,7 @@ public class Gui extends JFrame implements ActionListener{
 					}else if(src == calculate){
 
 
-
+						toloadvalue = Integer.parseInt(valueL);
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
 						for (ToolMeasure tm : toolMeasures){
 							toolList.add(tm.getName());
@@ -283,6 +282,7 @@ public class Gui extends JFrame implements ActionListener{
 						panel1.add(lCalcJP);
 						
 						if(cBJitterR.isSelected()){
+							  
 							//valueR = rotationAngel.getText(); 
 							lCalcJR.setText(" Jitterrotation = " ); //+valueR
 							
