@@ -253,21 +253,10 @@ public class Gui extends JFrame implements ActionListener{
  
 					}else if(src == calculate){
 
-						/*
-						for(int i =0 ; i< toolMeas.size(); i++){
-							ToolMeasure tool = toolMeas.get(i); 
-								tool.getMeasurement(); 
-								AverageMeasurement aM = tool.getAverageMeasurement(); 
-							jitter = aM.getError();
-						    boxplot = aM.getBoxPlot(); 
-						    firstMeas = aM.g;
-						}
-						/*
-						List<Measurement> mesL = toolMeasure.getMeasurement();
-						AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mesL);
-						dataS.getAccuracyRotation(valueR, firstMeasurement.getMeasurement(), secondMeasurement.getMeasurement()); 
-						dataS.getAccuracy(valueD, firstAverageMeasurement.getAverageMeasurement(), secondAverageMeasurement.getAverageMeasurement()) ;
-						*/
+						List <ToolMeasure> toolMeasures = dataS.loadNextData(valueL);
+						
+						
+					
 						lValue.setText("Calculatet Value");
 						lValue.setBounds(650, 510, 130, 30);
 						panel1.add(lValue);
