@@ -5,7 +5,9 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Label;
 import java.awt.LayoutManager;
+import java.awt.TextField;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,16 +62,18 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextField rotationAngel = new JTextField(5); private JLabel rotationL = new JLabel();
 	private JTextField openIGTf = new JTextField(25); private JLabel openIGTl = new JLabel();
 	
+	TextField positionJitter = new TextField();
 	File f; String valueP, valueD, valueR, valueL ;  
 	//double correctness, accuracy, jitterR, jitterP;
 	
-	ToolMeasure firstMeasurement; ToolMeasure secondMeasurement;
-	ToolMeasure firstAverageMeasurement; ToolMeasure secondAverageMeasurement;
+	private final java.awt.List toolList = new java.awt.List(); 
+	private final Label label2 = new Label("Available Tools");
 	
 	DataService dataS = new DataService();
 	DataProcessor dataP = new DataProcessor();
 	JPanel panel1 = new JPanel();
 	JPanel panel2 = new JPanel();
+	
 	
 	public Gui(){
 		//allow window
@@ -254,6 +258,10 @@ public class Gui extends JFrame implements ActionListener{
 					}else if(src == calculate){
 
 						List <ToolMeasure> toolMeasures = dataS.loadNextData(valueL);
+						for (ToolMeasure tm : toolMeasures){
+							toolList.add(tm.getName());
+							
+						}
 						
 						
 					
@@ -284,8 +292,12 @@ public class Gui extends JFrame implements ActionListener{
 						}//if(openIGTB.isSelected()){
 							//testInputOutput.Start_Stop_IGTLink.startIGTWindow();		
 						//}	
-						
-					} 	
+					}else if(src == toolList){
+							ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
+							AverageMeasurement avgMes = tool.getAverageMeasurement();
+							positionJitter.setText(String.valueOf(avgMes.getError()));
+					}
+					
 				}catch(Exception ep){
 					if(f.exists()==false){
 						JOptionPane.showMessageDialog(null,"Dateipfad existiert nicht",
