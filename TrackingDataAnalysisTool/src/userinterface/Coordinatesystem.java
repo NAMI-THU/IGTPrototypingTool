@@ -54,7 +54,7 @@ public class Coordinatesystem {
 			for (int i = 0; i < l.size(); i = i + 3) {
 				x = l.get(i).getPoint().getX();
 				// System.out.println(x);
-
+		
 				/*
 				 * The loop goes through the list and gets all values. With the
 				 * getPoint method, the y-value is explicitly picked from these
@@ -65,6 +65,12 @@ public class Coordinatesystem {
 					y = l.get(i).getPoint().getY();
 					System.out.println(y);
 					s.getData().add(new XYChart.Data(x, y));
+					 try {
+							s.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				}
 			}
 

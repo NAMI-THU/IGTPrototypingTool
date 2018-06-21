@@ -84,11 +84,11 @@ public class Diagramm extends Application {
 		 * Create new series for the coordinate system and set name.
 		 */
 		XYChart.Series series1 = new XYChart.Series();
-		series1.setName("XY-Diagramm");
+//		series1.setName("XY-Diagramm");
 		XYChart.Series series2 = new XYChart.Series();
-		series2.setName("XZ-Diagramm");
+//		series2.setName("XZ-Diagramm");
 		XYChart.Series series3 = new XYChart.Series();
-		series3.setName("YZ-Diagramm");
+//		series3.setName("YZ-Diagramm");
 
 		/*
 		 * set size for each scatter-chart and add the series on the
@@ -133,7 +133,8 @@ public class Diagramm extends Application {
 			DataService da = new DataService();
 
 			// number of passes
-			int countGoToNext = 34;
+			Gui myGui = new Gui();
+			int countGoToNext = myGui.valueL;  
 
 			// all Tools with all measurements
 			List<ToolMeasure> tools = da.loadNextData(countGoToNext);
