@@ -10,9 +10,9 @@ public class main {
 
 	public static void main(String[] args) {
 		Gui myGui = new Gui();
-		myGui.setSize(2000, 1000);
+		myGui.setSize(1000, 1000);
 		myGui.setTitle("TrackingDataAnalysisTool");
-		myGui.setLocation(250,30);
+		myGui.setLocation(600,30);
 		myGui.setVisible(true);
 		myGui.validate();
 		myGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

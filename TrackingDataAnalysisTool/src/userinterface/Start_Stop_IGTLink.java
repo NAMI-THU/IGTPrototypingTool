@@ -1,4 +1,4 @@
-package testInputOutput;
+package userinterface;
 
 import inputOutput.Networkconnection;
 import inputOutput.OpenIGTLinkConnection;
@@ -11,6 +11,7 @@ import javax.swing.*;
 public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 	private boolean value = true;
+	private static boolean testapp = false;
 	Networkconnection begin;
 
 	private JButton start = new JButton("Start");
@@ -60,8 +61,6 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
 	public void actionPerformed(ActionEvent evt) {
 		Object src = evt.getSource();
 		algorithm.DataManager data = new algorithm.DataManager();
@@ -91,8 +90,10 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 
 			data.setCount();
 
-			testInputOutput.Networkconnection_test_app.setCount();
+			if (testapp == true) {
 
+				testInputOutput.Networkconnection_test_app.setCount();
+			}
 		}
 
 		if (src == close) {
@@ -106,6 +107,10 @@ public class Start_Stop_IGTLink extends JFrame implements ActionListener {
 			data.setCount();
 			testInputOutput.Networkconnection_test_app.setCount();
 		}
+	}
+
+	public static void setTestappValue() {
+		testapp = true;
 	}
 
 	public static void startIGTWindow() {
