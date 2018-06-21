@@ -26,7 +26,7 @@ public class ExceptionWindow extends JFrame implements ActionListener{
 			this.setSize(new Dimension(500, 300));
 			this.setTitle("Exception!");
 
-			lable.setBounds(165,20,200,100);
+			lable.setBounds(165,20,300,100);
 			lable.setFont(new Font("Arial", Font.BOLD, 20));
 			
 			ok.setBounds(200, 100, 100, 100);

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import testInputOutput.Exception_Window;
 
-public class CSVFileReader extends Interface {
+public class CSVFileReader {
 	// initialize variable
 	private static int line_counter = 0;
 	private static String line = null;
@@ -24,7 +24,7 @@ public class CSVFileReader extends Interface {
 	// interface for the other groups
 	public static ArrayList<Tool> update() {
 
-		// was könnte man hier returnen, falls die datei zu ende ist?
+		// was koennte man hier returnen, falls die datei zu ende ist?
 
 		// reader for CSV-file
 		try {

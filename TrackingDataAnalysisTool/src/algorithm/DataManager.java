@@ -7,7 +7,7 @@ import inputOutput.CSVFileReader;
 
 import inputOutput.Tool;
 
-public class DataManager {
+public class DataManager  {
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private boolean count = false;
 
@@ -18,7 +18,7 @@ public class DataManager {
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
 		for (double i = 0; i < countToGetNext; i++) {
-			// aus rückgabe von update neue messung erstellen
+			// aus rueckgabe von update neue messung erstellen
 			List<Tool> tools = inputOutput.CSVFileReader.update();
 
 			for (Tool tool : tools) {
@@ -35,12 +35,13 @@ public class DataManager {
 		for (ToolMeasure toolMeasure : toolMeasures) {
 			if (toolMeasure.getName().equals(measurement.getToolname())) {
 				toolMeasure.addMeasurement(measurement);
-			} else {
-				ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
-				newTool.addMeasurement(measurement);
-				toolMeasures.add(newTool);
+				return;
 			}
 		}
+		
+		ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
+		newTool.addMeasurement(measurement);
+		toolMeasures.add(newTool);
 	}
 
 	public void setList(ArrayList<Tool> test) {
@@ -56,5 +57,9 @@ public class DataManager {
 		} else {
 			count=true;
 		}
+	}
+	
+	public void setCount(){
+		count=false;
 	}
 }
