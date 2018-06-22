@@ -62,6 +62,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel lCalcJR = new JLabel();
 	private JLabel lCalcC = new JLabel();
 	private JLabel lCalcJP = new JLabel();
+	private JLabel loaded = new JLabel();
 
 	private JMenuBar bar;
 	private JMenu menu;
@@ -188,7 +189,10 @@ public class Gui extends JFrame implements ActionListener {
 		
 		restart.setBounds(460,600, 150,30);
 		panel1.add(restart);
-
+		
+		loaded.setBounds(600, 40, 120, 25);
+		panel1.add(loaded);
+		
 		// Connection with ActionListener
 		start.addActionListener(this);
 		finish.addActionListener(this);
@@ -233,9 +237,14 @@ public class Gui extends JFrame implements ActionListener {
 			}
 		});
 	}
+	
+	public void setTexttoloaded(){
+		loaded.setText("Data loaded");
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
+		
 		String path;
 		algorithm.DataManager data = new algorithm.DataManager();
 		Gui giu = new Gui();
@@ -248,6 +257,7 @@ public class Gui extends JFrame implements ActionListener {
 		try {
 
 			if (src == loadData) {
+				
 				f = new File(adresse.getText());
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
