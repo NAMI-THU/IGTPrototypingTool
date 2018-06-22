@@ -1,4 +1,4 @@
-package userinterface;
+package testInputOutput;
 
 import inputOutput.Networkconnection;
 import inputOutput.OpenIGTLinkConnection;
