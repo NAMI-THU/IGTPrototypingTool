@@ -57,6 +57,7 @@ public class Coordinatesystem {
 				// System.out.println(x);
 				y = l.get(i).getPoint().getY();
 				s.getData().add(new XYChart.Data(x, y));
+				
 
 				// try {
 				// s.wait();
@@ -64,6 +65,20 @@ public class Coordinatesystem {
 				// // TODO Auto-generated catch block
 				// e.printStackTrace();
 				// }
+				 new Thread(() -> {
+					    while (!Thread.currentThread().isInterrupted())
+				
+					    	//repaint();
+					    	
+					      try {
+					        Thread.sleep(500);
+					      } catch (InterruptedException ex) {
+					        Thread.currentThread().interrupt();
+					  //break;
+					      }
+					    }
+			//} 
+			).start();
 
 			}
 
