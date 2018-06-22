@@ -62,7 +62,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel lCalcJR = new JLabel();
 	private JLabel lCalcC = new JLabel();
 	private JLabel lCalcJP = new JLabel();
-	private JLabel loaded = new JLabel();
+	private static JLabel loaded = new JLabel();
 
 	private JMenuBar bar;
 	private JMenu menu;
@@ -238,7 +238,7 @@ public class Gui extends JFrame implements ActionListener {
 		});
 	}
 	
-	public void setTexttoloaded(){
+	public static void setTexttoloaded(){
 		loaded.setText("Data loaded");
 	}
 
@@ -247,7 +247,6 @@ public class Gui extends JFrame implements ActionListener {
 		
 		String path;
 		algorithm.DataManager data = new algorithm.DataManager();
-		Gui giu = new Gui();
 		Networkconnection begin = new Networkconnection();
 
 		List<ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);

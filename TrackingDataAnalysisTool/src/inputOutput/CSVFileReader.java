@@ -148,8 +148,7 @@ public class CSVFileReader {
 
 	public static void setPath(String abspath) {
 		path = abspath;
-		Gui g = new Gui();
-		g.setTexttoloaded();
+		userinterface.Gui.setTexttoloaded();
 	}
 
 	public static int getLine_counter() {
