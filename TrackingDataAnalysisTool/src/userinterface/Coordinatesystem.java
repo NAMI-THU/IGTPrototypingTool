@@ -48,30 +48,23 @@ public class Coordinatesystem {
 
 			/*
 			 * The loop goes through the list and gets all values. With the
-			 * getPoint method, the x-value is explicitly picked from these
-			 * values
+			 * getPoint method, the x-value and y-value are explicitly picked
+			 * from the list
+			 * 
 			 */
-			for (int i = 0; i < l.size(); i = i + 3) {
+			for (int i = 0, j = 1; i < l.size() && j < l.size(); i += 3, j += 3) {
 				x = l.get(i).getPoint().getX();
 				// System.out.println(x);
-		
-				/*
-				 * The loop goes through the list and gets all values. With the
-				 * getPoint method, the y-value is explicitly picked from these
-				 * values
-				 */
-				for (int j = 1; j < l.size(); j = j + 3) {
+				y = l.get(i).getPoint().getY();
+				s.getData().add(new XYChart.Data(x, y));
 
-					y = l.get(i).getPoint().getY();
-					System.out.println(y);
-					s.getData().add(new XYChart.Data(x, y));
-					 try {
-							s.wait();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				}
+				// try {
+				// s.wait();
+				// } catch (InterruptedException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+
 			}
 
 			/*
@@ -83,22 +76,19 @@ public class Coordinatesystem {
 
 			xAxis.setLabel("X-Achse");
 			yAxis.setLabel("Z-Achse");
-			for (int i = 0; i < l.size(); i = i + 3) {
-				x = l.get(i).getPoint().getX();
-				;
-				System.out.println(x);
 
-				/*
-				 * The loop goes through the list and gets all values. With the
-				 * getPoint method, the z-value is explicitly picked from these
-				 * values
-				 */
-				for (int j = 2; j < l.size(); j = j + 3) {
-					z = l.get(i).getPoint().getZ();
-					;
-					s.getData().add(new XYChart.Data(x, z));
-				}
+			/*
+			 * The loop goes through the list and gets all values. With the
+			 * getPoint method, the x-value and z-value are explicitly picked
+			 * from the list
+			 */
+			for (int i = 0, j = 2; i < l.size() && j < l.size(); i += 3, j += 3) {
+				x = l.get(i).getPoint().getX();
+				z = l.get(i).getPoint().getZ();
+				// System.out.println(x);
+				s.getData().add(new XYChart.Data(x, z));
 			}
+
 			break;
 
 		case "zy":
@@ -108,22 +98,17 @@ public class Coordinatesystem {
 			 */
 			xAxis.setLabel("Z-Achse");
 			yAxis.setLabel("Y-Achse");
-			for (int i = 1; i < l.size(); i = i + 3) {
+			for (int i = 1, j = 2; i < l.size() && j < l.size(); i += 3, j += 3) {
 				y = l.get(i).getPoint().getY();
-				;
-				System.out.println(y);
+				z = l.get(i).getPoint().getZ();
+				// System.out.println(y);
+				/*
+				 * The chart is drawn on the series with the axes z and y
+				 */
+				s.getData().add(new XYChart.Data(z, y));
 
-				for (int j = 2; j < l.size(); j = j + 3) {
-					z = l.get(i).getPoint().getZ();
-					;
-					/*
-					 * The chart is drawn on the series with the axes z and y
-					 */
-					s.getData().add(new XYChart.Data(z, y));
-				}
+				break;
 			}
-
-			break;
 		}
 	}
 }
