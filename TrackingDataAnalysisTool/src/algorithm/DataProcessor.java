@@ -14,26 +14,39 @@ import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 
 import com.jme3.math.Quaternion;
 
+/** This class provides the methods for processing the measurements. */
 public class DataProcessor {
 
+	/** This method computes the distance of two average points. */
 	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
-			AverageMeasurement secondAverangeMeasurement) {
+			AverageMeasurement secondAverangeMeasurement)
+	
+	/** Method getDistance from class Point 3D. */
+	{
 		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
 				- expectedDistance;
 	}
 
+	/** */
 	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement,
 			Measurement secondMeasurement) {
 		return (firstMeasurement.getRotation().getAngle() - secondMeasurement.getRotation().getAngle()) - expectedAngle;
 	}
 
+	
+	/** This method calculates the values for a boxplot. */
 	public BoxPlot getBoxPlot(List<Double> values) {
 
 		BoxPlot boxPlot = new BoxPlot();
+		
+		/** The values are sorted by using the method sort of the class Collections. */
 		Collections.sort(values);
+		
+		/** Create an array. */
 		Percentile percentile = new Percentile();
 		percentile.setData(toDoubleArray(values));
 
+		/** Calculation oft the values. */
 		boxPlot.setMax(Collections.max(values));
 		boxPlot.setMin(Collections.min(values));
 		boxPlot.setQ1(percentile.evaluate(25));
@@ -43,6 +56,7 @@ public class DataProcessor {
 		return boxPlot;
 	}
 
+	/** toDoubleArray converts a list into an array */
 	double[] toDoubleArray(List<Double> list) {
 		double[] ret = new double[list.size()];
 		int i = 0;
@@ -62,7 +76,9 @@ public class DataProcessor {
 	// return mainToolMeasurement;
 	// }
 
-	// Methode zum Berechnen des Mittelwerts;
+	
+	
+	/** This method computes the mean of the passed values and the average rotation. */
 	public AverageMeasurement getAverageMeasurement(List<Measurement> measurements) {
 
 		int measureSize = measurements.size();
@@ -104,6 +120,7 @@ public class DataProcessor {
 		return averageMeasurement;
 	}
 
+	/** This method calculates errors and saves them in a list */
 	public List<Double> getErrors(List<Measurement> measurements, Point3D avgPoint) {
 		List<Double> errors = new ArrayList<>();
 
@@ -115,11 +132,15 @@ public class DataProcessor {
 		return errors;
 	}
 
+	/** getJitter computes from errors RMSE */
 	public double getJitter(List<Double> errors) {
 		return getRMSE(errors);
 	}
 
+	/** berechnet Jitter von Rotation */
 	public RotationError getRotationJitter(List<Measurement> measurements, Rotation avgRotation) {
+		
+		/** Create two array lists */
 		List<Double> rotationPositionErrors = new ArrayList<>();
 		List<Double> rotationAngleErrors = new ArrayList<>();
 
@@ -129,19 +150,24 @@ public class DataProcessor {
 			Rotation rotationPosition = measurements.get(i).getRotation();
 			double angle = measurements.get(i).getRotation().getAngle();
 
+			/** Calculation of the difference between the angle of the rotation and the angle of the average rotation. */
 			double angleRotation = angle - avgRotation.getAngle();
+			
+			/** Calculation of the distance between the rotation and the average rotation. */
 			double distanceRotation = Rotation.distance(rotationPosition, avgRotation);
+			
 			rotationPositionErrors.add(distanceRotation);
 			rotationAngleErrors.add(angleRotation);
 		}
-
+		
+		/** Calculation of the jitter. */
 		rotationError.setRotationPositionError(getRMSE(rotationPositionErrors));
 		rotationError.setRotationAngleError(getRMSE(rotationAngleErrors));
 
 		return rotationError;
 	}
 
-	// root mean square error
+	 /** This method computes the root mean square error */
 	private double getRMSE(List<Double> errors) {
 		double additionalPowError = 0;
 
@@ -151,7 +177,7 @@ public class DataProcessor {
 		return Math.sqrt(additionalPowError / errors.size());
 	}
 
-	// calculate distance of two points
+	/** This method calculates the distance of two points. */
 	private double getDistance(Point3D firstPoint, Point3D secondPoint) {
 		return firstPoint.distance(secondPoint);
 	}
