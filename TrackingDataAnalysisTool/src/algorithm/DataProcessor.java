@@ -20,7 +20,7 @@ public class DataProcessor {
 	/** This method computes the distance of two average points. */
 	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
 			AverageMeasurement secondAverangeMeasurement)
-	
+
 	/** Method getDistance from class Point 3D. */
 	{
 		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
@@ -33,15 +33,14 @@ public class DataProcessor {
 		return (firstMeasurement.getRotation().getAngle() - secondMeasurement.getRotation().getAngle()) - expectedAngle;
 	}
 
-	
 	/** This method calculates the values for a boxplot. */
 	public BoxPlot getBoxPlot(List<Double> values) {
 
 		BoxPlot boxPlot = new BoxPlot();
-		
+
 		/** The values are sorted by using the method sort of the class Collections. */
 		Collections.sort(values);
-		
+
 		/** Create an array. */
 		Percentile percentile = new Percentile();
 		percentile.setData(toDoubleArray(values));
@@ -76,9 +75,9 @@ public class DataProcessor {
 	// return mainToolMeasurement;
 	// }
 
-	
-	
-	/** This method computes the mean of the passed values and the average rotation. */
+	/**
+	 * This method computes the mean of the passed values and the average rotation.
+	 */
 	public AverageMeasurement getAverageMeasurement(List<Measurement> measurements) {
 
 		int measureSize = measurements.size();
@@ -90,13 +89,13 @@ public class DataProcessor {
 			Measurement measurement = measurements.get(i);
 			Point3D point = measurement.getPoint();
 			addPoint = addPoint.add(point);
-			
+
 			Rotation rotation = measurement.getRotation();
-			
-//			Quaternion quat = new Quaternion();
-//			quat.add(q)
-//			quat.slerp(quat, quat, 0.5f);
-			
+
+			// Quaternion quat = new Quaternion();
+			// quat.add(q)
+			// quat.slerp(quat, quat, 0.5f);
+
 			Point3D rotationPoint = new Point3D(rotation.getQ1(), rotation.getQ2(), rotation.getQ3());
 			addRotationPoint = addRotationPoint.add(rotationPoint);
 			scalar += rotation.getQ0();
@@ -139,7 +138,7 @@ public class DataProcessor {
 
 	/** berechnet Jitter von Rotation */
 	public RotationError getRotationJitter(List<Measurement> measurements, Rotation avgRotation) {
-		
+
 		/** Create two array lists */
 		List<Double> rotationPositionErrors = new ArrayList<>();
 		List<Double> rotationAngleErrors = new ArrayList<>();
@@ -150,16 +149,21 @@ public class DataProcessor {
 			Rotation rotationPosition = measurements.get(i).getRotation();
 			double angle = measurements.get(i).getRotation().getAngle();
 
-			/** Calculation of the difference between the angle of the rotation and the angle of the average rotation. */
+			/**
+			 * Calculation of the difference between the angle of the rotation and the angle
+			 * of the average rotation.
+			 */
 			double angleRotation = angle - avgRotation.getAngle();
-			
-			/** Calculation of the distance between the rotation and the average rotation. */
+
+			/**
+			 * Calculation of the distance between the rotation and the average rotation.
+			 */
 			double distanceRotation = Rotation.distance(rotationPosition, avgRotation);
-			
+
 			rotationPositionErrors.add(distanceRotation);
 			rotationAngleErrors.add(angleRotation);
 		}
-		
+
 		/** Calculation of the jitter. */
 		rotationError.setRotationPositionError(getRMSE(rotationPositionErrors));
 		rotationError.setRotationAngleError(getRMSE(rotationAngleErrors));
@@ -167,7 +171,7 @@ public class DataProcessor {
 		return rotationError;
 	}
 
-	 /** This method computes the root mean square error */
+	/** This method computes the root mean square error */
 	private double getRMSE(List<Double> errors) {
 		double additionalPowError = 0;
 

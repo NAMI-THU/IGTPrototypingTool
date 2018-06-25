@@ -7,14 +7,16 @@ import inputOutput.CSVFileReader;
 
 import inputOutput.Tool;
 
-public class DataManager  {
+public class DataManager {
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private boolean count = false;
 
 	public List<ToolMeasure> getToolMeasures() {
 		return toolMeasures;
 	}
- /** getNextData calls method update, creates a measurement and adds this tool*/
+
+	/** getNextData calls method update, creates a measurement and adds this tool */
+
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
 		for (double i = 0; i < countToGetNext; i++) {
@@ -30,19 +32,21 @@ public class DataManager  {
 
 		return toolMeasures;
 	}
+
 	/** This methods manages the tools */
+
 	private void addMeasurementToTool(Measurement measurement) {
-		
-		/** Check if tool exists*/
+
+		/** Check if tool exists */
 		for (ToolMeasure toolMeasure : toolMeasures) {
 			if (toolMeasure.getName().equals(measurement.getToolname())) {
-				
+
 				/** added new measurements to the tool */
 				toolMeasure.addMeasurement(measurement);
 				return;
 			}
 		}
-		
+
 		/** creation of a new tool */
 		ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
 		newTool.addMeasurement(measurement);
@@ -50,6 +54,7 @@ public class DataManager  {
 	}
 
 	/** Method call for team 3 */
+
 	public void setList(ArrayList<Tool> test) {
 
 		if (count == true) {
@@ -61,11 +66,11 @@ public class DataManager  {
 			}
 
 		} else {
-			count=true;
+			count = true;
 		}
 	}
-	
-	public void setCount(){
-		count=false;
+
+	public void setCount() {
+		count = false;
 	}
 }
