@@ -253,9 +253,11 @@ public class Gui extends JFrame implements ActionListener {
 		this.getContentPane();
 		this.add(tabbedPane);
 
+		//Open with Actionslistener
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 			// opens actionPerformed by clicking openItem
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+				//added JFileChooser
 
 				FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
 				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -271,6 +273,7 @@ public class Gui extends JFrame implements ActionListener {
 		});
 	}
 	
+	//Label for recognizing, if data is loaded 
 	public static void setTexttoloaded(){
 		loaded.setText("Data loaded");
 	}
@@ -287,8 +290,10 @@ public class Gui extends JFrame implements ActionListener {
 		List<ToolMeasure> secondMeasurement = toolMeasures;
 
 		try {
+			//button loaddata pressed
 			if (src == loadData) {
 
+				//get path and handover to group 3 
 				f = new File(adresse.getText());
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
@@ -297,11 +302,14 @@ public class Gui extends JFrame implements ActionListener {
 				} else {
 					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", "Warnung", JOptionPane.WARNING_MESSAGE);
 				}
+				
+				//button start pressed
 			} else if (src == start || src == start2) {
 
 				JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung",
 						JOptionPane.WARNING_MESSAGE);
 
+				//open-IGT-Connection
 				if (value == true) {
 					value = false;
 					begin.start();
@@ -310,16 +318,19 @@ public class Gui extends JFrame implements ActionListener {
 					begin.setBreak(true);
 				}
 
+				//button finish pressed
 			} else if (src == finish || src == finish2) {
 				begin.setBreak(false);
 				data.setCount();
 			} else if (src == exit_connection) {
+				//exit-button
 				value = true;
 				begin.setExit(false);
 				data.setCount();
 				testInputOutput.Networkconnection_test_app.setCount();
 			}
 
+			//if mesurementtyp pressed
 			else if (src == measurementtyp) {
 				String selected = (String) measurementtyp.getSelectedItem();
 				if ("Correctness".equals(selected)) {
@@ -335,6 +346,7 @@ public class Gui extends JFrame implements ActionListener {
 					finish2.setEnabled(true);
 
 				}
+				//button sough pressed
 				if ("Rauschen".equals(selected)) {
 					start2.setEnabled(false);
 					finish2.setEnabled(false);
@@ -342,6 +354,7 @@ public class Gui extends JFrame implements ActionListener {
 					rotationAngel.setEnabled(false);
 				}
 
+				//button calculate pressed
 			} else if (src == calculate) {
 
 				ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
@@ -359,16 +372,19 @@ public class Gui extends JFrame implements ActionListener {
 				lCalcJP.setBounds(650, 620, 200, 40);
 				panel1.add(lCalcJP);
 
+				//JCheckBox cBJitterR pressed
 				if (cBJitterR.isSelected()) {
 					lCalcJR.setText("0,00");
 					lCalcJR.setText(String.valueOf(avgMes.getRotationError()));
 
 				}
+				//JCheckBox cBJitterP pressed
 				if (cBJitterP.isSelected()) {
 					lCalcJP.setText("0,00");
 					lCalcJP.setText(String.valueOf(avgMes.getError()));
 
 				}
+				//JChekBox cBCorrectnessR pressed
 				if (cBCorrectnessR.isSelected()) {
 					
 					String str = String.valueOf(valueR1);
@@ -389,6 +405,7 @@ public class Gui extends JFrame implements ActionListener {
 									secondMeasurement.get(0).getMeasurement().get(0))));
 
 				}
+				//JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
 					valueD = distance.getText();
 					toD = Double.parseDouble(valueD);
@@ -398,6 +415,7 @@ public class Gui extends JFrame implements ActionListener {
 									secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
+				//loadData is pressed
 			} else if (src == loadTool) {
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
@@ -415,8 +433,15 @@ public class Gui extends JFrame implements ActionListener {
 					}
 
 				}
-			}
-			
+			} 
+//			else if (src == restart) {
+//			giu.removeAll();
+//			giu.init();
+
+//			}
+
+			//Exception-Window 
+
 		} catch (Exception ep) {
 			if (f.exists() == false) {
 				JOptionPane.showMessageDialog(null, "Dateipfad existiert nicht", "Fenstertitel",
