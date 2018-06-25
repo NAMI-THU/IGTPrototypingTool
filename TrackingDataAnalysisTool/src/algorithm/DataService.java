@@ -2,6 +2,8 @@ package algorithm;
 
 import java.util.List;
 
+import com.jme3.math.Quaternion;
+
 public class DataService {
 	private DataProcessor dataProcessor;
 	private DataManager dataManager;
@@ -44,8 +46,8 @@ public class DataService {
 		return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 	}
 
-	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement,
+	public double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
 			Measurement secondMeasurement) {
-		return dataProcessor.getAccuracyRotation(expectedAngle, firstMeasurement, secondMeasurement);
+		return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 	}
 }
