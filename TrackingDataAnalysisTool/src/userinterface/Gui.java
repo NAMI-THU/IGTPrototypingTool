@@ -168,10 +168,8 @@ public class Gui extends JFrame implements ActionListener {
 
 		cBJitterR.setBounds(650, 400, 150, 30);
 		panel1.add(cBJitterR);
-		// cBJitterR.setEnabled(false);
 		cBJitterP.setBounds(650, 420, 150, 30);
 		panel1.add(cBJitterP);
-		// cBJitterP.setEnabled(false);
 		cBCorrectnessR.setBounds(650, 440, 150, 30);
 		panel1.add(cBCorrectnessR);
 		cBCorrectnessP.setBounds(650, 460, 150, 30);
@@ -244,7 +242,7 @@ public class Gui extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
-		
+
 		String path;
 		algorithm.DataManager data = new algorithm.DataManager();
 		Networkconnection begin = new Networkconnection();
@@ -254,9 +252,8 @@ public class Gui extends JFrame implements ActionListener {
 		List<ToolMeasure> secondMeasurement = toolMeasures;
 
 		try {
-
 			if (src == loadData) {
-				
+
 				f = new File(adresse.getText());
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
@@ -276,14 +273,11 @@ public class Gui extends JFrame implements ActionListener {
 
 				} else if (value == false) {
 					begin.setBreak(true);
-
 				}
 
 			} else if (src == finish || src == finish2) {
-
 				begin.setBreak(false);
 				data.setCount();
-				
 			} else if (src == exit_connection) {
 				value = true;
 				begin.setExit(false);
@@ -376,12 +370,7 @@ public class Gui extends JFrame implements ActionListener {
 
 				}
 			}
-//			else if (src == restart) {
-//				giu.removeAll();
-//				giu.init();
-//			}
-
-
+			
 		} catch (Exception ep) {
 			if (f.exists() == false) {
 				JOptionPane.showMessageDialog(null, "Dateipfad existiert nicht", "Fenstertitel",
@@ -400,6 +389,5 @@ public class Gui extends JFrame implements ActionListener {
 			System.exit(0); // Prgm wird beendet
 		}
 	}
-	
 
 }
