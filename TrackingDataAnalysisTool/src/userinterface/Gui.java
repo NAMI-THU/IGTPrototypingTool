@@ -73,8 +73,17 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel toLoad = new JLabel();
 	private JTextField distanceF = new JTextField(5);
 	private JLabel distance = new JLabel();
-	private JTextField rotationAngel = new JTextField(5);
+	private JTextField rotationAngel = new JTextField();
+	private JTextField rotationAngel1 = new JTextField();
+	private JTextField rotationAngel2 = new JTextField();
+	private JTextField rotationAngel3 = new JTextField();
+	
 	private JLabel rotationL = new JLabel();
+	private JLabel rotationL1 = new JLabel();
+	private JLabel rotationL2 = new JLabel();
+	private JLabel rotationL3 = new JLabel();
+	private JLabel rotationL4 = new JLabel();
+	
 	private JLabel openIGTl = new JLabel();
 	//Textfield, Label
 	private JButton exit_connection = new JButton("Exit Connection");
@@ -83,7 +92,8 @@ public class Gui extends JFrame implements ActionListener {
 	
 	TextField positionJitter = new TextField();
 	File f;
-	String valueP, valueD, valueR, valueL;
+	String valueP, valueD, valueL;
+	double valueR1,valueR2, valueR3, valueR4;  
 	// double correctness, accuracy, jitterR, jitterP;
 	// list for available tools
 	private final java.awt.List toolList = new java.awt.List();
@@ -148,12 +158,34 @@ public class Gui extends JFrame implements ActionListener {
 		distanceF.setBounds(210, 240, 180, 20);
 		panel1.add(distanceF);
 
-		rotationL.setText("Angel indication"); // corner
+		rotationL.setText("Quaternion-Angabe"); // corner
 		rotationL.setBounds(20, 340, 170, 20);
 		panel1.add(rotationL);
-		rotationAngel.setBounds(210, 340, 180, 20);
+		
+		rotationL1.setText("x:"); 
+		rotationL1.setBounds(200, 340, 15, 20);
+		panel1.add(rotationL1);
+		rotationAngel.setBounds(220, 340, 80, 20);
 		panel1.add(rotationAngel);
-
+		
+		rotationL2.setText("y:"); 
+		rotationL2.setBounds(200, 360, 15, 20);
+		panel1.add(rotationL2);
+		rotationAngel1.setBounds(220, 360, 80, 20);
+		panel1.add(rotationAngel1);
+	
+		rotationL3.setText("z:"); 
+		rotationL3.setBounds(200, 380, 15, 20);
+		panel1.add(rotationL3);
+		rotationAngel2.setBounds(220, 380, 80, 20);
+		panel1.add(rotationAngel2);
+		
+		rotationL4.setText("r:"); 
+		rotationL4.setBounds(200, 400, 15, 20);
+		panel1.add(rotationL4);
+		rotationAngel3.setBounds(220, 400, 80, 20);
+		panel1.add(rotationAngel3);
+		
 		JLabel measuredTyp = new JLabel("Measurementtyp"); //measuredtyp
 		measuredTyp.setBounds(700, 72, 150, 20);
 		panel2.add(measuredTyp);
@@ -206,6 +238,9 @@ public class Gui extends JFrame implements ActionListener {
 		toLoadField.addActionListener(this);
 		distanceF.addActionListener(this);
 		rotationAngel.addActionListener(this);
+		rotationAngel1.addActionListener(this);
+		rotationAngel2.addActionListener(this);
+		rotationAngel3.addActionListener(this);
 		toolList.addActionListener(this);
 		loadTool.addActionListener(this);
 		exit_connection.addActionListener(this);
@@ -335,11 +370,22 @@ public class Gui extends JFrame implements ActionListener {
 
 				}
 				if (cBCorrectnessR.isSelected()) {
-					valueR = rotationAngel.getText();
-					toR = Double.parseDouble(valueR);
+					
+					String str = String.valueOf(valueR1);
+					str = rotationAngel.getText();
+					
+					String str2 = String.valueOf(valueR2);
+					str2 = rotationAngel1.getText();
+					
+					String str3 = String.valueOf(valueR3);
+					str3 = rotationAngel.getText();
+					
+					String str4 = String.valueOf(valueR4);
+					str4 = rotationAngel.getText();
+					
 					lCalcC.setText("0,00");
 					lCalcC.setText(String
-							.valueOf(dataS.getAccuracyRotation(toR, firstMeasurement.get(0).getMeasurement().get(0),
+							.valueOf(dataS.getAccuracyRotation(str, str2, str3, str4, firstMeasurement.get(0).getMeasurement().get(0),
 									secondMeasurement.get(0).getMeasurement().get(0))));
 
 				}
