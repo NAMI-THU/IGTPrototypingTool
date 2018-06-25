@@ -1,33 +1,59 @@
 package userinterface;
 
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import algorithm.Measurement;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
 import algorithm.ToolMeasure;
+
 import inputOutput.CSVFileReader;
 import algorithm.DataProcessor;
 import algorithm.DataService;
 
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.net.*;
+import inputOutput.*;
+import testInputOutput.*;
 public class Diagramm extends Application {
+
+
+
 
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
 	Button add, start;
+	private JTextField adresse = new JTextField(25);
+	File f;
+	FileChooser fileChooser;
+	Stage stage;
+	String path;
 
 	@SuppressWarnings("unchecked")
 
@@ -118,6 +144,37 @@ public class Diagramm extends Application {
 		 * add action on the button "start" if the button is clicked, there will
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
+		
+		add = new Button("Datei laden"); 
+       TextField tx = new TextField ();
+	        tx.setText("Label");
+	        
+	        tx.clear();
+	        
+	        GridPane grid = new GridPane();
+	        grid.setVgap(4);
+	        grid.setHgap(10);
+	        grid.setPadding(new Insets(5, 5, 5, 5));
+	        grid.add(new Label("Pfad: "), 0, 0);
+	        grid.add(tx, 2, 0);
+
+				
+				
+	        // handle ADD button event
+	        add.setOnAction((event) -> {
+	        	System.out.println("Add Button pressed");
+	        	
+	        	f = new File(tx.getText());
+				path = f.getAbsolutePath();
+				if (f.exists() == true && path.endsWith(".csv")) {
+					CSVFileReader.setPath(path);
+	        	//fp.showOpenFileDialog();
+				}
+
+	        });
+	        
+	 
+		
 		start.setOnAction((event) -> {
 			series1.getData().clear();
 
@@ -183,7 +240,8 @@ public class Diagramm extends Application {
 		/*
 		 * the button "start" and the scatter-charts added to the vbox
 		 */
-		vbox.getChildren().addAll(start, s1, s2, s3);
+		vbox.getChildren().addAll(grid,add,start, s1, s2, s3);
+		//vbox.getChildren().add(adresse);
 		hbox.setPadding(new Insets(50, 10, 50, 20));
 
 		/*
