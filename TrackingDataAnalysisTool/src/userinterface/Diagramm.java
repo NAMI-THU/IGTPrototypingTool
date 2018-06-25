@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
 import algorithm.ToolMeasure;
+import inputOutput.CSVFileReader;
 import algorithm.DataProcessor;
 import algorithm.DataService;
 
@@ -51,14 +52,14 @@ public class Diagramm extends Application {
 		 * Create new axes and fix the scale for the axes: plotting a range of
 		 * numbers.
 		 */
-		final NumberAxis xAxis = new NumberAxis(0, 30, 1);
-		final NumberAxis yAxis = new NumberAxis(0, 30, 1);
+		final NumberAxis xAxis = new NumberAxis(0, 500, 100);
+		final NumberAxis yAxis = new NumberAxis(0, 500, 100);
 
-		final NumberAxis xAxis1 = new NumberAxis(0, 30, 1);
-		final NumberAxis yAxis1 = new NumberAxis(0, 30, 1);
+		final NumberAxis xAxis1 = new NumberAxis(0, 500, 100);
+		final NumberAxis yAxis1 = new NumberAxis(0, 500, 100);
 
-		final NumberAxis xAxis2 = new NumberAxis(0, 30, 1);
-		final NumberAxis yAxis2 = new NumberAxis(0, 30, 1);
+		final NumberAxis xAxis2 = new NumberAxis(0, 500, 100);
+		final NumberAxis yAxis2 = new NumberAxis(0, 500, 100);
 
 		/* Set labels for the axes (with declared string-variables). */
 		xAxis.setLabel(x);
@@ -131,13 +132,15 @@ public class Diagramm extends Application {
 			// create an object from the class "DataService" in package
 			// algorithm
 			DataService da = new DataService();
+			CSVFileReader.setPath("U:/Datei/logfile_single.csv");
 
 			// number of passes
 			Gui myGui = new Gui();
 			int countGoToNext = myGui.toloadvalue;  
 
 			// all Tools with all measurements
-			List<ToolMeasure> tools = da.loadNextData(countGoToNext);
+			List<ToolMeasure> tools = da.loadNextData(50);
+			System.out.print("Size: " + tools.size());
 
 			// List<Measurement> l = new ArrayList();
 
@@ -149,9 +152,12 @@ public class Diagramm extends Application {
 			 */
 			for (int i = 0; i < tools.size(); i++) {
 				ToolMeasure tool = tools.get(i);
+				System.out.println("List tool " + i);
 
 				// all measurements from one tool
 				List<Measurement> li = tool.getMeasurement();
+				System.out.println("List size " + li.size());
+				System.out.print(li.get(0).getPoint());
 
 				/*
 				 * Call up the method "drawAchsen" from the class
