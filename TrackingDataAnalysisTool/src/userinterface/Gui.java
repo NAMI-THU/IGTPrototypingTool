@@ -47,7 +47,6 @@ public class Gui extends JFrame implements ActionListener {
 
 	// Textfield for data source to load CSV- data:
 	private JTextField adresse = new JTextField(25);
-	private JTextField ValueData = new JTextField(15);
 	// choose measurement:
 	private String[] messungen = { "Rauschen", "Correctness" };
 	private JComboBox measurementtyp = new JComboBox(messungen);
@@ -76,22 +75,22 @@ public class Gui extends JFrame implements ActionListener {
 	private JTextField rotationAngle1 = new JTextField();
 	private JTextField rotationAngle2 = new JTextField();
 	private JTextField rotationAngle3 = new JTextField();
-	
+
 	private JLabel rotationL = new JLabel();
 	private JLabel rotationL1 = new JLabel();
 	private JLabel rotationL2 = new JLabel();
 	private JLabel rotationL3 = new JLabel();
 	private JLabel rotationL4 = new JLabel();
-	
-	//Textfield, Label
+
+	// Textfield, Label
 	private JButton exit_connection = new JButton("Exit Connection");
 	private boolean value = true;
 	private static boolean testapp = false;
-	
+
 	TextField positionJitter = new TextField();
 	File f;
-	String valueP, valueD, valueL, valueR1,valueR2, valueR3, valueR4; 
-	double toR1,toR2, toR3, toR4;  
+	String valueP, valueD, valueL, valueR1, valueR2, valueR3, valueR4;
+	double toR1, toR2, toR3, toR4;
 	// double correctness, accuracy, jitterR, jitterP;
 	// list for available tools
 	private final java.awt.List toolList = new java.awt.List();
@@ -130,12 +129,12 @@ public class Gui extends JFrame implements ActionListener {
 		bar.add(menu);
 		bar.setBounds(5, 20, 120, 20);
 		panel1.add(bar);
-		
-		 //Connection for OPENIGTLink
+
+		// Connection for OPENIGTLink
 		lblOpenIgtlink.setForeground(Color.RED);
 		lblOpenIgtlink.setBounds(350, 10, 120, 40);
 		panel2.add(lblOpenIgtlink);
-		
+
 		JLabel l0 = new JLabel(" CSV-Datafile:"); // Label for CSV file path
 		l0.setBounds(20, 40, 120, 20);
 		panel1.add(l0);
@@ -160,26 +159,26 @@ public class Gui extends JFrame implements ActionListener {
 		rotationL.setText("Quaternion-Angabe"); // corner
 		rotationL.setBounds(20, 340, 170, 20);
 		panel1.add(rotationL);
-		
-		rotationL1.setText("x:"); 
+
+		rotationL1.setText("x:");
 		rotationL1.setBounds(200, 340, 15, 20);
 		panel1.add(rotationL1);
 		rotationAngle.setBounds(220, 340, 80, 20);
 		panel1.add(rotationAngle);
-		
-		rotationL2.setText("y:"); 
+
+		rotationL2.setText("y:");
 		rotationL2.setBounds(200, 360, 15, 20);
 		panel1.add(rotationL2);
 		rotationAngle1.setBounds(220, 360, 80, 20);
 		panel1.add(rotationAngle1);
-	
-		rotationL3.setText("z:"); 
+
+		rotationL3.setText("z:");
 		rotationL3.setBounds(200, 380, 15, 20);
 		panel1.add(rotationL3);
 		rotationAngle2.setBounds(220, 380, 80, 20);
 		panel1.add(rotationAngle2);
-		
-		rotationL4.setText("r:"); 
+
+		rotationL4.setText("r:");
 		rotationL4.setBounds(200, 400, 15, 20);
 		panel1.add(rotationL4);
 		rotationAngle3.setBounds(220, 400, 80, 20);
@@ -188,8 +187,8 @@ public class Gui extends JFrame implements ActionListener {
 		rotationAngle1.setEnabled(false);
 		rotationAngle2.setEnabled(false);
 		rotationAngle3.setEnabled(false);
-		
-		JLabel measuredTyp = new JLabel("Measurementtyp"); //measuredtyp
+
+		JLabel measuredTyp = new JLabel("Measurementtyp"); // measuredtyp
 		measuredTyp.setBounds(700, 72, 150, 20);
 		panel2.add(measuredTyp);
 		measurementtyp.setBounds(700, 120, 120, 25);
@@ -200,7 +199,7 @@ public class Gui extends JFrame implements ActionListener {
 		finish.setBounds(400, 72, 150, 30);
 		panel2.add(finish);
 		finish.setForeground(Color.RED); // set button "finish" red
-		
+
 		cBJitterR.setBounds(650, 400, 150, 30);
 		panel1.add(cBJitterR);
 		cBJitterP.setBounds(650, 420, 150, 30);
@@ -211,7 +210,7 @@ public class Gui extends JFrame implements ActionListener {
 		panel1.add(cBCorrectnessP);
 		calculate.setBounds(800, 400, 130, 60); // set bounds for calculate
 		panel1.add(calculate);
-		
+
 		label2.setBounds(20, 480, 120, 20);
 		panel1.add(label2);
 		toolList.setBounds(20, 500, 120, 80);
@@ -221,13 +220,13 @@ public class Gui extends JFrame implements ActionListener {
 
 		exit_connection.setBounds(350, 200, 160, 20);
 		panel2.add(exit_connection);
-		
-		restart.setBounds(460,600, 150,30);
+
+		restart.setBounds(460, 600, 150, 30);
 		panel1.add(restart);
-		
+
 		loaded.setBounds(600, 40, 120, 25);
 		panel1.add(loaded);
-		
+
 		// Connection with ActionListener
 		start.addActionListener(this);
 		finish.addActionListener(this);
@@ -258,11 +257,11 @@ public class Gui extends JFrame implements ActionListener {
 		this.getContentPane();
 		this.add(tabbedPane);
 
-		//Open with Actionslistener
+		// Open with Actionslistener
 		openItem.addActionListener(new java.awt.event.ActionListener() {
 			// opens actionPerformed by clicking openItem
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				//added JFileChooser
+				// added JFileChooser
 
 				FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
 				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -272,14 +271,14 @@ public class Gui extends JFrame implements ActionListener {
 					File selctedFile = fc.getSelectedFile();
 					String path2 = selctedFile.getAbsolutePath();
 					CSVFileReader.setPath(path2);
-					
+
 				}
 			}
 		});
 	}
-	
-	//Label for recognizing, if data is loaded 
-	public static void setTexttoloaded(){
+
+	// Label for recognizing, if data is loaded
+	public static void setTexttoloaded() {
 		loaded.setText("Data loaded");
 	}
 
@@ -295,10 +294,10 @@ public class Gui extends JFrame implements ActionListener {
 		List<ToolMeasure> secondMeasurement = toolMeasures;
 
 		try {
-			//button loaddata pressed
+			// button loaddata pressed
 			if (src == loadData) {
 
-				//get path and handover to group 3 
+				// get path and handover to group 3
 				f = new File(adresse.getText());
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
@@ -307,14 +306,14 @@ public class Gui extends JFrame implements ActionListener {
 				} else {
 					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", "Warnung", JOptionPane.WARNING_MESSAGE);
 				}
-				
-				//button start pressed
+
+				// button start pressed
 			} else if (src == start || src == start2) {
 
 				JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung",
 						JOptionPane.WARNING_MESSAGE);
 
-				//open-IGT-Connection
+				// open-IGT-Connection
 				if (value == true) {
 					value = false;
 					begin.start();
@@ -323,19 +322,19 @@ public class Gui extends JFrame implements ActionListener {
 					begin.setBreak(true);
 				}
 
-				//button finish pressed
+				// button finish pressed
 			} else if (src == finish || src == finish2) {
 				begin.setBreak(false);
 				data.setCount();
 			} else if (src == exit_connection) {
-				//exit-button
+				// exit-button
 				value = true;
 				begin.setExit(false);
 				data.setCount();
 				testInputOutput.Networkconnection_test_app.setCount();
 			}
 
-			//if mesurementtyp pressed
+			// if mesurementtyp pressed
 			else if (src == measurementtyp) {
 				String selected = (String) measurementtyp.getSelectedItem();
 				if ("Correctness".equals(selected)) {
@@ -344,7 +343,7 @@ public class Gui extends JFrame implements ActionListener {
 					rotationAngle1.setEnabled(true);
 					rotationAngle2.setEnabled(true);
 					rotationAngle3.setEnabled(true);
-					
+
 					start2.setBounds(200, 110, 150, 30);
 					panel2.add(start2);
 					start2.setForeground(Color.GREEN);
@@ -355,7 +354,7 @@ public class Gui extends JFrame implements ActionListener {
 					finish2.setEnabled(true);
 
 				}
-				//button sough pressed
+				// button sough pressed
 				if ("Rauschen".equals(selected)) {
 					start2.setEnabled(false);
 					finish2.setEnabled(false);
@@ -364,10 +363,10 @@ public class Gui extends JFrame implements ActionListener {
 					rotationAngle1.setEnabled(false);
 					rotationAngle2.setEnabled(false);
 					rotationAngle3.setEnabled(false);
-					
+
 				}
 
-				//button calculate pressed
+				// button calculate pressed
 			} else if (src == calculate) {
 
 				ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
@@ -385,40 +384,43 @@ public class Gui extends JFrame implements ActionListener {
 				lCalcJP.setBounds(650, 620, 200, 40);
 				panel1.add(lCalcJP);
 
-				//JCheckBox cBJitterR pressed
+				// JCheckBox cBJitterR pressed
 				if (cBJitterR.isSelected()) {
 					lCalcJR.setText("0,00");
 					lCalcJR.setText(String.valueOf(avgMes.getRotationError()));
 
 				}
-				//JCheckBox cBJitterP pressed
+				// JCheckBox cBJitterP pressed
 				if (cBJitterP.isSelected()) {
 					lCalcJP.setText("0,00");
 					lCalcJP.setText(String.valueOf(avgMes.getError()));
 
 				}
-				//JChekBox cBCorrectnessR pressed
+				// JChekBox cBCorrectnessR pressed
 				if (cBCorrectnessR.isSelected()) {
-					
-					valueR1= rotationAngle.getText();
-					toR1= Double.parseDouble(valueR1);
-					
-					valueR2= rotationAngle.getText();
-					toR2= Double.parseDouble(valueR2);;
-					
-					valueR3= rotationAngle.getText();
-					toR3= Double.parseDouble(valueR3);
-					
-					valueR4= rotationAngle.getText();
-					toR4= Double.parseDouble(valueR4);
-					
+
+					valueR1 = rotationAngle.getText();
+					toR1 = Double.parseDouble(valueR1);
+
+					valueR2 = rotationAngle.getText();
+					toR2 = Double.parseDouble(valueR2);
+					;
+
+					valueR3 = rotationAngle.getText();
+					toR3 = Double.parseDouble(valueR3);
+
+					valueR4 = rotationAngle.getText();
+					toR4 = Double.parseDouble(valueR4);
+
 					lCalcC.setText("0,00");
-				/*	lCalcC.setText(String
-							.valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3, toR4, firstMeasurement.get(0).getMeasurement().get(0),
-									secondMeasurement.get(0).getMeasurement().get(0))));
-*/
+					
+//					  lCalcC.setText(String
+//					  .valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3,
+//					  toR4, firstMeasurement.get(0).getMeasurement().get(0),
+//					  secondMeasurement.get(0).getMeasurement().get(0))));
+//					
 				}
-				//JChekBox cBCorrectnessP pressed
+				// JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
 					valueD = distance.getText();
 					toD = Double.parseDouble(valueD);
@@ -428,8 +430,8 @@ public class Gui extends JFrame implements ActionListener {
 									secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
-				
-			}//loadData is pressed
+
+			} // loadData is pressed
 			else if (src == loadTool) {
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
@@ -447,15 +449,23 @@ public class Gui extends JFrame implements ActionListener {
 					}
 
 				}
-			
-			} 
-//			else if (src == restart) {
-//			giu.removeAll();
-//			giu.init();
 
-//			}
-
-			//Exception-Window 
+			} else if (src == restart) {
+				// repaint();
+				toLoadField.setText("");
+				adresse.setText("");
+				rotationAngle.setText("");
+				rotationAngle1.setText("");
+				rotationAngle2.setText("");
+				rotationAngle3.setText("");
+				distanceF.setText("");
+				cBJitterR.setSelected(false);
+				cBJitterP.setSelected(false);
+				cBCorrectnessR.setSelected(false);
+				cBCorrectnessP.setSelected(false);
+				toolList.removeAll();
+			}
+			// Exception-Window
 
 		} catch (Exception ep) {
 			if (f.exists() == false) {
