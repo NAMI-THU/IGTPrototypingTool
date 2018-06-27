@@ -27,14 +27,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
 import algorithm.ToolMeasure;
-
 import inputOutput.CSVFileReader;
 import algorithm.DataProcessor;
 import algorithm.DataService;
 
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 
 import java.net.*;
 import inputOutput.*;
@@ -45,12 +49,14 @@ public class Diagramm extends Application {
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
-	Button add, start;
+	Button add, start, choose;
 	File f;
 	Stage stage;
 	String path;
 	String value;
 	int loadvalue;
+	FileChooser fp;
+	File file;
 
 	@SuppressWarnings("unchecked")
 
@@ -135,9 +141,10 @@ public class Diagramm extends Application {
 		final HBox hbox = new HBox();
 
 		/* create new button "start" with the name "Start" */
+
 		start = new Button("Start");
 
-		add = new Button("Search for Data");
+		add = new Button("load Data");
 		TextField tx = new TextField();
 		tx.setText("Label");
 
@@ -175,12 +182,34 @@ public class Diagramm extends Application {
 
 		});
 
+		choose = new Button("Search for Data");
+
+		// handle ADD button event
+		choose.setOnAction((event) -> {
+			System.out.println("Choose Button pressed");
+
+			fp = new FileChooser();
+			fp.setTitle("Search for Data");
+			fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
+
+			file = fp.showOpenDialog(stage);
+			path = file.getAbsolutePath();
+			CSVFileReader.setPath(path);
+
+			System.out.println(path);
+
+		});
+
 		/*
 		 * add action on the button "start" if the button is clicked, there will
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
 		start.setOnAction((event) -> {
+			
+	
 			series1.getData().clear();
+			series2.getData().clear();
+			series3.getData().clear();
 
 			// create an object from the class "DataService" in package
 			// algorithm
@@ -214,10 +243,13 @@ public class Diagramm extends Application {
 				 * "Coordinatesystem". Hand over the "choice", the tool,
 				 * required series and axes
 				 */
-
+		
 				Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
 				Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
 				Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
+				
+	
+				
 			}
 		});
 
@@ -231,7 +263,7 @@ public class Diagramm extends Application {
 		/*
 		 * the button "start" and the scatter-charts added to the vbox
 		 */
-		vbox.getChildren().addAll(grid, grid2, add, start, s1, s2, s3);
+		vbox.getChildren().addAll(grid, grid2, add, start, choose, s1, s2, s3);
 
 		// vbox.getChildren().add(adresse);
 		hbox.setPadding(new Insets(50, 10, 50, 20));
