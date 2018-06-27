@@ -7,6 +7,7 @@ import inputOutput.CSVFileReader;
 
 import inputOutput.Tool;
 
+/** The class DataManager represents the interface to team 3 and manages our data */
 public class DataManager {
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private boolean count = false;
@@ -15,12 +16,16 @@ public class DataManager {
 		return toolMeasures;
 	}
 
-	/** getNextData calls method update, creates a measurement and adds this tool */
+	/** The method getNextData calls method update, which is from inputOutput, creates from return value of update a measurement and adds this tool 
+	 * 
+	 * @param countToGetNext, 
+	 * @return toolMeasures
+	 * */
 
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
 		for (double i = 0; i < countToGetNext; i++) {
-			/** from return value of update a new measurement will be created */
+			/* from return value of update a new measurement will be created */
 			List<Tool> tools = inputOutput.CSVFileReader.update();
 
 			for (Tool tool : tools) {
@@ -33,27 +38,36 @@ public class DataManager {
 		return toolMeasures;
 	}
 
-	/** This methods manages the tools */
+	/** This methods manages the tools. AddMeasurementToTool controlls if a tool with this name exists. If there is already a tool with this name, then the method 
+	 * 	added the new measurements to this tool. If there is no tool with this name, then there will a new tool be created 
+	 * 
+	 * @param measurement
+	 * @return
+	 * */
 
 	private void addMeasurementToTool(Measurement measurement) {
 
-		/** Check if tool exists */
+		/* Check if tool exists */
 		for (ToolMeasure toolMeasure : toolMeasures) {
 			if (toolMeasure.getName().equals(measurement.getToolname())) {
 
-				/** added new measurements to the tool */
+				/* added new measurements to the tool */
 				toolMeasure.addMeasurement(measurement);
 				return;
 			}
 		}
 
-		/** creation of a new tool */
+		/* creation of a new tool */
 		ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
 		newTool.addMeasurement(measurement);
 		toolMeasures.add(newTool);
 	}
 
-	/** Method call for team 3 */
+	/** This method is called by inputOutput
+	 * 
+	 *  @param test
+	 *  @return 
+	 *  */
 
 	public void setList(ArrayList<Tool> test) {
 
