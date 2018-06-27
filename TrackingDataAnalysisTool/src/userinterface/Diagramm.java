@@ -1,6 +1,5 @@
 package userinterface;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -40,20 +39,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.net.*;
 import inputOutput.*;
 import testInputOutput.*;
+
 public class Diagramm extends Application {
-
-
-
 
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
 	Button add, start;
-	private JTextField adresse = new JTextField(25);
 	File f;
-	FileChooser fileChooser;
 	Stage stage;
 	String path;
+	String value;
+	int loadvalue;
 
 	@SuppressWarnings("unchecked")
 
@@ -67,25 +64,25 @@ public class Diagramm extends Application {
 
 		/* Create variables x, y and z from type string to store each axis */
 
-		String x = "X-Achse";
-		String y = "Y-Achse";
-		String z = "Z-Achse";
+		String x = "X-axis";
+		String y = "Y-axis";
+		String z = "Z-axis";
 
 		/* The stage is named "x-y-z-Ebene" */
-		stage.setTitle("x-y-z-Ebene");
+		stage.setTitle("x-y-z-plane");
 
 		/*
 		 * Create new axes and fix the scale for the axes: plotting a range of
 		 * numbers.
 		 */
-		final NumberAxis xAxis = new NumberAxis(0, 500, 100);
-		final NumberAxis yAxis = new NumberAxis(0, 500, 100);
+		final NumberAxis xAxis = new NumberAxis(-500, 500, 100);
+		final NumberAxis yAxis = new NumberAxis(-500, 500, 100);
 
-		final NumberAxis xAxis1 = new NumberAxis(0, 500, 100);
-		final NumberAxis yAxis1 = new NumberAxis(0, 500, 100);
+		final NumberAxis xAxis1 = new NumberAxis(-500, 500, 100);
+		final NumberAxis yAxis1 = new NumberAxis(-500, 500, 100);
 
-		final NumberAxis xAxis2 = new NumberAxis(0, 500, 100);
-		final NumberAxis yAxis2 = new NumberAxis(0, 500, 100);
+		final NumberAxis xAxis2 = new NumberAxis(-500, 500, 100);
+		final NumberAxis yAxis2 = new NumberAxis(-500, 500, 100);
 
 		/* Set labels for the axes (with declared string-variables). */
 		xAxis.setLabel(x);
@@ -103,19 +100,19 @@ public class Diagramm extends Application {
 		final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
 
 		/* Set title for the scatter-charts. */
-		s1.setTitle("XY-Ebene");
-		s2.setTitle("XZ-Ebene");
-		s3.setTitle("YZ-Ebene");
+		s1.setTitle("XY-plane");
+		s2.setTitle("XZ-plane");
+		s3.setTitle("YZ-plane");
 
 		/*
 		 * Create new series for the coordinate system and set name.
 		 */
 		XYChart.Series series1 = new XYChart.Series();
-//		series1.setName("XY-Diagramm");
+		// series1.setName("XY-Diagramm");
 		XYChart.Series series2 = new XYChart.Series();
-//		series2.setName("XZ-Diagramm");
+		// series2.setName("XZ-Diagramm");
 		XYChart.Series series3 = new XYChart.Series();
-//		series3.setName("YZ-Diagramm");
+		// series3.setName("YZ-Diagramm");
 
 		/*
 		 * set size for each scatter-chart and add the series on the
@@ -140,68 +137,64 @@ public class Diagramm extends Application {
 		/* create new button "start" with the name "Start" */
 		start = new Button("Start");
 
+		add = new Button("Search for Data");
+		TextField tx = new TextField();
+		tx.setText("Label");
+
+		tx.clear();
+
+		GridPane grid = new GridPane();
+		grid.setVgap(4);
+		grid.setHgap(10);
+		grid.setPadding(new Insets(5, 5, 5, 5));
+		grid.add(new Label("Path: "), 0, 0);
+		grid.add(tx, 2, 0);
+
+		TextField tx2 = new TextField();
+		tx2.setText("Number of files to load");
+
+		tx2.clear();
+
+		GridPane grid2 = new GridPane();
+		grid2.setVgap(4);
+		grid2.setHgap(10);
+		grid2.setPadding(new Insets(5, 5, 5, 5));
+		grid2.add(new Label("Number of files to load: "), 0, 0);
+		grid2.add(tx2, 1, 0);
+
+		// handle ADD button event
+		add.setOnAction((event) -> {
+			System.out.println("Add Button pressed");
+
+			f = new File(tx.getText());
+			path = f.getAbsolutePath();
+			if (f.exists() == true) {
+				CSVFileReader.setPath(path);
+
+			}
+
+		});
+
 		/*
 		 * add action on the button "start" if the button is clicked, there will
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
-		
-		add = new Button("Datei laden"); 
-       TextField tx = new TextField ();
-	        tx.setText("Label");
-	        
-	        tx.clear();
-	        
-	        GridPane grid = new GridPane();
-	        grid.setVgap(4);
-	        grid.setHgap(10);
-	        grid.setPadding(new Insets(5, 5, 5, 5));
-	        grid.add(new Label("Pfad: "), 0, 0);
-	        grid.add(tx, 2, 0);
-
-				
-				
-	        // handle ADD button event
-	        add.setOnAction((event) -> {
-	        	System.out.println("Add Button pressed");
-	        	
-	        	f = new File(tx.getText());
-				path = f.getAbsolutePath();
-				if (f.exists() == true && path.endsWith(".csv")) {
-					CSVFileReader.setPath(path);
-	        	//fp.showOpenFileDialog();
-				}
-
-	        });
-	        
-	 
-		
 		start.setOnAction((event) -> {
 			series1.getData().clear();
-
-			// String choice = "xyz";
-
-			// if (radioB1.isSelected()) {
-			// choice = "xyz";
-			// series1.setName("XY-Diagramm");
-			// series2.setName("XZ-Diagramm");
-			// }
 
 			// create an object from the class "DataService" in package
 			// algorithm
 			DataService da = new DataService();
-			CSVFileReader.setPath("U:/Datei/logfile_single.csv");
 
 			// number of passes
 			Gui myGui = new Gui();
-			int countGoToNext = myGui.toloadvalue;  
+			int countGoToNext = myGui.toloadvalue;
 
+			value = tx2.getText();
+			loadvalue = Integer.parseInt(value);
 			// all Tools with all measurements
-			List<ToolMeasure> tools = da.loadNextData(50);
+			List<ToolMeasure> tools = da.loadNextData(loadvalue);
 			System.out.print("Size: " + tools.size());
-
-			// List<Measurement> l = new ArrayList();
-
-			// ToolMeasure tx = new ToolMeasure();
 
 			/*
 			 * The for statement picks the tools from the List <ToolMeasure>
@@ -221,6 +214,7 @@ public class Diagramm extends Application {
 				 * "Coordinatesystem". Hand over the "choice", the tool,
 				 * required series and axes
 				 */
+
 				Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
 				Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
 				Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
@@ -228,31 +222,28 @@ public class Diagramm extends Application {
 		});
 
 		hbox.setSpacing(10);
-		// hbox.getChildren().addAll(s1, s2, s3);
 
 		/*
 		 * vbox added to the hbox
 		 */
 		hbox.getChildren().addAll(vbox);
 
-		// vbox.getChildren().addAll(start, hbox);
-
 		/*
 		 * the button "start" and the scatter-charts added to the vbox
 		 */
-		vbox.getChildren().addAll(grid,add,start, s1, s2, s3);
-		//vbox.getChildren().add(adresse);
+		vbox.getChildren().addAll(grid, grid2, add, start, s1, s2, s3);
+
+		// vbox.getChildren().add(adresse);
 		hbox.setPadding(new Insets(50, 10, 50, 20));
 
+		stage.setX(120);
+		stage.setY(0);
 		/*
 		 * vbox added to the scene and the scene added to the main stage
 		 */
 		((Group) scene.getRoot()).getChildren().add(vbox);
 		stage.setScene(scene);
 		stage.show();
-
-		// public static getStage(){
-		// return stage;}
 
 	}
 
