@@ -1,8 +1,6 @@
 package algorithm;
 
-import org.apache.commons.math3.complex.Quaternion;
-import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
-
+import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
 
@@ -10,7 +8,7 @@ public class Measurement {
 
 	public Measurement(Tool tool) {
 		this.setPoint(new Point3D(tool.getCoordinat().getX(), tool.getCoordinat().getY(), tool.getCoordinat().getZ()));
-		this.setRotation(new Rotation(tool.getRotation_r(), tool.getRotation_x(), tool.getRotation_y(), tool.getRotation_z(), true));
+		this.setRotation(new Quaternion().set((float)tool.getRotation_x(), (float)tool.getRotation_y(), (float)tool.getRotation_z(), (float)tool.getRotation_r()));
 		this.setTimestamp(tool.getTimestamp());
 		this.setToolname(tool.getName());
 
@@ -25,13 +23,13 @@ public class Measurement {
 	private double error;
 	private double timestamp;
 	private String toolname;
-	private Rotation rotation;
+	private Quaternion rotation;
 
-	public Rotation getRotation() {
+	public Quaternion getRotation() {
 		return rotation;
 	}
 
-	public void setRotation(Rotation rotation) {
+	public void setRotation(Quaternion rotation) {
 		this.rotation = rotation;
 	}
 

@@ -3,10 +3,7 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.complex.Quaternion;
-import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
-
-import javafx.geometry.Point3D;
+import com.jme3.math.Quaternion;
 
 public class AverageMeasurement extends Measurement {
 
@@ -15,7 +12,7 @@ public class AverageMeasurement extends Measurement {
 	}
 
 	private double error;
-	private RotationError rotationError;
+	private Quaternion rotationError;
 	private List<Double> errors = new ArrayList<>();
 	private BoxPlot boxPlot;
 
@@ -43,11 +40,11 @@ public class AverageMeasurement extends Measurement {
 		this.error = error;
 	}
 
-	public RotationError getRotationError() {
+	public Quaternion getRotationError() {
 		return rotationError;
 	}
 
-	public void setRotationError(RotationError rotationError) {
+	public void setRotationError(Quaternion rotationError) {
 		this.rotationError = rotationError;
 	}
 
