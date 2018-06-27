@@ -57,28 +57,25 @@ public class Coordinatesystem {
 				// System.out.println(x);
 				y = l.get(i).getPoint().getY();
 				s.getData().add(new XYChart.Data(x, y));
-				
 
+				// new Thread(() -> {
+				// while (!Thread.currentThread().isInterrupted())
+				//
+				// //repaint();
+
+				// s.getChart().getData().clear();
+				// s.getChart().getData().addAll();
+				//
+				//
 				// try {
-				// s.wait();
-				// } catch (InterruptedException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
+				// Thread.sleep(500);
+				// } catch (InterruptedException ex) {
+				// Thread.currentThread().interrupt();
+				// //break;
 				// }
-				 new Thread(() -> {
-					    while (!Thread.currentThread().isInterrupted())
-				
-					    	//repaint();
-					    	
-					      try {
-					        Thread.sleep(500);
-					      } catch (InterruptedException ex) {
-					        Thread.currentThread().interrupt();
-					  //break;
-					      }
-					    }
-			//} 
-			).start();
+				// }
+				// //}
+				// ).start();
 
 			}
 
@@ -113,17 +110,18 @@ public class Coordinatesystem {
 			 */
 			xAxis.setLabel("Z-Achse");
 			yAxis.setLabel("Y-Achse");
-			for (int i = 1, j = 2; i < l.size() && j < l.size(); i += 3, j += 3) {
-				y = l.get(i).getPoint().getY();
+			for (int i =2 , j = 1; i < l.size() && j < l.size(); i += 3, j += 3) {
+				
 				z = l.get(i).getPoint().getZ();
+				y = l.get(i).getPoint().getY();
 				// System.out.println(y);
 				/*
 				 * The chart is drawn on the series with the axes z and y
 				 */
 				s.getData().add(new XYChart.Data(z, y));
 
-				break;
+			}
+			break;
 			}
 		}
 	}
-}
