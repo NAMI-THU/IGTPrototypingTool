@@ -22,6 +22,7 @@ public class DataProcessor {
 			AverageMeasurement secondAverangeMeasurement)
 
 
+
 	/* Method getDistance from class Point 3D. */
 
 	{
@@ -30,7 +31,7 @@ public class DataProcessor {
 				- expectedDistance;
 	}
 
-<<<<<<< HEAD
+
 	/** 
 	 * 
 	 * 
@@ -86,13 +87,13 @@ public class DataProcessor {
 
 	/**
 
+
 	 * This method computes the mean of the passed values and the average rotation.
 	 * 
 	 * @param measurements
 	 * @return averageMeasurement
 
-	 * This method computes the mean of the passed values.
->>>>>>> 5405caf038ed1ca8940c0907ae238621a1c1a078
+
 	 */
 	public AverageMeasurement getAverageMeasurement(List<Measurement> measurements) {
 
@@ -158,6 +159,7 @@ public class DataProcessor {
 	}
 
 
+
 	/** This method computes the Jitter of a Rotation. A list of measurements and an average rotation is passed.
 	 * In a loop, the rotation and the angle are retrieved for each measurement, the difference between the angle of the rotation and 
 	 * the angle of the average rotation is calculated and additional the distance between the rotation and the average rotation.
@@ -194,6 +196,36 @@ public class DataProcessor {
 		rotationError.setRotationAngleError(getRMSE(rotationAngleErrors));
 
 		return rotationError;
+
+	/** berechnet Jitter von Rotation */
+	public RotationError getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {
+
+		/** Create two array lists */
+			List<Double> rotationPositionErrors = new ArrayList<>();
+			RotationError rotationError = new RotationError();
+
+			for (int i = 0; i < measurements.size(); i++) {
+				
+				Quaternion rotationMovement = measurements.get(i).getRotation();
+				// vorraussetzung: liste muss nach zeitstempel sortiert sein
+				if(i > 0) {
+					rotationMovement = rotationMovement.subtract(measurements.get(i -1).getRotation());
+				}
+				
+				Quaternion errorRotationofIterate = rotationMovement.subtract(avgRotation);
+				//zusammenfassen der "einzelnen" Fehler
+				double Indize = getRotationIndize(errorRotationofIterate);
+				rotationPositionErrors.add(Indize);
+			}
+			/** Calculation of the jitter. */
+			rotationError.setRotationPositionError(getRMSE(rotationPositionErrors));
+
+			return rotationError;
+		}
+
+	// geht nicht da Quaternion an position 0 ist w = 1
+	private double getRotationIndize(Quaternion rotation) {
+		return rotation.getX() + rotation.getY() + rotation.getZ() + rotation.getW();
 
 	/** berechnet Jitter von Rotation */
 	public RotationError getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {

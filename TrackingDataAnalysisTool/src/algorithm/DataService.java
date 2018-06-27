@@ -3,8 +3,10 @@ package algorithm;
 import java.util.List;
 
 
+
 /** The class DataService represents the interface to team 1 */
 import com.jme3.math.Quaternion;
+
 
 
 public class DataService {
@@ -79,6 +81,7 @@ public class DataService {
 	}
 
 
+
 	/**
 	 * 
 	 *  @param expectedAngle
@@ -86,7 +89,7 @@ public class DataService {
 	 *  @return 
 	 *  */
 
-	public double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+ double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
 
 			Measurement secondMeasurement) {
 		return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
