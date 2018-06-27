@@ -43,8 +43,8 @@ public class Coordinatesystem {
 		 */
 		case "xy":
 
-			xAxis.setLabel("X-Achse");
-			yAxis.setLabel("Y-Achse");
+			xAxis.setLabel("X-axis");
+			yAxis.setLabel("Y-axis");
 
 			/*
 			 * The loop goes through the list and gets all values. With the
@@ -86,8 +86,8 @@ public class Coordinatesystem {
 
 		case "xz":
 
-			xAxis.setLabel("X-Achse");
-			yAxis.setLabel("Z-Achse");
+			xAxis.setLabel("X-axis");
+			yAxis.setLabel("Z-axis");
 
 			/*
 			 * The loop goes through the list and gets all values. With the
@@ -108,8 +108,8 @@ public class Coordinatesystem {
 			/*
 			 * Set label for the axes
 			 */
-			xAxis.setLabel("Z-Achse");
-			yAxis.setLabel("Y-Achse");
+			xAxis.setLabel("Z-axis");
+			yAxis.setLabel("Y-axis");
 			for (int i =2 , j = 1; i < l.size() && j < l.size(); i += 3, j += 3) {
 				
 				z = l.get(i).getPoint().getZ();

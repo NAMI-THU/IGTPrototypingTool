@@ -46,7 +46,6 @@ public class Diagramm extends Application {
 	 * Create a button named "add" create a button named "start".
 	 */
 	Button add, start;
-	private JTextField adresse = new JTextField(25);
 	File f;
 	Stage stage;
 	String path;
@@ -65,12 +64,12 @@ public class Diagramm extends Application {
 
 		/* Create variables x, y and z from type string to store each axis */
 
-		String x = "X-Achse";
-		String y = "Y-Achse";
-		String z = "Z-Achse";
+		String x = "X-axis";
+		String y = "Y-axis";
+		String z = "Z-axis";
 
 		/* The stage is named "x-y-z-Ebene" */
-		stage.setTitle("x-y-z-Ebene");
+		stage.setTitle("x-y-z-plane");
 
 		/*
 		 * Create new axes and fix the scale for the axes: plotting a range of
@@ -101,9 +100,9 @@ public class Diagramm extends Application {
 		final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
 
 		/* Set title for the scatter-charts. */
-		s1.setTitle("XY-Ebene");
-		s2.setTitle("XZ-Ebene");
-		s3.setTitle("YZ-Ebene");
+		s1.setTitle("XY-plane");
+		s2.setTitle("XZ-plane");
+		s3.setTitle("YZ-plane");
 
 		/*
 		 * Create new series for the coordinate system and set name.
@@ -138,7 +137,7 @@ public class Diagramm extends Application {
 		/* create new button "start" with the name "Start" */
 		start = new Button("Start");
 
-		add = new Button("Datei laden");
+		add = new Button("Search for Data");
 		TextField tx = new TextField();
 		tx.setText("Label");
 
@@ -148,11 +147,11 @@ public class Diagramm extends Application {
 		grid.setVgap(4);
 		grid.setHgap(10);
 		grid.setPadding(new Insets(5, 5, 5, 5));
-		grid.add(new Label("Pfad: "), 0, 0);
+		grid.add(new Label("Path: "), 0, 0);
 		grid.add(tx, 2, 0);
 
 		TextField tx2 = new TextField();
-		tx2.setText("Anzahl zu ladender Datei");
+		tx2.setText("Number of files to load");
 
 		tx2.clear();
 
@@ -160,8 +159,8 @@ public class Diagramm extends Application {
 		grid2.setVgap(4);
 		grid2.setHgap(10);
 		grid2.setPadding(new Insets(5, 5, 5, 5));
-		grid2.add(new Label("Anzahl zu ladender Datei: "), 0, 0);
-		grid2.add(tx2, 2, 0);
+		grid2.add(new Label("Number of files to load: "), 0, 0);
+		grid2.add(tx2, 1, 0);
 
 		// handle ADD button event
 		add.setOnAction((event) -> {
@@ -238,7 +237,7 @@ public class Diagramm extends Application {
 		hbox.setPadding(new Insets(50, 10, 50, 20));
 
 		stage.setX(120);
-		stage.setY(40);
+		stage.setY(0);
 		/*
 		 * vbox added to the scene and the scene added to the main stage
 		 */
