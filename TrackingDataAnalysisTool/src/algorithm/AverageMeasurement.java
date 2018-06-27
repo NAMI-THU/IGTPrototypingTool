@@ -15,7 +15,7 @@ public class AverageMeasurement extends Measurement {
 	}
 
 	private double error;
-	private RotationError rotationError;
+	private Quaternion rotationError;
 	private List<Double> errors = new ArrayList<>();
 	private BoxPlot boxPlot;
 
@@ -43,11 +43,11 @@ public class AverageMeasurement extends Measurement {
 		this.error = error;
 	}
 
-	public RotationError getRotationError() {
+	public Quaternion getRotationError() {
 		return rotationError;
 	}
 
-	public void setRotationError(RotationError rotationError) {
+	public void setRotationError(Quaternion rotationError) {
 		this.rotationError = rotationError;
 	}
 
