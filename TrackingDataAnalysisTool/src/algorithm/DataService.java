@@ -89,9 +89,7 @@ public class DataService {
 	 *  @return 
 	 *  */
 
- double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
-
-			Measurement secondMeasurement) {
+	public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement, Measurement secondMeasurement) {
 		return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 	}
 }
