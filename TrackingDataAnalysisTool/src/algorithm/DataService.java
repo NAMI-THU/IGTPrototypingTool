@@ -2,7 +2,12 @@ package algorithm;
 
 import java.util.List;
 
+<<<<<<< HEAD
 /** The class DataService represents the interface to team 1 */
+=======
+import com.jme3.math.Quaternion;
+
+
 public class DataService {
 	private DataProcessor dataProcessor;
 	private DataManager dataManager;
@@ -74,14 +79,17 @@ public class DataService {
 		return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 	}
 
+
 	/**
 	 * 
 	 *  @param expectedAngle
 	 *  @param firstMeasurement
 	 *  @return 
 	 *  */
-	public double getAccuracyRotation(double expectedAngle, Measurement firstMeasurement,
+
+	public double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+
 			Measurement secondMeasurement) {
-		return dataProcessor.getAccuracyRotation(expectedAngle, firstMeasurement, secondMeasurement);
+		return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 	}
 }
