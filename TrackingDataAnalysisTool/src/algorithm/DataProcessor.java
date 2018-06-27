@@ -22,10 +22,11 @@ public class DataProcessor {
 	}
 
 	/** */
-	public double getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+	public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
 			Measurement secondMeasurement) {
-		return getRotationIndize(
-				firstMeasurement.getRotation().subtract(secondMeasurement.getRotation()).subtract(expectedRotation));
+		Quaternion result = firstMeasurement.getRotation().subtract(secondMeasurement.getRotation())
+				.subtract(expectedRotation);
+		return result;
 	}
 
 	/** This method calculates the values for a boxplot. */
@@ -84,10 +85,10 @@ public class DataProcessor {
 		averageMeasurement.setRotation(getAverageRotation(measurements));
 		return averageMeasurement;
 	}
+
 	public Quaternion getAverageRotation(List<Measurement> measurements) {
 
 		Quaternion firstRotation = measurements.get(0).getRotation();
-
 		Quaternion lastRotation = measurements.get(measurements.size() - 1).getRotation();
 
 		// Zeit durch Anzahl teilen
@@ -117,30 +118,45 @@ public class DataProcessor {
 	}
 
 	/** berechnet Jitter von Rotation */
-	public RotationError getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {
+	public Quaternion getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {
 
 		/** Create two array lists */
-			List<Double> rotationPositionErrors = new ArrayList<>();
-			RotationError rotationError = new RotationError();
+		List<Double> rotationPositionErrors = new ArrayList<>();
+		List<Double> rotationErrorX = new ArrayList<>();
+		List<Double> rotationErrorY = new ArrayList<>();
+		List<Double> rotationErrorZ = new ArrayList<>();
+		List<Double> rotationErrorW = new ArrayList<>();
 
-			for (int i = 0; i < measurements.size(); i++) {
-				
-				Quaternion rotationMovement = measurements.get(i).getRotation();
-				// vorraussetzung: liste muss nach zeitstempel sortiert sein
-				if(i > 0) {
-					rotationMovement = rotationMovement.subtract(measurements.get(i -1).getRotation());
-				}
-				
-				Quaternion errorRotationofIterate = rotationMovement.subtract(avgRotation);
-				//zusammenfassen der "einzelnen" Fehler
-				double Indize = getRotationIndize(errorRotationofIterate);
-				rotationPositionErrors.add(Indize);
+		for (int i = 0; i < measurements.size(); i++) {
+
+			Quaternion rotationMovement = measurements.get(i).getRotation();
+			// vorraussetzung: liste muss nach zeitstempel sortiert sein
+			if (i > 0) {
+				rotationMovement = rotationMovement.subtract(measurements.get(i - 1).getRotation());
 			}
-			/** Calculation of the jitter. */
-			rotationError.setRotationPositionError(getRMSE(rotationPositionErrors));
 
-			return rotationError;
+			Quaternion errorRotationOfIterate = rotationMovement.subtract(avgRotation);
+
+			double errorX = errorRotationOfIterate.getX();
+			rotationErrorX.add(errorX);
+
+			double errorY = errorRotationOfIterate.getY();
+			rotationErrorY.add(errorY);
+
+			double errorZ = errorRotationOfIterate.getZ();
+			rotationErrorZ.add(errorZ);
+
+			double errorW = errorRotationOfIterate.getW();
+			rotationErrorW.add(errorW);
+
 		}
+		/** Calculation of the jitter. */
+
+		Quaternion rotationError = new Quaternion((float) getRMSE(rotationErrorX), (float) getRMSE(rotationErrorY),
+				(float) getRMSE(rotationErrorZ), (float) getRMSE(rotationErrorW));
+
+		return rotationError;
+	}
 
 	// geht nicht da Quaternion an position 0 ist w = 1
 	private double getRotationIndize(Quaternion rotation) {
