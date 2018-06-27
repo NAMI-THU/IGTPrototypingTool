@@ -2,9 +2,8 @@ package algorithm;
 
 import java.util.List;
 
-<<<<<<< HEAD
+
 /** The class DataService represents the interface to team 1 */
-=======
 import com.jme3.math.Quaternion;
 
 
