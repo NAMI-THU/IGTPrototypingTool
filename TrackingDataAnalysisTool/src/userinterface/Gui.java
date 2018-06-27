@@ -56,8 +56,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JCheckBox cBCorrectnessR = new JCheckBox("Accuracy-Rotation", false);
 	private JCheckBox cBCorrectnessP = new JCheckBox("Accuracy-Position", false);
 	// Checkbox for Jitter, correctness, accuracy, rotation
-	private JLabel LabelDataValue = new JLabel();
-	private JLabel openITGL = new JLabel();
+	private JLabel lblOpenIgtlink = new JLabel("Open IGTLINK");
 	private JLabel lValue = new JLabel();
 	private JLabel lCalcJR = new JLabel();
 	private JLabel lCalcC = new JLabel();
@@ -73,10 +72,10 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel toLoad = new JLabel();
 	private JTextField distanceF = new JTextField(5);
 	private JLabel distance = new JLabel();
-	private JTextField rotationAngel = new JTextField();
-	private JTextField rotationAngel1 = new JTextField();
-	private JTextField rotationAngel2 = new JTextField();
-	private JTextField rotationAngel3 = new JTextField();
+	private JTextField rotationAngle = new JTextField();
+	private JTextField rotationAngle1 = new JTextField();
+	private JTextField rotationAngle2 = new JTextField();
+	private JTextField rotationAngle3 = new JTextField();
 	
 	private JLabel rotationL = new JLabel();
 	private JLabel rotationL1 = new JLabel();
@@ -84,7 +83,6 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel rotationL3 = new JLabel();
 	private JLabel rotationL4 = new JLabel();
 	
-	private JLabel openIGTl = new JLabel();
 	//Textfield, Label
 	private JButton exit_connection = new JButton("Exit Connection");
 	private boolean value = true;
@@ -92,8 +90,8 @@ public class Gui extends JFrame implements ActionListener {
 	
 	TextField positionJitter = new TextField();
 	File f;
-	String valueP, valueD, valueL;
-	double valueR1,valueR2, valueR3, valueR4;  
+	String valueP, valueD, valueL, valueR1,valueR2, valueR3, valueR4; 
+	double toR1,toR2, toR3, toR4;  
 	// double correctness, accuracy, jitterR, jitterP;
 	// list for available tools
 	private final java.awt.List toolList = new java.awt.List();
@@ -133,7 +131,7 @@ public class Gui extends JFrame implements ActionListener {
 		bar.setBounds(5, 20, 120, 20);
 		panel1.add(bar);
 		
-		JLabel lblOpenIgtlink = new JLabel("Open IGTLINK"); //Connection for OPENIGTLink
+		 //Connection for OPENIGTLink
 		lblOpenIgtlink.setForeground(Color.RED);
 		lblOpenIgtlink.setBounds(350, 10, 120, 40);
 		panel2.add(lblOpenIgtlink);
@@ -157,6 +155,7 @@ public class Gui extends JFrame implements ActionListener {
 		panel1.add(distance);
 		distanceF.setBounds(210, 240, 180, 20);
 		panel1.add(distanceF);
+		distanceF.setEnabled(false);
 
 		rotationL.setText("Quaternion-Angabe"); // corner
 		rotationL.setBounds(20, 340, 170, 20);
@@ -165,26 +164,30 @@ public class Gui extends JFrame implements ActionListener {
 		rotationL1.setText("x:"); 
 		rotationL1.setBounds(200, 340, 15, 20);
 		panel1.add(rotationL1);
-		rotationAngel.setBounds(220, 340, 80, 20);
-		panel1.add(rotationAngel);
+		rotationAngle.setBounds(220, 340, 80, 20);
+		panel1.add(rotationAngle);
 		
 		rotationL2.setText("y:"); 
 		rotationL2.setBounds(200, 360, 15, 20);
 		panel1.add(rotationL2);
-		rotationAngel1.setBounds(220, 360, 80, 20);
-		panel1.add(rotationAngel1);
+		rotationAngle1.setBounds(220, 360, 80, 20);
+		panel1.add(rotationAngle1);
 	
 		rotationL3.setText("z:"); 
 		rotationL3.setBounds(200, 380, 15, 20);
 		panel1.add(rotationL3);
-		rotationAngel2.setBounds(220, 380, 80, 20);
-		panel1.add(rotationAngel2);
+		rotationAngle2.setBounds(220, 380, 80, 20);
+		panel1.add(rotationAngle2);
 		
 		rotationL4.setText("r:"); 
 		rotationL4.setBounds(200, 400, 15, 20);
 		panel1.add(rotationL4);
-		rotationAngel3.setBounds(220, 400, 80, 20);
-		panel1.add(rotationAngel3);
+		rotationAngle3.setBounds(220, 400, 80, 20);
+		panel1.add(rotationAngle3);
+		rotationAngle.setEnabled(false);
+		rotationAngle1.setEnabled(false);
+		rotationAngle2.setEnabled(false);
+		rotationAngle3.setEnabled(false);
 		
 		JLabel measuredTyp = new JLabel("Measurementtyp"); //measuredtyp
 		measuredTyp.setBounds(700, 72, 150, 20);
@@ -208,7 +211,9 @@ public class Gui extends JFrame implements ActionListener {
 		panel1.add(cBCorrectnessP);
 		calculate.setBounds(800, 400, 130, 60); // set bounds for calculate
 		panel1.add(calculate);
-
+		
+		label2.setBounds(20, 480, 120, 20);
+		panel1.add(label2);
 		toolList.setBounds(20, 500, 120, 80);
 		panel1.add(toolList);
 		loadTool.setBounds(210, 500, 150, 25);
@@ -237,10 +242,10 @@ public class Gui extends JFrame implements ActionListener {
 		cBCorrectnessP.addActionListener(this);
 		toLoadField.addActionListener(this);
 		distanceF.addActionListener(this);
-		rotationAngel.addActionListener(this);
-		rotationAngel1.addActionListener(this);
-		rotationAngel2.addActionListener(this);
-		rotationAngel3.addActionListener(this);
+		rotationAngle.addActionListener(this);
+		rotationAngle1.addActionListener(this);
+		rotationAngle2.addActionListener(this);
+		rotationAngle3.addActionListener(this);
 		toolList.addActionListener(this);
 		loadTool.addActionListener(this);
 		exit_connection.addActionListener(this);
@@ -335,7 +340,11 @@ public class Gui extends JFrame implements ActionListener {
 				String selected = (String) measurementtyp.getSelectedItem();
 				if ("Correctness".equals(selected)) {
 					distanceF.setEnabled(true);
-					rotationAngel.setEnabled(true);
+					rotationAngle.setEnabled(true);
+					rotationAngle1.setEnabled(true);
+					rotationAngle2.setEnabled(true);
+					rotationAngle3.setEnabled(true);
+					
 					start2.setBounds(200, 110, 150, 30);
 					panel2.add(start2);
 					start2.setForeground(Color.GREEN);
@@ -351,7 +360,11 @@ public class Gui extends JFrame implements ActionListener {
 					start2.setEnabled(false);
 					finish2.setEnabled(false);
 					distanceF.setEnabled(false);
-					rotationAngel.setEnabled(false);
+					rotationAngle.setEnabled(false);
+					rotationAngle1.setEnabled(false);
+					rotationAngle2.setEnabled(false);
+					rotationAngle3.setEnabled(false);
+					
 				}
 
 				//button calculate pressed
@@ -387,23 +400,23 @@ public class Gui extends JFrame implements ActionListener {
 				//JChekBox cBCorrectnessR pressed
 				if (cBCorrectnessR.isSelected()) {
 					
-					String str = String.valueOf(valueR1);
-					str = rotationAngel.getText();
+					valueR1= rotationAngle.getText();
+					toR1= Double.parseDouble(valueR1);
 					
-					String str2 = String.valueOf(valueR2);
-					str2 = rotationAngel1.getText();
+					valueR2= rotationAngle.getText();
+					toR2= Double.parseDouble(valueR2);;
 					
-					String str3 = String.valueOf(valueR3);
-					str3 = rotationAngel.getText();
+					valueR3= rotationAngle.getText();
+					toR3= Double.parseDouble(valueR3);
 					
-					String str4 = String.valueOf(valueR4);
-					str4 = rotationAngel.getText();
+					valueR4= rotationAngle.getText();
+					toR4= Double.parseDouble(valueR4);
 					
 					lCalcC.setText("0,00");
-					lCalcC.setText(String
-							.valueOf(dataS.getAccuracyRotation(str, str2, str3, str4, firstMeasurement.get(0).getMeasurement().get(0),
+				/*	lCalcC.setText(String
+							.valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3, toR4, firstMeasurement.get(0).getMeasurement().get(0),
 									secondMeasurement.get(0).getMeasurement().get(0))));
-
+*/
 				}
 				//JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
@@ -415,8 +428,9 @@ public class Gui extends JFrame implements ActionListener {
 									secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
-				//loadData is pressed
-			} else if (src == loadTool) {
+				
+			}//loadData is pressed
+			else if (src == loadTool) {
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
 
@@ -433,6 +447,7 @@ public class Gui extends JFrame implements ActionListener {
 					}
 
 				}
+			
 			} 
 //			else if (src == restart) {
 //			giu.removeAll();
