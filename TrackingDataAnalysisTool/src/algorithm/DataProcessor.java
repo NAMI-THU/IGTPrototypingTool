@@ -125,7 +125,7 @@ public class DataProcessor {
 
 		// Zeit durch Anzahl teilen
 		// (bei diesem Wert ist die Bewegung genau die des durchschnitts)
-		// (insofern das Tool auf dem küzesten weg nach lastRotation bewegt wurde = kein
+		// (insofern das Tool auf dem kuerzesten weg nach lastRotation bewegt wurde = kein
 		// richtungswechel in der Bewegung)
 		float positionAtTime = 1 / measurements.size();
 
