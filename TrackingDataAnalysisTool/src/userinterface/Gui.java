@@ -373,7 +373,7 @@ public class Gui extends JFrame implements ActionListener {
 				ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
 				AverageMeasurement avgMes = tool.getAverageMeasurement();
 
-				lValue.setText("Calculatet Value");
+				lValue.setText("Calculated Value");
 				lValue.setBounds(650, 510, 130, 30);
 				panel1.add(lValue);
 				lValue.setForeground(Color.BLUE);
