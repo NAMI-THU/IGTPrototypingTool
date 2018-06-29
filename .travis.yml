@@ -11,6 +11,7 @@ addons:
       - oracle-java8-installer
 
 script:
+- export CLASSPATH=$PWD/TrackingDataAnalysisTool/lib/*:$PWD/TrackingDataAnalysisTool/src/:$CLASSPATH
 - cd TrackingDataAnalysisTool/src/algorithm
 - javac *.java
 - cd ../inputOutput
