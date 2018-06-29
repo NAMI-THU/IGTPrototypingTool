@@ -24,7 +24,7 @@ public class DataManager {
 
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
-		for (double i = 0; i < countToGetNext; i++) {
+		for (double i = 1; i <= countToGetNext; i++) {
 			/* from return value of update a new measurement will be created */
 			List<Tool> tools = inputOutput.CSVFileReader.update();
 			

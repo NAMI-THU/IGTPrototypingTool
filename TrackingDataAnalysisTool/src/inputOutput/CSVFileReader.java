@@ -157,4 +157,7 @@ public class CSVFileReader {
 	public static int getException_number(){
 		return exception_number;
 		}
+	public static void setLine_counter() {
+		line_counter=0;
+	}
 }

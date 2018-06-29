@@ -45,6 +45,8 @@ public class Gui extends JFrame implements ActionListener {
 	private JButton calculate = new JButton("Calculate");
 	private JButton loadTool = new JButton("Load Tool");
 	private JButton restart = new JButton("Load New Data");
+	private boolean list2 = false;
+	private int linecounter = 0;
 
 	// Textfield for data source to load CSV- data:
 	private JTextField adresse = new JTextField(25);
@@ -62,7 +64,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel lCalcC = new JLabel();
 	private JLabel lCalcJP = new JLabel();
 	private static JLabel loaded = new JLabel();
-	//Label
+	// Label
 	private JMenuBar bar;
 	private JMenu menu;
 	private JMenuItem openItem;
@@ -290,9 +292,10 @@ public class Gui extends JFrame implements ActionListener {
 		algorithm.DataManager data = new algorithm.DataManager();
 		Networkconnection begin = new Networkconnection();
 
-		List<ToolMeasure> toolMeasures= new ArrayList<>();
+		List<ToolMeasure> toolMeasures = new ArrayList<>();
 		List<ToolMeasure> firstMeasurement = new ArrayList<>();
 		List<ToolMeasure> secondMeasurement = new ArrayList<>();
+		List<Measurement> helpMeasures = new ArrayList<>();
 
 		try {
 			// button loaddata pressed
@@ -414,12 +417,12 @@ public class Gui extends JFrame implements ActionListener {
 					toR4 = Double.parseDouble(valueR4);
 
 					lCalcC.setText("0,00");
-					
-//					  lCalcC.setText(String
-//					  .valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3,
-//					  toR4, firstMeasurement.get(0).getMeasurement().get(0),
-//					  secondMeasurement.get(0).getMeasurement().get(0))));
-//					
+
+					// lCalcC.setText(String
+					// .valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3,
+					// toR4, firstMeasurement.get(0).getMeasurement().get(0),
+					// secondMeasurement.get(0).getMeasurement().get(0))));
+					//
 				}
 				// JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
@@ -428,31 +431,43 @@ public class Gui extends JFrame implements ActionListener {
 					lCalcC.setText("0,00");
 					lCalcC.setText(
 							String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),
-									secondMeasurement.get(0).getAverageMeasurement())));
+									secondMeasurement.get(1).getAverageMeasurement())));
 
 				}
 
 			} // loadData is pressed
 			else if (src == loadTool) {
+
+				inputOutput.CSVFileReader.setLine_counter();
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
 				toolMeasures = dataS.loadNextData(toloadvalue);
-				firstMeasurement = toolMeasures;
-				secondMeasurement = toolMeasures;
 
 				for (ToolMeasure tm : toolMeasures) {
 					toolList.add(tm.getName());
-					firstMeasurement = toolMeasures;
-					if (toolMeasures.contains(firstMeasurement)) {
-						toolMeasures.clear();
 
-						for (ToolMeasure tm2 : toolMeasures) {
-							toolList.add(tm2.getName());
-							secondMeasurement = toolMeasures;
-						}
+					if (list2 == false) {
+						firstMeasurement = toolMeasures;
+
+						System.out.println(toolMeasures.get(0).getMeasurement().size());
+
+						linecounter = inputOutput.CSVFileReader.getLine_counter();
+					} else {
+
+						System.out.println(toolMeasures.get(0).getMeasurement().size());
+
+						// for (int i = linecounter; i < toolMeasures.get(0).getMeasurement().size();
+						// i++) {
+						//
+						// helpMeasures.add(toolMeasures.get(0).getMeasurement().get(i));
+						//
+						// System.out.println(helpMeasures.size());
+						//
+						// }
+
 					}
-
 				}
+				list2 = true;
 
 			} else if (src == restart) {
 				// repaint();
@@ -468,10 +483,13 @@ public class Gui extends JFrame implements ActionListener {
 				cBCorrectnessR.setSelected(false);
 				cBCorrectnessP.setSelected(false);
 				toolList.removeAll();
+
 			}
 			// Exception-Window
 
-		} catch (Exception ep) {
+		} catch (
+
+		Exception ep) {
 			if (f.exists() == false) {
 				JOptionPane.showMessageDialog(null, "Dateipfad existiert nicht", "Fenstertitel",
 						JOptionPane.ERROR_MESSAGE);

@@ -206,7 +206,7 @@ public class Diagramm extends Application {
 		 */
 		start.setOnAction((event) -> {
 			
-	
+			inputOutput.CSVFileReader.setLine_counter();
 			series1.getData().clear();
 			series2.getData().clear();
 			series3.getData().clear();
