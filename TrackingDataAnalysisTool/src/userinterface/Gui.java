@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.TextField;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,7 +43,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JButton finish2 = new JButton("End 2.Measurement");
 	private JButton loadData = new JButton("Load Data");
 	private JButton calculate = new JButton("Calculate");
-	private JButton loadTool = new JButton("Tool");
+	private JButton loadTool = new JButton("Load Tool");
 	private JButton restart = new JButton("Load New Data");
 
 	// Textfield for data source to load CSV- data:
@@ -149,7 +150,7 @@ public class Gui extends JFrame implements ActionListener {
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 
-		distance.setText("Distant indication");// distance indication
+		distance.setText("Expected Distance");// distance indication
 		distance.setBounds(20, 240, 130, 20);
 		panel1.add(distance);
 		distanceF.setBounds(210, 240, 180, 20);
@@ -190,9 +191,9 @@ public class Gui extends JFrame implements ActionListener {
 
 		JLabel measuredTyp = new JLabel("Measurementtyp"); // measuredtyp
 		measuredTyp.setBounds(700, 72, 150, 20);
-		panel2.add(measuredTyp);
+		panel1.add(measuredTyp);
 		measurementtyp.setBounds(700, 120, 120, 25);
-		panel2.add(measurementtyp);
+		panel1.add(measurementtyp);
 		start.setBounds(200, 72, 150, 30); // setbounds for position
 		panel2.add(start);
 		start.setForeground(Color.GREEN); // set button "start" green
@@ -289,9 +290,9 @@ public class Gui extends JFrame implements ActionListener {
 		algorithm.DataManager data = new algorithm.DataManager();
 		Networkconnection begin = new Networkconnection();
 
-		List<ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
-		List<ToolMeasure> firstMeasurement = toolMeasures;
-		List<ToolMeasure> secondMeasurement = toolMeasures;
+		List<ToolMeasure> toolMeasures= new ArrayList<>();
+		List<ToolMeasure> firstMeasurement = new ArrayList<>();
+		List<ToolMeasure> secondMeasurement = new ArrayList<>();
 
 		try {
 			// button loaddata pressed
@@ -377,11 +378,11 @@ public class Gui extends JFrame implements ActionListener {
 				panel1.add(lValue);
 				lValue.setForeground(Color.BLUE);
 
-				lCalcJR.setBounds(650, 540, 200, 30);
+				lCalcJR.setBounds(650, 540, 280, 30);
 				panel1.add(lCalcJR);
 				lCalcC.setBounds(650, 580, 200, 30);
 				panel1.add(lCalcC);
-				lCalcJP.setBounds(650, 620, 200, 40);
+				lCalcJP.setBounds(650, 620, 280, 40);
 				panel1.add(lCalcJP);
 
 				// JCheckBox cBJitterR pressed
@@ -435,6 +436,9 @@ public class Gui extends JFrame implements ActionListener {
 			else if (src == loadTool) {
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
+				toolMeasures = dataS.loadNextData(toloadvalue);
+				firstMeasurement = toolMeasures;
+				secondMeasurement = toolMeasures;
 
 				for (ToolMeasure tm : toolMeasures) {
 					toolList.add(tm.getName());

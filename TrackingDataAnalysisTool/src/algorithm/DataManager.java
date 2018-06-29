@@ -27,6 +27,12 @@ public class DataManager {
 		for (double i = 0; i < countToGetNext; i++) {
 			/* from return value of update a new measurement will be created */
 			List<Tool> tools = inputOutput.CSVFileReader.update();
+			
+			if (tools.isEmpty()) {
+				inputOutput.ExceptionData.checkException();
+				
+				break;
+			}
 
 			for (Tool tool : tools) {
 				Measurement measurement = new Measurement(tool);
