@@ -1,6 +1,7 @@
 package userinterface;
 
 import algorithm.*;
+import com.jme3.math.Quaternion;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -9,6 +10,7 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.TextField;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -30,7 +33,9 @@ import inputOutput.OpenIGTLinkConnection;
 import com.sun.glass.events.KeyEvent;
 
 import javax.swing.filechooser.FileFilter;
+
 import java.net.*;
+
 import inputOutput.*;
 import testInputOutput.*;
 
@@ -42,8 +47,15 @@ public class Gui extends JFrame implements ActionListener {
 	private JButton finish2 = new JButton("End 2.Measurement");
 	private JButton loadData = new JButton("Load Data");
 	private JButton calculate = new JButton("Calculate");
-	private JButton loadTool = new JButton("Tool");
+	private JButton loadTool = new JButton("Load Tool");
 	private JButton restart = new JButton("Load New Data");
+	private boolean list2 = false;
+	private int linecounter = 0;
+	private ToolMeasure helptool = new ToolMeasure();
+	private List<ToolMeasure> toolMeasures = new ArrayList<>();
+	private List<ToolMeasure> firstMeasurement = new ArrayList<>();
+	private List<ToolMeasure> secondMeasurement = new ArrayList<>();
+	DataProcessor dataProcessor = new DataProcessor();
 
 	// Textfield for data source to load CSV- data:
 	private JTextField adresse = new JTextField(25);
@@ -61,7 +73,7 @@ public class Gui extends JFrame implements ActionListener {
 	private JLabel lCalcC = new JLabel();
 	private JLabel lCalcJP = new JLabel();
 	private static JLabel loaded = new JLabel();
-	//Label
+	// Label
 	private JMenuBar bar;
 	private JMenu menu;
 	private JMenuItem openItem;
@@ -149,7 +161,7 @@ public class Gui extends JFrame implements ActionListener {
 		toLoadField.setBounds(210, 140, 180, 20);
 		panel1.add("n", toLoadField);
 
-		distance.setText("Distant indication");// distance indication
+		distance.setText("Expected Distance");// distance indication
 		distance.setBounds(20, 240, 130, 20);
 		panel1.add(distance);
 		distanceF.setBounds(210, 240, 180, 20);
@@ -190,9 +202,9 @@ public class Gui extends JFrame implements ActionListener {
 
 		JLabel measuredTyp = new JLabel("Measurementtyp"); // measuredtyp
 		measuredTyp.setBounds(700, 72, 150, 20);
-		panel2.add(measuredTyp);
+		panel1.add(measuredTyp);
 		measurementtyp.setBounds(700, 120, 120, 25);
-		panel2.add(measurementtyp);
+		panel1.add(measurementtyp);
 		start.setBounds(200, 72, 150, 30); // setbounds for position
 		panel2.add(start);
 		start.setForeground(Color.GREEN); // set button "start" green
@@ -263,8 +275,10 @@ public class Gui extends JFrame implements ActionListener {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				// added JFileChooser
 
-				FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
-				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				FileFilter filter = new FileNameExtensionFilter("Testreihe",
+						"csv");
+				JFileChooser fc = new JFileChooser(FileSystemView
+						.getFileSystemView().getHomeDirectory());
 				fc.addChoosableFileFilter(filter);
 				int returnValue = fc.showOpenDialog(null);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -289,10 +303,6 @@ public class Gui extends JFrame implements ActionListener {
 		algorithm.DataManager data = new algorithm.DataManager();
 		Networkconnection begin = new Networkconnection();
 
-		List<ToolMeasure> toolMeasures = dataS.loadNextData(toloadvalue);
-		List<ToolMeasure> firstMeasurement = toolMeasures;
-		List<ToolMeasure> secondMeasurement = toolMeasures;
-
 		try {
 			// button loaddata pressed
 			if (src == loadData) {
@@ -304,13 +314,15 @@ public class Gui extends JFrame implements ActionListener {
 					CSVFileReader.setPath(path);
 
 				} else {
-					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", "Warnung", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp",
+							"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
 
 				// button start pressed
 			} else if (src == start || src == start2) {
 
-				JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung",
+				JOptionPane.showMessageDialog(null,
+						"Jetzt das Geraet ruhig liegen lassen", "Warnung",
 						JOptionPane.WARNING_MESSAGE);
 
 				// open-IGT-Connection
@@ -369,19 +381,20 @@ public class Gui extends JFrame implements ActionListener {
 				// button calculate pressed
 			} else if (src == calculate) {
 
-				ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
+				ToolMeasure tool = dataS.getToolByName(toolList
+						.getSelectedItem());
 				AverageMeasurement avgMes = tool.getAverageMeasurement();
 
-				lValue.setText("Calculatet Value");
+				lValue.setText("Calculated Value");
 				lValue.setBounds(650, 510, 130, 30);
 				panel1.add(lValue);
 				lValue.setForeground(Color.BLUE);
 
-				lCalcJR.setBounds(650, 540, 200, 30);
+				lCalcJR.setBounds(650, 540, 380, 30);
 				panel1.add(lCalcJR);
-				lCalcC.setBounds(650, 580, 200, 30);
+				lCalcC.setBounds(650, 580, 280, 30);
 				panel1.add(lCalcC);
-				lCalcJP.setBounds(650, 620, 200, 40);
+				lCalcJP.setBounds(650, 620, 280, 40);
 				panel1.add(lCalcJP);
 
 				// JCheckBox cBJitterR pressed
@@ -402,53 +415,83 @@ public class Gui extends JFrame implements ActionListener {
 					valueR1 = rotationAngle.getText();
 					toR1 = Double.parseDouble(valueR1);
 
-					valueR2 = rotationAngle.getText();
+					valueR2 = rotationAngle1.getText();
 					toR2 = Double.parseDouble(valueR2);
 					;
 
-					valueR3 = rotationAngle.getText();
+					valueR3 = rotationAngle2.getText();
 					toR3 = Double.parseDouble(valueR3);
 
-					valueR4 = rotationAngle.getText();
+					valueR4 = rotationAngle3.getText();
 					toR4 = Double.parseDouble(valueR4);
 
-					lCalcC.setText("0,00");
-					
-//					  lCalcC.setText(String
-//					  .valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3,
-//					  toR4, firstMeasurement.get(0).getMeasurement().get(0),
-//					  secondMeasurement.get(0).getMeasurement().get(0))));
-//					
+					Quaternion expectetrotation = new Quaternion().set(
+							(float) toR1, (float) toR2, (float) toR3,
+							(float) toR4);
+
+					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
+							expectetrotation, firstMeasurement.get(0)
+									.getMeasurement().get(0), secondMeasurement
+									.get(0).getMeasurement().get(0))));
+
 				}
 				// JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
-					valueD = distance.getText();
+					valueD = distanceF.getText();
 					toD = Double.parseDouble(valueD);
 					lCalcC.setText("0,00");
-					lCalcC.setText(
-							String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),
-									secondMeasurement.get(0).getAverageMeasurement())));
+					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
+							firstMeasurement.get(0).getAverageMeasurement(),
+							secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
 
 			} // loadData is pressed
 			else if (src == loadTool) {
+
+				inputOutput.CSVFileReader.setLine_counter();
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
+				toolMeasures = dataS.loadNextData(toloadvalue);
 
 				for (ToolMeasure tm : toolMeasures) {
 					toolList.add(tm.getName());
-					firstMeasurement = toolMeasures;
-					if (toolMeasures.contains(firstMeasurement)) {
-						toolMeasures.clear();
 
-						for (ToolMeasure tm2 : toolMeasures) {
-							toolList.add(tm2.getName());
-							secondMeasurement = toolMeasures;
+					if (list2 == false) {
+						firstMeasurement = toolMeasures;
+
+						linecounter = inputOutput.CSVFileReader
+								.getLine_counter();
+					} else {
+
+						for (int i = linecounter - 1; i < toolMeasures.get(0)
+								.getMeasurement().size(); i++) {
+
+							helptool.addMeasurement(toolMeasures.get(0)
+									.getMeasurement().get(i));
+
 						}
-					}
 
+						List<Measurement> mes = helptool.getMeasurement();
+
+						AverageMeasurement avgMes = dataProcessor
+								.getAverageMeasurement(mes);
+						avgMes.setErrors(dataProcessor.getErrors(mes,
+								avgMes.getPoint()));
+						avgMes.setError(dataProcessor.getJitter(avgMes
+								.getErrors()));
+						avgMes.setRotationError(dataProcessor
+								.getRotationJitter(mes, avgMes.getRotation()));
+						avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes
+								.getErrors()));
+
+						helptool.setAverageMeasurement(avgMes);
+
+						secondMeasurement.add(helptool);
+
+					}
 				}
+				list2 = true;
 
 			} else if (src == restart) {
 				// repaint();
@@ -459,21 +502,29 @@ public class Gui extends JFrame implements ActionListener {
 				rotationAngle2.setText("");
 				rotationAngle3.setText("");
 				distanceF.setText("");
+				lCalcJR.setText("");
+				lCalcJP.setText("");
+				lCalcC.setText("");
 				cBJitterR.setSelected(false);
 				cBJitterP.setSelected(false);
 				cBCorrectnessR.setSelected(false);
 				cBCorrectnessP.setSelected(false);
 				toolList.removeAll();
+
 			}
 			// Exception-Window
 
-		} catch (Exception ep) {
+		} catch (
+
+		Exception ep) {
 			if (f.exists() == false) {
-				JOptionPane.showMessageDialog(null, "Dateipfad existiert nicht", "Fenstertitel",
+				JOptionPane.showMessageDialog(null,
+						"Dateipfad existiert nicht", "Fenstertitel",
 						JOptionPane.ERROR_MESSAGE);
 			} else {
 
-				JOptionPane.showMessageDialog(null, "Fehlermeldung", "Fenstertitel", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Fehlermeldung",
+						"Fenstertitel", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
