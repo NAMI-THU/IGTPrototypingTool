@@ -294,6 +294,7 @@ public class Gui extends JFrame implements ActionListener {
 	// Label for recognizing, if data is loaded
 	public static void setTexttoloaded() {
 		loaded.setText("Data loaded");
+		loaded.setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -510,6 +511,7 @@ public class Gui extends JFrame implements ActionListener {
 				cBCorrectnessR.setSelected(false);
 				cBCorrectnessP.setSelected(false);
 				toolList.removeAll();
+				loaded.setVisible(false);
 
 			}
 			// Exception-Window
