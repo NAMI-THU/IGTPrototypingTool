@@ -18,7 +18,7 @@ public class ExceptionData {
 				
 
 			} else {
-				ExceptionWindow.setExceptionText("end of file");
+				ExceptionWindow.setExceptionText("End of file");
 				
 			}
 			break;

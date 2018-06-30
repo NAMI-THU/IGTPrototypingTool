@@ -1,7 +1,7 @@
 package userinterface;
 
 import algorithm.*;
-
+import com.jme3.math.Quaternion;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -390,9 +390,9 @@ public class Gui extends JFrame implements ActionListener {
 				panel1.add(lValue);
 				lValue.setForeground(Color.BLUE);
 
-				lCalcJR.setBounds(650, 540, 280, 30);
+				lCalcJR.setBounds(650, 540, 380, 30);
 				panel1.add(lCalcJR);
-				lCalcC.setBounds(650, 580, 200, 30);
+				lCalcC.setBounds(650, 580, 280, 30);
 				panel1.add(lCalcC);
 				lCalcJP.setBounds(650, 620, 280, 40);
 				panel1.add(lCalcJP);
@@ -415,23 +415,25 @@ public class Gui extends JFrame implements ActionListener {
 					valueR1 = rotationAngle.getText();
 					toR1 = Double.parseDouble(valueR1);
 
-					valueR2 = rotationAngle.getText();
+					valueR2 = rotationAngle1.getText();
 					toR2 = Double.parseDouble(valueR2);
 					;
 
-					valueR3 = rotationAngle.getText();
+					valueR3 = rotationAngle2.getText();
 					toR3 = Double.parseDouble(valueR3);
 
-					valueR4 = rotationAngle.getText();
+					valueR4 = rotationAngle3.getText();
 					toR4 = Double.parseDouble(valueR4);
 
-					lCalcC.setText("0,00");
+					Quaternion expectetrotation = new Quaternion().set(
+							(float) toR1, (float) toR2, (float) toR3,
+							(float) toR4);
 
-					// lCalcC.setText(String
-					// .valueOf(dataS.getAccuracyRotation(toR1, toR2, toR3,
-					// toR4, firstMeasurement.get(0).getMeasurement().get(0),
-					// secondMeasurement.get(0).getMeasurement().get(0))));
-					//
+					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
+							expectetrotation, firstMeasurement.get(0)
+									.getMeasurement().get(0), secondMeasurement
+									.get(0).getMeasurement().get(0))));
+
 				}
 				// JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
@@ -469,11 +471,11 @@ public class Gui extends JFrame implements ActionListener {
 									.getMeasurement().get(i));
 
 						}
-						
-					
+
 						List<Measurement> mes = helptool.getMeasurement();
 
-						AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mes);
+						AverageMeasurement avgMes = dataProcessor
+								.getAverageMeasurement(mes);
 						avgMes.setErrors(dataProcessor.getErrors(mes,
 								avgMes.getPoint()));
 						avgMes.setError(dataProcessor.getJitter(avgMes
@@ -486,7 +488,6 @@ public class Gui extends JFrame implements ActionListener {
 						helptool.setAverageMeasurement(avgMes);
 
 						secondMeasurement.add(helptool);
-						
 
 					}
 				}
@@ -501,6 +502,9 @@ public class Gui extends JFrame implements ActionListener {
 				rotationAngle2.setText("");
 				rotationAngle3.setText("");
 				distanceF.setText("");
+				lCalcJR.setText("");
+				lCalcJP.setText("");
+				lCalcC.setText("");
 				cBJitterR.setSelected(false);
 				cBJitterP.setSelected(false);
 				cBCorrectnessR.setSelected(false);
