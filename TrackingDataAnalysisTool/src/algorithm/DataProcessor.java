@@ -23,8 +23,7 @@ public class DataProcessor {
 	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
 			AverageMeasurement secondAverangeMeasurement) {
 		/** calculates the distance between the point of firstAverangeMeasurement and the point of secondAverangeMeasurement*/
-		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
-				- expectedDistance;
+		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())- expectedDistance;
 	}
 
 	/**

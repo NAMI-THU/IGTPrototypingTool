@@ -159,5 +159,6 @@ public class CSVFileReader {
 		}
 	public static void setLine_counter() {
 		line_counter=0;
+		toollist.clear();
 	}
 }

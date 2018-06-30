@@ -1,6 +1,7 @@
 package userinterface;
 
 import algorithm.*;
+
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -31,7 +33,9 @@ import inputOutput.OpenIGTLinkConnection;
 import com.sun.glass.events.KeyEvent;
 
 import javax.swing.filechooser.FileFilter;
+
 import java.net.*;
+
 import inputOutput.*;
 import testInputOutput.*;
 
@@ -47,6 +51,11 @@ public class Gui extends JFrame implements ActionListener {
 	private JButton restart = new JButton("Load New Data");
 	private boolean list2 = false;
 	private int linecounter = 0;
+	private ToolMeasure helptool = new ToolMeasure();
+	private List<ToolMeasure> toolMeasures = new ArrayList<>();
+	private List<ToolMeasure> firstMeasurement = new ArrayList<>();
+	private List<ToolMeasure> secondMeasurement = new ArrayList<>();
+	DataProcessor dataProcessor = new DataProcessor();
 
 	// Textfield for data source to load CSV- data:
 	private JTextField adresse = new JTextField(25);
@@ -266,8 +275,10 @@ public class Gui extends JFrame implements ActionListener {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				// added JFileChooser
 
-				FileFilter filter = new FileNameExtensionFilter("Testreihe", "csv");
-				JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				FileFilter filter = new FileNameExtensionFilter("Testreihe",
+						"csv");
+				JFileChooser fc = new JFileChooser(FileSystemView
+						.getFileSystemView().getHomeDirectory());
 				fc.addChoosableFileFilter(filter);
 				int returnValue = fc.showOpenDialog(null);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -292,11 +303,6 @@ public class Gui extends JFrame implements ActionListener {
 		algorithm.DataManager data = new algorithm.DataManager();
 		Networkconnection begin = new Networkconnection();
 
-		List<ToolMeasure> toolMeasures = new ArrayList<>();
-		List<ToolMeasure> firstMeasurement = new ArrayList<>();
-		List<ToolMeasure> secondMeasurement = new ArrayList<>();
-		List<Measurement> helpMeasures = new ArrayList<>();
-
 		try {
 			// button loaddata pressed
 			if (src == loadData) {
@@ -308,13 +314,15 @@ public class Gui extends JFrame implements ActionListener {
 					CSVFileReader.setPath(path);
 
 				} else {
-					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp", "Warnung", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp",
+							"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
 
 				// button start pressed
 			} else if (src == start || src == start2) {
 
-				JOptionPane.showMessageDialog(null, "Jetzt das Geraet ruhig liegen lassen", "Warnung",
+				JOptionPane.showMessageDialog(null,
+						"Jetzt das Geraet ruhig liegen lassen", "Warnung",
 						JOptionPane.WARNING_MESSAGE);
 
 				// open-IGT-Connection
@@ -373,7 +381,8 @@ public class Gui extends JFrame implements ActionListener {
 				// button calculate pressed
 			} else if (src == calculate) {
 
-				ToolMeasure tool = dataS.getToolByName(toolList.getSelectedItem());
+				ToolMeasure tool = dataS.getToolByName(toolList
+						.getSelectedItem());
 				AverageMeasurement avgMes = tool.getAverageMeasurement();
 
 				lValue.setText("Calculated Value");
@@ -426,12 +435,12 @@ public class Gui extends JFrame implements ActionListener {
 				}
 				// JChekBox cBCorrectnessP pressed
 				if (cBCorrectnessP.isSelected()) {
-					valueD = distance.getText();
+					valueD = distanceF.getText();
 					toD = Double.parseDouble(valueD);
 					lCalcC.setText("0,00");
-					lCalcC.setText(
-							String.valueOf(dataS.getAccuracy(toD, firstMeasurement.get(0).getAverageMeasurement(),
-									secondMeasurement.get(1).getAverageMeasurement())));
+					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
+							firstMeasurement.get(0).getAverageMeasurement(),
+							secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
 
@@ -449,21 +458,35 @@ public class Gui extends JFrame implements ActionListener {
 					if (list2 == false) {
 						firstMeasurement = toolMeasures;
 
-						System.out.println(toolMeasures.get(0).getMeasurement().size());
-
-						linecounter = inputOutput.CSVFileReader.getLine_counter();
+						linecounter = inputOutput.CSVFileReader
+								.getLine_counter();
 					} else {
 
-						System.out.println(toolMeasures.get(0).getMeasurement().size());
+						for (int i = linecounter - 1; i < toolMeasures.get(0)
+								.getMeasurement().size(); i++) {
 
-						// for (int i = linecounter; i < toolMeasures.get(0).getMeasurement().size();
-						// i++) {
-						//
-						// helpMeasures.add(toolMeasures.get(0).getMeasurement().get(i));
-						//
-						// System.out.println(helpMeasures.size());
-						//
-						// }
+							helptool.addMeasurement(toolMeasures.get(0)
+									.getMeasurement().get(i));
+
+						}
+						
+					
+						List<Measurement> mes = helptool.getMeasurement();
+
+						AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mes);
+						avgMes.setErrors(dataProcessor.getErrors(mes,
+								avgMes.getPoint()));
+						avgMes.setError(dataProcessor.getJitter(avgMes
+								.getErrors()));
+						avgMes.setRotationError(dataProcessor
+								.getRotationJitter(mes, avgMes.getRotation()));
+						avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes
+								.getErrors()));
+
+						helptool.setAverageMeasurement(avgMes);
+
+						secondMeasurement.add(helptool);
+						
 
 					}
 				}
@@ -491,11 +514,13 @@ public class Gui extends JFrame implements ActionListener {
 
 		Exception ep) {
 			if (f.exists() == false) {
-				JOptionPane.showMessageDialog(null, "Dateipfad existiert nicht", "Fenstertitel",
+				JOptionPane.showMessageDialog(null,
+						"Dateipfad existiert nicht", "Fenstertitel",
 						JOptionPane.ERROR_MESSAGE);
 			} else {
 
-				JOptionPane.showMessageDialog(null, "Fehlermeldung", "Fenstertitel", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Fehlermeldung",
+						"Fenstertitel", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
