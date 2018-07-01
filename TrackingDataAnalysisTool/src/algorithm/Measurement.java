@@ -8,10 +8,10 @@ public class Measurement {
 
 	public Measurement(Tool tool) {
 		this.setPoint(new Point3D(tool.getCoordinat().getX(), tool.getCoordinat().getY(), tool.getCoordinat().getZ()));
-		this.setRotation(new Quaternion().set((float)tool.getRotation_x(), (float)tool.getRotation_y(), (float)tool.getRotation_z(), (float)tool.getRotation_r()));
+		this.setRotation(new Quaternion().set((float) tool.getRotation_x(), (float) tool.getRotation_y(),
+				(float) tool.getRotation_z(), (float) tool.getRotation_r()));
 		this.setTimestamp(tool.getTimestamp());
 		this.setToolname(tool.getName());
-
 
 	}
 

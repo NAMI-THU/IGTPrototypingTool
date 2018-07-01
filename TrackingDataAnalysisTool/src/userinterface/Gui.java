@@ -52,6 +52,11 @@ public class Gui extends JFrame implements ActionListener {
 	private boolean list2 = false;
 	private int linecounter = 0;
 	private ToolMeasure helptool = new ToolMeasure();
+	
+	private DataManager dataManager;
+	private List<DataManager> dataManagers = new ArrayList<>();
+	
+	
 	private List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private List<ToolMeasure> firstMeasurement = new ArrayList<>();
 	private List<ToolMeasure> secondMeasurement = new ArrayList<>();
@@ -109,7 +114,7 @@ public class Gui extends JFrame implements ActionListener {
 	private final Label label2 = new Label("Available Tools");
 
 	DataService dataS = new DataService();
-	DataProcessor dataP = new DataProcessor();
+	
 	JPanel panel1 = new JPanel();
 	JPanel panel2 = new JPanel();
 	int toloadvalue;
@@ -285,6 +290,9 @@ public class Gui extends JFrame implements ActionListener {
 					File selctedFile = fc.getSelectedFile();
 					String path2 = selctedFile.getAbsolutePath();
 					CSVFileReader.setPath(path2);
+					dataManager = new DataManager();
+					dataManagers.add(dataManager);
+					dataS.setDataManager(dataManager);
 
 				}
 			}
@@ -313,11 +321,12 @@ public class Gui extends JFrame implements ActionListener {
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
 					CSVFileReader.setPath(path);
-
+					
 				} else {
 					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp",
 							"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
+				
 
 				// button start pressed
 			} else if (src == start || src == start2) {
@@ -426,14 +435,17 @@ public class Gui extends JFrame implements ActionListener {
 					valueR4 = rotationAngle3.getText();
 					toR4 = Double.parseDouble(valueR4);
 
-					Quaternion expectetrotation = new Quaternion().set(
+					Quaternion expectedrotation = new Quaternion().set(
 							(float) toR1, (float) toR2, (float) toR3,
 							(float) toR4);
+					
+					dataS.setDataManager(dataManagers.get(0));
+					ToolMeasure firstTool = dataS.getToolByName(toolList.getSelectedItem());
+					dataS.setDataManager(dataManagers.get(1));
+					ToolMeasure secondTool = dataS.getToolByName(toolList.getSelectedItem());
 
 					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
-							expectetrotation, firstMeasurement.get(0)
-									.getMeasurement().get(0), secondMeasurement
-									.get(0).getMeasurement().get(0))));
+							expectedrotation, firstTool.getMeasurement().get(0),secondTool.getMeasurement().get(0))));
 
 				}
 				// JChekBox cBCorrectnessP pressed
@@ -441,9 +453,19 @@ public class Gui extends JFrame implements ActionListener {
 					valueD = distanceF.getText();
 					toD = Double.parseDouble(valueD);
 					lCalcC.setText("0,00");
+					
+					dataS.setDataManager(dataManagers.get(0));
+					ToolMeasure firstTool = dataS.getToolByName(toolList.getSelectedItem());
+					dataS.setDataManager(dataManagers.get(1));
+					ToolMeasure secondTool = dataS.getToolByName(toolList.getSelectedItem());
+					
+					
 					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
-							firstMeasurement.get(0).getAverageMeasurement(),
-							secondMeasurement.get(0).getAverageMeasurement())));
+							firstTool.getAverageMeasurement(),
+							secondTool.getAverageMeasurement())));
+//					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
+//							firstMeasurement.get(0).getAverageMeasurement(),
+//							secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
 
@@ -453,45 +475,52 @@ public class Gui extends JFrame implements ActionListener {
 				inputOutput.CSVFileReader.setLine_counter();
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
+				
 				toolMeasures = dataS.loadNextData(toloadvalue);
-
+				
+				
 				for (ToolMeasure tm : toolMeasures) {
 					toolList.add(tm.getName());
-
-					if (list2 == false) {
-						firstMeasurement = toolMeasures;
-
-						linecounter = inputOutput.CSVFileReader
-								.getLine_counter();
-					} else {
-
-						for (int i = linecounter - 1; i < toolMeasures.get(0)
-								.getMeasurement().size(); i++) {
-
-							helptool.addMeasurement(toolMeasures.get(0)
-									.getMeasurement().get(i));
-
-						}
-
-						List<Measurement> mes = helptool.getMeasurement();
-
-						AverageMeasurement avgMes = dataProcessor
-								.getAverageMeasurement(mes);
-						avgMes.setErrors(dataProcessor.getErrors(mes,
-								avgMes.getPoint()));
-						avgMes.setError(dataProcessor.getJitter(avgMes
-								.getErrors()));
-						avgMes.setRotationError(dataProcessor
-								.getRotationJitter(mes, avgMes.getRotation()));
-						avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes
-								.getErrors()));
-
-						helptool.setAverageMeasurement(avgMes);
-
-						secondMeasurement.add(helptool);
-
-					}
 				}
+				
+
+//				for (ToolMeasure tm : toolMeasures) {
+//					toolList.add(tm.getName());
+//
+//					if (list2 == false) {
+//						firstMeasurement = toolMeasures;
+//
+//						linecounter = inputOutput.CSVFileReader
+//								.getLine_counter();
+//					} else {
+//
+//						for (int i = linecounter - 1; i < toolMeasures.get(0)
+//								.getMeasurement().size(); i++) {
+//
+//							helptool.addMeasurement(toolMeasures.get(0)
+//									.getMeasurement().get(i));
+//
+//						}
+//
+//						List<Measurement> mes = helptool.getMeasurement();
+//
+//						AverageMeasurement avgMes = dataProcessor
+//								.getAverageMeasurement(mes);
+//						avgMes.setErrors(dataProcessor.getErrors(mes,
+//								avgMes.getPoint()));
+//						avgMes.setError(dataProcessor.getJitter(avgMes
+//								.getErrors()));
+//						avgMes.setRotationError(dataProcessor
+//								.getRotationJitter(mes, avgMes.getRotation()));
+//						avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes
+//								.getErrors()));
+//
+//						helptool.setAverageMeasurement(avgMes);
+//
+//						secondMeasurement.add(helptool);
+//
+//					}
+//				}
 				list2 = true;
 
 			} else if (src == restart) {
