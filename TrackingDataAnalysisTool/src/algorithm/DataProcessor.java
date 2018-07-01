@@ -15,28 +15,28 @@ public class DataProcessor {
 	 * This method computes the distance of two average points. Then the expected
 	 * distance is subtracted from the distance of the points.
 	 * 
-	 * @param expectedDistance
-	 * @param firstAverangeMeasurement
-	 * @param secondAverangeMeasurement
-	 * @return
+	 * @param expectedDistance - value of type double
+	 * @param firstAverangeMeasurement - value of type AverageMeasurement
+	 * @param secondAverangeMeasurement - value of type AverageMeasurement
+	 * @return accurate - the distance 
 	 */
 	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
 			AverageMeasurement secondAverangeMeasurement) {
-		/** calculates the distance between the point of firstAverangeMeasurement and the point of secondAverangeMeasurement*/
-		return getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
+		/* calculates the distance between the point of firstAverangeMeasurement and the point of secondAverangeMeasurement*/
+		double accurate = getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
 				- expectedDistance;
+		return accurate;
 	}
 
 	/**
+	 * This method gets a quaternion (four double values) and two measurements. With the method getRotation the
+	 * quaternion of firstMeasurement is fetched. From this value, the second quaternion is subtracted from the 
+	 * second measurement. Then the expected quaternion is subtracted. 
 	 * 
-	 * 
-	 * @param expectedRotation
-	 * @param firstMeasurement
-	 * @param secondMeasurement
-	 * @return
-	 */
-
-	/** */
+	 * @param expectedRotation - of type quaternion
+	 * @param firstMeasurement - of type Measurement
+	 * @param secondMeasurement - of type Measurement
+	 * @return result - of type quaternion
 
 	public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement, Measurement secondMeasurement) {
 		Quaternion result = firstMeasurement.getRotation().subtract(secondMeasurement.getRotation()).subtract(expectedRotation);
@@ -52,8 +52,8 @@ public class DataProcessor {
 	 * Percentile class can only count on arrays. The values are calculated using
 	 * the available methods in these two classes.
 	 * 
-	 * @param values
-	 * @return boxPlot
+	 * @param values - a list with values
+	 * @return boxPlot - of type boxPlot with results
 	 */
 	public BoxPlot getBoxPlot(List<Double> values) {
 
@@ -88,10 +88,14 @@ public class DataProcessor {
 	/**
 	 * 
 	 * 
-	 * This method computes the mean of the passed values and the average rotation.
+	 * This method computes the mean of the passed values. getAverageMeasurement gets a list of measurements.
+	 * Size of the list is determined. A null point is created. A loop goes over the number of measurements.
+	 * In place i the point will be fetched and added to addPoint. 
+	 * For x, y and z an average point is calculated. Though all points from addPoint are pitched by the size of the list.
+	 * An average measurement and an average point is created. 
 	 * 
-	 * @param measurements
-	 * @return averageMeasurement
+	 * @param measurements - list with measurements
+	 * @return averageMeasurement - a average measurement
 	 * 
 	 * 
 	 */
@@ -118,26 +122,35 @@ public class DataProcessor {
 		return averageMeasurement;
 	}
 
+	/** 
+	 * This method computes the average rotation. The first quaternion of the list of measurement 
+	 * on point 0  and the last quaternion is taken.
+	 * The time and the size of the measurements are divided. At this value, the movement is exactly the average. 
+	 * On the first quaterion method slerp is called by class quaternion. The first and the last quaternion plus positionAtTime
+	 * is returned as average rotation.
+	 * 
+	 * @param measurements - list of measurements
+	 * @return firstRotation.slerp(firstRotation, lastRotation, positionAtTime) -  a quaternion
+	 * 
+	 * 
+	 */
 	public Quaternion getAverageRotation(List<Measurement> measurements) {
 
 		Quaternion firstRotation = measurements.get(0).getRotation();
 		Quaternion lastRotation = measurements.get(measurements.size() - 1).getRotation();
 
-		// Zeit durch Anzahl teilen
-		// (bei diesem Wert ist die Bewegung genau die des durchschnitts)
-		// (insofern das Tool auf dem küzesten weg nach lastRotation bewegt wurde = kein
-		// richtungswechel in der Bewegung)
 		float positionAtTime = 1 / measurements.size();
 
 		return firstRotation.slerp(firstRotation, lastRotation, positionAtTime);
 	}
 
 	/**
-	 * This method calculates errors and saves them in a list
+	 * This method calculates errors and saves them in a list. With a loop the distance between each point and the average point
+	 * is computed. Every distance is added to the list of errors.
 	 * 
-	 * @param measurements
-	 * @param avgPoint
-	 * @return errors
+	 * @param measurements - list of measurements
+	 * @param avgPoint - average point of type Point3D
+	 * @return errors - of type list
 	 */
 	public List<Double> getErrors(List<Measurement> measurements, Point3D avgPoint) {
 		List<Double> errors = new ArrayList<>();
@@ -151,10 +164,11 @@ public class DataProcessor {
 	}
 
 	/**
-	 * getJitter computes from errors RMSE
+	 * The method getJitter computes the root mean square error. She receives a list of errors and called method
+	 * getRMSE, where the RMSE is calculated.
 	 * 
-	 * @param errors
-	 * @return getRMSE
+	 * @param errors - a list with errors of type double
+	 * @return getRMSE - the root mean square error
 	 */
 	public double getJitter(List<Double> errors) {
 		return getRMSE(errors);
@@ -162,22 +176,20 @@ public class DataProcessor {
 
 	/**
 	 * This method computes the Jitter of a Rotation. A list of measurements and an
-	 * average rotation is passed. In a loop, the rotation and the angle are
-	 * retrieved for each measurement, the difference between the angle of the
-	 * rotation and the angle of the average rotation is calculated and additional
-	 * the distance between the rotation and the average rotation. Then the jitter
-	 * is calculated for each rotation and angle.
+	 * average rotation is passed. Four lists of errors, for every value of the quaternion, where created.  
+	 * In a loop the method gets quaternions on point i. If i > 0, from rotationMovement the quaternion on point i is subtracted. 
+	 * Error variables are created. From each quaternion the list from above is added. 
+	 * Every list is added in rotationError. From rotation error the root mean square error is calculated. 
 	 * 
-	 * @param measurements
-	 * @param avgRotation
-	 * @return rotationError
+	 * @param measurements -  list of type measurements
+	 * @param avgRotation - average rotation of type Quaternion
+	 * @return rotationError - of type quaternion 
 	 */
 
-	/** berechnet Jitter von Rotation */
 	public Quaternion getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {
 
-		/** Create two array lists */
-		List<Double> rotationPositionErrors = new ArrayList<>();
+		
+		
 		List<Double> rotationErrorX = new ArrayList<>();
 		List<Double> rotationErrorY = new ArrayList<>();
 		List<Double> rotationErrorZ = new ArrayList<>();
@@ -186,7 +198,7 @@ public class DataProcessor {
 		for (int i = 0; i < measurements.size(); i++) {
 
 			Quaternion rotationMovement = measurements.get(i).getRotation();
-			// vorraussetzung: liste muss nach zeitstempel sortiert sein
+			
 			if (i > 0) {
 				rotationMovement = rotationMovement.subtract(measurements.get(i - 1).getRotation());
 			}
@@ -206,7 +218,7 @@ public class DataProcessor {
 			rotationErrorW.add(errorW);
 
 		}
-		/** Calculation of the jitter. */
+		/* Calculation of the jitter. */
 
 		Quaternion rotationError = new Quaternion((float) getRMSE(rotationErrorX), (float) getRMSE(rotationErrorY),
 				(float) getRMSE(rotationErrorZ), (float) getRMSE(rotationErrorW));
@@ -215,11 +227,12 @@ public class DataProcessor {
 	}
 
 	/**
-	 * This method computes the root mean square error
+	 * This method computes the root mean square error. She receives a list of errors. 
+	 * In a loop the errors are added and taken in square. 
+	 * The RMSE is calculated with the square of additionalPowError divided by the number of errors.  
 	 * 
-	 * @param errors
-	 * @return rmse the Root Mean Square Error, which is just the square root of the
-	 *         mean square error.
+	 * @param errors - list of errors of type double
+	 * @return rmse - the Root Mean Square Error, which is just the square root of the mean square error
 	 */
 	private double getRMSE(List<Double> errors) {
 		double additionalPowError = 0;
@@ -234,11 +247,9 @@ public class DataProcessor {
 	/**
 	 * This method calculates the distance of two points and uses the method distance from the class Point3D
 	 * 
-	 * @param firstPoint
-	 *            of typ Point3D
-	 * @param secondPoint
-	 *            of typ Point3D
-	 * @return distance of typ double
+	 * @param firstPoint - of type Point3D
+	 * @param secondPoint - of type Point3D
+	 * @return distance - of type double
 	 */
 	
 	
