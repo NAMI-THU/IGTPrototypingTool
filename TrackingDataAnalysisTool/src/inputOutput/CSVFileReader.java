@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import testInputOutput.Exception_Window;
+import userinterface.Gui;
 
 public class CSVFileReader {
 	// initialize variable
@@ -147,6 +148,7 @@ public class CSVFileReader {
 
 	public static void setPath(String abspath) {
 		path = abspath;
+		userinterface.Gui.setTexttoloaded();
 	}
 
 	public static int getLine_counter() {
@@ -155,4 +157,8 @@ public class CSVFileReader {
 	public static int getException_number(){
 		return exception_number;
 		}
+	public static void setLine_counter() {
+		line_counter=0;
+		toollist.clear();
+	}
 }

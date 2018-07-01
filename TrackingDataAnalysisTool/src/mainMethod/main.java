@@ -16,6 +16,13 @@ public class main {
 		myGui.setVisible(true);
 		myGui.validate();
 		myGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+        Diagramm app = new Diagramm();
+        app.main(null);
+        
+       
+        
 	}
 
 }

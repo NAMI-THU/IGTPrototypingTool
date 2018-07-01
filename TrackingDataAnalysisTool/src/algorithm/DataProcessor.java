@@ -22,9 +22,12 @@ public class DataProcessor {
 	 */
 	public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
 			AverageMeasurement secondAverangeMeasurement) {
-		/* calculates the distance between the point of firstAverangeMeasurement and the point of secondAverangeMeasurement*/
-		double accurate = getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
-				- expectedDistance;
+
+		/**
+		 * calculates the distance between the point of firstAverangeMeasurement and the
+		 * point of secondAverangeMeasurement
+		 */
+		double accurate = getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint());
 		return accurate;
 	}
 
@@ -37,12 +40,14 @@ public class DataProcessor {
 	 * @param firstMeasurement - of type Measurement
 	 * @param secondMeasurement - of type Measurement
 	 * @return result - of type quaternion
+	 */
 
-	public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement, Measurement secondMeasurement) {
-		Quaternion result = firstMeasurement.getRotation().subtract(secondMeasurement.getRotation()).subtract(expectedRotation);
+	public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+			Measurement secondMeasurement) {
+		Quaternion result = secondMeasurement.getRotation().subtract(firstMeasurement.getRotation())
+				.subtract(expectedRotation);
 		return result;
-		
-		 
+
 	}
 
 	/**
@@ -59,7 +64,9 @@ public class DataProcessor {
 
 		BoxPlot boxPlot = new BoxPlot();
 
-		/* The values are sorted by using the method sort of the class Collections. */
+		/*
+		 * The values are sorted by using the method sort of the class Collections.
+		 */
 		Collections.sort(values);
 
 		/* Create an array. */
@@ -139,6 +146,12 @@ public class DataProcessor {
 		Quaternion firstRotation = measurements.get(0).getRotation();
 		Quaternion lastRotation = measurements.get(measurements.size() - 1).getRotation();
 
+		// Zeit durch Anzahl teilen
+		// (bei diesem Wert ist die Bewegung genau die des durchschnitts)
+		// (insofern das Tool auf dem kuerzesten weg nach lastRotation bewegt
+		// wurde = kein
+		// richtungswechel in der Bewegung)
+
 		float positionAtTime = 1 / measurements.size();
 
 		return firstRotation.slerp(firstRotation, lastRotation, positionAtTime);
@@ -188,8 +201,8 @@ public class DataProcessor {
 
 	public Quaternion getRotationJitter(List<Measurement> measurements, Quaternion avgRotation) {
 
-		
-		
+		/** Create four array lists */
+
 		List<Double> rotationErrorX = new ArrayList<>();
 		List<Double> rotationErrorY = new ArrayList<>();
 		List<Double> rotationErrorZ = new ArrayList<>();
@@ -245,14 +258,14 @@ public class DataProcessor {
 	}
 
 	/**
-	 * This method calculates the distance of two points and uses the method distance from the class Point3D
+	 * This method calculates the distance of two points and uses the method
+	 * distance from the class Point3D
 	 * 
 	 * @param firstPoint - of type Point3D
 	 * @param secondPoint - of type Point3D
 	 * @return distance - of type double
 	 */
-	
-	
+
 	private double getDistance(Point3D firstPoint, Point3D secondPoint) {
 		double distance = firstPoint.distance(secondPoint);
 		return distance;

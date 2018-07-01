@@ -9,6 +9,8 @@ import inputOutput.*;
 import org.medcare.igtl.messages.*;
 import org.junit.Test;
 
+import userinterface.Start_Stop_IGTLink;
+
 public class Networkconnection_test_app {
 
 	static ArrayList<Tool> testlist = new ArrayList<Tool>();

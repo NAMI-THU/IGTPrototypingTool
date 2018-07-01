@@ -8,8 +8,10 @@ addons:
     packages:
       - language-pack-en
       - language-pack-de
+      - oracle-java8-installer
 
 script:
+- export CLASSPATH=$PWD/TrackingDataAnalysisTool/lib/*:$PWD/TrackingDataAnalysisTool/src/:$PWD/TrackingDataAnalysisTool/testsrc/:$CLASSPATH
 - cd TrackingDataAnalysisTool/src/algorithm
 - javac *.java
 - cd ../inputOutput
@@ -17,4 +19,10 @@ script:
 - cd ../mainMethod
 - javac *.java
 - cd ../userinterface
+- javac *.java
+- cd ../../testsrc/testalgorithm
+- javac *.java
+- cd ../testInputOutput
+- javac *.java
+- cd ../testUserinterface
 - javac *.java
