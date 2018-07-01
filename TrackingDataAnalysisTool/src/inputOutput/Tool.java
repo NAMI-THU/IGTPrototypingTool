@@ -3,8 +3,8 @@ package inputOutput;
 import javafx.geometry.Point3D;
 
 /**
- * This class is used an an object to temporary save the values of a tool, which are separated in CSVFileReader. 
- * These tool objects will be cached in an ArrayList which is later used for various calculation. 
+ * This class is used as an object to temporary save the values of a tool, which are separated in CSVFileReader. 
+ * These tool objects will be cached in an ArrayList which is used later for various calculation. 
  *  
  * @author Jonas Lang (comments)
 
