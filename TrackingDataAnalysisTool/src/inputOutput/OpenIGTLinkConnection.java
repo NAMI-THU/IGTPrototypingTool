@@ -1,6 +1,10 @@
 package inputOutput;
 
 import java.util.ArrayList;
+/**
+ * this class makes it possible to connect with OpenIGTLink so the tracking data of the tools (coordinates, rotation, name, etc.)
+ * can be transfered directly without saving it in a CSV-file in advance
+ */
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
@@ -29,6 +33,12 @@ public class OpenIGTLinkConnection {
 	//
 	// }
 
+	
+	/**
+	 * this method assigns the values of each tool to an object of a toollist
+	 * @param n is the name of the tool
+	 * @param t is a matrix which tells us the coordinates and the rotation of each tool
+	 */
 	public void setValues(String n, TransformNR t) {
 
 		timestamp = org.medcare.igtl.util.Header.getTimeStamp();
@@ -60,6 +70,12 @@ public class OpenIGTLinkConnection {
 		counter1++;
 
 	}
+	
+	
+	/**
+	 * this method creates an ArrayList for the data of the tools containing as many objects as there are tools available
+	 * @param tool contains the values of one tool
+	 */
 
 	public void setArraylist(Tool tool) {
 
