@@ -23,6 +23,11 @@ import testInputOutput.Exception_Window;
 import Jama.Matrix;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.*;
+/**
+ * this class creates a networkconnection
+ * @author
+ *
+ */
 
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
 
