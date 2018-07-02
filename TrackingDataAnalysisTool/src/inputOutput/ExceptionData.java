@@ -1,11 +1,22 @@
 package inputOutput;
 
 import userinterface.ExceptionWindow;
+/**
+ * this class detects errors when reading in the CSV-file
+ * @author 
+ *
+ */
 
 public class ExceptionData {
 
 	private static int exception_number;
 	
+	
+	/**
+	 * when there is an error this method checks out if the CSV-file either is empty,
+	 * the file has already been read completely or if the data was not found
+	 * for each case there is a number which tells us what kind of error exists
+	 */
 	public static void checkException() {
 
 		exception_number = CSVFileReader.getException_number();
