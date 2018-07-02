@@ -167,8 +167,8 @@ public class CSVFileReader {
 
 	/**
 	 * this method gets the name of the tool out of the CSV-file
-	 * @param csv_name
-	 * @param index_name
+	 * @param csv_name contains name of the tool
+	 * @param index_name shows index of the tool to get the correct name for each tool
 	 */
 	private static void getName(String csv_name, int index_name) {
 		// find the tool name by splitting "timestamp_name"
