@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import testInputOutput.Exception_Window;
 import userinterface.Gui;
 
+/**
+ * this class reads in a 'CSV-file containing a variation of tools and coordinates of their position in a room.
+ * it files them, so the different variable can be allocated to each single tool
+ * @author 
+ *
+ */
 public class CSVFileReader {
 	// initialize variable
 	private static int line_counter = 0;
@@ -23,10 +29,16 @@ public class CSVFileReader {
 	private static BufferedReader csv_file = null;
 
 	// interface for the other groups
+	
+	
+	/**
+	 * this returns an ArrayList containing as many tools as are listed in the CSV-file:
+	 * when the CSV-file contains two tools then the method returns an ArrayList containing the objects of two tools
+	 * @return ArrayList of tools
+	 */
 	public static ArrayList<Tool> update() {
 
-		// was koennte man hier returnen, falls die datei zu ende ist?
-
+		
 		// reader for CSV-file
 		try {
 			csv_file = new BufferedReader(new InputStreamReader(
@@ -53,6 +65,12 @@ public class CSVFileReader {
 		}
 
 	}
+	/**
+	 * the method init tells us the number of tools in the CSV-file by splitting up the lines, one tool has 9 Variables.
+	 * the method also assigns the tools to the toollist, that makes sure that the toollist contains as many objects 
+	 * as there are tools available in the file
+	 * @throws IOException
+	 */
 
 	private static void init() throws IOException {
 
@@ -61,7 +79,7 @@ public class CSVFileReader {
 		number_of_tools = (data.length) / 9;
 		toolname = new String[number_of_tools];
 
-		// creating tools depends on the number of tools and add them to the
+		// creating tools depending on the number of tools and adding them to the
 		// Tool list
 		for (int i = 1, j = 0; i <= number_of_tools; i++, j = j + 9) {
 
@@ -77,6 +95,11 @@ public class CSVFileReader {
 		match();
 	}
 
+	/**
+	 * this method matches the values of the CSV-file to each Object of the toollist to make sure, that each object 
+	 * contains the values that belong to it
+	 * @throws IOException
+	 */
 	private static void match() throws IOException {
 
 		read();
@@ -89,7 +112,7 @@ public class CSVFileReader {
 		}
 
 		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
-			// set the Values of the Csv-File to the Object
+			// assign the Values of the Csv-File to the Object
 			toollist.get(i).setData(data_new[j], data_new[j + 1],
 					data_new[j + 2], data_new[j + 3], data_new[j + 4],
 					data_new[j + 5], data_new[j + 6], data_new[j + 7],
@@ -108,6 +131,9 @@ public class CSVFileReader {
 		}
 	}
 
+	/**
+	 * this method creates a file reader for the CSV-file which is found by the method setPath()
+	 */
 	private static void read() {
 		// create the file reader for the CSV data
 		csv_file = null;
@@ -121,7 +147,7 @@ public class CSVFileReader {
 		}
 
 		try {
-			// split the CSV-data with semicolon and saves the Values in an
+			// splits the CSV-data by semicolon and saves the Values in an
 			// array
 			for (int j = 0; j <= line_counter; j++) {
 
@@ -139,13 +165,22 @@ public class CSVFileReader {
 
 	}
 
+	/**
+	 * this method gets the name of the tool out of the CSV-file
+	 * @param csv_name
+	 * @param index_name
+	 */
 	private static void getName(String csv_name, int index_name) {
-		// find the tool name with the splitted timestamp name
+		// find the tool name by splitting "timestamp_name"
 		String[] name = csv_name.split("_");
 		toolname[index_name] = name[1];
 
 	}
 
+	/**
+	 * this sets the path of the location from the CSV-file
+	 * @param abspath is a string of a path you need to chose to be able to read in exactly the file you want to
+	 */
 	public static void setPath(String abspath) {
 		path = abspath;
 		userinterface.Gui.setTexttoloaded();
