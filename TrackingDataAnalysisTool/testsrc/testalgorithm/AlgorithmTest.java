@@ -48,8 +48,7 @@ public class AlgorithmTest {
 
 	@Test
 	/**
-	 * {@link DataProcessor}
-	 * {@link DataProcessor#getJitter(double)}
+	 * {@link DataProcessor} {@link DataProcessor#getJitter(double)}
 	 */
 	public void getJitterIsCorrect() {
 		setUpData();
@@ -63,8 +62,7 @@ public class AlgorithmTest {
 
 	@Test
 	/**
-	 * {@link DataProcessor}
-	 * {@link DataProcessor#getAccuracy(double)}
+	 * {@link DataProcessor} {@link DataProcessor#getAccuracy(double)}
 	 */
 	public void getAccuracyIsCorrect() {
 
@@ -79,38 +77,36 @@ public class AlgorithmTest {
 
 	@Test
 	/**
-	 * {@link DataProcessor}
-	 * {@link DataProcessor#getRotationJitter(List)}
+	 * {@link DataProcessor} {@link DataProcessor#getRotationJitter(List)}
 	 */
 	public void getRotationJitterIsCorrect() {
 		setUpData();
 
-		Quaternion result = processor.getRotationJitter(testTool.getMeasurement(), new Quaternion((float)0,(float)0,(float)0,(float)1));
+		Quaternion result = processor.getRotationJitter(testTool.getMeasurement(),
+				new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
 
-		assertTrue(result.equals(new Quaternion((float)0,(float)0,(float)0,(float)0.8164966)));
+		assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) 0.8164966)));
 
 	}
 
 	@Test
 	/**
-	 * {@link DataProcessor}
-	 * {@link DataProcessor#getAccuracyRotation(Measurement)}
+	 * {@link DataProcessor} {@link DataProcessor#getAccuracyRotation(Measurement)}
 	 */
 	public void getAccuracyRotationIsCorrect() {
 
 		setUpDataAccuracy();
-		Quaternion expectedRotation = new Quaternion((float)0,(float)0.7071,(float)0,(float)0.7071);
+		Quaternion expectedRotation = new Quaternion((float) 0, (float) 0.7071, (float) 0, (float) 0.7071);
 
 		Quaternion result = processor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 
 		// keine Abweichung erwartet
-		assertTrue(result.equals(new Quaternion((float)0,(float)0,(float)0,(float)-1)));
+		assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) -1)));
 	}
 
 	@Test
 	/**
-	 * {@link DataProcessor}
-	 * {@link DataProcessor#getBoxPlot(double)}
+	 * {@link DataProcessor} {@link DataProcessor#getBoxPlot(double)}
 	 */
 	public void getBoxPlotIsCorrect() {
 
@@ -131,12 +127,16 @@ public class AlgorithmTest {
 		assertTrue(result.getMedian() == 3);
 		assertTrue(result.getQ3() == 4.5);
 		assertTrue(result.getMax() == 5);
+
+		System.out.println(
+				"BoxPlot Werte: \n Min: " + result.getMin() + "\n" + " 1.Q : " + result.getQ1() + "\n" + " Median: "
+						+ result.getMedian() + "\n" + " 3.Q: " + result.getQ3() + "\n" + " Max: " + result.getMax());
+
 	}
 
 	@Test
 	/**
-	 * {@link DataService}
-	 * {@link DataService#getToolByName(String)}
+	 * {@link DataService} {@link DataService#getToolByName(String)}
 	 */
 	public void getToolByNameCorrect() {
 
@@ -155,21 +155,19 @@ public class AlgorithmTest {
 
 	}
 
-
 	private void setUpDataAccuracy() {
 		processor = new DataProcessor();
 
 		firstAverangeMeasurement = new AverageMeasurement();
 		secondAverangeMeasurement = new AverageMeasurement();
-		
 
 		firstMeasurement = new Measurement();
 		secondMeasurement = new Measurement();
 
 		Point3D p1 = new Point3D(1, 1, 1);
 		Point3D p2 = new Point3D(2, 2, 2);
-		Quaternion quaternion1 = new Quaternion((float)0,(float)0,(float)0,(float)1);
-		Quaternion quaternion2 = new Quaternion((float)0,(float)0.7071,(float)0,(float)0.7071);
+		Quaternion quaternion1 = new Quaternion((float) 0, (float) 0, (float) 0, (float) 1);
+		Quaternion quaternion2 = new Quaternion((float) 0, (float) 0.7071, (float) 0, (float) 0.7071);
 		firstMeasurement.setRotation(quaternion1);
 		secondMeasurement.setRotation(quaternion2);
 
@@ -194,11 +192,11 @@ public class AlgorithmTest {
 		Point3D p3 = new Point3D(3, 3, 3);
 
 		measurement1.setPoint(p1);
-		measurement1.setRotation(new Quaternion((float)0,(float)0,(float)0,(float)1));
+		measurement1.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
 		measurement2.setPoint(p2);
-		measurement2.setRotation(new Quaternion((float)0,(float)0,(float)0,(float)1));
+		measurement2.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
 		measurement3.setPoint(p3);
-		measurement3.setRotation(new Quaternion((float)0,(float)0,(float)0,(float)1));
+		measurement3.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
 
 		avgM.setPoint(p2);
 
