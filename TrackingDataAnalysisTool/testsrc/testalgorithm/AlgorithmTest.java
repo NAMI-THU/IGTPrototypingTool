@@ -28,6 +28,10 @@ public class AlgorithmTest {
 	Measurement secondMeasurement;
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getAverageMeasurement(AverageMeasurement)}
+	 */
 	public void getAverageMeasurementIsCorrect() {
 		setUpData();
 
@@ -43,6 +47,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getJitter(double)}
+	 */
 	public void getJitterIsCorrect() {
 		setUpData();
 
@@ -54,6 +62,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getAccuracy(double)}
+	 */
 	public void getAccuracyIsCorrect() {
 
 		setUpDataAccuracy();
@@ -66,6 +78,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getRotationJitter(List)}
+	 */
 	public void getRotationJitterIsCorrect() {
 		setUpData();
 
@@ -76,6 +92,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getAccuracyRotation(Measurement)}
+	 */
 	public void getAccuracyRotationIsCorrect() {
 
 		setUpDataAccuracy();
@@ -88,6 +108,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataProcessor}
+	 * {@link DataProcessor#getBoxPlot(double)}
+	 */
 	public void getBoxPlotIsCorrect() {
 
 		processor = new DataProcessor();
@@ -110,6 +134,10 @@ public class AlgorithmTest {
 	}
 
 	@Test
+	/**
+	 * {@link DataService}
+	 * {@link DataService#getToolByName(String)}
+	 */
 	public void getToolByNameCorrect() {
 
 		dataService = new DataService();

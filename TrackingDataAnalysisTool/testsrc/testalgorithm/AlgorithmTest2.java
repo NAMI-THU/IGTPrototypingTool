@@ -25,7 +25,10 @@ public class AlgorithmTest2 {
 
 	
 	@Test
-
+	/**
+	 * {@link DataService}
+	 * {@link DataService#loadNextData(List)}
+	 */
 	public void test() {
 
 		int countToGetNext = 3;
