@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.application.*;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
+import algorithm.DataManager;
 import algorithm.DataProcessor;
 import algorithm.DataService;
 

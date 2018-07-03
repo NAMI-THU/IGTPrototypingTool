@@ -8,9 +8,11 @@ import inputOutput.CSVFileReader;
 import inputOutput.Tool;
 
 /**
- * The class DataManager represents the interface to team 3 and manages our data
+ * The class DataManager represents the interface to team 3 and manages our
+ * data.
  */
 public class DataManager {
+
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private boolean count = false;
 
@@ -23,9 +25,12 @@ public class DataManager {
 	 * creates from return value of update a measurement and adds this tool
 	 * 
 	 * @param countToGetNext
+	 *            - number of the reloaded data
+	 * @return toolMeasures - List of tools
+	 * @param countToGetNext
 	 *            ,
 	 * @return toolMeasures
-	 * */
+	 */
 
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
@@ -50,14 +55,14 @@ public class DataManager {
 	}
 
 	/**
-	 * This methods manages the tools. AddMeasurementToTool controlls if a tool
-	 * with this name exists. If there is already a tool with this name, then
-	 * the method added the new measurements to this tool. If there is no tool
-	 * with this name, then there will a new tool be created
+	 * This methods manages the tools. AddMeasurementToTool controls if a tool with
+	 * this name exists. If there is already a tool with this name, then the method
+	 * added the new measurements to this tool. If there is no tool with this name,
+	 * then there will a new tool be created
 	 * 
 	 * @param measurement
-	 * @return
-	 * */
+	 *            - variable of type Measurement
+	 */
 
 	private void addMeasurementToTool(Measurement measurement) {
 
@@ -78,11 +83,15 @@ public class DataManager {
 	}
 
 	/**
-	 * This method is called by inputOutput
+	 * This method is called by inputOutput. She receives a list of tools. If the
+	 * variable count is true, a new measurement is created. Then, with the for-loop
+	 * you go over the list and for each tool the measurement is taken. Method
+	 * addMeasurementToTool is called, where the measurement is added to a tool. If
+	 * the variable count is false, count will be set on true.
 	 * 
 	 * @param test
-	 * @return
-	 * */
+	 *            - a list of tools from inputOutput
+	 */
 
 	public void setList(ArrayList<Tool> test) {
 
