@@ -160,12 +160,6 @@ public class DataProcessor {
 		Quaternion firstRotation = measurements.get(0).getRotation();
 		Quaternion lastRotation = measurements.get(measurements.size() - 1).getRotation();
 
-		// Zeit durch Anzahl teilen
-		// (bei diesem Wert ist die Bewegung genau die des durchschnitts)
-		// (insofern das Tool auf dem kuerzesten weg nach lastRotation bewegt
-		// wurde = kein
-		// richtungswechel in der Bewegung)
-
 		float positionAtTime = 1 / measurements.size();
 
 		return firstRotation.slerp(firstRotation, lastRotation, positionAtTime);

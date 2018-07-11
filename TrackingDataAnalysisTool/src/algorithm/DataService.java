@@ -29,8 +29,9 @@ public class DataService {
 	 * the name, the exception will be thrown.
 	 * 
 	 * 
-	 * @param Name - name from a tool of type String @return toolMeasure - of type
-	 * ToolMeasure @exception
+	 * @param Name
+	 *            - name from a tool of type String @return toolMeasure - of type
+	 *            ToolMeasure @exception
 	 */
 
 	public ToolMeasure getToolByName(String Name) throws Exception {
