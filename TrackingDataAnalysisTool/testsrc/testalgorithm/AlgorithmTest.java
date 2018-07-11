@@ -71,7 +71,7 @@ public class AlgorithmTest {
 
 		double result = processor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 
-		// keine Abweichung erwartet
+		// no deviation expected
 		assertTrue(result == 0);
 	}
 
@@ -100,7 +100,7 @@ public class AlgorithmTest {
 
 		Quaternion result = processor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 
-		// keine Abweichung erwartet
+		// no deviation expected
 		assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) -1)));
 	}
 
@@ -121,7 +121,7 @@ public class AlgorithmTest {
 
 		BoxPlot result = processor.getBoxPlot(values);
 
-		// keine Abweichung erwartet
+		// no deviation expected
 		assertTrue(result.getMin() == 1);
 		assertTrue(result.getQ1() == 1.5);
 		assertTrue(result.getMedian() == 3);
