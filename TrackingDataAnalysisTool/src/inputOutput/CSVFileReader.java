@@ -13,20 +13,20 @@ import userinterface.Gui;
  * @author 
  *
  */
-public class CSVFileReader {
+public class CSVFileReader extends TrackingDataSource {
 	// initialize variable
-	private static int line_counter = 0;
-	private static String line = null;
-	private static String[] data = null;
+	private int line_counter = 0;
+	private String line = null;
+	private String[] data = null;
 	// create tool list
-	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
-	private static int number_of_tools = 0;
-	private static String[] toolname = null;
-	private static String path;
-	private static int exception_number = 0;
+	
+	private int number_of_tools = 0;
+	private String[] toolname = null;
+	private String path;
+	private int exception_number = 0;
 	
 
-	private static BufferedReader csv_file = null;
+	private BufferedReader csv_file = null;
 
 	// interface for the other groups
 	
@@ -36,9 +36,9 @@ public class CSVFileReader {
 	 * when the CSV-file contains two tools then the method returns an ArrayList containing the objects of two tools
 	 * @return ArrayList of tools
 	 */
-	public static ArrayList<Tool> update() {
+	public ArrayList<Tool> update() {
 
-		
+		System.out.println("Update called!");
 		// reader for CSV-file
 		try {
 			csv_file = new BufferedReader(new InputStreamReader(
@@ -72,9 +72,10 @@ public class CSVFileReader {
 	 * @throws IOException
 	 */
 
-	private static void init() throws IOException {
+	private void init() throws IOException {
 
 		read();
+		System.out.println("Init called!");
 		// find the number of the tools
 		number_of_tools = (data.length) / 9;
 		toolname = new String[number_of_tools];
@@ -100,7 +101,7 @@ public class CSVFileReader {
 	 * contains the values that belong to it
 	 * @throws IOException
 	 */
-	private static void match() throws IOException {
+	private void match() throws IOException {
 
 		read();
 
@@ -134,7 +135,7 @@ public class CSVFileReader {
 	/**
 	 * this method creates a file reader for the CSV-file which is found by the method setPath()
 	 */
-	private static void read() {
+	private void read() {
 		// create the file reader for the CSV data
 		csv_file = null;
 		try {
@@ -170,7 +171,7 @@ public class CSVFileReader {
 	 * @param csv_name contains name of the tool
 	 * @param index_name shows index of the tool to get the correct name for each tool
 	 */
-	private static void getName(String csv_name, int index_name) {
+	private void getName(String csv_name, int index_name) {
 		// find the tool name by splitting "timestamp_name"
 		String[] name = csv_name.split("_");
 		toolname[index_name] = name[1];
@@ -181,18 +182,19 @@ public class CSVFileReader {
 	 * this sets the path of the location from the CSV-file
 	 * @param abspath is a string of a path you need to chose to be able to read in exactly the file you want to
 	 */
-	public static void setPath(String abspath) {
+	public void setPath(String abspath) {
+		System.out.println("Path set: " + path);
 		path = abspath;
 		userinterface.Gui.setTexttoloaded();
 	}
 
-	public static int getLine_counter() {
+	public int getLine_counter() {
 		return line_counter;
 	}
-	public static int getException_number(){
+	public int getException_number(){
 		return exception_number;
 		}
-	public static void setLine_counter() {
+	public void setLine_counter() {
 		line_counter=0;
 		toollist.clear();
 	}
