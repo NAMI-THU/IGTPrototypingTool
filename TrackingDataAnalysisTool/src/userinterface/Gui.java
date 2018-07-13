@@ -1,7 +1,9 @@
 package userinterface;
 
 import algorithm.*;
+
 import com.jme3.math.Quaternion;
+
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,8 +29,10 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import inputOutput.CSVFileReader;
 import inputOutput.Networkconnection;
 import inputOutput.OpenIGTLinkConnection;
+import inputOutput.TrackingDataSource;
 
 import com.sun.glass.events.KeyEvent;
 
@@ -112,6 +116,8 @@ public class Gui extends JFrame implements ActionListener {
 	// list for available tools
 	private final java.awt.List toolList = new java.awt.List();
 	private final Label label2 = new Label("Available Tools");
+	
+	TrackingDataSource source;
 
 	DataService dataS = new DataService();
 	
@@ -289,7 +295,9 @@ public class Gui extends JFrame implements ActionListener {
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					File selctedFile = fc.getSelectedFile();
 					String path2 = selctedFile.getAbsolutePath();
-					CSVFileReader.setPath(path2);
+					CSVFileReader newSource = new CSVFileReader();
+					newSource.setPath(path2);
+					source = newSource;
 					dataManager = new DataManager();
 					dataManagers.add(dataManager);
 					dataS.setDataManager(dataManager);
@@ -320,7 +328,9 @@ public class Gui extends JFrame implements ActionListener {
 				f = new File(adresse.getText());
 				path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
-					CSVFileReader.setPath(path);
+					CSVFileReader newSource = new CSVFileReader();
+					newSource.setPath(path);
+					source = newSource;
 					
 				} else {
 					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp",
@@ -353,7 +363,7 @@ public class Gui extends JFrame implements ActionListener {
 				value = true;
 				begin.setExit(false);
 				data.setCount();
-				testInputOutput.Networkconnection_test_app.setCount();
+				//testInputOutput.Networkconnection_test_app.setCount();
 			}
 
 			// if mesurementtyp pressed
@@ -472,7 +482,7 @@ public class Gui extends JFrame implements ActionListener {
 			} // loadData is pressed
 			else if (src == loadTool) {
 
-				inputOutput.CSVFileReader.setLine_counter();
+				//inputOutput.CSVFileReader.setLine_counter();
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
 				

@@ -1,6 +1,7 @@
 package userinterface;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,6 +27,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.application.*;
+import javafx.animation.Timeline;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
 import algorithm.DataManager;
@@ -40,6 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+
 
 import java.net.*;
 import inputOutput.*;
@@ -60,7 +66,36 @@ public class Diagramm extends Application {
 	File file;
 	
 	TrackingDataSource source;
+	DataService da;
+	
+	/*
+	 * Create new axes and fix the scale for the axes: plotting a range of
+	 * numbers.
+	 */
+	final NumberAxis xAxis = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis = new NumberAxis(-500, 500, 100);
 
+	final NumberAxis xAxis1 = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis1 = new NumberAxis(-500, 500, 100);
+
+	final NumberAxis xAxis2 = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis2 = new NumberAxis(-500, 500, 100);
+	
+	/*
+	 * Create new series for the coordinate system and set name.
+	 */
+	XYChart.Series series1 = new XYChart.Series();
+	// series1.setName("XY-Diagramm");
+	XYChart.Series series2 = new XYChart.Series();
+	// series2.setName("XZ-Diagramm");
+	XYChart.Series series3 = new XYChart.Series();
+	// series3.setName("YZ-Diagramm");
+	
+	/* Create new scatter-charts and put the created axes on them. */
+	final ScatterChart<Number, Number> s1 = new ScatterChart<Number, Number>(xAxis, yAxis);
+	final ScatterChart<Number, Number> s2 = new ScatterChart<Number, Number>(xAxis1, yAxis1);
+	final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
+	
 	@SuppressWarnings("unchecked")
 
 	/*
@@ -80,18 +115,7 @@ public class Diagramm extends Application {
 		/* The stage is named "x-y-z-Ebene" */
 		stage.setTitle("x-y-z-plane");
 
-		/*
-		 * Create new axes and fix the scale for the axes: plotting a range of
-		 * numbers.
-		 */
-		final NumberAxis xAxis = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis = new NumberAxis(-500, 500, 100);
-
-		final NumberAxis xAxis1 = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis1 = new NumberAxis(-500, 500, 100);
-
-		final NumberAxis xAxis2 = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis2 = new NumberAxis(-500, 500, 100);
+		
 
 		/* Set labels for the axes (with declared string-variables). */
 		xAxis.setLabel(x);
@@ -103,25 +127,12 @@ public class Diagramm extends Application {
 		xAxis2.setLabel(z);
 		yAxis2.setLabel(y);
 
-		/* Create new scatter-charts and put the created axes on them. */
-		final ScatterChart<Number, Number> s1 = new ScatterChart<Number, Number>(xAxis, yAxis);
-		final ScatterChart<Number, Number> s2 = new ScatterChart<Number, Number>(xAxis1, yAxis1);
-		final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
-
 		/* Set title for the scatter-charts. */
 		s1.setTitle("XY-plane");
 		s2.setTitle("XZ-plane");
 		s3.setTitle("YZ-plane");
 
-		/*
-		 * Create new series for the coordinate system and set name.
-		 */
-		XYChart.Series series1 = new XYChart.Series();
-		// series1.setName("XY-Diagramm");
-		XYChart.Series series2 = new XYChart.Series();
-		// series2.setName("XZ-Diagramm");
-		XYChart.Series series3 = new XYChart.Series();
-		// series3.setName("YZ-Diagramm");
+		
 
 		/*
 		 * set size for each scatter-chart and add the series on the
@@ -181,6 +192,7 @@ public class Diagramm extends Application {
 			if (f.exists() == true) {
 				CSVFileReader newSource = new CSVFileReader();
 				newSource.setPath(path);
+				newSource.setRepeatMode(true);
 				source = newSource;
 			}
 
@@ -200,6 +212,7 @@ public class Diagramm extends Application {
 			path = file.getAbsolutePath();
 			CSVFileReader newSource = new CSVFileReader();
 			newSource.setPath(path);
+			newSource.setRepeatMode(true);
 			source = newSource;
 
 			System.out.println(path);
@@ -219,7 +232,7 @@ public class Diagramm extends Application {
 
 			// create an object from the class "DataService" in package
 			// algorithm
-			DataService da = new DataService(source);
+			da = new DataService(source);
 			
 			// number of passes
 			Gui myGui = new Gui();
@@ -227,36 +240,16 @@ public class Diagramm extends Application {
 
 			value = tx2.getText();
 			loadvalue = Integer.parseInt(value);
-			// all Tools with all measurements
-			List<ToolMeasure> tools = da.loadNextData(loadvalue);
-			System.out.print("Size: " + tools.size());
-
-			/*
-			 * The for statement picks the tools from the List <ToolMeasure>
-			 * until the list-size of the tools
-			 */
-			for (int i = 0; i < tools.size(); i++) {
-				ToolMeasure tool = tools.get(i);
-				System.out.println("List tool " + i);
-
-				// all measurements from one tool
-				List<Measurement> li = tool.getMeasurement();
-				System.out.println("List size " + li.size());
-				System.out.print(li.get(0).getPoint());
-
-				/*
-				 * Call up the method "drawAchsen" from the class
-				 * "Coordinatesystem". Hand over the "choice", the tool,
-				 * required series and axes
-				 */
-		
-				Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
-				Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
-				Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
-				
-	
-				
-			}
+			
+			Timeline timeline = new Timeline();
+	        timeline.setCycleCount(Animation.INDEFINITE);
+	        timeline.getKeyFrames().add(
+	                new KeyFrame(Duration.millis(100),
+	                event2 -> updateDiagrams())
+	        );
+	        timeline.play();
+			updateDiagrams();
+			
 		});
 
 		hbox.setSpacing(10);
@@ -288,5 +281,65 @@ public class Diagramm extends Application {
 	public static void main(String[] args) {
 
 		launch(args);
+	}
+	
+	public void updateDiagrams()
+	{
+		// all Tools with all measurements
+		List<ToolMeasure> tools = da.loadNextData(loadvalue);
+		
+		/*
+		 * The for statement picks the tools from the List <ToolMeasure>
+		 * until the list-size of the tools
+		 */
+		//for (int i = 0; i < tools.size(); i++) {
+			ToolMeasure tool = tools.get(tools.size()-1);
+			
+			// all measurements from one tool
+			List<Measurement> li = tool.getMeasurement();
+			
+			series1.getData().clear();
+			series2.getData().clear();
+			series3.getData().clear();
+			
+			for (int i=1; i<5; i++)
+			{
+				if(li.size()-i < 0) break;
+				
+				double x = li.get(li.size()-i).getPoint().getX();
+				double y = li.get(li.size()-i).getPoint().getY();
+				double z = li.get(li.size()-i).getPoint().getZ();
+				
+				series1.getData().add(new XYChart.Data(x, y));
+				series2.getData().add(new XYChart.Data(x, z));
+				series3.getData().add(new XYChart.Data(z, y));
+			}
+			
+		
+			/*
+			series1 = new XYChart.Series();
+			series2 = new XYChart.Series();
+			series3 = new XYChart.Series();
+			s1.setPrefSize(400, 300);
+			s1.getData().addAll(series1);
+
+			s2.setPrefSize(400, 300);
+			s2.getData().addAll(series2);
+
+			s3.setPrefSize(400, 300);
+			s3.getData().addAll(series3);
+			*/
+			
+			
+			
+			/*
+			Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
+			Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
+			Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
+			*/
+			
+
+			
+		//}
 	}
 }
