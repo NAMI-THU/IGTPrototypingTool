@@ -11,20 +11,20 @@ import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
 
 public class OpenIGTLinkConnection {
 
-	private static double coordinate_x;
-	private static double coordinate_y;
-	private static double coordinate_z;
-	private static double rotation_r;
-	private static double rotation_x;
-	private static double rotation_y;
-	private static double rotation_z;
-	private static String name;
-	private static double timestamp;
-	private static double valid = 1;
-	private static ArrayList<Tool> toollist = new ArrayList<Tool>();
-	private static int counter = 0;
-	private static int counter1 = 1;
-	private static String helpname;
+	private double coordinate_x;
+	private double coordinate_y;
+	private double coordinate_z;
+	private double rotation_r;
+	private double rotation_x;
+	private double rotation_y;
+	private double rotation_z;
+	private String name;
+	private double timestamp;
+	private double valid = 1;
+	private ArrayList<Tool> toollist = new ArrayList<Tool>();
+	private int counter = 0;
+	private int counter1 = 1;
+	private String helpname;
 	private static boolean testapp = false;
 
 	// public static void update() {
