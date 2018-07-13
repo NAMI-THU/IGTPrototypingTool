@@ -58,6 +58,8 @@ public class Diagramm extends Application {
 	int loadvalue;
 	FileChooser fp;
 	File file;
+	
+	TrackingDataSource source;
 
 	@SuppressWarnings("unchecked")
 
@@ -177,8 +179,9 @@ public class Diagramm extends Application {
 			f = new File(tx.getText());
 			path = f.getAbsolutePath();
 			if (f.exists() == true) {
-				CSVFileReader.setPath(path);
-
+				CSVFileReader newSource = new CSVFileReader();
+				newSource.setPath(path);
+				source = newSource;
 			}
 
 		});
@@ -195,7 +198,9 @@ public class Diagramm extends Application {
 
 			file = fp.showOpenDialog(stage);
 			path = file.getAbsolutePath();
-			CSVFileReader.setPath(path);
+			CSVFileReader newSource = new CSVFileReader();
+			newSource.setPath(path);
+			source = newSource;
 
 			System.out.println(path);
 
@@ -207,15 +212,15 @@ public class Diagramm extends Application {
 		 */
 		start.setOnAction((event) -> {
 			
-			inputOutput.CSVFileReader.setLine_counter();
+			//inputOutput.CSVFileReader.setLine_counter();
 			series1.getData().clear();
 			series2.getData().clear();
 			series3.getData().clear();
 
 			// create an object from the class "DataService" in package
 			// algorithm
-			DataService da = new DataService();
-
+			DataService da = new DataService(source);
+			
 			// number of passes
 			Gui myGui = new Gui();
 			int countGoToNext = myGui.toloadvalue;

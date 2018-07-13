@@ -1,6 +1,9 @@
 package algorithm;
 
+import inputOutput.TrackingDataSource;
+
 import java.util.List;
+
 
 /** The class DataService represents the interface to team 1 */
 import com.jme3.math.Quaternion;
@@ -8,9 +11,20 @@ import com.jme3.math.Quaternion;
 public class DataService {
 	private DataProcessor dataProcessor;
 	private DataManager dataManager;
-
+	
 	public DataService() {
 		dataManager = new DataManager();
+		dataProcessor = new DataProcessor();
+	}
+	
+	public void setTrackingDataSource(TrackingDataSource source)
+	{
+		if (dataManager!=null) dataManager.setSource(source);
+	}
+
+	public DataService(TrackingDataSource source) {
+		dataManager = new DataManager();
+		dataManager.setSource(source);
 		dataProcessor = new DataProcessor();
 	}
 

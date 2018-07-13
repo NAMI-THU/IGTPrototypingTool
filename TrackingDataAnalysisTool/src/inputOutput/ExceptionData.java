@@ -24,14 +24,15 @@ public class ExceptionData {
 		switch (exception_number) {
 
 		case 0:
+			/*
 			if (CSVFileReader.getLine_counter() == 0) {
 				ExceptionWindow.setExceptionText("Data is empty");
 				
 
-			} else {
+			} else {*/
 				ExceptionWindow.setExceptionText("End of file");
 				
-			}
+			//}
 			break;
 
 		case 1:// must be changed to the right methodname of group userinterface

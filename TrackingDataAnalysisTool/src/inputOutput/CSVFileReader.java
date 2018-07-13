@@ -23,7 +23,7 @@ public class CSVFileReader extends TrackingDataSource {
 	private int number_of_tools = 0;
 	private String[] toolname = null;
 	private String path;
-	private int exception_number = 0;
+	private static int exception_number = 0;
 	private boolean repeatMode = false;
 	
 
@@ -199,13 +199,13 @@ public class CSVFileReader extends TrackingDataSource {
 	public void setPath(String abspath) {
 		System.out.println("Path set: " + path);
 		path = abspath;
-		userinterface.Gui.setTexttoloaded();
+		//userinterface.Gui.setTexttoloaded();
 	}
 
 	public int getLine_counter() {
 		return line_counter;
 	}
-	public int getException_number(){
+	public static int getException_number(){
 		return exception_number;
 		}
 	public void setLine_counter() {

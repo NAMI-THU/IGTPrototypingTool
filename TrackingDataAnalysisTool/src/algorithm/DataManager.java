@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import inputOutput.CSVFileReader;
-
 import inputOutput.Tool;
+import inputOutput.TrackingDataSource;
 
 /**
  * The class DataManager represents the interface to team 3 and manages our
  * data.
  */
 public class DataManager {
+	
+	private TrackingDataSource source;
+	
 
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
 	private boolean count = false;
@@ -19,6 +22,12 @@ public class DataManager {
 	public List<ToolMeasure> getToolMeasures() {
 		return toolMeasures;
 	}
+
+	
+	public void setSource(TrackingDataSource source) {
+		this.source = source;
+	}
+
 
 	/**
 	 * The method getNextData calls method update, which is from inputOutput,
@@ -34,9 +43,15 @@ public class DataManager {
 
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
+		if(source == null)
+		{
+			System.err.println("Tracking data source is not set. Aborting!");
+			return toolMeasures;
+		}
+		
 		for (double i = 1; i <= countToGetNext; i++) {
 			/* from return value of update a new measurement will be created */
-			List<Tool> tools = inputOutput.CSVFileReader.update();
+			List<Tool> tools = source.update();
 
 			if (tools.isEmpty()) {
 				inputOutput.ExceptionData.checkException();
