@@ -6,6 +6,6 @@ public abstract class TrackingDataSource {
 	
 	protected ArrayList<Tool> toollist = new ArrayList<Tool>();
 	
-	abstract ArrayList<Tool> update();
+	public abstract ArrayList<Tool> update();
 
 }

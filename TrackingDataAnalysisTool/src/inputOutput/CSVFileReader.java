@@ -24,8 +24,16 @@ public class CSVFileReader extends TrackingDataSource {
 	private String[] toolname = null;
 	private String path;
 	private int exception_number = 0;
+	private boolean repeatMode = false;
 	
 
+	public boolean isRepeatModeOn() {
+		return repeatMode;
+	}
+	public void setRepeatMode(boolean repeatMode) {
+		this.repeatMode = repeatMode;
+	}
+	
 	private BufferedReader csv_file = null;
 
 	// interface for the other groups
@@ -38,22 +46,27 @@ public class CSVFileReader extends TrackingDataSource {
 	 */
 	public ArrayList<Tool> update() {
 
-		System.out.println("Update called!");
 		// reader for CSV-file
 		try {
-			csv_file = new BufferedReader(new InputStreamReader(
+			
+			if (line_counter == 0) csv_file = new BufferedReader(new InputStreamReader(
 					new FileInputStream(path)));
-
+			
 			if (csv_file.readLine() != null) {
-				if (line_counter == 0) {
-
+				if (line_counter == 0) {	
 					init();
 				} else {
+					line_counter++;
 					match();
 				}
 				// return value of tool list
 				return toollist;
 			} else {
+				if(repeatMode)
+				{
+					csv_file.close();
+					line_counter = 0;
+				}
 				return toollist;
 			}
 
@@ -79,6 +92,7 @@ public class CSVFileReader extends TrackingDataSource {
 		// find the number of the tools
 		number_of_tools = (data.length) / 9;
 		toolname = new String[number_of_tools];
+		toollist = new ArrayList<Tool>();
 
 		// creating tools depending on the number of tools and adding them to the
 		// Tool list
@@ -112,7 +126,7 @@ public class CSVFileReader extends TrackingDataSource {
 			data_new[a] = Double.parseDouble(data[a]);
 		}
 
-		for (int i = 0, j = 0; i < number_of_tools; i++, j = j + 9) {
+		for (int i = 0, j = 0; i < toollist.size(); i++, j = j + 9) {
 			// assign the Values of the Csv-File to the Object
 			toollist.get(i).setData(data_new[j], data_new[j + 1],
 					data_new[j + 2], data_new[j + 3], data_new[j + 4],
@@ -122,14 +136,14 @@ public class CSVFileReader extends TrackingDataSource {
 		}
 
 		// decrease line_counter because next line has to be read
-
+		/*
 		if (csv_file.readLine() != null) {
 
 			line_counter++;
 		} else {
 			toollist.removeAll(toollist);
 
-		}
+		}*/
 	}
 
 	/**
