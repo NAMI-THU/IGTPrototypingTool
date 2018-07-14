@@ -54,8 +54,7 @@ public class DataManager {
 			List<Tool> tools = source.update();
 
 			if (tools.isEmpty()) {
-				inputOutput.ExceptionData.checkException();
-
+				//inputOutput.ExceptionData.checkException();
 				break;
 			}
 

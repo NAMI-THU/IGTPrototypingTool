@@ -56,12 +56,9 @@ public class Diagramm extends Application {
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
-	Button add, start, choose;
+	Button start, choose, network;
 	File f;
 	Stage stage;
-	String path;
-	String value;
-	int loadvalue;
 	FileChooser fp;
 	File file;
 	
@@ -158,66 +155,43 @@ public class Diagramm extends Application {
 
 		start = new Button("Start");
 
-		add = new Button("load Data");
-		TextField tx = new TextField();
-		tx.setText("Label");
-
-		tx.clear();
-
 		GridPane grid = new GridPane();
 		grid.setVgap(4);
 		grid.setHgap(10);
 		grid.setPadding(new Insets(5, 5, 5, 5));
-		grid.add(new Label("Path: "), 0, 0);
-		grid.add(tx, 2, 0);
-
-		TextField tx2 = new TextField();
-		tx2.setText("Number of files to load");
-
-		tx2.clear();
+		
 
 		GridPane grid2 = new GridPane();
 		grid2.setVgap(4);
 		grid2.setHgap(10);
 		grid2.setPadding(new Insets(5, 5, 5, 5));
-		grid2.add(new Label("Number of files to load: "), 0, 0);
-		grid2.add(tx2, 1, 0);
+		
+		
+		choose = new Button("Load Data");
 
-		// handle ADD button event
-		add.setOnAction((event) -> {
-			System.out.println("Add Button pressed");
-
-			f = new File(tx.getText());
-			path = f.getAbsolutePath();
-			if (f.exists() == true) {
-				CSVFileReader newSource = new CSVFileReader();
-				newSource.setPath(path);
-				newSource.setRepeatMode(true);
-				source = newSource;
-			}
-
-		});
-
-		choose = new Button("Search for Data");
-
-		// handle ADD button event
+		// handle button event
 		choose.setOnAction((event) -> {
-			System.out.println("Choose Button pressed");
-
 			fp = new FileChooser();
-			fp.setTitle("Search for Data");
+			fp.setTitle("Load Data");
 			fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
 
 			file = fp.showOpenDialog(stage);
-			path = file.getAbsolutePath();
 			CSVFileReader newSource = new CSVFileReader();
-			newSource.setPath(path);
+			newSource.setPath(file.getAbsolutePath());
 			newSource.setRepeatMode(true);
 			source = newSource;
 
-			System.out.println(path);
-
 		});
+		
+		network = new Button("Connect via OpenIGTLink (localhost)");
+		
+		// handle button event
+		network.setOnAction((event) -> {
+					
+					OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
+					source = newSource;
+
+				});
 
 		/*
 		 * add action on the button "start" if the button is clicked, there will
@@ -237,9 +211,6 @@ public class Diagramm extends Application {
 			// number of passes
 			Gui myGui = new Gui();
 			int countGoToNext = myGui.toloadvalue;
-
-			value = tx2.getText();
-			loadvalue = Integer.parseInt(value);
 			
 			Timeline timeline = new Timeline();
 	        timeline.setCycleCount(Animation.INDEFINITE);
@@ -262,7 +233,7 @@ public class Diagramm extends Application {
 		/*
 		 * the button "start" and the scatter-charts added to the vbox
 		 */
-		vbox.getChildren().addAll(grid, grid2, add, start, choose, s1, s2, s3);
+		vbox.getChildren().addAll(grid, grid2, start, choose, network, s1, s2, s3);
 
 		// vbox.getChildren().add(adresse);
 		hbox.setPadding(new Insets(50, 10, 50, 20));
@@ -286,60 +257,28 @@ public class Diagramm extends Application {
 	public void updateDiagrams()
 	{
 		// all Tools with all measurements
-		List<ToolMeasure> tools = da.loadNextData(loadvalue);
+		List<ToolMeasure> tools = da.loadNextData(1);
+		if(tools.isEmpty()) return;
+		ToolMeasure tool = tools.get(tools.size()-1);
+			
+		// all measurements from one tool
+		List<Measurement> li = tool.getMeasurement();
 		
-		/*
-		 * The for statement picks the tools from the List <ToolMeasure>
-		 * until the list-size of the tools
-		 */
-		//for (int i = 0; i < tools.size(); i++) {
-			ToolMeasure tool = tools.get(tools.size()-1);
-			
-			// all measurements from one tool
-			List<Measurement> li = tool.getMeasurement();
-			
-			series1.getData().clear();
-			series2.getData().clear();
-			series3.getData().clear();
-			
-			for (int i=1; i<5; i++)
-			{
-				if(li.size()-i < 0) break;
-				
-				double x = li.get(li.size()-i).getPoint().getX();
-				double y = li.get(li.size()-i).getPoint().getY();
-				double z = li.get(li.size()-i).getPoint().getZ();
-				
-				series1.getData().add(new XYChart.Data(x, y));
-				series2.getData().add(new XYChart.Data(x, z));
-				series3.getData().add(new XYChart.Data(z, y));
-			}
-			
+		series1.getData().clear();
+		series2.getData().clear();
+		series3.getData().clear();
 		
-			/*
-			series1 = new XYChart.Series();
-			series2 = new XYChart.Series();
-			series3 = new XYChart.Series();
-			s1.setPrefSize(400, 300);
-			s1.getData().addAll(series1);
-
-			s2.setPrefSize(400, 300);
-			s2.getData().addAll(series2);
-
-			s3.setPrefSize(400, 300);
-			s3.getData().addAll(series3);
-			*/
+		for (int i=1; i<5; i++) //use the last 5 measurements, otherwise blending will be a problem during motion
+		{
+			if(li.size()-i < 0) break;
 			
+			double x = li.get(li.size()-i).getPoint().getX();
+			double y = li.get(li.size()-i).getPoint().getY();
+			double z = li.get(li.size()-i).getPoint().getZ();
 			
-			
-			/*
-			Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
-			Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
-			Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
-			*/
-			
-
-			
-		//}
+			series1.getData().add(new XYChart.Data(x, y));
+			series2.getData().add(new XYChart.Data(x, z));
+			series3.getData().add(new XYChart.Data(z, y));
+		}
 	}
 }
