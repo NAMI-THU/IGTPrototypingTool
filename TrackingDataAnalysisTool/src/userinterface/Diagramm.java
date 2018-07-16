@@ -1,5 +1,6 @@
 package userinterface;
 
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
 
@@ -22,9 +23,7 @@ import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
-
 import algorithm.DataService;
-
 import inputOutput.*;
 
 public class Diagramm extends Application {
@@ -40,6 +39,7 @@ public class Diagramm extends Application {
 	
 	TrackingDataSource source;
 	DataService da;
+	MeasurementView myMeasurementView;
 	
 	/*
 	 * Create new axes and fix the scale for the axes: plotting a range of
@@ -187,12 +187,12 @@ public class Diagramm extends Application {
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
 		measurement.setOnAction((event) -> {
-			MeasurementView myGui = new MeasurementView();
-			myGui.setSize(1000, 1000);
-			myGui.setTitle("TrackingDataAnalysisTool");
-			myGui.setLocation(600,30);
-			myGui.setVisible(true);
-			myGui.validate();
+			myMeasurementView = new MeasurementView(source);
+			myMeasurementView.setSize(1000, 1000);
+			myMeasurementView.setTitle("TrackingDataAnalysisTool");
+			myMeasurementView.setLocation(600,30);
+			myMeasurementView.setVisible(true);
+			myMeasurementView.validate();
 		});
 
 		/* Add buttons and charts to the layout */
@@ -205,8 +205,7 @@ public class Diagramm extends Application {
 		stage.show();
 
 	}
-
-	
+		
 	public void updateDiagrams()
 	{
 		// all Tools with all measurements

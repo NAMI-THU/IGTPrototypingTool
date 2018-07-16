@@ -13,7 +13,10 @@ import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.TextField;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -44,27 +47,20 @@ import inputOutput.*;
 import testInputOutput.*;
 
 public class MeasurementView extends JFrame implements ActionListener {
-	// Declarations of Buttons for measurements, loading data, compute:
-	private JButton start = new JButton("Start Measurement");
-	private JButton finish = new JButton("End Measurement");
-	private JButton start2 = new JButton("Start 2.Measurement");
-	private JButton finish2 = new JButton("End 2.Measurement");
+	private JButton start2 = new JButton("Start Measurement");
+	private JButton finish2 = new JButton("End Measurement");
 	private JButton loadData = new JButton("Load Data");
 	private JButton calculate = new JButton("Calculate");
-	private JButton loadTool = new JButton("Load Tool");
+	private JButton loadTool = new JButton("Add Measurement");
 	private JButton restart = new JButton("Load New Data");
-	private boolean list2 = false;
-	private int linecounter = 0;
-	private ToolMeasure helptool = new ToolMeasure();
 	
-	private DataManager dataManager;
-	private List<DataManager> dataManagers = new ArrayList<>();
-	
+	private Map<String,ToolMeasure> storedMeasurements = new LinkedHashMap<String,ToolMeasure>();
+	private int measurementCounter = 0;
 	
 	private List<ToolMeasure> toolMeasures = new ArrayList<>();
-	private List<ToolMeasure> firstMeasurement = new ArrayList<>();
-	private List<ToolMeasure> secondMeasurement = new ArrayList<>();
 	DataProcessor dataProcessor = new DataProcessor();
+	
+	private Timer timer;
 
 	// Textfield for data source to load CSV- data:
 	private JTextField adresse = new JTextField(25);
@@ -75,18 +71,11 @@ public class MeasurementView extends JFrame implements ActionListener {
 	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
 	private JCheckBox cBCorrectnessR = new JCheckBox("Accuracy-Rotation", false);
 	private JCheckBox cBCorrectnessP = new JCheckBox("Accuracy-Position", false);
-	// Checkbox for Jitter, correctness, accuracy, rotation
-	private JLabel lblOpenIgtlink = new JLabel("Open IGTLINK");
 	private JLabel lValue = new JLabel();
 	private JLabel lCalcJR = new JLabel();
 	private JLabel lCalcC = new JLabel();
 	private JLabel lCalcJP = new JLabel();
 	private static JLabel loaded = new JLabel();
-	// Label
-	private JMenuBar bar;
-	private JMenu menu;
-	private JMenuItem openItem;
-	private JMenuItem closeItem;
 	// Jfile Chooser
 	private JTextField toLoadField = new JTextField(5);
 	private JLabel toLoad = new JLabel();
@@ -102,11 +91,9 @@ public class MeasurementView extends JFrame implements ActionListener {
 	private JLabel rotationL2 = new JLabel();
 	private JLabel rotationL3 = new JLabel();
 	private JLabel rotationL4 = new JLabel();
-
-	// Textfield, Label
-	private JButton exit_connection = new JButton("Exit Connection");
 	private boolean value = true;
 	private static boolean testapp = false;
+	private java.awt.List measurementList;
 
 	TextField positionJitter = new TextField();
 	File f;
@@ -125,6 +112,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 	JPanel panel2 = new JPanel();
 	int toloadvalue;
 	double toR, toD;
+	private final JButton btnNewButton = new JButton("Search Data");
 
 	public MeasurementView() {
 		// allow window
@@ -134,183 +122,186 @@ public class MeasurementView extends JFrame implements ActionListener {
 	
 	public MeasurementView(TrackingDataSource source) {
 		this.source = source;
+		
 		// allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		init();
+		
+		
+		if(source != null)
+		{
+			dataS.setTrackingDataSource(source); 
+			
+			for(Tool t : source.update()){
+				toolList.add(t.getName());
+				System.out.println("Add tool: " + t.getName());
+			}
+		}
+	}
+	
+	private void updateMeasurementList()
+	{
+		measurementList.removeAll();
+		for (String n : storedMeasurements.keySet())
+		{
+			measurementList.add(n);
+		}
 	}
 
 	private void init() {
 		// register for searching OITG or CSV
 		JTabbedPane tabbedPane = new JTabbedPane();
-		panel1 = new JPanel();
-		panel2 = new JPanel();
-		tabbedPane.addTab("CSV", panel1);
-		tabbedPane.addTab("OpenIGTLink", panel2);
-		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-		tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-
-		// Searching for data file
-		bar = new JMenuBar();
-		menu = new JMenu("Search for Data ");
-		openItem = new JMenuItem("Open");
-		closeItem = new JMenuItem("Close");
-		menu.add(openItem);
-		menu.add(closeItem);
-		bar.add(menu);
-		bar.setBounds(5, 20, 120, 20);
-		panel1.add(bar);
-
-		// Connection for OPENIGTLink
-		lblOpenIgtlink.setForeground(Color.RED);
-		lblOpenIgtlink.setBounds(350, 10, 120, 40);
-		panel2.add(lblOpenIgtlink);
-
-		JLabel l0 = new JLabel(" CSV-Datafile:"); // Label for CSV file path
-		l0.setBounds(20, 40, 120, 20);
-		panel1.add(l0);
-		adresse.setBounds(210, 40, 250, 20);
-		panel1.add(adresse);
-		loadData.setBounds(460, 40, 120, 20);
-		panel1.add(loadData);
-
-		toLoad.setText("Number of files to load"); // number of files to load
-		toLoad.setBounds(20, 140, 180, 25);
-		panel1.add(toLoad);
-		toLoadField.setBounds(210, 140, 180, 20);
-		panel1.add("n", toLoadField);
-
-		distance.setText("Expected Distance");// distance indication
-		distance.setBounds(20, 240, 130, 20);
-		panel1.add(distance);
-		distanceF.setBounds(210, 240, 180, 20);
-		panel1.add(distanceF);
-		distanceF.setEnabled(false);
-
-		rotationL.setText("Quaternion-Angabe"); // corner
-		rotationL.setBounds(20, 340, 170, 20);
-		panel1.add(rotationL);
-
-		rotationL1.setText("x:");
-		rotationL1.setBounds(200, 340, 15, 20);
-		panel1.add(rotationL1);
-		rotationAngle.setBounds(220, 340, 80, 20);
-		panel1.add(rotationAngle);
-
-		rotationL2.setText("y:");
-		rotationL2.setBounds(200, 360, 15, 20);
-		panel1.add(rotationL2);
-		rotationAngle1.setBounds(220, 360, 80, 20);
-		panel1.add(rotationAngle1);
-
-		rotationL3.setText("z:");
-		rotationL3.setBounds(200, 380, 15, 20);
-		panel1.add(rotationL3);
-		rotationAngle2.setBounds(220, 380, 80, 20);
-		panel1.add(rotationAngle2);
-
-		rotationL4.setText("r:");
-		rotationL4.setBounds(200, 400, 15, 20);
-		panel1.add(rotationL4);
-		rotationAngle3.setBounds(220, 400, 80, 20);
-		panel1.add(rotationAngle3);
-		rotationAngle.setEnabled(false);
-		rotationAngle1.setEnabled(false);
-		rotationAngle2.setEnabled(false);
-		rotationAngle3.setEnabled(false);
-
-		JLabel measuredTyp = new JLabel("Measurementtyp"); // measuredtyp
-		measuredTyp.setBounds(700, 72, 150, 20);
-		panel1.add(measuredTyp);
-		measurementtyp.setBounds(700, 120, 120, 25);
-		panel1.add(measurementtyp);
-		start.setBounds(200, 72, 150, 30); // setbounds for position
-		panel2.add(start);
-		start.setForeground(Color.GREEN); // set button "start" green
-		finish.setBounds(400, 72, 150, 30);
-		panel2.add(finish);
-		finish.setForeground(Color.RED); // set button "finish" red
-
-		cBJitterR.setBounds(650, 400, 150, 30);
-		panel1.add(cBJitterR);
-		cBJitterP.setBounds(650, 420, 150, 30);
-		panel1.add(cBJitterP);
-		cBCorrectnessR.setBounds(650, 440, 150, 30);
-		panel1.add(cBCorrectnessR);
-		cBCorrectnessP.setBounds(650, 460, 150, 30);
-		panel1.add(cBCorrectnessP);
-		calculate.setBounds(800, 400, 130, 60); // set bounds for calculate
-		panel1.add(calculate);
-
-		label2.setBounds(20, 480, 120, 20);
-		panel1.add(label2);
-		toolList.setBounds(20, 500, 120, 80);
-		panel1.add(toolList);
-		loadTool.setBounds(210, 500, 150, 25);
-		panel1.add(loadTool);
-
-		exit_connection.setBounds(350, 200, 160, 20);
-		panel2.add(exit_connection);
-
-		restart.setBounds(460, 600, 150, 30);
-		panel1.add(restart);
-
-		loaded.setBounds(600, 40, 120, 25);
-		panel1.add(loaded);
-
-		// Connection with ActionListener
-		start.addActionListener(this);
-		finish.addActionListener(this);
-		loadData.addActionListener(this);
-		calculate.addActionListener(this);
-		measurementtyp.addActionListener(this);
 		start2.addActionListener(this);
 		finish2.addActionListener(this);
-		cBJitterR.addActionListener(this);
-		cBJitterP.addActionListener(this);
-		cBCorrectnessR.addActionListener(this);
-		cBCorrectnessP.addActionListener(this);
-		toLoadField.addActionListener(this);
-		distanceF.addActionListener(this);
-		rotationAngle.addActionListener(this);
-		rotationAngle1.addActionListener(this);
-		rotationAngle2.addActionListener(this);
-		rotationAngle3.addActionListener(this);
-		toolList.addActionListener(this);
-		loadTool.addActionListener(this);
-		exit_connection.addActionListener(this);
-		restart.addActionListener(this);
-
-		panel1.setLayout(null);
-		panel2.setLayout(null);
-		this.setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());
 		this.getContentPane();
-		this.add(tabbedPane);
-
-		// Open with Actionslistener
-		openItem.addActionListener(new java.awt.event.ActionListener() {
-			// opens actionPerformed by clicking openItem
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				// added JFileChooser
-
-				FileFilter filter = new FileNameExtensionFilter("Testreihe",
-						"csv");
-				JFileChooser fc = new JFileChooser(FileSystemView
-						.getFileSystemView().getHomeDirectory());
-				fc.addChoosableFileFilter(filter);
-				int returnValue = fc.showOpenDialog(null);
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File selctedFile = fc.getSelectedFile();
-					String path2 = selctedFile.getAbsolutePath();
-					CSVFileReader newSource = new CSVFileReader();
-					newSource.setPath(path2);
-					source = newSource;
-					dataManager = new DataManager();
-					dataManagers.add(dataManager);
-					dataS.setDataManager(dataManager);
-
-				}
-			}
-		});
+		getContentPane().add(tabbedPane);
+		panel1 = new JPanel();
+		tabbedPane.addTab("Measurement", panel1);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+				panel1.setLayout(null);
+				
+						JLabel l0 = new JLabel(" CSV-Datafile:");
+						l0.setBounds(30, 107, 120, 20);
+						panel1.add(l0);
+						adresse.setBounds(200, 107, 318, 20);
+						panel1.add(adresse);
+						loadData.setBounds(528, 107, 120, 20);
+						panel1.add(loadData);
+								toLoad.setBounds(30, 40, 180, 25);
+						
+								toLoad.setText("Number of samples to load:");
+								panel1.add(toLoad);
+								toLoadField.setText("50");
+								toLoadField.setBounds(200, 42, 318, 20);
+								panel1.add(toLoadField);
+										distance.setBounds(661, 347, 130, 20);
+								
+										distance.setText("Expected Distance");
+										panel1.add(distance);
+										distanceF.setBounds(797, 347, 80, 20);
+										panel1.add(distanceF);
+										distanceF.setEnabled(false);
+												rotationL.setBounds(661, 378, 101, 20);
+										
+												rotationL.setText("Quaternion");
+												panel1.add(rotationL);
+														rotationL1.setBounds(777, 378, 15, 20);
+												
+														rotationL1.setText("x:");
+														panel1.add(rotationL1);
+														rotationAngle.setBounds(797, 378, 80, 20);
+														panel1.add(rotationAngle);
+																rotationL2.setBounds(777, 398, 15, 20);
+														
+																rotationL2.setText("y:");
+																panel1.add(rotationL2);
+																rotationAngle1.setBounds(797, 398, 80, 20);
+																panel1.add(rotationAngle1);
+																		rotationL3.setBounds(777, 418, 15, 20);
+																
+																		rotationL3.setText("z:");
+																		panel1.add(rotationL3);
+																		rotationAngle2.setBounds(797, 418, 80, 20);
+																		panel1.add(rotationAngle2);
+																				rotationL4.setBounds(777, 438, 15, 20);
+																		
+																				rotationL4.setText("r:");
+																				panel1.add(rotationL4);
+																				rotationAngle3.setBounds(797, 438, 80, 20);
+																				panel1.add(rotationAngle3);
+																				rotationAngle.setEnabled(false);
+																				rotationAngle1.setEnabled(false);
+																				rotationAngle2.setEnabled(false);
+																				rotationAngle3.setEnabled(false);
+																				
+																						JLabel measuredTyp = new JLabel("Type of Measurement");
+																						measuredTyp.setBounds(651, 316, 150, 20);
+																						panel1.add(measuredTyp);
+																						measurementtyp.setBounds(797, 314, 120, 25);
+																						panel1.add(measurementtyp);
+																								cBJitterR.setBounds(651, 540, 150, 30);
+																								panel1.add(cBJitterR);
+																								cBJitterP.setBounds(651, 560, 150, 30);
+																								panel1.add(cBJitterP);
+																								cBCorrectnessR.setBounds(651, 580, 150, 30);
+																								panel1.add(cBCorrectnessR);
+																								cBCorrectnessP.setBounds(651, 600, 150, 30);
+																								panel1.add(cBCorrectnessP);
+																								calculate.setBounds(807, 570, 130, 60);
+																								panel1.add(calculate);
+																										label2.setBounds(710, 40, 101, 20);
+																										panel1.add(label2);
+																										toolList.setBounds(817, 40, 120, 87);
+																										panel1.add(toolList);
+																										loadTool.setBounds(710, 137, 227, 23);
+																										panel1.add(loadTool);
+																												restart.setBounds(30, 618, 150, 30);
+																												panel1.add(restart);
+																														loaded.setText("<no data loaded>");
+																														loaded.setBounds(200, 138, 318, 22);
+																														panel1.add(loaded);
+																														loadData.addActionListener(this);
+																														calculate.addActionListener(this);
+																														measurementtyp.addActionListener(this);
+																														cBJitterR.addActionListener(this);
+																														cBJitterP.addActionListener(this);
+																														cBCorrectnessR.addActionListener(this);
+																														cBCorrectnessP.addActionListener(this);
+																														toLoadField.addActionListener(this);
+																														distanceF.addActionListener(this);
+																														rotationAngle.addActionListener(this);
+																														rotationAngle1.addActionListener(this);
+																														rotationAngle2.addActionListener(this);
+																														rotationAngle3.addActionListener(this);
+																														toolList.addActionListener(this);
+																														loadTool.addActionListener(this);
+																														restart.addActionListener(this);
+																																
+																																JLabel lblLoadDataFrom = new JLabel("Load data from file");
+																																lblLoadDataFrom.setBounds(10, 11, 195, 14);
+																																panel1.add(lblLoadDataFrom);
+																																
+																																JSeparator separator = new JSeparator();
+																																separator.setBounds(20, 183, 1003, 2);
+																																panel1.add(separator);
+																																
+																																JLabel lblCaptureContinousData = new JLabel("Capture continous data");
+																																lblCaptureContinousData.setBounds(15, 196, 195, 14);
+																																panel1.add(lblCaptureContinousData);
+																																
+																														
+																																start2.setForeground(Color.GREEN);
+																																start2.setBounds(210, 221, 150, 30);
+																																panel1.add(start2);
+																																
+																															
+																																finish2.setForeground(Color.RED);
+																																finish2.setBounds(378, 221, 150, 30);
+																																panel1.add(finish2);
+																																
+																																JSeparator separator_1 = new JSeparator();
+																																separator_1.setBounds(20, 281, 1003, 2);
+																																panel1.add(separator_1);
+																																
+																																JSeparator separator_2 = new JSeparator();
+																																separator_2.setBounds(369, 511, 5, -115);
+																																panel1.add(separator_2);
+																																btnNewButton.addActionListener(new ActionListener() {
+																																	public void actionPerformed(ActionEvent arg0) {
+																																	}
+																																});
+																																btnNewButton.setBounds(528, 138, 120, 20);
+																																
+																																panel1.add(btnNewButton);
+																																
+																																measurementList = new java.awt.List();
+																																measurementList.setBounds(30, 331, 554, 250);
+																																panel1.add(measurementList);
+																																
+																																Label label = new Label("Captured Measurements");
+																																label.setBounds(30, 302, 150, 20);
+																																panel1.add(label);
 	}
 
 	// Label for recognizing, if data is loaded
@@ -321,56 +312,51 @@ public class MeasurementView extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
-
-		String path;
-		algorithm.DataManager data = new algorithm.DataManager();
-		Networkconnection begin = new Networkconnection();
-
+				
 		try {
 			// button loaddata pressed
 			if (src == loadData) {
 
 				// get path and handover to group 3
 				f = new File(adresse.getText());
-				path = f.getAbsolutePath();
+				String path = f.getAbsolutePath();
 				if (f.exists() == true && path.endsWith(".csv")) {
 					CSVFileReader newSource = new CSVFileReader();
 					newSource.setPath(path);
 					source = newSource;
 					
 				} else {
-					JOptionPane.showMessageDialog(null, "Ungueltiger Dateityp",
+					JOptionPane.showMessageDialog(null, "Wrong data type!",
 							"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
 				
 
 				// button start pressed
-			} else if (src == start || src == start2) {
+			} else if (src == start2) {
 
 				JOptionPane.showMessageDialog(null,
-						"Jetzt das Geraet ruhig liegen lassen", "Warnung",
+						"Please hold tracking tool in fixed position.", "Attention!",
 						JOptionPane.WARNING_MESSAGE);
 
-				// open-IGT-Connection
-				if (value == true) {
-					value = false;
-					begin.start();
-
-				} else if (value == false) {
-					begin.setBreak(true);
-				}
+				dataS.getDataManager().setSource(source);
+				if (timer==null)timer = new Timer(50, this);
+		        timer.setInitialDelay(0);
+		        timer.start();
 
 				// button finish pressed
-			} else if (src == finish || src == finish2) {
-				begin.setBreak(false);
-				data.setCount();
-			} else if (src == exit_connection) {
-				// exit-button
-				value = true;
-				begin.setExit(false);
-				data.setCount();
-				//testInputOutput.Networkconnection_test_app.setCount();
-			}
+			} else if (src == finish2) {
+					
+				timer.stop();
+				System.out.println("Stop!");
+				storedMeasurements.put("Measurement " + measurementCounter + "("
+								       + dataS.getDataManager().getToolMeasures().get(0).getName() 
+								       + ")",dataS.getDataManager().getToolMeasures().get(0));
+				this.updateMeasurementList();
+				measurementCounter++;
+				
+				
+				
+			} 
 
 			// if mesurementtyp pressed
 			else if (src == measurementtyp) {
@@ -455,10 +441,8 @@ public class MeasurementView extends JFrame implements ActionListener {
 							(float) toR1, (float) toR2, (float) toR3,
 							(float) toR4);
 					
-					dataS.setDataManager(dataManagers.get(0));
-					ToolMeasure firstTool = dataS.getToolByName(toolList.getSelectedItem());
-					dataS.setDataManager(dataManagers.get(1));
-					ToolMeasure secondTool = dataS.getToolByName(toolList.getSelectedItem());
+					ToolMeasure firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
+					ToolMeasure secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
 
 					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
 							expectedrotation, firstTool.getMeasurement().get(0),secondTool.getMeasurement().get(0))));
@@ -470,25 +454,18 @@ public class MeasurementView extends JFrame implements ActionListener {
 					toD = Double.parseDouble(valueD);
 					lCalcC.setText("0,00");
 					
-					dataS.setDataManager(dataManagers.get(0));
-					ToolMeasure firstTool = dataS.getToolByName(toolList.getSelectedItem());
-					dataS.setDataManager(dataManagers.get(1));
-					ToolMeasure secondTool = dataS.getToolByName(toolList.getSelectedItem());
-					
+					ToolMeasure firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
+					ToolMeasure secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
 					
 					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
 							firstTool.getAverageMeasurement(),
 							secondTool.getAverageMeasurement())));
-//					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
-//							firstMeasurement.get(0).getAverageMeasurement(),
-//							secondMeasurement.get(0).getAverageMeasurement())));
 
 				}
 
 			} // loadData is pressed
 			else if (src == loadTool) {
 
-				//inputOutput.CSVFileReader.setLine_counter();
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
 				
@@ -499,46 +476,6 @@ public class MeasurementView extends JFrame implements ActionListener {
 					toolList.add(tm.getName());
 				}
 				
-
-//				for (ToolMeasure tm : toolMeasures) {
-//					toolList.add(tm.getName());
-//
-//					if (list2 == false) {
-//						firstMeasurement = toolMeasures;
-//
-//						linecounter = inputOutput.CSVFileReader
-//								.getLine_counter();
-//					} else {
-//
-//						for (int i = linecounter - 1; i < toolMeasures.get(0)
-//								.getMeasurement().size(); i++) {
-//
-//							helptool.addMeasurement(toolMeasures.get(0)
-//									.getMeasurement().get(i));
-//
-//						}
-//
-//						List<Measurement> mes = helptool.getMeasurement();
-//
-//						AverageMeasurement avgMes = dataProcessor
-//								.getAverageMeasurement(mes);
-//						avgMes.setErrors(dataProcessor.getErrors(mes,
-//								avgMes.getPoint()));
-//						avgMes.setError(dataProcessor.getJitter(avgMes
-//								.getErrors()));
-//						avgMes.setRotationError(dataProcessor
-//								.getRotationJitter(mes, avgMes.getRotation()));
-//						avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes
-//								.getErrors()));
-//
-//						helptool.setAverageMeasurement(avgMes);
-//
-//						secondMeasurement.add(helptool);
-//
-//					}
-//				}
-				list2 = true;
-
 			} else if (src == restart) {
 				// repaint();
 				toLoadField.setText("");
@@ -558,6 +495,13 @@ public class MeasurementView extends JFrame implements ActionListener {
 				toolList.removeAll();
 				loaded.setVisible(false);
 
+			}
+			
+			else //timer event
+			{
+				dataS.getDataManager().getNextData(1);
+				System.out.println("Capturing data...");
+				
 			}
 			// Exception-Window
 
@@ -583,5 +527,4 @@ public class MeasurementView extends JFrame implements ActionListener {
 			System.exit(0); // Prgm wird beendet
 		}
 	}
-
 }
