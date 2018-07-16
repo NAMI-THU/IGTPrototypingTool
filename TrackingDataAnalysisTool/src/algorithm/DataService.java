@@ -2,7 +2,9 @@ package algorithm;
 
 import inputOutput.TrackingDataSource;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 
 /** The class DataService represents the interface to team 1 */
@@ -19,13 +21,21 @@ public class DataService {
 	
 	public void setTrackingDataSource(TrackingDataSource source)
 	{
-		if (dataManager!=null) dataManager.setSource(source);
+		dataManager.setSource(source);
 	}
 
 	public DataService(TrackingDataSource source) {
 		dataManager = new DataManager();
 		dataManager.setSource(source);
 		dataProcessor = new DataProcessor();
+	}
+	
+	/** Restarts all measurements: resets
+	 *  the internal list of tools.
+	 */
+	public void restartMeasurements()
+	{
+		dataManager.restartMeasurements();
 	}
 
 	public void setDataManager(DataManager dataManager) {
@@ -57,6 +67,20 @@ public class DataService {
 		/* If the tool doesn't exists, the exception is thrown */
 		throw new Exception("Tool not found: " + Name);
 	}
+	
+	/**
+	 * This method checks if the tool exists and returns the average measurement
+	 * of all collected data of that tool
+	 * 
+	 * 
+	 * @param Name			name of a tool of type String 
+	 * @return  			average measurement of that tool
+	 * @throws				throws an exception if the tool was not found
+	 */
+	public AverageMeasurement getAverageMeasurement(String name) throws Exception
+	{
+		return getToolByName(name).getAverageMeasurement();
+	}
 
 	/**
 	 * 
@@ -78,7 +102,7 @@ public class DataService {
 		dataManager.getNextData(countToGetNext);
 		return dataManager.getToolMeasures();
 	}
-
+	
 	/**
 	 * This methods calculates the correctness of the position. The expected
 	 * distance can be entered via the surface. On the surface the desired

@@ -15,15 +15,25 @@ public class DataManager {
 	
 	private TrackingDataSource source;
 	
-
 	List<ToolMeasure> toolMeasures = new ArrayList<>();
-	private boolean count = false;
-
+	
 	public List<ToolMeasure> getToolMeasures() {
 		return toolMeasures;
 	}
-
 	
+	/** Restarts all measurements: resets
+	 *  the internal list of tools.
+	 */
+	public void restartMeasurements()
+	{
+		toolMeasures = new ArrayList<>();
+	}
+
+	/**
+	 * 
+	 * @param source Sets the TrackingDataSource that is 
+	 * 				 to get all data.
+	 */
 	public void setSource(TrackingDataSource source) {
 		this.source = source;
 	}
@@ -40,7 +50,6 @@ public class DataManager {
 	 *            ,
 	 * @return toolMeasures
 	 */
-
 	public List<ToolMeasure> getNextData(int countToGetNext) {
 
 		if(source == null)
@@ -95,34 +104,5 @@ public class DataManager {
 		newTool.addMeasurement(measurement);
 		toolMeasures.add(newTool);
 	}
-
-	/**
-	 * This method is called by inputOutput. She receives a list of tools. If the
-	 * variable count is true, a new measurement is created. Then, with the for-loop
-	 * you go over the list and for each tool the measurement is taken. Method
-	 * addMeasurementToTool is called, where the measurement is added to a tool. If
-	 * the variable count is false, count will be set on true.
-	 * 
-	 * @param test
-	 *            - a list of tools from inputOutput
-	 */
-
-	public void setList(ArrayList<Tool> test) {
-
-		if (count == true) {
-
-			List<Tool> tools = test;
-			for (Tool tool : tools) {
-				Measurement measurement = new Measurement(tool);
-				addMeasurementToTool(measurement);
-			}
-
-		} else {
-			count = true;
-		}
-	}
-
-	public void setCount() {
-		count = false;
-	}
+	
 }
