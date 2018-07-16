@@ -187,7 +187,7 @@ public class Diagramm extends Application {
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
 		measurement.setOnAction((event) -> {
-			Gui myGui = new Gui();
+			MeasurementView myGui = new MeasurementView();
 			myGui.setSize(1000, 1000);
 			myGui.setTitle("TrackingDataAnalysisTool");
 			myGui.setLocation(600,30);

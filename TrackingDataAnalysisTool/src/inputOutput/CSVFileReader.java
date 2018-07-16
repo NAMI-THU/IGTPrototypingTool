@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import testInputOutput.Exception_Window;
-import userinterface.Gui;
+import userinterface.MeasurementView;
 
 /**
  * this class reads in a 'CSV-file containing a variation of tools and coordinates of their position in a room.

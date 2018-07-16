@@ -43,7 +43,7 @@ import java.net.*;
 import inputOutput.*;
 import testInputOutput.*;
 
-public class Gui extends JFrame implements ActionListener {
+public class MeasurementView extends JFrame implements ActionListener {
 	// Declarations of Buttons for measurements, loading data, compute:
 	private JButton start = new JButton("Start Measurement");
 	private JButton finish = new JButton("End Measurement");
@@ -126,13 +126,13 @@ public class Gui extends JFrame implements ActionListener {
 	int toloadvalue;
 	double toR, toD;
 
-	public Gui() {
+	public MeasurementView() {
 		// allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		init();
 	}
 	
-	public Gui(TrackingDataSource source) {
+	public MeasurementView(TrackingDataSource source) {
 		this.source = source;
 		// allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
