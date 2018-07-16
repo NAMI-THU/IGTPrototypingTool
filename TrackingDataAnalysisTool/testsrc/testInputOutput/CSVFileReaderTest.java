@@ -19,8 +19,9 @@ public class CSVFileReaderTest {
 	@Test
 	public void updateTest() throws IOException {
 
-		String path = "Q:/logfile_neu.csv";
-		CSVFileReader.setPath(path);
+		String path = "C:/Users/franz-lokal/logfile.csv";
+		CSVFileReader myReader = new CSVFileReader();
+		myReader.setPath(path);
 
 		Tool testtool1 = new Tool();
 		testtool1.setData(188138.0, 1.0, 73.5664539062506, 75.3365062500002,
@@ -37,7 +38,7 @@ public class CSVFileReaderTest {
 		// read csv-file
 		for (int i = 1; i <= 1; i++) {
 
-			testlist = CSVFileReader.update();
+			testlist = myReader.update();
 
 		}
 
