@@ -177,9 +177,12 @@ public class Diagramm extends Application {
 
 			file = fp.showOpenDialog(stage);
 			CSVFileReader newSource = new CSVFileReader();
-			newSource.setPath(file.getAbsolutePath());
-			newSource.setRepeatMode(true);
-			source = newSource;
+			if (file != null)
+			{
+				newSource.setPath(file.getAbsolutePath());
+				newSource.setRepeatMode(true);
+				source = newSource;
+			}
 
 		});
 		
