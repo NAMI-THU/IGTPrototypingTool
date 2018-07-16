@@ -76,23 +76,6 @@ public class DataService {
 
 		/* calls method getNextData */
 		dataManager.getNextData(countToGetNext);
-
-		for (ToolMeasure toolMeasure : dataManager.getToolMeasures()) {
-
-			/* creation of a list of measurements */
-			List<Measurement> mes = toolMeasure.getMeasurement();
-			/* average measurement is calculated */
-			AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mes);
-
-			/* from the average measurement different calculations */
-			avgMes.setErrors(dataProcessor.getErrors(mes, avgMes.getPoint()));
-			avgMes.setError(dataProcessor.getJitter(avgMes.getErrors()));
-			avgMes.setRotationError(dataProcessor.getRotationJitter(mes, avgMes.getRotation()));
-			avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes.getErrors()));
-
-			toolMeasure.setAverageMeasurement(avgMes);
-		}
-
 		return dataManager.getToolMeasures();
 	}
 
