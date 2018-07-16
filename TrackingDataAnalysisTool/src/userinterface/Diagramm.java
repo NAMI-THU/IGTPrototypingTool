@@ -2,6 +2,7 @@ package userinterface;
 
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import algorithm.Measurement;
@@ -15,6 +16,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.animation.Timeline;
@@ -40,6 +42,7 @@ public class Diagramm extends Application {
 	TrackingDataSource source;
 	DataService da;
 	MeasurementView myMeasurementView;
+	Timeline timeline;
 	
 	/*
 	 * Create new axes and fix the scale for the axes: plotting a range of
@@ -68,6 +71,9 @@ public class Diagramm extends Application {
 	final ScatterChart<Number, Number> s1 = new ScatterChart<Number, Number>(xAxis, yAxis);
 	final ScatterChart<Number, Number> s2 = new ScatterChart<Number, Number>(xAxis1, yAxis1);
 	final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
+	
+	Label pos = new Label();
+	Label rot = new Label();
 	
 	@SuppressWarnings("unchecked")
 
@@ -118,12 +124,10 @@ public class Diagramm extends Application {
 		/* create a new scene */
 		Scene scene = new Scene(new Group());
 
-		/* create vbox and hbox for the scatter-charts */
-		final VBox vbox = new VBox();
-		final HBox hbox = new HBox();
-
+		
 		/* #############  create buttons  ############# */		
 		choose = new Button("Load Data From MITK CSV File");
+		choose.setMinWidth(280);
 
 		choose.setOnAction((event) -> { // handle button event
 			fp = new FileChooser();
@@ -137,22 +141,24 @@ public class Diagramm extends Application {
 				newSource.setPath(file.getAbsolutePath());
 				newSource.setRepeatMode(true);
 				source = newSource;
-				myMeasurementView.setTrackingDeviceSource(source);
+				if (myMeasurementView != null) myMeasurementView.setTrackingDeviceSource(source);
 			}
 
 		});
 		
 		network = new Button("Connect via OpenIGTLink (localhost)");
+		network.setMinWidth(280);
 		
 		// handle button event
 		network.setOnAction((event) -> {
 					OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
 					source = newSource;
-					myMeasurementView.setTrackingDeviceSource(source);
+					if (myMeasurementView!=null) myMeasurementView.setTrackingDeviceSource(source);
 				});
 		
 		/* create new button "start" with the name "Start" */
 		start = new Button("Start Tracking Data Visualization");
+		start.setMinWidth(280);
 
 		/*
 		 * add action on the button "start" if the button is clicked, there will
@@ -160,27 +166,31 @@ public class Diagramm extends Application {
 		 */
 		start.setOnAction((event) -> {
 	
-			series1.getData().clear();
-			series2.getData().clear();
-			series3.getData().clear();
-
-			// create an object from the class "DataService" in package
-			// algorithm
-			da = new DataService(source);
-					
-			Timeline timeline = new Timeline();
-	        timeline.setCycleCount(Animation.INDEFINITE);
-	        timeline.getKeyFrames().add(
-	                new KeyFrame(Duration.millis(100),
-	                event2 -> updateDiagrams())
-	        );
-	        timeline.play();
-			updateDiagrams();
+			if (timeline==null && source!=null)
+			{
+				series1.getData().clear();
+				series2.getData().clear();
+				series3.getData().clear();
+	
+				// create an object from the class "DataService" in package
+				// algorithm
+				da = new DataService(source);
+						
+				timeline = new Timeline();
+		        timeline.setCycleCount(Animation.INDEFINITE);
+		        timeline.getKeyFrames().add(
+		                new KeyFrame(Duration.millis(100),
+		                event2 -> updateDiagrams())
+		        );
+		        timeline.play();
+				updateDiagrams();
+			}
 			
 		});
 		
 		/* create new button "start" with the name "Start" */
 		measurement = new Button("Open Measurement View");
+		measurement.setMinWidth(280);
 
 		/*
 		 * add action on the button "start" if the button is clicked, there will
@@ -194,11 +204,23 @@ public class Diagramm extends Application {
 			myMeasurementView.setVisible(true);
 			myMeasurementView.validate();
 		});
+		
+		/* create layouts */
+		VBox vbox = new VBox();
+		VBox v2box = new VBox();
+		VBox v3box = new VBox();
+		HBox hbox = new HBox();
+		
 
+		pos.setText("Position: [-]");
+		rot.setText("Orientation: [-]");
+		
 		/* Add buttons and charts to the layout */
 		vbox.setSpacing(10);
 		vbox.getChildren().addAll(choose, network, start, measurement);
-		hbox.getChildren().addAll(vbox, s1, s2, s3);
+		v2box.getChildren().addAll(s1,s2);
+		v3box.getChildren().addAll(s3,pos,rot);
+		hbox.getChildren().addAll(v2box, v3box,vbox);
 		
 		((Group) scene.getRoot()).getChildren().add(hbox);
 		stage.setScene(scene);
@@ -228,6 +250,17 @@ public class Diagramm extends Application {
 			double x = li.get(li.size()-i).getPoint().getX();
 			double y = li.get(li.size()-i).getPoint().getY();
 			double z = li.get(li.size()-i).getPoint().getZ();
+			
+			if(i==1) 
+				{
+				DecimalFormat df = new DecimalFormat("0.00");
+				double qX = li.get(li.size()-i).getRotation().getX();
+				double qY = li.get(li.size()-i).getRotation().getY();
+				double qZ = li.get(li.size()-i).getRotation().getZ();
+				double qR = li.get(li.size()-i).getRotation().getW();
+				pos.setText("Position: [" + df.format(x) + ";" + df.format(y) +";"+df.format(z)+"]");
+				rot.setText("Orientation: ["+df.format(qX)+ ";" +df.format(qY)+ ";" +df.format(qZ)+ ";" +df.format(qR)+"]");
+				}
 			
 			series1.getData().add(new XYChart.Data(x, y));
 			series2.getData().add(new XYChart.Data(x, z));

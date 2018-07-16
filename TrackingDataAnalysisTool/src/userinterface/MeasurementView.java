@@ -108,25 +108,24 @@ public class MeasurementView extends JFrame implements ActionListener {
 	
 	private TrackingDataSource source; //source for continous tracking
 	private TrackingDataSource source_filereader; //source for reading single files
-	private DataService dataS;
+	private DataService dataS = new DataService();
 	private Map<String,ToolMeasure> storedMeasurements = new LinkedHashMap<String,ToolMeasure>();
 	private int measurementCounter = 0;
 	
 	
 	public MeasurementView() {
 		// allow window
-		dataS = new DataService();
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		init();
 	}
 	
 	public void setTrackingDeviceSource(TrackingDataSource source) {
 		this.source = source;
+		this.dataS.setTrackingDataSource(source);
 	}
 				
 	public MeasurementView(TrackingDataSource source) {
 		this.source = source;
-		dataS = new DataService();
 		
 		// allow window
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -165,7 +164,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 						panel1.add(l0);
 						adresse.setBounds(200, 107, 318, 20);
 						panel1.add(adresse);
-						loadData.setBounds(528, 107, 120, 20);
+						loadData.setBounds(528, 138, 120, 20);
 						panel1.add(loadData);
 								toLoad.setBounds(30, 40, 180, 25);
 						
@@ -220,15 +219,15 @@ public class MeasurementView extends JFrame implements ActionListener {
 																						panel1.add(measuredTyp);
 																						measurementtyp.setBounds(797, 314, 120, 25);
 																						panel1.add(measurementtyp);
-																								cBJitterR.setBounds(651, 540, 150, 30);
+																								cBJitterR.setBounds(684, 596, 110, 30);
 																								panel1.add(cBJitterR);
-																								cBJitterP.setBounds(651, 560, 150, 30);
+																								cBJitterP.setBounds(684, 493, 110, 30);
 																								panel1.add(cBJitterP);
-																								cBCorrectnessR.setBounds(651, 580, 150, 30);
+																								cBCorrectnessR.setBounds(684, 570, 120, 30);
 																								panel1.add(cBCorrectnessR);
-																								cBCorrectnessP.setBounds(651, 600, 150, 30);
+																								cBCorrectnessP.setBounds(684, 519, 120, 30);
 																								panel1.add(cBCorrectnessP);
-																								calculate.setBounds(807, 570, 130, 60);
+																								calculate.setBounds(807, 493, 130, 137);
 																								panel1.add(calculate);
 																										label2.setBounds(710, 40, 101, 20);
 																										panel1.add(label2);
@@ -285,7 +284,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 																																separator_2.setBounds(369, 511, 5, -115);
 																																panel1.add(separator_2);
 																																searchButton.addActionListener(this);
-																																searchButton.setBounds(528, 138, 120, 20);
+																																searchButton.setBounds(528, 107, 120, 20);
 																																
 																																panel1.add(searchButton);
 																																
@@ -323,7 +322,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 					for(Tool t : source_filereader.update()){
 						toolList.add(t.getName());
 					}
-					loaded.setText("Loaded:" + path);
+					loaded.setText("Loaded: " + path);
 					
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong data type!",
@@ -345,10 +344,13 @@ public class MeasurementView extends JFrame implements ActionListener {
 			// button start pressed
 			} else if (src == start2) {
 
+				if(source==null) {JOptionPane.showMessageDialog(null, "Tracking not started yet (aborting)!" ,
+						"Warning", JOptionPane.WARNING_MESSAGE); return;}
+				
 				JOptionPane.showMessageDialog(null,
 						"Please hold tracking tool in fixed position.", "Attention!",
 						JOptionPane.WARNING_MESSAGE);
-
+				
 				dataS.restartMeasurements();
 				timer = new Timer(50, this);
 		        timer.setInitialDelay(0);
@@ -357,8 +359,9 @@ public class MeasurementView extends JFrame implements ActionListener {
 			// button finish pressed
 			} else if (src == finish2) {
 					
+				if(source==null || !timer.isRunning()) { JOptionPane.showMessageDialog(null, "Tracking not started yet (aborting)!" ,
+						"Warning", JOptionPane.WARNING_MESSAGE); return;}
 				timer.stop();
-				System.out.println("Stop!");
 				storedMeasurements.put("Measurement " + measurementCounter + "("
 								       + dataS.getDataManager().getToolMeasures().get(0).getName() 
 								       + ")",dataS.getDataManager().getToolMeasures().get(0));
