@@ -52,7 +52,6 @@ public class MeasurementView extends JFrame implements ActionListener {
 	private JButton loadData = new JButton("Load Data");
 	private JButton calculate = new JButton("Calculate");
 	private JButton loadTool = new JButton("Add Measurement");
-	private JButton restart = new JButton("Load New Data");
 	
 	private Map<String,ToolMeasure> storedMeasurements = new LinkedHashMap<String,ToolMeasure>();
 	private int measurementCounter = 0;
@@ -236,8 +235,6 @@ public class MeasurementView extends JFrame implements ActionListener {
 																										panel1.add(toolList);
 																										loadTool.setBounds(710, 137, 227, 23);
 																										panel1.add(loadTool);
-																												restart.setBounds(30, 618, 150, 30);
-																												panel1.add(restart);
 																														loaded.setText("<no data loaded>");
 																														loaded.setBounds(200, 138, 318, 22);
 																														panel1.add(loaded);
@@ -256,7 +253,6 @@ public class MeasurementView extends JFrame implements ActionListener {
 																														rotationAngle3.addActionListener(this);
 																														toolList.addActionListener(this);
 																														loadTool.addActionListener(this);
-																														restart.addActionListener(this);
 																																
 																																JLabel lblLoadDataFrom = new JLabel("Load data from file");
 																																lblLoadDataFrom.setBounds(10, 11, 195, 14);
@@ -300,7 +296,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 																																panel1.add(measurementList);
 																																
 																																Label label = new Label("Captured Measurements");
-																																label.setBounds(30, 302, 150, 20);
+																																label.setBounds(10, 305, 150, 20);
 																																panel1.add(label);
 	}
 
@@ -338,6 +334,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 						"Please hold tracking tool in fixed position.", "Attention!",
 						JOptionPane.WARNING_MESSAGE);
 
+				dataS = new DataService(source);
 				dataS.getDataManager().setSource(source);
 				if (timer==null)timer = new Timer(50, this);
 		        timer.setInitialDelay(0);
@@ -367,21 +364,10 @@ public class MeasurementView extends JFrame implements ActionListener {
 					rotationAngle1.setEnabled(true);
 					rotationAngle2.setEnabled(true);
 					rotationAngle3.setEnabled(true);
-
-					start2.setBounds(200, 110, 150, 30);
-					panel2.add(start2);
-					start2.setForeground(Color.GREEN);
-					start2.setEnabled(true);
-					finish2.setBounds(400, 110, 150, 30);
-					panel2.add(finish2);
-					finish2.setForeground(Color.RED);
-					finish2.setEnabled(true);
-
 				}
 				// button sough pressed
 				if ("Rauschen".equals(selected)) {
-					start2.setEnabled(false);
-					finish2.setEnabled(false);
+					
 					distanceF.setEnabled(false);
 					rotationAngle.setEnabled(false);
 					rotationAngle1.setEnabled(false);
@@ -390,12 +376,24 @@ public class MeasurementView extends JFrame implements ActionListener {
 
 				}
 
-				// button calculate pressed
-			} else if (src == calculate) {
+				
+			} 
+			
+			else if (src == calculate) // button calculate pressed
+			{
 
-				ToolMeasure tool = dataS.getToolByName(toolList
-						.getSelectedItem());
+				System.out.println("Computing results");
+				ToolMeasure tool = (ToolMeasure) storedMeasurements.values().toArray()[0]; 
+				System.out.println("name: "+tool.getName());
+				System.out.println("size: "+tool.getMeasurement().size());
 				AverageMeasurement avgMes = tool.getAverageMeasurement();
+				/*
+				for (Measurement m : tool.getMeasurement())
+				{
+					System.out.println("Captured value: " + m.getPoint());
+				}
+				System.out.println("jitter: "+avgMes.getJitter());
+				*/
 
 				lValue.setText("Calculated Value");
 				lValue.setBounds(650, 510, 130, 30);
@@ -418,7 +416,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 				// JCheckBox cBJitterP pressed
 				if (cBJitterP.isSelected()) {
 					lCalcJP.setText("0,00");
-					lCalcJP.setText(String.valueOf(avgMes.getError()));
+					lCalcJP.setText(String.valueOf(avgMes.getJitter()));
 
 				}
 				// JChekBox cBCorrectnessR pressed
@@ -443,7 +441,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 					
 					ToolMeasure firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
 					ToolMeasure secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
-
+					
 					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
 							expectedrotation, firstTool.getMeasurement().get(0),secondTool.getMeasurement().get(0))));
 
@@ -454,17 +452,43 @@ public class MeasurementView extends JFrame implements ActionListener {
 					toD = Double.parseDouble(valueD);
 					lCalcC.setText("0,00");
 					
-					ToolMeasure firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
-					ToolMeasure secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
+					ToolMeasure firstTool = null;
+					ToolMeasure secondTool = null;
+					AverageMeasurement avgMes1 = new AverageMeasurement();
+					AverageMeasurement avgMes2 = new AverageMeasurement();
+					for (ToolMeasure m : storedMeasurements.values())
+						{
+						/*
+						if (firstTool == null) 
+							{
+							firstTool = m;
+							System.out.println("Tool1:" + firstTool.getName());
+							avgMes1 = dataProcessor.getAverageMeasurement(firstTool.getMeasurement());
+							}
+						else if (secondTool==null) 
+							{
+							secondTool = m;
+							System.out.println("Tool2:" + secondTool.getName());
+							avgMes2 = dataProcessor.getAverageMeasurement(secondTool.getMeasurement());
+							}*/
+						System.out.println("Tool:"+m.getName());
+						
+						}
 					
-					lCalcC.setText(String.valueOf(dataS.getAccuracy(toD,
-							firstTool.getAverageMeasurement(),
-							secondTool.getAverageMeasurement())));
+								
+					System.out.println("Avgmes1:" + avgMes1.getPoint());
+					System.out.println("Avgmes2:" + avgMes2.getPoint());
+					
+					lCalcJP.setText(String.valueOf(dataS.getAccuracy(toD,
+							avgMes1,
+							avgMes2)));
 
 				}
 
-			} // loadData is pressed
-			else if (src == loadTool) {
+			} 
+			
+			else if (src == loadTool) // loadData is pressed
+			{
 
 				valueL = toLoadField.getText();
 				toloadvalue = Integer.parseInt(valueL);
@@ -476,28 +500,9 @@ public class MeasurementView extends JFrame implements ActionListener {
 					toolList.add(tm.getName());
 				}
 				
-			} else if (src == restart) {
-				// repaint();
-				toLoadField.setText("");
-				adresse.setText("");
-				rotationAngle.setText("");
-				rotationAngle1.setText("");
-				rotationAngle2.setText("");
-				rotationAngle3.setText("");
-				distanceF.setText("");
-				lCalcJR.setText("");
-				lCalcJP.setText("");
-				lCalcC.setText("");
-				cBJitterR.setSelected(false);
-				cBJitterP.setSelected(false);
-				cBCorrectnessR.setSelected(false);
-				cBCorrectnessP.setSelected(false);
-				toolList.removeAll();
-				loaded.setVisible(false);
-
-			}
+			} 
 			
-			else //timer event
+			else if (src == timer) //timer event
 			{
 				dataS.getDataManager().getNextData(1);
 				System.out.println("Capturing data...");
@@ -508,7 +513,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 		} catch (
 
 		Exception ep) {
-			if (f.exists() == false) {
+			if (f!=null && (f.exists() == false)) {
 				JOptionPane.showMessageDialog(null,
 						"Dateipfad existiert nicht", "Fenstertitel",
 						JOptionPane.ERROR_MESSAGE);
