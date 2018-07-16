@@ -28,6 +28,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -102,7 +106,8 @@ public class MeasurementView extends JFrame implements ActionListener {
 	double toR, toD;
 	
 	
-	private TrackingDataSource source;
+	private TrackingDataSource source; //source for continous tracking
+	private TrackingDataSource source_filereader; //source for reading single files
 	private DataService dataS;
 	private Map<String,ToolMeasure> storedMeasurements = new LinkedHashMap<String,ToolMeasure>();
 	private int measurementCounter = 0;
@@ -115,6 +120,10 @@ public class MeasurementView extends JFrame implements ActionListener {
 		init();
 	}
 	
+	public void setTrackingDeviceSource(TrackingDataSource source) {
+		this.source = source;
+	}
+				
 	public MeasurementView(TrackingDataSource source) {
 		this.source = source;
 		dataS = new DataService();
@@ -125,12 +134,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 		
 		if(source != null)
 		{
-			dataS.setTrackingDataSource(source); 
-			
-			for(Tool t : source.update()){
-				toolList.add(t.getName());
-				System.out.println("Add tool: " + t.getName());
-			}
+			dataS.setTrackingDataSource(source); 			
 		}
 	}
 	
@@ -280,10 +284,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 																																JSeparator separator_2 = new JSeparator();
 																																separator_2.setBounds(369, 511, 5, -115);
 																																panel1.add(separator_2);
-																																searchButton.addActionListener(new ActionListener() {
-																																	public void actionPerformed(ActionEvent arg0) {
-																																	}
-																																});
+																																searchButton.addActionListener(this);
 																																searchButton.setBounds(528, 138, 120, 20);
 																																
 																																panel1.add(searchButton);
@@ -307,7 +308,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 		Object src = e.getSource();
 				
 		try {
-			// button loaddata pressed
+			// button loaddata (from file) pressed
 			if (src == loadData) {
 
 				// get path and handover to group 3
@@ -316,14 +317,31 @@ public class MeasurementView extends JFrame implements ActionListener {
 				if (f.exists() == true && path.endsWith(".csv")) {
 					CSVFileReader newSource = new CSVFileReader();
 					newSource.setPath(path);
-					source = newSource;
+					source_filereader = newSource;
+					
+					toolList.removeAll();
+					for(Tool t : source_filereader.update()){
+						toolList.add(t.getName());
+					}
+					loaded.setText("Loaded:" + path);
 					
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong data type!",
-							"Warnung", JOptionPane.WARNING_MESSAGE);
+							"Error", JOptionPane.WARNING_MESSAGE);
 				}
-				
-
+			} else if (src == searchButton) {
+				FileFilter filter = new FileNameExtensionFilter("Testreihe",
+						"csv");
+				JFileChooser fc = new JFileChooser(FileSystemView
+						.getFileSystemView().getHomeDirectory());
+				fc.addChoosableFileFilter(filter);
+				int returnValue = fc.showOpenDialog(null);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selctedFile = fc.getSelectedFile();
+					String path = selctedFile.getAbsolutePath();
+					adresse.setText(path);
+				}
+					
 			// button start pressed
 			} else if (src == start2) {
 
@@ -483,18 +501,18 @@ public class MeasurementView extends JFrame implements ActionListener {
 
 			} 
 			
-			else if (src == loadTool) // loadData is pressed
+			else if (src == loadTool) // loadData (from file) is pressed
 			{
 
-				valueL = toLoadField.getText();
-				toloadvalue = Integer.parseInt(valueL);
-				/*
-				toolMeasures = dataS.loadNextData(toloadvalue);
-				
-				
-				for (ToolMeasure tm : toolMeasures) {
-					toolList.add(tm.getName());
-				}*/
+				DataService loadDataService = new DataService();
+				loadDataService.setTrackingDataSource(source_filereader);
+				loadDataService.loadNextData(Integer.parseInt(toLoadField.getText()),true);
+				ToolMeasure newMeasurement = loadDataService.getToolByName(toolList.getSelectedItem());
+				storedMeasurements.put("Measurement " + measurementCounter + "("
+					       + newMeasurement.getName() 
+					       + ", from file)",newMeasurement);
+				this.updateMeasurementList();
+				measurementCounter++;
 				
 			} 
 			
@@ -502,7 +520,6 @@ public class MeasurementView extends JFrame implements ActionListener {
 			{
 				dataS.getDataManager().getNextData(1);
 				System.out.println("Capturing data...");
-				
 			}
 			// Exception-Window
 
@@ -511,12 +528,12 @@ public class MeasurementView extends JFrame implements ActionListener {
 		Exception ep) {
 			if (f!=null && (f.exists() == false)) {
 				JOptionPane.showMessageDialog(null,
-						"Dateipfad existiert nicht", "Fenstertitel",
+						"File does not exist.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			} else {
 
-				JOptionPane.showMessageDialog(null, "Fehlermeldung",
-						"Fenstertitel", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Error: " + ep.toString() ,
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

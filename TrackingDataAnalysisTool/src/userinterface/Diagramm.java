@@ -137,6 +137,7 @@ public class Diagramm extends Application {
 				newSource.setPath(file.getAbsolutePath());
 				newSource.setRepeatMode(true);
 				source = newSource;
+				myMeasurementView.setTrackingDeviceSource(source);
 			}
 
 		});
@@ -145,10 +146,9 @@ public class Diagramm extends Application {
 		
 		// handle button event
 		network.setOnAction((event) -> {
-					
 					OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
 					source = newSource;
-
+					myMeasurementView.setTrackingDeviceSource(source);
 				});
 		
 		/* create new button "start" with the name "Start" */
@@ -209,6 +209,7 @@ public class Diagramm extends Application {
 	public void updateDiagrams()
 	{
 		// all Tools with all measurements
+		source.update();
 		List<ToolMeasure> tools = da.loadNextData(1);
 		if(tools.isEmpty()) return;
 		ToolMeasure tool = tools.get(tools.size()-1);
