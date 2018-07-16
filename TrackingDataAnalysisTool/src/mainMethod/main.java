@@ -9,6 +9,8 @@ import userinterface.*;
 public class main {
 
 	public static void main(String[] args) {
+		
+		/*
 		Gui myGui = new Gui();
 		myGui.setSize(1000, 1000);
 		myGui.setTitle("TrackingDataAnalysisTool");
@@ -16,10 +18,11 @@ public class main {
 		myGui.setVisible(true);
 		myGui.validate();
 		myGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		*/
 		
 		
         Diagramm app = new Diagramm();
-        app.main(null);
+        //app.main(null);
         
        
         
