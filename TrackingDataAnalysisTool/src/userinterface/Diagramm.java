@@ -32,7 +32,7 @@ public class Diagramm extends Application {
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
-	Button start, choose, network;
+	Button start, choose, network, measurement;
 	File f;
 	Stage stage;
 	FileChooser fp;
@@ -178,10 +178,26 @@ public class Diagramm extends Application {
 			updateDiagrams();
 			
 		});
+		
+		/* create new button "start" with the name "Start" */
+		measurement = new Button("Open Measurement View");
+
+		/*
+		 * add action on the button "start" if the button is clicked, there will
+		 * be shown the values x, y and z on the axes of the scatter-charts
+		 */
+		measurement.setOnAction((event) -> {
+			Gui myGui = new Gui();
+			myGui.setSize(1000, 1000);
+			myGui.setTitle("TrackingDataAnalysisTool");
+			myGui.setLocation(600,30);
+			myGui.setVisible(true);
+			myGui.validate();
+		});
 
 		/* Add buttons and charts to the layout */
 		vbox.setSpacing(10);
-		vbox.getChildren().addAll(choose, network, start);
+		vbox.getChildren().addAll(choose, network, start, measurement);
 		hbox.getChildren().addAll(vbox, s1, s2, s3);
 		
 		((Group) scene.getRoot()).getChildren().add(hbox);

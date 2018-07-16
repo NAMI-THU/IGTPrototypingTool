@@ -131,6 +131,13 @@ public class Gui extends JFrame implements ActionListener {
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		init();
 	}
+	
+	public Gui(TrackingDataSource source) {
+		this.source = source;
+		// allow window
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		init();
+	}
 
 	private void init() {
 		// register for searching OITG or CSV
@@ -276,7 +283,6 @@ public class Gui extends JFrame implements ActionListener {
 		panel1.setLayout(null);
 		panel2.setLayout(null);
 		this.setLayout(new BorderLayout());
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE); // for closing
 		this.getContentPane();
 		this.add(tabbedPane);
 
