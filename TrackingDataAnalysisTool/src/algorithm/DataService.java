@@ -103,6 +103,14 @@ public class DataService {
 		return dataManager.getToolMeasures();
 	}
 	
+	public List<ToolMeasure> loadNextData(int countToGetNext, boolean updateSource) {
+
+		if(updateSource) dataManager.getSource().update();
+		/* calls method getNextData */
+		dataManager.getNextData(countToGetNext);
+		return dataManager.getToolMeasures();
+	}
+	
 	/**
 	 * This methods calculates the correctness of the position. The expected
 	 * distance can be entered via the surface. On the surface the desired

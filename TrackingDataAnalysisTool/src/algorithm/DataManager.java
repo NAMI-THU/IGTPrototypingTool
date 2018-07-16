@@ -60,7 +60,7 @@ public class DataManager {
 		
 		for (double i = 1; i <= countToGetNext; i++) {
 			/* from return value of update a new measurement will be created */
-			List<Tool> tools = source.update();
+			List<Tool> tools = source.getLastToolist();
 
 			if (tools.isEmpty()) {
 				//inputOutput.ExceptionData.checkException();
@@ -75,6 +75,10 @@ public class DataManager {
 		}
 
 		return toolMeasures;
+	}
+
+	public TrackingDataSource getSource() {
+		return source;
 	}
 
 	/**

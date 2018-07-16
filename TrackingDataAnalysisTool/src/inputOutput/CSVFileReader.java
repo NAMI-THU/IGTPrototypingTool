@@ -49,22 +49,23 @@ public class CSVFileReader extends TrackingDataSource {
 		// reader for CSV-file
 		try {
 			
-			if (line_counter == 0) csv_file = new BufferedReader(new InputStreamReader(
-					new FileInputStream(path)));
-			
+			if ((line_counter == 0) || (csv_file == null)) {
+				line_counter = 0;
+				init();
+			}
+						
 			if (csv_file.readLine() != null) {
-				if (line_counter == 0) {	
-					init();
-				} else {
-					line_counter++;
-					match();
-				}
-				// return value of tool list
+				
+				line_counter++;
+				match();
 				return toollist;
-			} else {
+			} 
+			
+			else {
 				if(repeatMode)
 				{
 					csv_file.close();
+					csv_file = null;
 					line_counter = 0;
 				}
 				return toollist;
@@ -88,7 +89,7 @@ public class CSVFileReader extends TrackingDataSource {
 	private void init() throws IOException {
 
 		read();
-		System.out.println("Init called!");
+		
 		// find the number of the tools
 		number_of_tools = (data.length) / 9;
 		toolname = new String[number_of_tools];
@@ -135,15 +136,6 @@ public class CSVFileReader extends TrackingDataSource {
 
 		}
 
-		// decrease line_counter because next line has to be read
-		/*
-		if (csv_file.readLine() != null) {
-
-			line_counter++;
-		} else {
-			toollist.removeAll(toollist);
-
-		}*/
 	}
 
 	/**
@@ -167,7 +159,6 @@ public class CSVFileReader extends TrackingDataSource {
 			for (int j = 0; j <= line_counter; j++) {
 
 				line = csv_file.readLine();
-
 				data = line.split(";");
 
 			}
