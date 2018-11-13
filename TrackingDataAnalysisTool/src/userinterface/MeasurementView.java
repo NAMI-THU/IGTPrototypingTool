@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.TextField;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -400,7 +401,7 @@ public class MeasurementView extends JFrame implements ActionListener {
 			{
 
 				System.out.println("Computing results");
-				ToolMeasure tool = (ToolMeasure) storedMeasurements.values().toArray()[0]; 
+				ToolMeasure tool = (ToolMeasure) storedMeasurements.values().toArray()[measurementList.getSelectedIndex()]; 
 				//System.out.println("name: "+tool.getName());
 				//System.out.println("size: "+tool.getMeasurement().size());
 				AverageMeasurement avgMes = tool.getAverageMeasurement();
@@ -426,14 +427,14 @@ public class MeasurementView extends JFrame implements ActionListener {
 
 				// JCheckBox cBJitterR pressed
 				if (cBJitterR.isSelected()) {
-					lCalcJR.setText("0,00");
-					lCalcJR.setText(String.valueOf(avgMes.getRotationError()));
+					lCalcJR.setText("0.00 mm");
+					lCalcJR.setText(new DecimalFormat("#0.00").format(avgMes.getRotationError())+ " mm");
 
 				}
 				// JCheckBox cBJitterP pressed
 				if (cBJitterP.isSelected()) {
-					lCalcJP.setText("0,00");
-					lCalcJP.setText(String.valueOf(avgMes.getJitter()));
+					lCalcJP.setText("0.00 mm");
+					lCalcJP.setText(new DecimalFormat("#0.00").format(avgMes.getJitter()) + " mm");
 
 				}
 				// JChekBox cBCorrectnessR pressed
