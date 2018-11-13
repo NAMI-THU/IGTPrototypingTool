@@ -1,6 +1,11 @@
 package inputOutput;
 
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,15 +36,23 @@ import com.neuronrobotics.sdk.addons.kinematics.math.*;
 
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
 
-	private static boolean exit = true;
-	private static boolean stop = true;
-
-	private static GenericIGTLinkClient client;
-
+	private boolean exit = true;
+	private boolean stop = true;
+	
+	private GenericIGTLinkClient client;
+	
+	public class ToolData
+	{
+		String name;
+		TransformNR t;
+	}
+	private List<ToolData> toolDataList = Collections.synchronizedList(new LinkedList<ToolData>());
+	
+	
 	/**
 	 * @param args
 	 */
-	public static void Connection() {
+	public void Connect(String ipAddress, int port) {
 
 		exit = true;
 
@@ -52,9 +65,11 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 			Log.enableSystemPrint(false);
 
 			Log.debug("Starting client");
-			client = new GenericIGTLinkClient("127.0.0.1", 18944);
+			client = new GenericIGTLinkClient(ipAddress, port);
 
-			client.addIOpenIgtOnPacket(new Networkconnection());
+			client.addIOpenIgtOnPacket(this);
+			toolDataList = Collections.synchronizedList(new LinkedList<ToolData>());
+			
 
 			// while (exit == true) {
 			// Thread.sleep(1000);
@@ -76,11 +91,32 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 	@Override
 	public void onRxTransform(String name, TransformNR t) {
 		Log.debug("Received Transform: " + t);
-
+		
 		if (exit == true && stop == true) {
-
-			OpenIGTLinkConnection igt = new OpenIGTLinkConnection();
-			igt.setValues(name, t);
+			
+			boolean foundTool = false;
+			
+			synchronized (toolDataList) 
+			{
+				for(ToolData d : toolDataList)
+				{
+					if(d.name.equals(name)) 
+						{
+						d.t = t;
+						foundTool = true;
+						}
+				}
+				
+				if (!foundTool)
+				{
+					ToolData newData = new ToolData();
+					newData.name = name;
+					newData.t = t;
+					toolDataList.add(newData);
+				}
+			}
+			
+			
 		} else if (exit == false) {
 			client.stopClient();
 		}
@@ -103,6 +139,8 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		}
 	}
 
+	
+
 	public void setExit(boolean value) {
 		exit = value;
 	}
@@ -112,7 +150,7 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 	}
 
 	public void run() {
-		Connection();
+		//Connection();
 	}
 
 	@Override
@@ -172,5 +210,9 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 		for (int i = 0; i < data.length; i++) {
 			Log.debug("Data[" + i + "]=" + data[i]);
 		}
+	}
+
+	public List<ToolData> getToolDataList() {
+		return toolDataList;
 	}
 }

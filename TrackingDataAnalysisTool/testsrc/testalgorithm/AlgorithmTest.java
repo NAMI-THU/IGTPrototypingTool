@@ -35,7 +35,7 @@ public class AlgorithmTest {
 	public void getAverageMeasurementIsCorrect() {
 		setUpData();
 
-		AverageMeasurement result = processor.getAverageMeasurement(testTool.getMeasurement());
+		AverageMeasurement result = testTool.getAverageMeasurement();
 
 		Point3D expectedPoint = new Point3D(2, 2, 2);
 		Point3D avgPoint = result.getPoint();
@@ -53,9 +53,8 @@ public class AlgorithmTest {
 	public void getJitterIsCorrect() {
 		setUpData();
 
-		double result = processor
-				.getJitter(processor.getErrors(testTool.getMeasurement(), testTool.getAverageMeasurement().getPoint()));
-
+		double result = testTool.getAverageMeasurement().getJitter();
+		System.out.println("result:"+result);
 		assertTrue(result == 1.414213562373095);
 
 	}
@@ -82,8 +81,7 @@ public class AlgorithmTest {
 	public void getRotationJitterIsCorrect() {
 		setUpData();
 
-		Quaternion result = processor.getRotationJitter(testTool.getMeasurement(),
-				new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
+		Quaternion result = testTool.getAverageRotation();
 
 		assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) 0.8164966)));
 
@@ -185,8 +183,6 @@ public class AlgorithmTest {
 		Measurement measurement2 = new Measurement();
 		Measurement measurement3 = new Measurement();
 
-		AverageMeasurement avgM = new AverageMeasurement();
-
 		Point3D p1 = new Point3D(1, 1, 1);
 		Point3D p2 = new Point3D(2, 2, 2);
 		Point3D p3 = new Point3D(3, 3, 3);
@@ -198,7 +194,6 @@ public class AlgorithmTest {
 		measurement3.setPoint(p3);
 		measurement3.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
 
-		avgM.setPoint(p2);
 
 		measurements.add(measurement1);
 		measurements.add(measurement2);
@@ -207,8 +202,6 @@ public class AlgorithmTest {
 		testTool.addMeasurement(measurement1);
 		testTool.addMeasurement(measurement2);
 		testTool.addMeasurement(measurement3);
-
-		testTool.setAverageMeasurement(avgM);
 
 	}
 

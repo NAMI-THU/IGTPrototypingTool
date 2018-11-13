@@ -1,6 +1,11 @@
 package algorithm;
 
+import inputOutput.TrackingDataSource;
+
+import java.util.ArrayList;
 import java.util.List;
+
+
 
 /** The class DataService represents the interface to team 1 */
 import com.jme3.math.Quaternion;
@@ -8,10 +13,29 @@ import com.jme3.math.Quaternion;
 public class DataService {
 	private DataProcessor dataProcessor;
 	private DataManager dataManager;
-
+	
 	public DataService() {
 		dataManager = new DataManager();
 		dataProcessor = new DataProcessor();
+	}
+	
+	public void setTrackingDataSource(TrackingDataSource source)
+	{
+		dataManager.setSource(source);
+	}
+
+	public DataService(TrackingDataSource source) {
+		dataManager = new DataManager();
+		dataManager.setSource(source);
+		dataProcessor = new DataProcessor();
+	}
+	
+	/** Restarts all measurements: resets
+	 *  the internal list of tools.
+	 */
+	public void restartMeasurements()
+	{
+		dataManager.restartMeasurements();
 	}
 
 	public void setDataManager(DataManager dataManager) {
@@ -43,6 +67,20 @@ public class DataService {
 		/* If the tool doesn't exists, the exception is thrown */
 		throw new Exception("Tool not found: " + Name);
 	}
+	
+	/**
+	 * This method checks if the tool exists and returns the average measurement
+	 * of all collected data of that tool
+	 * 
+	 * 
+	 * @param Name			name of a tool of type String 
+	 * @return  			average measurement of that tool
+	 * @throws				throws an exception if the tool was not found
+	 */
+	public AverageMeasurement getAverageMeasurement(String name) throws Exception
+	{
+		return getToolByName(name).getAverageMeasurement();
+	}
 
 	/**
 	 * 
@@ -62,26 +100,17 @@ public class DataService {
 
 		/* calls method getNextData */
 		dataManager.getNextData(countToGetNext);
-
-		for (ToolMeasure toolMeasure : dataManager.getToolMeasures()) {
-
-			/* creation of a list of measurements */
-			List<Measurement> mes = toolMeasure.getMeasurement();
-			/* average measurement is calculated */
-			AverageMeasurement avgMes = dataProcessor.getAverageMeasurement(mes);
-
-			/* from the average measurement different calculations */
-			avgMes.setErrors(dataProcessor.getErrors(mes, avgMes.getPoint()));
-			avgMes.setError(dataProcessor.getJitter(avgMes.getErrors()));
-			avgMes.setRotationError(dataProcessor.getRotationJitter(mes, avgMes.getRotation()));
-			avgMes.setBoxPlot(dataProcessor.getBoxPlot(avgMes.getErrors()));
-
-			toolMeasure.setAverageMeasurement(avgMes);
-		}
-
 		return dataManager.getToolMeasures();
 	}
+	
+	public List<ToolMeasure> loadNextData(int countToGetNext, boolean updateSource) {
 
+		if(updateSource) dataManager.getSource().update();
+		/* calls method getNextData */
+		dataManager.getNextData(countToGetNext);
+		return dataManager.getToolMeasures();
+	}
+	
 	/**
 	 * This methods calculates the correctness of the position. The expected
 	 * distance can be entered via the surface. On the surface the desired

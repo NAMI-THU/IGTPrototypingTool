@@ -19,13 +19,14 @@ public class CSV_File_was_not_found {
 	@Test
 	public void updateTest() throws IOException {
 
-		String path = "Q:/logfile_neu.csv";
-		CSVFileReader.setPath(path);
+		String path = "C:/Users/franz-lokal/logfile.csv";
+		CSVFileReader myReader = new CSVFileReader();
+		myReader.setPath(path);
 
 		
 		for (int i = 1; i <= 150; i++) {
 
-			testlist = CSVFileReader.update();
+			testlist = myReader.update();
 			
 			
 			try {

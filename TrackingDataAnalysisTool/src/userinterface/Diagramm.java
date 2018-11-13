@@ -1,15 +1,12 @@
 package userinterface;
 
-import java.io.BufferedReader;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import algorithm.Measurement;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -20,45 +17,64 @@ import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.application.*;
+import javafx.animation.Timeline;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
-import algorithm.DataManager;
-import algorithm.DataProcessor;
 import algorithm.DataService;
-
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-
-import java.net.*;
 import inputOutput.*;
-import testInputOutput.*;
 
 public class Diagramm extends Application {
 
 	/*
 	 * Create a button named "add" create a button named "start".
 	 */
-	Button add, start, choose;
+	Button start, choose, network, measurement;
 	File f;
 	Stage stage;
-	String path;
-	String value;
-	int loadvalue;
 	FileChooser fp;
 	File file;
+	
+	TrackingDataSource source;
+	DataService da;
+	MeasurementView myMeasurementView;
+	Timeline timeline;
+	
+	/*
+	 * Create new axes and fix the scale for the axes: plotting a range of
+	 * numbers.
+	 */
+	final NumberAxis xAxis = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis = new NumberAxis(-500, 500, 100);
 
+	final NumberAxis xAxis1 = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis1 = new NumberAxis(-500, 500, 100);
+
+	final NumberAxis xAxis2 = new NumberAxis(-500, 500, 100);
+	final NumberAxis yAxis2 = new NumberAxis(-500, 500, 100);
+	
+	/*
+	 * Create new series for the coordinate system and set name.
+	 */
+	XYChart.Series series1 = new XYChart.Series();
+	// series1.setName("XY-Diagramm");
+	XYChart.Series series2 = new XYChart.Series();
+	// series2.setName("XZ-Diagramm");
+	XYChart.Series series3 = new XYChart.Series();
+	// series3.setName("YZ-Diagramm");
+	
+	/* Create new scatter-charts and put the created axes on them. */
+	final ScatterChart<Number, Number> s1 = new ScatterChart<Number, Number>(xAxis, yAxis);
+	final ScatterChart<Number, Number> s2 = new ScatterChart<Number, Number>(xAxis1, yAxis1);
+	final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
+	
+	Label pos = new Label();
+	Label rot = new Label();
+	
 	@SuppressWarnings("unchecked")
 
 	/*
@@ -69,57 +85,28 @@ public class Diagramm extends Application {
 	@Override
 	public void start(Stage stage) throws InterruptedException {
 
-		/* Create variables x, y and z from type string to store each axis */
+		
 
+		stage.setTitle("Tracking Data Analysis Tool");
+
+		/* ############# create charts #############  */
+		/* create variables x, y and z from type string to store each axis */
 		String x = "X-axis";
 		String y = "Y-axis";
 		String z = "Z-axis";
 
-		/* The stage is named "x-y-z-Ebene" */
-		stage.setTitle("x-y-z-plane");
-
-		/*
-		 * Create new axes and fix the scale for the axes: plotting a range of
-		 * numbers.
-		 */
-		final NumberAxis xAxis = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis = new NumberAxis(-500, 500, 100);
-
-		final NumberAxis xAxis1 = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis1 = new NumberAxis(-500, 500, 100);
-
-		final NumberAxis xAxis2 = new NumberAxis(-500, 500, 100);
-		final NumberAxis yAxis2 = new NumberAxis(-500, 500, 100);
-
 		/* Set labels for the axes (with declared string-variables). */
 		xAxis.setLabel(x);
 		yAxis.setLabel(y);
-
 		xAxis1.setLabel(x);
 		yAxis1.setLabel(z);
-
 		xAxis2.setLabel(z);
 		yAxis2.setLabel(y);
-
-		/* Create new scatter-charts and put the created axes on them. */
-		final ScatterChart<Number, Number> s1 = new ScatterChart<Number, Number>(xAxis, yAxis);
-		final ScatterChart<Number, Number> s2 = new ScatterChart<Number, Number>(xAxis1, yAxis1);
-		final ScatterChart<Number, Number> s3 = new ScatterChart<Number, Number>(xAxis2, yAxis2);
 
 		/* Set title for the scatter-charts. */
 		s1.setTitle("XY-plane");
 		s2.setTitle("XZ-plane");
 		s3.setTitle("YZ-plane");
-
-		/*
-		 * Create new series for the coordinate system and set name.
-		 */
-		XYChart.Series series1 = new XYChart.Series();
-		// series1.setName("XY-Diagramm");
-		XYChart.Series series2 = new XYChart.Series();
-		// series2.setName("XZ-Diagramm");
-		XYChart.Series series3 = new XYChart.Series();
-		// series3.setName("YZ-Diagramm");
 
 		/*
 		 * set size for each scatter-chart and add the series on the
@@ -137,151 +124,147 @@ public class Diagramm extends Application {
 		/* create a new scene */
 		Scene scene = new Scene(new Group());
 
-		/* create vbox and hbox for the scatter-charts */
-		final VBox vbox = new VBox();
-		final HBox hbox = new HBox();
+		
+		/* #############  create buttons  ############# */		
+		choose = new Button("Load Data From MITK CSV File");
+		choose.setMinWidth(280);
 
-		/* create new button "start" with the name "Start" */
-
-		start = new Button("Start");
-
-		add = new Button("load Data");
-		TextField tx = new TextField();
-		tx.setText("Label");
-
-		tx.clear();
-
-		GridPane grid = new GridPane();
-		grid.setVgap(4);
-		grid.setHgap(10);
-		grid.setPadding(new Insets(5, 5, 5, 5));
-		grid.add(new Label("Path: "), 0, 0);
-		grid.add(tx, 2, 0);
-
-		TextField tx2 = new TextField();
-		tx2.setText("Number of files to load");
-
-		tx2.clear();
-
-		GridPane grid2 = new GridPane();
-		grid2.setVgap(4);
-		grid2.setHgap(10);
-		grid2.setPadding(new Insets(5, 5, 5, 5));
-		grid2.add(new Label("Number of files to load: "), 0, 0);
-		grid2.add(tx2, 1, 0);
-
-		// handle ADD button event
-		add.setOnAction((event) -> {
-			System.out.println("Add Button pressed");
-
-			f = new File(tx.getText());
-			path = f.getAbsolutePath();
-			if (f.exists() == true) {
-				CSVFileReader.setPath(path);
-
-			}
-
-		});
-
-		choose = new Button("Search for Data");
-
-		// handle ADD button event
-		choose.setOnAction((event) -> {
-			System.out.println("Choose Button pressed");
-
+		choose.setOnAction((event) -> { // handle button event
 			fp = new FileChooser();
-			fp.setTitle("Search for Data");
+			fp.setTitle("Load Data");
 			fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
 
 			file = fp.showOpenDialog(stage);
-			path = file.getAbsolutePath();
-			CSVFileReader.setPath(path);
-
-			System.out.println(path);
+			CSVFileReader newSource = new CSVFileReader();
+			if (file != null)
+			{
+				newSource.setPath(file.getAbsolutePath());
+				newSource.setRepeatMode(true);
+				source = newSource;
+				if (myMeasurementView != null) myMeasurementView.setTrackingDeviceSource(source);
+			}
 
 		});
+		
+		network = new Button("Connect via OpenIGTLink (localhost)");
+		network.setMinWidth(280);
+		
+		// handle button event
+		network.setOnAction((event) -> {
+					OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
+					source = newSource;
+					if (myMeasurementView!=null) myMeasurementView.setTrackingDeviceSource(source);
+				});
+		
+		/* create new button "start" with the name "Start" */
+		start = new Button("Start Tracking Data Visualization");
+		start.setMinWidth(280);
 
 		/*
 		 * add action on the button "start" if the button is clicked, there will
 		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
 		start.setOnAction((event) -> {
-			
-			inputOutput.CSVFileReader.setLine_counter();
-			series1.getData().clear();
-			series2.getData().clear();
-			series3.getData().clear();
-
-			// create an object from the class "DataService" in package
-			// algorithm
-			DataService da = new DataService();
-
-			// number of passes
-			Gui myGui = new Gui();
-			int countGoToNext = myGui.toloadvalue;
-
-			value = tx2.getText();
-			loadvalue = Integer.parseInt(value);
-			// all Tools with all measurements
-			List<ToolMeasure> tools = da.loadNextData(loadvalue);
-			System.out.print("Size: " + tools.size());
-
-			/*
-			 * The for statement picks the tools from the List <ToolMeasure>
-			 * until the list-size of the tools
-			 */
-			for (int i = 0; i < tools.size(); i++) {
-				ToolMeasure tool = tools.get(i);
-				System.out.println("List tool " + i);
-
-				// all measurements from one tool
-				List<Measurement> li = tool.getMeasurement();
-				System.out.println("List size " + li.size());
-				System.out.print(li.get(0).getPoint());
-
-				/*
-				 * Call up the method "drawAchsen" from the class
-				 * "Coordinatesystem". Hand over the "choice", the tool,
-				 * required series and axes
-				 */
-		
-				Coordinatesystem.drawAchsen("xy", li, series1, xAxis, yAxis);
-				Coordinatesystem.drawAchsen("xz", li, series2, xAxis, yAxis);
-				Coordinatesystem.drawAchsen("zy", li, series3, xAxis, yAxis);
-				
 	
-				
+			if (timeline==null && source!=null)
+			{
+				series1.getData().clear();
+				series2.getData().clear();
+				series3.getData().clear();
+	
+				// create an object from the class "DataService" in package
+				// algorithm
+				da = new DataService(source);
+						
+				timeline = new Timeline();
+		        timeline.setCycleCount(Animation.INDEFINITE);
+		        timeline.getKeyFrames().add(
+		                new KeyFrame(Duration.millis(100),
+		                event2 -> updateDiagrams())
+		        );
+		        timeline.play();
+				updateDiagrams();
 			}
+			
 		});
-
-		hbox.setSpacing(10);
-
-		/*
-		 * vbox added to the hbox
-		 */
-		hbox.getChildren().addAll(vbox);
+		
+		/* create new button "start" with the name "Start" */
+		measurement = new Button("Open Measurement View");
+		measurement.setMinWidth(280);
 
 		/*
-		 * the button "start" and the scatter-charts added to the vbox
+		 * add action on the button "start" if the button is clicked, there will
+		 * be shown the values x, y and z on the axes of the scatter-charts
 		 */
-		vbox.getChildren().addAll(grid, grid2, add, start, choose, s1, s2, s3);
+		measurement.setOnAction((event) -> {
+			myMeasurementView = new MeasurementView(source);
+			myMeasurementView.setSize(1000, 1000);
+			myMeasurementView.setTitle("TrackingDataAnalysisTool");
+			myMeasurementView.setLocation(600,30);
+			myMeasurementView.setVisible(true);
+			myMeasurementView.validate();
+		});
+		
+		/* create layouts */
+		VBox vbox = new VBox();
+		VBox v2box = new VBox();
+		VBox v3box = new VBox();
+		HBox hbox = new HBox();
+		
 
-		// vbox.getChildren().add(adresse);
-		hbox.setPadding(new Insets(50, 10, 50, 20));
-
-		stage.setX(120);
-		stage.setY(0);
-		/*
-		 * vbox added to the scene and the scene added to the main stage
-		 */
-		((Group) scene.getRoot()).getChildren().add(vbox);
+		pos.setText("Position: [-]");
+		rot.setText("Orientation: [-]");
+		
+		/* Add buttons and charts to the layout */
+		vbox.setSpacing(10);
+		vbox.getChildren().addAll(choose, network, start, measurement);
+		v2box.getChildren().addAll(s1,s2);
+		v3box.getChildren().addAll(s3,pos,rot);
+		hbox.getChildren().addAll(v2box, v3box,vbox);
+		
+		((Group) scene.getRoot()).getChildren().add(hbox);
 		stage.setScene(scene);
 		stage.show();
 
 	}
-
-	public static void main(String[] args) {
-
-		launch(args);
+		
+	public void updateDiagrams()
+	{
+		// all Tools with all measurements
+		source.update();
+		List<ToolMeasure> tools = da.loadNextData(1);
+		if(tools.isEmpty()) return;
+		ToolMeasure tool = tools.get(tools.size()-1);
+			
+		// all measurements from one tool
+		List<Measurement> li = tool.getMeasurement();
+		
+		series1.getData().clear();
+		series2.getData().clear();
+		series3.getData().clear();
+		
+		for (int i=1; i<5; i++) //use the last 5 measurements, otherwise blending will be a problem during motion
+		{
+			if(li.size()-i < 0) break;
+			
+			double x = li.get(li.size()-i).getPoint().getX();
+			double y = li.get(li.size()-i).getPoint().getY();
+			double z = li.get(li.size()-i).getPoint().getZ();
+			
+			if(i==1) 
+				{
+				DecimalFormat df = new DecimalFormat("0.00");
+				double qX = li.get(li.size()-i).getRotation().getX();
+				double qY = li.get(li.size()-i).getRotation().getY();
+				double qZ = li.get(li.size()-i).getRotation().getZ();
+				double qR = li.get(li.size()-i).getRotation().getW();
+				pos.setText("Position: [" + df.format(x) + ";" + df.format(y) +";"+df.format(z)+"]");
+				rot.setText("Orientation: ["+df.format(qX)+ ";" +df.format(qY)+ ";" +df.format(qZ)+ ";" +df.format(qR)+"]");
+				}
+			
+			series1.getData().add(new XYChart.Data(x, y));
+			series2.getData().add(new XYChart.Data(x, z));
+			series3.getData().add(new XYChart.Data(z, y));
+		}
 	}
 }

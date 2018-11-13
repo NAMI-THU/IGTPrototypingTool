@@ -3,6 +3,8 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.geometry.Point3D;
+
 import com.jme3.math.Quaternion;
 
 public class AverageMeasurement extends Measurement {
@@ -11,9 +13,18 @@ public class AverageMeasurement extends Measurement {
 		super();
 	}
 
-	private double error;
 	private Quaternion rotationError;
 	private List<Double> errors = new ArrayList<>();
+	Quaternion RotationJitter;
+	
+	public Quaternion getRotationJitter() {
+		return RotationJitter;
+	}
+
+	public void setRotationJitter(Quaternion rotationJitter) {
+		RotationJitter = rotationJitter;
+	}
+
 	private BoxPlot boxPlot;
 
 	public BoxPlot getBoxPlot() {
@@ -32,14 +43,6 @@ public class AverageMeasurement extends Measurement {
 		this.errors = errors;
 	}
 
-	public double getError() {
-		return error;
-	}
-
-	public void setError(double error) {
-		this.error = error;
-	}
-
 	public Quaternion getRotationError() {
 		return rotationError;
 	}
@@ -47,5 +50,34 @@ public class AverageMeasurement extends Measurement {
 	public void setRotationError(Quaternion rotationError) {
 		this.rotationError = rotationError;
 	}
+		
+	/**
+	 * This method computes the root mean square error. She receives a list of
+	 * errors. In a loop the errors are added and taken in square. The RMSE is
+	 * calculated with the square of additionalPowError divided by the number of
+	 * errors.
+	 * 
+	 * @return rmse - the Root Mean Square Error, which is just the square root of
+	 *         the mean square error
+	 */
+	private double getRMSE() {
+		double additionalPowError = 0;
 
+		for (double error : errors) {
+			additionalPowError += Math.pow(error, 2);
+		}
+		double rmse = Math.sqrt(additionalPowError / errors.size());
+		return rmse;
+	}
+	
+	/**
+	 * The method getJitter computes the root mean square error. She receives a list
+	 * of errors and called method getRMSE, where the RMSE is calculated.
+	 * 
+	 * @return getRMSE - the root mean square error
+	 */
+	public double getJitter() {
+		return getRMSE();
+	}
+	
 }

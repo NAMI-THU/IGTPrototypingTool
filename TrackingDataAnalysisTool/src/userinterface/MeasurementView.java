@@ -1,0 +1,552 @@
+package userinterface;
+
+import algorithm.*;
+
+import com.jme3.math.Quaternion;
+
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Label;
+import java.awt.LayoutManager;
+import java.awt.TextField;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;//import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
+import inputOutput.CSVFileReader;
+import inputOutput.Networkconnection;
+import inputOutput.OpenIGTLinkConnection;
+import inputOutput.TrackingDataSource;
+
+import com.sun.glass.events.KeyEvent;
+
+import javax.swing.filechooser.FileFilter;
+
+import java.net.*;
+
+import inputOutput.*;
+import testInputOutput.*;
+
+public class MeasurementView extends JFrame implements ActionListener {
+	private JButton start2 = new JButton("Start Measurement");
+	private JButton finish2 = new JButton("End Measurement");
+	private JButton loadData = new JButton("Load Data");
+	private JButton calculate = new JButton("Calculate");
+	private JButton loadTool = new JButton("Add Measurement");
+	private JButton searchButton = new JButton("Search Data");
+		
+	private Timer timer;
+
+	// Textfield for data source to load CSV- data:
+	private JTextField adresse = new JTextField(25);
+	
+	// choose measurement:
+	private String[] messungen = { "Jitter", "Correctness" };
+	private JComboBox measurementtyp = new JComboBox(messungen);
+	private JCheckBox cBJitterP = new JCheckBox("Jitterposition", false);
+	private JCheckBox cBJitterR = new JCheckBox("Jitterrotation", false);
+	private JCheckBox cBCorrectnessR = new JCheckBox("Accuracy-Rotation", false);
+	private JCheckBox cBCorrectnessP = new JCheckBox("Accuracy-Position", false);
+	private JLabel lValue = new JLabel();
+	private JLabel lCalcJR = new JLabel();
+	private JLabel lCalcC = new JLabel();
+	private JLabel lCalcJP = new JLabel();
+	private static JLabel loaded = new JLabel();
+	// Jfile Chooser
+	private JTextField toLoadField = new JTextField(5);
+	private JLabel toLoad = new JLabel();
+	private JTextField distanceF = new JTextField(5);
+	private JLabel distance = new JLabel();
+	private JTextField rotationAngle = new JTextField();
+	private JTextField rotationAngle1 = new JTextField();
+	private JTextField rotationAngle2 = new JTextField();
+	private JTextField rotationAngle3 = new JTextField();
+
+	private JLabel rotationL = new JLabel();
+	private JLabel rotationL1 = new JLabel();
+	private JLabel rotationL2 = new JLabel();
+	private JLabel rotationL3 = new JLabel();
+	private JLabel rotationL4 = new JLabel();
+	private java.awt.List measurementList;
+
+	TextField positionJitter = new TextField();
+	File f;
+	String valueP, valueD, valueL, valueR1, valueR2, valueR3, valueR4;
+	double toR1, toR2, toR3, toR4;
+	// double correctness, accuracy, jitterR, jitterP;
+	// list for available tools
+	private final java.awt.List toolList = new java.awt.List();
+	private final Label label2 = new Label("Available Tools");
+	JPanel panel1 = new JPanel();
+	JPanel panel2 = new JPanel();
+	int toloadvalue;
+	double toR, toD;
+	
+	
+	private TrackingDataSource source; //source for continous tracking
+	private TrackingDataSource source_filereader; //source for reading single files
+	private DataService dataS = new DataService();
+	private Map<String,ToolMeasure> storedMeasurements = new LinkedHashMap<String,ToolMeasure>();
+	private int measurementCounter = 0;
+	
+	
+	public MeasurementView() {
+		// allow window
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		init();
+	}
+	
+	public void setTrackingDeviceSource(TrackingDataSource source) {
+		this.source = source;
+		this.dataS.setTrackingDataSource(source);
+	}
+				
+	public MeasurementView(TrackingDataSource source) {
+		this.source = source;
+		
+		// allow window
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		init();
+		
+		if(source != null)
+		{
+			dataS.setTrackingDataSource(source); 			
+		}
+	}
+	
+	private void updateMeasurementList()
+	{
+		measurementList.removeAll();
+		for (String n : storedMeasurements.keySet())
+		{
+			measurementList.add(n);
+		}
+	}
+
+	private void init() {
+		// register for searching OITG or CSV
+		JTabbedPane tabbedPane = new JTabbedPane();
+		start2.addActionListener(this);
+		finish2.addActionListener(this);
+		getContentPane().setLayout(new BorderLayout());
+		this.getContentPane();
+		getContentPane().add(tabbedPane);
+		panel1 = new JPanel();
+		tabbedPane.addTab("Measurement", panel1);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+				panel1.setLayout(null);
+				
+						JLabel l0 = new JLabel(" CSV-Datafile:");
+						l0.setBounds(30, 107, 120, 20);
+						panel1.add(l0);
+						adresse.setBounds(200, 107, 318, 20);
+						panel1.add(adresse);
+						loadData.setBounds(528, 138, 120, 20);
+						panel1.add(loadData);
+								toLoad.setBounds(30, 40, 180, 25);
+						
+								toLoad.setText("Number of samples to load:");
+								panel1.add(toLoad);
+								toLoadField.setText("50");
+								toLoadField.setBounds(200, 42, 318, 20);
+								panel1.add(toLoadField);
+										distance.setBounds(661, 347, 130, 20);
+								
+										distance.setText("Expected Distance [mm]");
+										panel1.add(distance);
+										distanceF.setText("50");
+										distanceF.setBounds(797, 347, 80, 20);
+										panel1.add(distanceF);
+										distanceF.setEnabled(false);
+												rotationL.setBounds(661, 378, 101, 20);
+										
+												rotationL.setText("Quaternion");
+												panel1.add(rotationL);
+														rotationL1.setBounds(777, 378, 15, 20);
+												
+														rotationL1.setText("x:");
+														panel1.add(rotationL1);
+														rotationAngle.setBounds(797, 378, 80, 20);
+														panel1.add(rotationAngle);
+																rotationL2.setBounds(777, 398, 15, 20);
+														
+																rotationL2.setText("y:");
+																panel1.add(rotationL2);
+																rotationAngle1.setBounds(797, 398, 80, 20);
+																panel1.add(rotationAngle1);
+																		rotationL3.setBounds(777, 418, 15, 20);
+																
+																		rotationL3.setText("z:");
+																		panel1.add(rotationL3);
+																		rotationAngle2.setBounds(797, 418, 80, 20);
+																		panel1.add(rotationAngle2);
+																				rotationL4.setBounds(777, 438, 15, 20);
+																		
+																				rotationL4.setText("r:");
+																				panel1.add(rotationL4);
+																				rotationAngle3.setBounds(797, 438, 80, 20);
+																				panel1.add(rotationAngle3);
+																				rotationAngle.setEnabled(false);
+																				rotationAngle1.setEnabled(false);
+																				rotationAngle2.setEnabled(false);
+																				rotationAngle3.setEnabled(false);
+																				
+																						JLabel measuredTyp = new JLabel("Type of Measurement");
+																						measuredTyp.setBounds(651, 316, 150, 20);
+																						panel1.add(measuredTyp);
+																						measurementtyp.setBounds(797, 314, 120, 25);
+																						panel1.add(measurementtyp);
+																								cBJitterR.setBounds(684, 596, 110, 30);
+																								panel1.add(cBJitterR);
+																								cBJitterP.setBounds(684, 493, 110, 30);
+																								panel1.add(cBJitterP);
+																								cBCorrectnessR.setBounds(684, 570, 120, 30);
+																								panel1.add(cBCorrectnessR);
+																								cBCorrectnessP.setBounds(684, 519, 120, 30);
+																								panel1.add(cBCorrectnessP);
+																								calculate.setBounds(807, 493, 130, 137);
+																								panel1.add(calculate);
+																										label2.setBounds(710, 40, 101, 20);
+																										panel1.add(label2);
+																										toolList.setBounds(817, 40, 120, 87);
+																										panel1.add(toolList);
+																										loadTool.setBounds(710, 137, 227, 23);
+																										panel1.add(loadTool);
+																														loaded.setText("<no data loaded>");
+																														loaded.setBounds(200, 138, 318, 22);
+																														panel1.add(loaded);
+																														loadData.addActionListener(this);
+																														calculate.addActionListener(this);
+																														measurementtyp.addActionListener(this);
+																														cBJitterR.addActionListener(this);
+																														cBJitterP.addActionListener(this);
+																														cBCorrectnessR.addActionListener(this);
+																														cBCorrectnessP.addActionListener(this);
+																														toLoadField.addActionListener(this);
+																														distanceF.addActionListener(this);
+																														rotationAngle.addActionListener(this);
+																														rotationAngle1.addActionListener(this);
+																														rotationAngle2.addActionListener(this);
+																														rotationAngle3.addActionListener(this);
+																														toolList.addActionListener(this);
+																														loadTool.addActionListener(this);
+																																
+																																JLabel lblLoadDataFrom = new JLabel("Load data from file");
+																																lblLoadDataFrom.setBounds(10, 11, 195, 14);
+																																panel1.add(lblLoadDataFrom);
+																																
+																																JSeparator separator = new JSeparator();
+																																separator.setBounds(20, 183, 1003, 2);
+																																panel1.add(separator);
+																																
+																																JLabel lblCaptureContinousData = new JLabel("Capture continous data");
+																																lblCaptureContinousData.setBounds(15, 196, 195, 14);
+																																panel1.add(lblCaptureContinousData);
+																																
+																														
+																																start2.setForeground(Color.GREEN);
+																																start2.setBounds(210, 221, 150, 30);
+																																panel1.add(start2);
+																																
+																															
+																																finish2.setForeground(Color.RED);
+																																finish2.setBounds(378, 221, 150, 30);
+																																panel1.add(finish2);
+																																
+																																JSeparator separator_1 = new JSeparator();
+																																separator_1.setBounds(20, 281, 1003, 2);
+																																panel1.add(separator_1);
+																																
+																																JSeparator separator_2 = new JSeparator();
+																																separator_2.setBounds(369, 511, 5, -115);
+																																panel1.add(separator_2);
+																																searchButton.addActionListener(this);
+																																searchButton.setBounds(528, 107, 120, 20);
+																																
+																																panel1.add(searchButton);
+																																
+																																measurementList = new java.awt.List();
+																																measurementList.setBounds(30, 331, 554, 250);
+																																panel1.add(measurementList);
+																																
+																																Label label = new Label("Captured Measurements");
+																																label.setBounds(10, 305, 150, 20);
+																																panel1.add(label);
+	}
+
+	// Label for recognizing, if data is loaded
+	public static void setTexttoloaded() {
+		loaded.setText("Data loaded");
+		loaded.setVisible(true);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		Object src = e.getSource();
+				
+		try {
+			// button loaddata (from file) pressed
+			if (src == loadData) {
+
+				// get path and handover to group 3
+				f = new File(adresse.getText());
+				String path = f.getAbsolutePath();
+				if (f.exists() == true && path.endsWith(".csv")) {
+					CSVFileReader newSource = new CSVFileReader();
+					newSource.setPath(path);
+					source_filereader = newSource;
+					
+					toolList.removeAll();
+					for(Tool t : source_filereader.update()){
+						toolList.add(t.getName());
+					}
+					loaded.setText("Loaded: " + path);
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "Wrong data type!",
+							"Error", JOptionPane.WARNING_MESSAGE);
+				}
+			} else if (src == searchButton) {
+				FileFilter filter = new FileNameExtensionFilter("Testreihe",
+						"csv");
+				JFileChooser fc = new JFileChooser(FileSystemView
+						.getFileSystemView().getHomeDirectory());
+				fc.addChoosableFileFilter(filter);
+				int returnValue = fc.showOpenDialog(null);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selctedFile = fc.getSelectedFile();
+					String path = selctedFile.getAbsolutePath();
+					adresse.setText(path);
+				}
+					
+			// button start pressed
+			} else if (src == start2) {
+
+				if(source==null) {JOptionPane.showMessageDialog(null, "Tracking not started yet (aborting)!" ,
+						"Warning", JOptionPane.WARNING_MESSAGE); return;}
+				
+				JOptionPane.showMessageDialog(null,
+						"Please hold tracking tool in fixed position.", "Attention!",
+						JOptionPane.WARNING_MESSAGE);
+				
+				dataS.restartMeasurements();
+				timer = new Timer(50, this);
+		        timer.setInitialDelay(0);
+		        timer.start();
+
+			// button finish pressed
+			} else if (src == finish2) {
+					
+				if(source==null || !timer.isRunning()) { JOptionPane.showMessageDialog(null, "Tracking not started yet (aborting)!" ,
+						"Warning", JOptionPane.WARNING_MESSAGE); return;}
+				timer.stop();
+				storedMeasurements.put("Measurement " + measurementCounter + "("
+								       + dataS.getDataManager().getToolMeasures().get(0).getName() 
+								       + ")",dataS.getDataManager().getToolMeasures().get(0));
+				this.updateMeasurementList();
+				measurementCounter++;
+				
+				
+				
+			} 
+
+			// if mesurementtyp pressed
+			else if (src == measurementtyp) {
+				String selected = (String) measurementtyp.getSelectedItem();
+				if ("Correctness".equals(selected)) {
+					distanceF.setEnabled(true);
+					rotationAngle.setEnabled(true);
+					rotationAngle1.setEnabled(true);
+					rotationAngle2.setEnabled(true);
+					rotationAngle3.setEnabled(true);
+				}
+				// button sough pressed
+				if ("Rauschen".equals(selected)) {
+					
+					distanceF.setEnabled(false);
+					rotationAngle.setEnabled(false);
+					rotationAngle1.setEnabled(false);
+					rotationAngle2.setEnabled(false);
+					rotationAngle3.setEnabled(false);
+
+				}
+
+				
+			} 
+			
+			else if (src == calculate) // button calculate pressed
+			{
+
+				System.out.println("Computing results");
+				ToolMeasure tool = (ToolMeasure) storedMeasurements.values().toArray()[measurementList.getSelectedIndex()]; 
+				//System.out.println("name: "+tool.getName());
+				//System.out.println("size: "+tool.getMeasurement().size());
+				AverageMeasurement avgMes = tool.getAverageMeasurement();
+				/*
+				for (Measurement m : tool.getMeasurement())
+				{
+					System.out.println("Captured value: " + m.getPoint());
+				}
+				System.out.println("jitter: "+avgMes.getJitter());
+				*/
+
+				lValue.setText("Calculated Value");
+				lValue.setBounds(650, 510, 130, 30);
+				panel1.add(lValue);
+				lValue.setForeground(Color.BLUE);
+
+				lCalcJR.setBounds(650, 540, 380, 30);
+				panel1.add(lCalcJR);
+				lCalcC.setBounds(650, 580, 280, 30);
+				panel1.add(lCalcC);
+				lCalcJP.setBounds(650, 620, 280, 40);
+				panel1.add(lCalcJP);
+
+				// JCheckBox cBJitterR pressed
+				if (cBJitterR.isSelected()) {
+					lCalcJR.setText("0.00 mm");
+					lCalcJR.setText(new DecimalFormat("#0.00").format(avgMes.getRotationError())+ " mm");
+
+				}
+				// JCheckBox cBJitterP pressed
+				if (cBJitterP.isSelected()) {
+					lCalcJP.setText("0.00 mm");
+					lCalcJP.setText(new DecimalFormat("#0.00").format(avgMes.getJitter()) + " mm");
+
+				}
+				// JChekBox cBCorrectnessR pressed
+				if (cBCorrectnessR.isSelected()) {
+
+					valueR1 = rotationAngle.getText();
+					toR1 = Double.parseDouble(valueR1);
+
+					valueR2 = rotationAngle1.getText();
+					toR2 = Double.parseDouble(valueR2);
+					;
+
+					valueR3 = rotationAngle2.getText();
+					toR3 = Double.parseDouble(valueR3);
+
+					valueR4 = rotationAngle3.getText();
+					toR4 = Double.parseDouble(valueR4);
+
+					Quaternion expectedrotation = new Quaternion().set(
+							(float) toR1, (float) toR2, (float) toR3,
+							(float) toR4);
+					
+					ToolMeasure firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
+					ToolMeasure secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
+					
+					lCalcJR.setText(String.valueOf(dataS.getAccuracyRotation(
+							expectedrotation, firstTool.getMeasurement().get(0),secondTool.getMeasurement().get(0))));
+
+				}
+				// JChekBox cBCorrectnessP pressed
+				if (cBCorrectnessP.isSelected()) {
+					valueD = distanceF.getText();
+					toD = Double.parseDouble(valueD);
+					lCalcC.setText("0,00");
+					
+					ToolMeasure firstTool = null;
+					ToolMeasure secondTool = null;
+					firstTool = (ToolMeasure)storedMeasurements.values().toArray()[0];
+					secondTool = (ToolMeasure)storedMeasurements.values().toArray()[1];
+					for (String m : storedMeasurements.keySet())
+						{
+						/*
+						if (firstTool == null) 
+							{
+							firstTool = m;
+							System.out.println("Tool1:" + firstTool.getName());
+							avgMes1 = dataProcessor.getAverageMeasurement(firstTool.getMeasurement());
+							}
+						else if (secondTool==null) 
+							{
+							secondTool = m;
+							System.out.println("Tool2:" + secondTool.getName());
+							avgMes2 = dataProcessor.getAverageMeasurement(secondTool.getMeasurement());
+							}*/
+						System.out.println("Tool:"+m);
+						
+						}
+					
+								
+					System.out.println("Avgmes1:" + firstTool.getAverageMeasurement().getPoint());
+					System.out.println("Avgmes2:" + secondTool.getAverageMeasurement().getPoint());
+					
+					lCalcJP.setText(String.valueOf(dataS.getAccuracy(toD,
+							firstTool.getAverageMeasurement(),
+							secondTool.getAverageMeasurement())));
+
+				}
+
+			} 
+			
+			else if (src == loadTool) // loadData (from file) is pressed
+			{
+
+				DataService loadDataService = new DataService();
+				loadDataService.setTrackingDataSource(source_filereader);
+				loadDataService.loadNextData(Integer.parseInt(toLoadField.getText()),true);
+				ToolMeasure newMeasurement = loadDataService.getToolByName(toolList.getSelectedItem());
+				storedMeasurements.put("Measurement " + measurementCounter + "("
+					       + newMeasurement.getName() 
+					       + ", from file)",newMeasurement);
+				this.updateMeasurementList();
+				measurementCounter++;
+				
+			} 
+			
+			else if (src == timer) //timer event
+			{
+				dataS.getDataManager().getNextData(1);
+				System.out.println("Capturing data...");
+			}
+			// Exception-Window
+
+		} catch (
+
+		Exception ep) {
+			if (f!=null && (f.exists() == false)) {
+				JOptionPane.showMessageDialog(null,
+						"File does not exist.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+
+				JOptionPane.showMessageDialog(null, "Error: " + ep.toString() ,
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	// close window
+	protected void processWindowsEvent(WindowEvent e) {
+		super.processWindowEvent(e);
+		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+			System.exit(0); // Prgm wird beendet
+		}
+	}
+}
