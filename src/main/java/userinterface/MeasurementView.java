@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.TextField;
+import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,14 +43,11 @@ import inputOutput.Networkconnection;
 import inputOutput.OpenIGTLinkConnection;
 import inputOutput.TrackingDataSource;
 
-import com.sun.glass.events.KeyEvent;
-
 import javax.swing.filechooser.FileFilter;
 
 import java.net.*;
 
 import inputOutput.*;
-import testInputOutput.*;
 
 public class MeasurementView extends JFrame implements ActionListener {
 	private JButton start2 = new JButton("Start Measurement");

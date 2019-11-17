@@ -40,7 +40,7 @@ public class ExceptionData {
 			ExceptionWindow.setExceptionText("Data was not found");
 			
 			break;
-		default: testInputOutput.Exception_Window.startExceptionWindow();
+		default: inputOutput.Exception_Window.startExceptionWindow();
 
 		}
 

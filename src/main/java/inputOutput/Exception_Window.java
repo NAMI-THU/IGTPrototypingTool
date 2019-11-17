@@ -1,4 +1,4 @@
-package testInputOutput;
+package inputOutput;
 
 import java.awt.*;
 import java.awt.event.*;

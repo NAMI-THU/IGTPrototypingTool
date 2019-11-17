@@ -18,7 +18,6 @@ import java.util.Map;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
-import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
 
 public class OpenIGTLinkConnection extends TrackingDataSource{
 

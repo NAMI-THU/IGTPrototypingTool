@@ -36,4 +36,6 @@ hs_err_pid*
 # Binary & build folder
 /bin
 /build
-TrackingDataAnalysisTool/.gitignore
+
+# Gradle 
+.gradle
