@@ -19,6 +19,8 @@ package org.medcare.igtl.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+
 import org.medcare.igtl.messages.OpenIGTMessage;
 import org.medcare.igtl.network.OpenIGTServer.ServerStatus;
 //import org.medcare.igtl.util.BytesArray;
@@ -102,21 +104,22 @@ public class ServerThread extends Thread {
                         socket.close();
                         Log.debug("IGTLink client got disconnected, will set alive=false to inform SocketServer");
                 } catch (IOException e) {
-                		e.printStackTrace();
+                        e.printStackTrace();
                         errorManager.error("ServerThread IOException", e, ErrorManager.SERVERTHREAD_IO_EXCEPTION);
                 }
                 this.interrupt();
         }
-		public void sendMessage(OpenIGTMessage message) throws Exception {
-			// TODO Auto-generated method stub
-			sendMessage(message.getHeader(), message.getBody());
-			//System.out.println("Message: Header=" + message.getHeader().toString() + " Body=" + message.getBody().toString());
-		}
-		public void sendMessage(Header header, byte[] body) throws Exception {
-			sendBytes(header.getBytes());
-			sendBytes(body);
-			Log.debug("Sending Message: Header=" + header.toString() + " Body=" + body.toString());
-		}
+        public void sendMessage(OpenIGTMessage message) throws Exception {
+            // TODO Auto-generated method stub
+            sendMessage(message.getHeader(), message.getBody());
+            //System.out.println("Message: Header=" + message.getHeader().toString() + " Body=" + message.getBody().toString());
+        }
+        public void sendMessage(Header header, byte[] body) throws Exception {
+            sendBytes(header.getBytes());
+            sendBytes(body);
+            Log.debug("Sending Message: Header=" + header.toString()
+                    + " Body=" + Arrays.toString(body));
+        }
 
         /***************************************************************************
          * Sends bytes
@@ -137,17 +140,17 @@ public class ServerThread extends Thread {
          * Interrupt this thread
          **************************************************************************/
         public void interrupt() {
-        		this.currentStatus  = ClientStatus.DISCONNECTED;
+                this.currentStatus  = ClientStatus.DISCONNECTED;
                 alive = false;
                 messageQueue.destroy();
                 try {
-					outstr.close();
-					instr.close();
-	                socket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    outstr.close();
+                    instr.close();
+                    socket.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
         }
 
         /**
@@ -168,13 +171,13 @@ public class ServerThread extends Thread {
                 return this.openIGTServer.getCurrentStatus();
         }
 
-		public boolean getAlive() {
-			return alive;
-		}
+        public boolean getAlive() {
+            return alive;
+        }
 
-		public void setAlive(boolean alive) {
-			this.alive = alive;
-		}
+        public void setAlive(boolean alive) {
+            this.alive = alive;
+        }
 
 
 

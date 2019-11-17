@@ -27,7 +27,7 @@ import org.medcare.igtl.util.Header;
  */
 public class GetCapabilityMessage extends OpenIGTMessage {
 
-	
+    
         /**
          *** Constructor to be used to create message to send them with this
          * constructor you must use method CreateBody and then
@@ -58,7 +58,7 @@ public class GetCapabilityMessage extends OpenIGTMessage {
          * @return the bytes array containing the body
          **/
         @Override
-        public byte[] PackBody() {
+        public byte[] packBody() {
                 setBody(new byte[0]);
                 setHeader(new Header(VERSION, "GET_CAPABIL", deviceName, getBody()));
                 return getBody();
@@ -71,7 +71,7 @@ public class GetCapabilityMessage extends OpenIGTMessage {
          * @return true if unpacking is ok
          */
         @Override
-        public boolean UnpackBody() {
+        public boolean unpackBody() {
                 return true;
         }
 

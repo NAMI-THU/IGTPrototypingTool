@@ -70,7 +70,7 @@ public class MessageQueueManager extends Thread {
                                                 } catch (CrcException c) {
                                                         errorManager.error("PB messageHandler ", c, ErrorManager.MESSAGE_CRC_EXCEPTION);
                                                 } catch (Exception e) {
-                                                	e.printStackTrace();
+                                                    e.printStackTrace();
                                                     errorManager.error("PB messageHandler ", e, ErrorManager.MESSAGE_EXCEPTION);
                                                 } finally {
                                                         Log.debug("MessageQueueManager messageHandler.performRequest OK");
@@ -127,11 +127,11 @@ public class MessageQueueManager extends Thread {
                 return VERSION;
         }
 
-		public void setOpenIGT_Queue(ConcurrentLinkedQueue<MessageHandler> openIGT_Queue) {
-			this.openIGT_Queue = openIGT_Queue;
-		}
+        public void setOpenIGT_Queue(ConcurrentLinkedQueue<MessageHandler> openIGT_Queue) {
+            this.openIGT_Queue = openIGT_Queue;
+        }
 
-		public ConcurrentLinkedQueue<MessageHandler> getOpenIGT_Queue() {
-			return openIGT_Queue;
-		}
+        public ConcurrentLinkedQueue<MessageHandler> getOpenIGT_Queue() {
+            return openIGT_Queue;
+        }
 }

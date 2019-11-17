@@ -57,7 +57,7 @@ public class GetStatusMessage extends OpenIGTMessage {
          * @return the bytes array containing the body
          **/
         @Override
-        public byte[] PackBody() {
+        public byte[] packBody() {
                 setBody(new byte[0]);
                 setHeader(new Header(VERSION, "GET_STATUS", deviceName, getBody()));
                 return getBody();
@@ -70,7 +70,7 @@ public class GetStatusMessage extends OpenIGTMessage {
          * @return true if unpacking is ok
          */
         @Override
-        public boolean UnpackBody() {
+        public boolean unpackBody() {
                 return true;
         }
 

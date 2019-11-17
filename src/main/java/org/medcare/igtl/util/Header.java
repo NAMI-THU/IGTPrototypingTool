@@ -247,16 +247,16 @@ public class Header {
         
         @Override
         public String toString(){
-        	String s="";
-        	s+="Version: "+getVersion();
-        	s+=" Type: "+getDataType();
-        	s+=" Name: "+getDeviceName();
-        	s+=" Timestamp: "+getTimeStamp();
-        	s+=" Body Size:"+getBody_size();
-        	s+=" CRC: "+getCrc();
+            String s="";
+            s+="Version: "+getVersion();
+            s+=" Type: "+getDataType();
+            s+=" Name: "+getDeviceName();
+            s+=" Timestamp: "+getTimeStamp();
+            s+=" Body Size:"+getBody_size();
+            s+=" CRC: "+getCrc();
 
-        	//s+=" bytes: "+new ByteList(getBytes());
-        	return s;
+            //s+=" bytes: "+new ByteList(getBytes());
+            return s;
         }
 }
 

@@ -52,7 +52,7 @@ public abstract class MessageHandler {
          * @throws Exception received by perform method
          */
         public boolean performRequest() throws Exception {
-        	// extract message type from header
+            // extract message type from header
                 String messageType = this.getHeader().getDataType();
                 System.out.println("Receiv ed message with capability value=" + messageType);
                 Iterator<String> it = capabilityList.iterator();
@@ -98,20 +98,20 @@ public abstract class MessageHandler {
         }
 
  
-		public void setHeader(Header header) {
-			this.header = header;
-		}
+        public void setHeader(Header header) {
+            this.header = header;
+        }
 
-		public Header getHeader() {
-			return header;
-		}
+        public Header getHeader() {
+            return header;
+        }
 
-		public void setBody(byte[] body) {
-			this.body = body;
-		}
+        public void setBody(byte[] body) {
+            this.body = body;
+        }
 
-		public byte[] getBody() {
-			return body;
-		}
+        public byte[] getBody() {
+            return body;
+        }
 }
 

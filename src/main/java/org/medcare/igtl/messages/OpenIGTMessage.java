@@ -75,15 +75,15 @@ public abstract class OpenIGTMessage {
          */
         public boolean Unpack() throws Exception {
                 if (getBody().length > 0 
-                		//&& !isBodyUnpacked
-                		) {
-                	Log.debug("Unpacking message...");
+                        //&& !isBodyUnpacked
+                        ) {
+                    Log.debug("Unpacking message...");
                         //if (header.getCrc() == bytesArray.crc64(body, body.length, 0L)) {
-                                isBodyUnpacked = UnpackBody();
+                                isBodyUnpacked = unpackBody();
                                 return isBodyUnpacked;
                        // } else {
-                        	//TODO fix when CRC is fixed   
-                        	// throw new CrcException("Crc control fail during unpacking CRC is: "+header.getCrc()+" calculated: "+bytesArray.crc64(body, body.length, 0L));
+                            //TODO fix when CRC is fixed   
+                            // throw new CrcException("Crc control fail during unpacking CRC is: "+header.getCrc()+" calculated: "+bytesArray.crc64(body, body.length, 0L));
                         //}
                 }
                 //TODO fix when CRC is fixed
@@ -98,7 +98,7 @@ public abstract class OpenIGTMessage {
          * @return true if unpacking is ok
          * @throws Exception 
          */
-        public abstract boolean UnpackBody() throws Exception;
+        public abstract boolean unpackBody() throws Exception;
 
         /**
          *** To create body from image_header and image_data
@@ -107,7 +107,7 @@ public abstract class OpenIGTMessage {
          *** 
          * @return the bytes array containing the message
          */
-        public abstract byte[] PackBody();
+        public abstract byte[] packBody();
 
         /**
          *** Unique device name.
@@ -133,9 +133,9 @@ public abstract class OpenIGTMessage {
          * @return bytes array containing the body of the message
          **/
         public byte[] getBody() {
-        	if(body==null){
-        		//TODO what if body is null?
-        	}
+            if(body==null){
+                //TODO what if body is null?
+            }
             return body;
         }
 
@@ -163,12 +163,12 @@ public abstract class OpenIGTMessage {
          */
         public abstract String toString();
 
-		public void setBody(byte[] body) {
-			this.body = body;
-		}
+        public void setBody(byte[] body) {
+            this.body = body;
+        }
 
-		public void setHeader(Header header) {
-			this.header = header;
-		}
+        public void setHeader(Header header) {
+            this.header = header;
+        }
 }
 

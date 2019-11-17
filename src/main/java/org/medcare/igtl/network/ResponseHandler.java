@@ -114,36 +114,36 @@ public abstract class ResponseHandler {
                 return this.getOpenIGTClient().getStatus();
         }
 
-		public byte[] getBody() {
-			return body;
-		}
+        public byte[] getBody() {
+            return body;
+        }
 
-		public void setBody(byte[] body) {
-			this.body = body;
-		}
+        public void setBody(byte[] body) {
+            this.body = body;
+        }
 
-		public Header getHeader() {
-			return header;
-		}
+        public Header getHeader() {
+            return header;
+        }
 
-		public void setHeader(Header header) {
-			this.header = header;
-		}
+        public void setHeader(Header header) {
+            this.header = header;
+        }
 
-		public OpenIGTClient getOpenIGTClient() {
-			return openIGTClient;
-		}
+        public OpenIGTClient getOpenIGTClient() {
+            return openIGTClient;
+        }
 
-		public void setOpenIGTClient(OpenIGTClient openIGTClient) {
-			this.openIGTClient = openIGTClient;
-		}
+        public void setOpenIGTClient(OpenIGTClient openIGTClient) {
+            this.openIGTClient = openIGTClient;
+        }
 
-		public ArrayList<String> getCapabilityList() {
-			return capabilityList;
-		}
+        public ArrayList<String> getCapabilityList() {
+            return capabilityList;
+        }
 
-		public void setCapabilityList(ArrayList<String> capabilityList) {
-			this.capabilityList = capabilityList;
-		}
+        public void setCapabilityList(ArrayList<String> capabilityList) {
+            this.capabilityList = capabilityList;
+        }
 }
 

@@ -63,7 +63,7 @@ public class StatusMessage extends OpenIGTMessage {
         public StatusMessage(String deviceName,int code, int subCode, String status) {
                 super(deviceName);
                 setStatus(new Status(code,subCode, deviceName, status));
-                PackBody();
+                packBody();
         }
         /**
          *** Constructor to be used to create message to send them with this
@@ -76,7 +76,7 @@ public class StatusMessage extends OpenIGTMessage {
         public StatusMessage(String deviceName,int code, int subCode, String errorName, String status) {
                 super(deviceName);
                 setStatus(new Status(code,subCode, errorName, status));
-                PackBody();
+                packBody();
         }
         /**
          *** Constructor to be used to create message from received data
@@ -96,7 +96,7 @@ public class StatusMessage extends OpenIGTMessage {
          * @return true if unpacking is ok
          */
         @Override
-        public boolean UnpackBody() throws Exception {
+        public boolean unpackBody() throws Exception {
                 int bodyLength = getBody().length;
                 status_data = new byte[bodyLength];
                 System.arraycopy(getBody(), 0, status_data, 0, bodyLength);
@@ -112,8 +112,8 @@ public class StatusMessage extends OpenIGTMessage {
          * @return the bytes array containing the body
          */
         @Override
-        public byte[] PackBody() {
-        		setStatusData(status);
+        public byte[] packBody() {
+                setStatusData(status);
                 setBody(new byte[status_data.length]);
                 System.arraycopy(status_data, 0, getBody(), 0, status_data.length);
                 setHeader(new Header(VERSION, "STATUS", deviceName, getBody()));

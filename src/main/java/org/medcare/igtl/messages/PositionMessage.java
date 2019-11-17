@@ -57,14 +57,14 @@ public class PositionMessage extends OpenIGTMessage {
          **/
         
      
-        	
-        	
+            
+            
       
         
         
         public PositionMessage(String deviceName, double[] ds, RotationNR RotationNR) {
                 super(deviceName);           
-                setPositionData(ds, RotationNR, 4);        		
+                setPositionData(ds, RotationNR, 4);                
         }
 
         /**
@@ -89,7 +89,7 @@ public class PositionMessage extends OpenIGTMessage {
          * @throws Exception 
          */
         @Override
-        public boolean UnpackBody() throws Exception {
+        public boolean unpackBody() throws Exception {
                 bodyLength = getBody().length;
                 position_data = new byte[bodyLength];
                 System.arraycopy(getBody(), 0, position_data, 0, bodyLength);
@@ -105,7 +105,7 @@ public class PositionMessage extends OpenIGTMessage {
          * @return the bytes array containing the message
          */ 
         @Override
-        public byte[] PackBody() {
+        public byte[] packBody() {
                 setBody(new byte[position_data.length]);
                 System.arraycopy(position_data, 0, getBody(), 0, position_data.length);
                 setHeader(new Header(VERSION, "POSITION", getDeviceName(), getBody()));
@@ -144,7 +144,7 @@ public class PositionMessage extends OpenIGTMessage {
                 bytesArray.putDouble(quaternion.getRotationMatrix2QuaturnionW(), 4);
 
                 position_data = bytesArray.getBytes();
-                PackBody();
+                packBody();
                 return position_data;
         }
 

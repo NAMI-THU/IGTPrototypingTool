@@ -1,18 +1,18 @@
 package mainMethod;
 
-import userinterface.*;
+import userinterface.Diagramm;
 
-public class main {
+public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		new Thread() {
+        new Thread() {
             @Override
             public void run() {
                 javafx.application.Application.launch(Diagramm.class);
             }
         }.start();
-                  
-	}
+
+    }
 
 }

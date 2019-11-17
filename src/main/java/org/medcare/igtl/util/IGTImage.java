@@ -8,22 +8,22 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 
 public class IGTImage {
-	ImageMessage message;
-	BufferedImage image = null;
-	TransformNR transform = new TransformNR(); 
-	public IGTImage(ImageMessage m){
-		message=m;
-		//TODO Satya, populate all fields.
-		image = null;
-		transform = new TransformNR(); 
-	}
-	
-	public TransformNR getTransform(){
-		
-		return transform;
-	}
-	
-	public BufferedImage getBufferedImage(){
-		return image;
-	}
+    ImageMessage message;
+    BufferedImage image = null;
+    TransformNR transform = new TransformNR(); 
+    public IGTImage(ImageMessage m){
+        message=m;
+        //TODO Satya, populate all fields.
+        image = null;
+        transform = new TransformNR(); 
+    }
+    
+    public TransformNR getTransform(){
+        
+        return transform;
+    }
+    
+    public BufferedImage getBufferedImage(){
+        return image;
+    }
 }
