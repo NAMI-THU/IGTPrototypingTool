@@ -64,6 +64,9 @@ tasks.withType(Checkstyle) {
 }
 
 tasks.withType(SpotBugsTask) {
+    // Only ignore failures until bugs have been fixed.  There are a lot of
+    // errors currently, so this will need to be disabled once a lot of them
+    // are fixed.
     ignoreFailures = true
     reports {
         xml.enabled = false
