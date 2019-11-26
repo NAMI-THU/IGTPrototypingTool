@@ -1,8 +1,8 @@
-package testalgorithm;
-
-import static org.junit.Assert.*;
+package algorithm;
 
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 public class ProgramLogicTest {
 

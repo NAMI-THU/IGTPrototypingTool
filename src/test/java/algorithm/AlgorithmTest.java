@@ -1,31 +1,25 @@
-package testalgorithm;
+package algorithm;
 
-import static org.junit.Assert.assertTrue;
+import com.jme3.math.Quaternion;
+import javafx.geometry.Point3D;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.jme3.math.Quaternion;
-
-import algorithm.AverageMeasurement;
-import algorithm.BoxPlot;
-import algorithm.DataProcessor;
-import algorithm.DataService;
-import algorithm.Measurement;
-import algorithm.ToolMeasure;
-import javafx.geometry.Point3D;
+import static java.lang.Math.PI;
+import static java.lang.Math.sin;
+import static org.junit.Assert.assertTrue;
 
 public class AlgorithmTest {
 
-    private DataProcessor processor;
-    private DataService dataService;
-    private ToolMeasure testTool;
     AverageMeasurement firstAverangeMeasurement;
     AverageMeasurement secondAverangeMeasurement;
     Measurement firstMeasurement;
     Measurement secondMeasurement;
+    private DataProcessor processor;
+    private DataService dataService;
+    private ToolMeasure testTool;
 
     @Test
     /**
@@ -54,7 +48,7 @@ public class AlgorithmTest {
         setUpData();
 
         double result = testTool.getAverageMeasurement().getJitter();
-        System.out.println("result:"+result);
+        System.out.println("result:" + result);
         assertTrue(result == 1.414213562373095);
 
     }
@@ -83,7 +77,7 @@ public class AlgorithmTest {
 
         Quaternion result = testTool.getAverageRotation();
 
-        assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) 0.8164966)));
+        assertTrue(result.equals(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
 
     }
 
@@ -94,7 +88,7 @@ public class AlgorithmTest {
     public void getAccuracyRotationIsCorrect() {
 
         setUpDataAccuracy();
-        Quaternion expectedRotation = new Quaternion((float) 0, (float) 0.7071, (float) 0, (float) 0.7071);
+        Quaternion expectedRotation = new Quaternion((float) 0, (float) sin(PI / 4), (float) 0, (float) sin(PI / 4));
 
         Quaternion result = processor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 
@@ -164,8 +158,8 @@ public class AlgorithmTest {
 
         Point3D p1 = new Point3D(1, 1, 1);
         Point3D p2 = new Point3D(2, 2, 2);
-        Quaternion quaternion1 = new Quaternion((float) 0, (float) 0, (float) 0, (float) 1);
-        Quaternion quaternion2 = new Quaternion((float) 0, (float) 0.7071, (float) 0, (float) 0.7071);
+        Quaternion quaternion1 = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+        Quaternion quaternion2 = new Quaternion(0.0f, (float) sin(PI / 4), 0, (float) sin(PI / 4));
         firstMeasurement.setRotation(quaternion1);
         secondMeasurement.setRotation(quaternion2);
 
@@ -188,11 +182,11 @@ public class AlgorithmTest {
         Point3D p3 = new Point3D(3, 3, 3);
 
         measurement1.setPoint(p1);
-        measurement1.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
+        measurement1.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
         measurement2.setPoint(p2);
-        measurement2.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
+        measurement2.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
         measurement3.setPoint(p3);
-        measurement3.setRotation(new Quaternion((float) 0, (float) 0, (float) 0, (float) 1));
+        measurement3.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
 
 
         measurements.add(measurement1);
