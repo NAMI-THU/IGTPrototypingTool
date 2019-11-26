@@ -7,8 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * this class reads in a 'CSV-file containing a variation of tools and coordinates of their position in a room.
- * it files them, so the different variable can be allocated to each single tool
+ * This class reads in a 'CSV-file containing a variation of tools and
+ * coordinates of their position in a room.  It files them, so the different
+ * variable can be allocated to each single tool
  *
  * @author
  */
@@ -20,7 +21,7 @@ public class CSVFileReader extends TrackingDataSource {
     // create tool list
     private String[] data = null;
     private int numberOfTools = 0;
-    private String[] toolname = null;
+    private String[] toolName = null;
     private String path;
     private boolean repeatMode = false;
     private BufferedReader csvFile = null;
@@ -40,8 +41,9 @@ public class CSVFileReader extends TrackingDataSource {
     }
 
     /**
-     * this returns an ArrayList containing as many tools as are listed in the CSV-file:
-     * when the CSV-file contains two tools then the method returns an ArrayList containing the objects of two tools
+     * this returns an ArrayList containing as many tools as are listed in the
+     * CSV-file: when the CSV-file contains two tools then the method returns
+     * an ArrayList containing the objects of two tools
      *
      * @return ArrayList of tools
      */
@@ -59,48 +61,47 @@ public class CSVFileReader extends TrackingDataSource {
 
                 lineCounter++;
                 match();
-                return toollist;
+                return toolList;
             } else {
                 if (repeatMode) {
                     csvFile.close();
                     csvFile = null;
                     lineCounter = 0;
                 }
-                return toollist;
+                return toolList;
             }
 
         } catch (IOException e) {
             exceptionNumber = 1;
             ExceptionData.checkException();
 
-            return toollist;
+            return toolList;
         }
-
     }
 
     /**
-     * the method init tells us the number of tools in the CSV-file by splitting up the lines, one tool has 9 Variables.
-     * the method also assigns the tools to the toollist, that makes sure that the toollist contains as many objects
-     * as there are tools available in the file
+     * the method init tells us the number of tools in the CSV-file by
+     * splitting up the lines, one tool has 9 Variables.  the method also
+     * assigns the tools to the toollist, that makes sure that the toollist
+     * contains as many objects as there are tools available in the file
      *
      * @throws IOException
      */
-
     private void init() throws IOException {
 
         read();
 
         // find the number of the tools
         numberOfTools = (data.length) / 9;
-        toolname = new String[numberOfTools];
-        toollist = new ArrayList<Tool>();
+        toolName = new String[numberOfTools];
+        toolList = new ArrayList<Tool>();
 
         // creating tools depending on the number of tools and adding them to the
         // Tool list
         for (int i = 1, j = 0; i <= numberOfTools; i++, j = j + 9) {
 
             Tool tool = new Tool();
-            toollist.add(tool);
+            toolList.add(tool);
 
             // Get the name of the tools from the Csv-file
             getName(data[j], (i - 1));
@@ -112,8 +113,9 @@ public class CSVFileReader extends TrackingDataSource {
     }
 
     /**
-     * this method matches the values of the CSV-file to each Object of the toollist to make sure, that each object
-     * contains the values that belong to it
+     * This method matches the values of the CSV-file to each Object of the
+     * toollist to make sure, that each object contains the values that belong
+     * to it
      *
      * @throws IOException
      */
@@ -128,19 +130,18 @@ public class CSVFileReader extends TrackingDataSource {
             dataNew[a] = Double.parseDouble(data[a]);
         }
 
-        for (int i = 0, j = 0; i < toollist.size(); i++, j = j + 9) {
+        for (int i = 0, j = 0; i < toolList.size(); i++, j = j + 9) {
             // assign the Values of the Csv-File to the Object
-            toollist.get(i).setData(dataNew[j], dataNew[j + 1],
+            toolList.get(i).setData(dataNew[j], dataNew[j + 1],
                     dataNew[j + 2], dataNew[j + 3], dataNew[j + 4],
                     dataNew[j + 5], dataNew[j + 6], dataNew[j + 7],
-                    dataNew[j + 8], toolname[i]);
-
+                    dataNew[j + 8], toolName[i]);
         }
-
     }
 
     /**
-     * this method creates a file reader for the CSV-file which is found by the method setPath()
+     * this method creates a file reader for the CSV-file which is found by the
+     * method setPath()
      */
     private void read() {
         // create the file reader for the CSV data
@@ -173,19 +174,21 @@ public class CSVFileReader extends TrackingDataSource {
      * this method gets the name of the tool out of the CSV-file
      *
      * @param csv_name   contains name of the tool
-     * @param index_name shows index of the tool to get the correct name for each tool
+     * @param index_name shows index of the tool to get the correct name for
+     * each tool
      */
     private void getName(String csv_name, int index_name) {
         // find the tool name by splitting "timestamp_name"
         String[] name = csv_name.split("_");
-        toolname[index_name] = name[1];
+        toolName[index_name] = name[1];
 
     }
 
     /**
      * this sets the path of the location from the CSV-file
      *
-     * @param abspath is a string of a path you need to chose to be able to read in exactly the file you want to
+     * @param abspath is a string of a path you need to chose to be able to
+     * read in exactly the file you want to
      */
     public void setPath(String abspath) {
         System.out.println("Path set: " + path);
@@ -199,6 +202,6 @@ public class CSVFileReader extends TrackingDataSource {
 
     public void setLine_counter() {
         lineCounter = 0;
-        toollist.clear();
+        toolList.clear();
     }
 }

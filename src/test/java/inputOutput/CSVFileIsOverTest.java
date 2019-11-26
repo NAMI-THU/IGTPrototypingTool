@@ -5,9 +5,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CSV_File_was_not_found {
-
-    ArrayList<Tool> testlist = new ArrayList<Tool>();
+public class CSVFileIsOverTest {
 
     @Test
     public void updateTest() throws IOException {
@@ -17,17 +15,17 @@ public class CSV_File_was_not_found {
         myReader.setPath(path);
 
         for (int i = 1; i <= 150; i++) {
-
-            testlist = myReader.update();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            ArrayList<Tool> testlist = myReader.update();
             if (testlist.isEmpty()) {
+                inputOutput.ExceptionData.checkException();
                 break;
             }
+        }
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

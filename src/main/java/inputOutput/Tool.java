@@ -3,15 +3,16 @@ package inputOutput;
 import javafx.geometry.Point3D;
 
 /**
- * This class is used as an object to temporary save the values of a tool, which are separated in CSVFileReader.
- * These tool objects will be cached in an ArrayList which is used later for various calculation.
+ * This class is used as an object to temporary save the values of a tool,
+ * which are separated in CSVFileReader.  These tool objects will be cached in
+ * an ArrayList which is used later for various calculation.
  *
  * @author Jonas Lang (comments)
  */
 public class Tool {
 
-    Point3D coordinate;
-    private double rotation_x, rotation_y, rotation_z, rotation_r;
+    private Point3D coordinate;
+    private double rotationX, rotationY, rotationZ, rotationR;
     private double valid;
     private double timestamp;
     private String name;
@@ -19,8 +20,8 @@ public class Tool {
     // Set Method for match Values
 
     /**
-     * This is the set method for all tool values. There is only one set method, because the values of a tool
-     * will be always set together
+     * This is the set method for all tool values. There is only one set
+     * method, because the values of a tool will be always set together
      *
      * @param timestamp    the recording time of the tool values
      * @param valid        shows if the tool is active at the moment
@@ -41,10 +42,10 @@ public class Tool {
 
         coordinate = new Point3D(coordinate_x, coordinate_y, coordinate_z);
 
-        this.rotation_x = rotation_x;
-        this.rotation_y = rotation_y;
-        this.rotation_z = rotation_z;
-        this.rotation_r = rotation_r;
+        this.rotationX = rotation_x;
+        this.rotationY = rotation_y;
+        this.rotationZ = rotation_z;
+        this.rotationR = rotation_r;
         this.name = name;
 
     }
@@ -72,36 +73,38 @@ public class Tool {
      *
      * @return the tool's coordinates
      */
-    public Point3D getCoordinat() {
+    public Point3D getCoordinate() {
         return coordinate;
-
     }
 
     /**
-     * This returns the current Quaternion rotation around the X-axis of this tool
+     * This returns the current Quaternion rotation around the X-axis of this
+     * tool
      *
      * @return the tool's rotation_x
      */
-    public double getRotation_x() {
-        return rotation_x;
+    public double getRotationX() {
+        return rotationX;
     }
 
     /**
-     * This returns the current Quaternion rotation around the Y-axis of this tool
+     * This returns the current Quaternion rotation around the Y-axis of this
+     * tool
      *
      * @return the tool's rotation_y
      */
-    public double getRotation_y() {
-        return rotation_y;
+    public double getRotationY() {
+        return rotationY;
     }
 
     /**
-     * This returns the current Quaternion rotation around the Z-axis of this tool
+     * This returns the current Quaternion rotation around the Z-axis of this
+     * tool
      *
      * @return the tool's rotation_z
      */
-    public double getRotation_z() {
-        return rotation_z;
+    public double getRotationZ() {
+        return rotationZ;
     }
 
     /**
@@ -109,8 +112,8 @@ public class Tool {
      *
      * @return the tool's rotation_r
      */
-    public double getRotation_r() {
-        return rotation_r;
+    public double getRotationR() {
+        return rotationR;
     }
 
     /**

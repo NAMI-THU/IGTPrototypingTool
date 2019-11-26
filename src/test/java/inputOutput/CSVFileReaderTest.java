@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class CSVFileReaderTest {
 
-    ArrayList<Tool> testlist = new ArrayList<Tool>();
+    private ArrayList<Tool> testList = new ArrayList<>();
 
     @Test
     public void updateTest() throws IOException {
@@ -32,7 +32,7 @@ public class CSVFileReaderTest {
 
         // read csv-file
         for (int i = 1; i <= 1; i++) {
-            testlist = myReader.update();
+            testList = myReader.update();
         }
 
         // test too1 correct import
@@ -48,32 +48,32 @@ public class CSVFileReaderTest {
     private boolean testequality(Tool testtool, int index) {
         boolean helptest = true;
 
-        if (testtool.getCoordinat().getX() != testlist.get(index)
-                .getCoordinat().getX()) {
+        if (testtool.getCoordinate().getX() != testList.get(index)
+                .getCoordinate().getX()) {
             helptest = false;
-        } else if (testtool.getCoordinat().getY() != testlist.get(index)
-                .getCoordinat().getY()) {
+        } else if (testtool.getCoordinate().getY() != testList.get(index)
+                .getCoordinate().getY()) {
             helptest = false;
-        } else if (testtool.getCoordinat().getZ() != testlist.get(index)
-                .getCoordinat().getZ()) {
+        } else if (testtool.getCoordinate().getZ() != testList.get(index)
+                .getCoordinate().getZ()) {
             helptest = false;
-        } else if (testtool.getRotation_x() != testlist.get(index)
-                .getRotation_x()) {
+        } else if (testtool.getRotationX() != testList.get(index)
+                .getRotationX()) {
             helptest = false;
-        } else if (testtool.getRotation_y() != testlist.get(index)
-                .getRotation_y()) {
+        } else if (testtool.getRotationY() != testList.get(index)
+                .getRotationY()) {
             helptest = false;
-        } else if (testtool.getRotation_z() != testlist.get(index)
-                .getRotation_z()) {
+        } else if (testtool.getRotationZ() != testList.get(index)
+                .getRotationZ()) {
             helptest = false;
-        } else if (testtool.getRotation_r() != testlist.get(index)
-                .getRotation_r()) {
+        } else if (testtool.getRotationR() != testList.get(index)
+                .getRotationR()) {
             helptest = false;
-        } else if (testtool.getTimestamp() != testlist.get(index).getTimestamp()) {
+        } else if (testtool.getTimestamp() != testList.get(index).getTimestamp()) {
             helptest = false;
-        } else if (testtool.getValid() != testlist.get(index).getValid()) {
+        } else if (testtool.getValid() != testList.get(index).getValid()) {
             helptest = false;
-        } else if (!testtool.getName().equals(testlist.get(index).getName())) {
+        } else if (!testtool.getName().equals(testList.get(index).getName())) {
             helptest = false;
         }
 

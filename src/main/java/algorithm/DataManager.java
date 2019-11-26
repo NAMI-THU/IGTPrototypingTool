@@ -44,7 +44,7 @@ public class DataManager {
 
         for (double i = 1; i <= countToGetNext; i++) {
             /* from return value of update a new measurement will be created */
-            List<Tool> tools = source.getLastToolist();
+            List<Tool> tools = source.getLastToolList();
 
             if (tools.isEmpty()) {
                 //inputOutput.ExceptionData.checkException();

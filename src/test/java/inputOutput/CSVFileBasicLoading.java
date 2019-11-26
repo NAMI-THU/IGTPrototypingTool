@@ -19,9 +19,9 @@ public class CSVFileBasicLoading {
             System.out.print("Data: ");
             for (Tool t : tools)
                 System.out.print("{" + t.getName() + ":"
-                        + t.getCoordinat().getX() + ";"
-                        + t.getCoordinat().getY() + ";"
-                        + t.getCoordinat().getZ() + "}");
+                        + t.getCoordinate().getX() + ";"
+                        + t.getCoordinate().getY() + ";"
+                        + t.getCoordinate().getZ() + "}");
             System.out.println();
         }
     }

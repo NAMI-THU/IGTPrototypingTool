@@ -13,9 +13,9 @@ public class Measurement {
     private Quaternion rotation;
 
     public Measurement(Tool tool) {
-        this.setPoint(new Point3D(tool.getCoordinat().getX(), tool.getCoordinat().getY(), tool.getCoordinat().getZ()));
-        this.setRotation(new Quaternion().set((float) tool.getRotation_x(), (float) tool.getRotation_y(),
-                (float) tool.getRotation_z(), (float) tool.getRotation_r()));
+        this.setPoint(new Point3D(tool.getCoordinate().getX(), tool.getCoordinate().getY(), tool.getCoordinate().getZ()));
+        this.setRotation(new Quaternion().set((float) tool.getRotationX(), (float) tool.getRotationY(),
+                (float) tool.getRotationZ(), (float) tool.getRotationR()));
         this.setTimestamp(tool.getTimestamp());
         this.setToolname(tool.getName());
 

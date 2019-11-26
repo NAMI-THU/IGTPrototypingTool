@@ -32,7 +32,7 @@ public class OpenIGTLinkConnection extends TrackingDataSource {
         if (myOpenIGTLinkConnection == null) {
             myOpenIGTLinkConnection = new Networkconnection();
             myOpenIGTLinkConnection.connect(ipAddress, port);
-            toollist = new ArrayList<Tool>();
+            toolList = new ArrayList<Tool>();
         }
         List<Networkconnection.ToolData> rawToolList = myOpenIGTLinkConnection.getToolDataList();
         synchronized (rawToolList) {
@@ -40,7 +40,7 @@ public class OpenIGTLinkConnection extends TrackingDataSource {
                 this.setValues(t.name, t.t);
         }
 
-        return toollist;
+        return toolList;
     }
 
     public String getIpAddress() {
@@ -83,7 +83,7 @@ public class OpenIGTLinkConnection extends TrackingDataSource {
         rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
         rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
 
-        for (Tool cur_tool : toollist) {
+        for (Tool cur_tool : toolList) {
             if (cur_tool.getName().equals(n)) {
                 cur_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
                         coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
@@ -97,7 +97,7 @@ public class OpenIGTLinkConnection extends TrackingDataSource {
         newTool.setData(timestamp, valid, coordinate_x, coordinate_y,
                 coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                 name);
-        this.toollist.add(newTool);
+        this.toolList.add(newTool);
 
     }
 

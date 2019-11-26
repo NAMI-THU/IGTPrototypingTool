@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public abstract class TrackingDataSource {
 
-    protected ArrayList<Tool> toollist = new ArrayList<Tool>();
+    protected ArrayList<Tool> toolList = new ArrayList<>();
 
     public abstract ArrayList<Tool> update();
 
-    public ArrayList<Tool> getLastToolist() {
-        return toollist;
+    public ArrayList<Tool> getLastToolList() {
+        return toolList;
     }
 
 }

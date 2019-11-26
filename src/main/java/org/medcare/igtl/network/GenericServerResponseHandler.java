@@ -7,7 +7,8 @@ import org.medcare.igtl.util.Header;
 public class GenericServerResponseHandler extends MessageHandler {
     private IOpenIgtPacketListener server;
     public OpenIGTMessage openIGTMessage;
-    public GenericServerResponseHandler(Header header, byte[] body,ServerThread serverThread,IOpenIgtPacketListener server) {
+
+    public GenericServerResponseHandler(Header header, byte[] body, ServerThread serverThread, IOpenIgtPacketListener server) {
         super(header, body, serverThread);
         capabilityList.add("TRANSFORM");
         capabilityList.add("POSITION");
@@ -24,20 +25,20 @@ public class GenericServerResponseHandler extends MessageHandler {
         capabilityList.add("GET_STATUS");
         capabilityList.add("GET_TRANS");
         capabilityList.add("NDARRAY");
-        
-        this.server=server;
+
+        this.server = server;
     }
 
     @Override
     public boolean perform(String messageType) throws Exception {
         //Log.debug("perform messageType : " + messageType);
         //Log.info("Recived IGTLink packet, header="+getHeader()+" body="+new ByteList(getBody()));
-        
+
         //TODO - GSF: Need to add complete set of new IGTLInk commands for BRP robot
         //http://wiki.ncigt.org/index.php/P41:Prostate:BRP:MRI_New_BRP_OpenIGTLink_Protocol_2012_Mar
         //Should support both TRANSFORM and QTRANSFORM packets
-        
-        openIGTMessage = new GenericMessageNodeHandler().perform(messageType, getHeader(),getBody(), server);
+
+        openIGTMessage = new GenericMessageNodeHandler().perform(messageType, getHeader(), getBody(), server);
         return openIGTMessage != null;
     }
 

@@ -1,12 +1,12 @@
 package org.medcare.igtl.messages;
 
+import Jama.Matrix;
 import org.medcare.igtl.util.Header;
 
-import Jama.Matrix;
-
-public class DataArrayMessage  extends OpenIGTMessage{
+public class DataArrayMessage extends OpenIGTMessage {
     /**
      * This is a stub class for how the Array Data message is to be implemented
+     *
      * @param head
      * @param body
      * @throws Exception

@@ -38,8 +38,8 @@ public class ToolMeasure {
 
     /**
      * This method calculates errors and saves them in a list. With a loop the
-     * distance between each point and the average point is computed. Every distance
-     * is added to the list of errors.
+     * distance between each point and the average point is computed. Every
+     * distance is added to the list of errors.
      *
      * @param avgPoint - average point of type Point3D
      * @return errors - of type list
@@ -70,12 +70,13 @@ public class ToolMeasure {
     }
 
     /**
-     * This method computes the mean of the passed values. getAverageMeasurement
-     * gets a list of measurements. Size of the list is determined. A null point is
-     * created. A loop goes over the number of measurements. In place i the point
-     * will be fetched and added to addPoint. For x, y and z an average point is
-     * calculated. Though all points from addPoint are pitched by the size of the
-     * list. An average measurement and an average point is created.
+     * This method computes the mean of the passed values.
+     * getAverageMeasurement gets a list of measurements. Size of the list is
+     * determined. A null point is created. A loop goes over the number of
+     * measurements. In place i the point will be fetched and added to
+     * addPoint. For x, y and z an average point is calculated. Though all
+     * points from addPoint are pitched by the size of the list. An average
+     * measurement and an average point is created.
      *
      * @param measurements - list with measurements
      * @return averageMeasurement - a average measurement
@@ -106,12 +107,12 @@ public class ToolMeasure {
     }
 
     /**
-     * This method computes the average rotation. The first quaternion of the list
-     * of measurement on point 0 and the last quaternion is taken. The time and the
-     * size of the measurements are divided. At this value, the movement is exactly
-     * the average. On the first quaterion method slerp is called by class
-     * quaternion. The first and the last quaternion plus positionAtTime is returned
-     * as average rotation.
+     * This method computes the average rotation. The first quaternion of the
+     * list of measurement on point 0 and the last quaternion is taken. The
+     * time and the size of the measurements are divided. At this value, the
+     * movement is exactly the average. On the first quaterion method slerp is
+     * called by class quaternion. The first and the last quaternion plus
+     * positionAtTime is returned as average rotation.
      *
      * @param measurements - list of measurements
      * @return firstRotation.slerp(firstRotation, lastRotation, positionAtTime) - a
@@ -128,13 +129,13 @@ public class ToolMeasure {
     }
 
     /**
-     * This method computes the Jitter of a Rotation. A list of measurements and an
-     * average rotation is passed. Four lists of errors, for every value of the
-     * quaternion, where created. In a loop the method gets quaternions on point i.
-     * If i > 0, from rotationMovement the quaternion on point i is subtracted.
-     * Error variables are created. From each quaternion the list from above is
-     * added. Every list is added in rotationError. From rotation error the root
-     * mean square error is calculated.
+     * This method computes the Jitter of a Rotation. A list of measurements
+     * and an average rotation is passed. Four lists of errors, for every value
+     * of the quaternion, where created. In a loop the method gets quaternions
+     * on point i.  If i > 0, from rotationMovement the quaternion on point i
+     * is subtracted.  Error variables are created. From each quaternion the
+     * list from above is added. Every list is added in rotationError. From
+     * rotation error the root mean square error is calculated.
      *
      * @param avgRotation - average rotation of type Quaternion
      * @return rotationError - of type quaternion

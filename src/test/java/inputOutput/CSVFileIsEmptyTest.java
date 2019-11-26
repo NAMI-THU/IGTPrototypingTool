@@ -1,16 +1,11 @@
 package inputOutput;
 
-import inputOutput.CSVFileReader;
-import inputOutput.Tool;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CSV_File_is_Over_Test {
-
-    ArrayList<Tool> testlist = new ArrayList<Tool>();
-
+public class CSVFileIsEmptyTest {
 
     @Test
     public void updateTest() throws IOException {
@@ -19,16 +14,12 @@ public class CSV_File_is_Over_Test {
         CSVFileReader myReader = new CSVFileReader();
         myReader.setPath(path);
 
-
         for (int i = 1; i <= 150; i++) {
-
-            testlist = myReader.update();
-            if (testlist.isEmpty()) {
+            ArrayList<Tool> testList = myReader.update();
+            if (testList.isEmpty()) {
                 inputOutput.ExceptionData.checkException();
-
                 break;
             }
-
         }
 
         try {
@@ -36,8 +27,5 @@ public class CSV_File_is_Over_Test {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
     }
-
 }

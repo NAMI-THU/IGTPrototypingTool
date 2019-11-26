@@ -5,10 +5,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CSV_File_is_Empty_Test {
+public class CSVFileWasNotFoundTest {
 
     ArrayList<Tool> testlist = new ArrayList<Tool>();
-
 
     @Test
     public void updateTest() throws IOException {
@@ -17,25 +16,18 @@ public class CSV_File_is_Empty_Test {
         CSVFileReader myReader = new CSVFileReader();
         myReader.setPath(path);
 
-
         for (int i = 1; i <= 150; i++) {
 
             testlist = myReader.update();
-            if (testlist.isEmpty()) {
-                inputOutput.ExceptionData.checkException();
-
-                break;
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
+            if (testlist.isEmpty()) {
+                break;
+            }
         }
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
     }
-
 }
