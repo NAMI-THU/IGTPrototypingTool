@@ -11,4 +11,4 @@ addons:
       - openjfx
 
 script:
-  - ./gradlew build
+  - ./gradlew test
