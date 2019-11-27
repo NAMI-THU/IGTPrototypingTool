@@ -70,7 +70,7 @@ public class MeasurementView extends JFrame implements ActionListener {
     private JLabel rotationL4 = new JLabel();
     private java.awt.List measurementList;
     private TrackingDataSource source; //source for continous tracking
-    private TrackingDataSource sourceFilereader; //source for reading single files
+    private TrackingDataSource sourceFileReader; //source for reading single files
     private DataService dataS = new DataService();
     private Map<String, ToolMeasure> storedMeasurements = new LinkedHashMap<String, ToolMeasure>();
     private int measurementCounter = 0;
@@ -273,12 +273,10 @@ public class MeasurementView extends JFrame implements ActionListener {
                 f = new File(address.getText());
                 String path = f.getAbsolutePath();
                 if (f.exists() && path.endsWith(".csv")) {
-                    CSVFileReader newSource = new CSVFileReader();
-                    newSource.setPath(path);
-                    sourceFilereader = newSource;
+                    sourceFileReader = new CSVFileReader(path);
 
                     toolList.removeAll();
-                    for (Tool t : sourceFilereader.update()) {
+                    for (Tool t : sourceFileReader.update()) {
                         toolList.add(t.getName());
                     }
                     loaded.setText("Loaded: " + path);
@@ -429,7 +427,7 @@ public class MeasurementView extends JFrame implements ActionListener {
             } else if (src == loadTool) { // loadData (from file) is pressed
 
                 DataService loadDataService = new DataService();
-                loadDataService.setTrackingDataSource(sourceFilereader);
+                loadDataService.setTrackingDataSource(sourceFileReader);
                 loadDataService.loadNextData(Integer.parseInt(toLoadField.getText()), true);
                 ToolMeasure newMeasurement = loadDataService.getToolByName(toolList.getSelectedItem());
                 storedMeasurements.put("Measurement " + measurementCounter + "("

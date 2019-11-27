@@ -15,8 +15,7 @@ public class CSVFileReaderTest {
     public void updateTest() throws IOException {
 
         String path = "C:/Users/franz-lokal/logfile.csv";
-        CSVFileReader myReader = new CSVFileReader();
-        myReader.setPath(path);
+        CSVFileReader myReader = new CSVFileReader(path);
 
         Tool testtool1 = new Tool();
         testtool1.setData(188138.0, 1.0, 73.5664539062506, 75.3365062500002,

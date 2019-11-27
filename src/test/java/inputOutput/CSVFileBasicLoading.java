@@ -2,15 +2,15 @@ package inputOutput;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CSVFileBasicLoading {
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         String path = "C:/tools/logfile.csv";
-        CSVFileReader myReader = new CSVFileReader();
-        myReader.setPath(path);
+        CSVFileReader myReader = new CSVFileReader(path);
         ArrayList<Tool> tools = myReader.update();
         System.out.println("Found " + tools.size() + " tools.");
         for (Tool t : tools) System.out.println("Name: " + t.getName());

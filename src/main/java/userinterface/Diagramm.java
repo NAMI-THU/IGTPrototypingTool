@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -122,20 +123,26 @@ public class Diagramm extends Application {
         choose.setMinWidth(280);
 
         choose.setOnAction((event) -> { // handle button event
-            fp = new FileChooser();
-            fp.setTitle("Load Data");
-            fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
+            CSVFileReader newSource = null;
+            while (newSource == null) {
+                fp = new FileChooser();
+                fp.setTitle("Load Data");
+                fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
 
-            file = fp.showOpenDialog(stage);
-            CSVFileReader newSource = new CSVFileReader();
-            if (file != null) {
-                newSource.setPath(file.getAbsolutePath());
-                newSource.setRepeatMode(true);
-                source = newSource;
-                if (myMeasurementView != null)
-                    myMeasurementView.setTrackingDeviceSource(source);
+                file = fp.showOpenDialog(stage);
+                if (file != null) {
+                    try {
+                        newSource = new CSVFileReader(file.getAbsolutePath());
+                    } catch (IOException e) {
+                        continue;
+                    }
+                    newSource.setRepeatMode(true);
+                    source = newSource;
+                    if (myMeasurementView != null) {
+                        myMeasurementView.setTrackingDeviceSource(source);
+                    }
+                }
             }
-
         });
 
         network = new Button("Connect via OpenIGTLink (localhost)");

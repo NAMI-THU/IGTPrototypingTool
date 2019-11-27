@@ -17,7 +17,6 @@ public class CSVFileReader extends TrackingDataSource {
     private static int exceptionNumber = 0;
     // initialize variable
     private int lineCounter = 0;
-    private String line = null;
     // create tool list
     private String[] data = null;
     private int numberOfTools = 0;
@@ -25,6 +24,15 @@ public class CSVFileReader extends TrackingDataSource {
     private String path;
     private boolean repeatMode = false;
     private BufferedReader csvFile = null;
+
+    public CSVFileReader(BufferedReader reader) {
+        csvFile = reader;
+    }
+
+    public CSVFileReader(String path) throws IOException {
+        this(new BufferedReader(new InputStreamReader(
+                new FileInputStream(path))));
+    }
 
     public static int getExceptionNumber() {
         return exceptionNumber;
@@ -147,17 +155,14 @@ public class CSVFileReader extends TrackingDataSource {
         // create the file reader for the CSV data
         csvFile = null;
         try {
-
             // reader for CSV-file
             csvFile = new BufferedReader(new InputStreamReader(
                     new FileInputStream(path)));
 
-
             // splits the CSV-data by semicolon and saves the Values in an
             // array
             for (int j = 0; j <= lineCounter; j++) {
-
-                line = csvFile.readLine();
+                String line = csvFile.readLine();
                 data = line.split(";");
 
             }
@@ -175,25 +180,13 @@ public class CSVFileReader extends TrackingDataSource {
      *
      * @param csv_name   contains name of the tool
      * @param index_name shows index of the tool to get the correct name for
-     * each tool
+     *                   each tool
      */
     private void getName(String csv_name, int index_name) {
         // find the tool name by splitting "timestamp_name"
         String[] name = csv_name.split("_");
         toolName[index_name] = name[1];
 
-    }
-
-    /**
-     * this sets the path of the location from the CSV-file
-     *
-     * @param abspath is a string of a path you need to chose to be able to
-     * read in exactly the file you want to
-     */
-    public void setPath(String abspath) {
-        System.out.println("Path set: " + path);
-        path = abspath;
-        //userinterface.Gui.setTexttoloaded();
     }
 
     public int getLineCounter() {

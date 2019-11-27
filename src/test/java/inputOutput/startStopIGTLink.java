@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class startStopIGTLink extends JFrame implements ActionListener {
@@ -102,8 +103,12 @@ public class startStopIGTLink extends JFrame implements ActionListener {
         if (src == start) {
 
             if (rdbtnCsvFileReader.isSelected()) {
-                CSVFileReader newSource = new CSVFileReader();
-                newSource.setPath(filename.getText());
+                CSVFileReader newSource;
+                try {
+                    newSource = new CSVFileReader(filename.getText());
+                } catch (IOException e) {
+                    return;
+                }
                 newSource.setRepeatMode(true);
                 source = newSource;
             } else {
@@ -126,8 +131,9 @@ public class startStopIGTLink extends JFrame implements ActionListener {
         } else if (src == close) {
             System.exit(0);
         } else if (src == exitConnection) {
-            if (this.rdbtnOpenIgtLink.isSelected())
+            if (this.rdbtnOpenIgtLink.isSelected()) {
                 ((OpenIGTLinkConnection) source).closeConnection();
+            }
         } else {
             ArrayList<Tool> tools = source.update();
             System.out.print("Data: ");

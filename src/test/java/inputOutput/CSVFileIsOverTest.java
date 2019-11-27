@@ -11,8 +11,7 @@ public class CSVFileIsOverTest {
     public void updateTest() throws IOException {
 
         String path = "C:/Users/franz-lokal/logfile.csv";
-        CSVFileReader myReader = new CSVFileReader();
-        myReader.setPath(path);
+        CSVFileReader myReader = new CSVFileReader(path);
 
         for (int i = 1; i <= 150; i++) {
             ArrayList<Tool> testlist = myReader.update();
