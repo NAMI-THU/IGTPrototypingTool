@@ -1,7 +1,16 @@
 package inputOutput;
 
-import java.io.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class reads in a 'CSV-file containing a variation of tools and
@@ -12,35 +21,41 @@ import java.util.ArrayList;
  */
 public class CSVFileReader extends TrackingDataSource {
     private static int exceptionNumber = 0;
-    // initialize variable
-    private int lineCounter = 0;
-    // create tool list
-    private String[] data = null;
-    private int numberOfTools = 0;
-    private String[] toolName = null;
+    private int recordNumber = 0;
+    private List<String> toolNames;
     private boolean repeatMode = false;
-    private BufferedReader csvFile;
+    private List<CSVRecord> records;
 
     /**
-     * Constructs a CSVFileReader from a BufferedReader.
+     * Constructs a CSVFileReader from a Reader object.
+     *
      * @param reader The reader to use.
      * @throws IOException
      */
-    public CSVFileReader(final BufferedReader reader) throws IOException {
-        csvFile = reader;
-        if (csvFile.markSupported()) {
-            csvFile.mark(0);
-        }
+    public CSVFileReader(final Reader reader) throws IOException {
+        CSVFormat format = CSVFormat.DEFAULT // first use the default csv format
+                .withDelimiter(';') // file uses ';' instead of ','
+                .withHeader(); // file has a header
+        CSVParser csvFile = new CSVParser(reader, format);
+        records = csvFile.getRecords();
+
+        // gets the names of all tools based on the TimeStamp header
+        String header = "TimeStamp_";
+        toolNames = csvFile.getHeaderNames()
+                .stream()
+                .filter(s -> s.startsWith(header))
+                .map(s -> s.substring(header.length()))
+                .collect(Collectors.toList());
     }
 
     /**
      * Constructs a CSVFileReader by reading a file from the filesystem.
+     *
      * @param path The path to read.
      * @throws IOException If the file does not exist.
      */
     public CSVFileReader(final String path) throws IOException {
-        this(new BufferedReader(new InputStreamReader(
-                new FileInputStream(path))));
+        this(new FileReader(path));
     }
 
     public static int getExceptionNumber() {
@@ -65,136 +80,24 @@ public class CSVFileReader extends TrackingDataSource {
      * @return ArrayList of tools
      */
     public ArrayList<Tool> update() {
-
-        // reader for CSV-file
-        try {
-            if (lineCounter == 0) {
-                init();
-            }
-
-            if (csvFile.readLine() != null) {
-                lineCounter++;
-                match();
-                return toolList;
-            } else {
-                if (repeatMode) {
-                    csvFile.reset();
-                    lineCounter = 0;
-                }
-                return toolList;
-            }
-
-        } catch (IOException e) {
-            exceptionNumber = 1;
-            ExceptionData.checkException();
-
-            return toolList;
+        ArrayList<Tool> list = new ArrayList<>(toolNames.size());
+        if (recordNumber >= records.size()) {
+            return list;
         }
-    }
+        CSVRecord currentRecord = records.get(recordNumber);
+        String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_", "QX_", "QY_", "QZ_", "QR_"};
+        for (String toolName : toolNames) {
+            double[] data = Arrays.stream(headers)
+                    .map(s -> s + toolName)
+                    .map(currentRecord::get)
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
 
-    /**
-     * the method init tells us the number of tools in the CSV-file by
-     * splitting up the lines, one tool has 9 Variables.  the method also
-     * assigns the tools to the toollist, that makes sure that the toollist
-     * contains as many objects as there are tools available in the file
-     *
-     * @throws IOException
-     */
-    private void init() throws IOException {
-
-        toolList = new ArrayList<>();
-        if (!read()) { // this is an empty file.
-            return;
+            Tool t = new Tool();
+            t.setData(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], toolName);
+            list.add(t);
         }
-
-        // find the number of the tools
-        numberOfTools = (data.length) / 9;
-        toolName = new String[numberOfTools];
-
-        // creating tools depending on the number of tools and adding them to the
-        // Tool list
-        for (int i = 1, j = 0; i <= numberOfTools; i++, j = j + 9) {
-
-            Tool tool = new Tool();
-            toolList.add(tool);
-
-            // Get the name of the tools from the Csv-file
-            getName(data[j], (i - 1));
-        }
-
-        // decrease line_counter because next line has to be read
-        lineCounter++;
-        match();
-    }
-
-    /**
-     * This method matches the values of the CSV-file to each Object of the
-     * toollist to make sure, that each object contains the values that belong
-     * to it
-     *
-     * @throws IOException
-     */
-    private void match() throws IOException {
-
-        read();
-
-        double[] dataNew = new double[data.length];
-
-        for (int a = 0; a < data.length; a++) {
-            // casting from string to double
-            dataNew[a] = Double.parseDouble(data[a]);
-        }
-
-        for (int i = 0, j = 0; i < toolList.size(); i++, j = j + 9) {
-            // assign the Values of the Csv-File to the Object
-            toolList.get(i).setData(dataNew[j], dataNew[j + 1],
-                    dataNew[j + 2], dataNew[j + 3], dataNew[j + 4],
-                    dataNew[j + 5], dataNew[j + 6], dataNew[j + 7],
-                    dataNew[j + 8], toolName[i]);
-        }
-    }
-
-    /**
-     * this method creates a file reader for the CSV-file which is found by the
-     * method setPath()
-     */
-    private boolean read() {
-        // create the file reader for the CSV data
-        try {
-            // splits the CSV-data by semicolon and saves the Values in an
-            // array
-            for (int j = 0; j < lineCounter; j++) {
-                String line = csvFile.readLine();
-                data = line.split(";");
-            }
-
-        } catch (IOException e) {
-            // error message output
-            System.out.println("Read error " + e);
-        }
-        return data != null;
-    }
-
-    /**
-     * this method gets the name of the tool out of the CSV-file
-     *
-     * @param csv_name   contains name of the tool
-     * @param index_name shows index of the tool to get the correct name for
-     *                   each tool
-     */
-    private void getName(String csv_name, int index_name) {
-        // find the tool name by splitting "timestamp_name"
-        String[] name = csv_name.split("_");
-        toolName[index_name] = name[1];
-
-    }
-
-    public int getLineCounter() {
-        return lineCounter;
-    }
-
-    public void setLine_counter() {
-        lineCounter = 0;
-        toolList.clear();
+        recordNumber += 1;
+        return list;
     }
 }

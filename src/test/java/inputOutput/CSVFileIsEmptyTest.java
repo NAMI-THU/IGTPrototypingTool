@@ -12,11 +12,7 @@ public class CSVFileIsEmptyTest {
 
     @Test
     public void updateTest() throws IOException {
-
-//        String path = "C:/Users/franz-lokal/logfile.csv";
-//        CSVFileReader myReader = new CSVFileReader(path);
         CSVFileReader myReader = new CSVFileReader(new BufferedReader(new StringReader("")));
-
         ArrayList<Tool> result = myReader.update();
         Assert.assertTrue(result.isEmpty());
     }

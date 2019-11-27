@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CSVFileWasNotFoundTest {
 
@@ -18,6 +18,8 @@ public class CSVFileWasNotFoundTest {
             fail();
         } catch (FileNotFoundException e) {
             return;
+        } catch (Exception e) {
+            fail();
         }
     }
 }
