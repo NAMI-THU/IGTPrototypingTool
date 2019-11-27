@@ -124,4 +124,19 @@ public class Tool {
     public String getName() {
         return name;
     }
+
+    /**
+     * Compares two tools against one another for equality
+     * @param other The object to compare against
+     * @return If the two objects are the same
+     */
+    public boolean equals(final Tool other) {
+        return this.name.equals(other.name)
+                && this.coordinate.equals(other.coordinate)
+                && this.rotationX - other.rotationX < 1e-6
+                && this.rotationY - other.rotationY < 1e-6
+                && this.rotationZ - other.rotationZ < 1e-6
+                && this.rotationR - other.rotationR < 1e-6
+                && this.timestamp - other.timestamp < 1e-6;
+    }
 }
