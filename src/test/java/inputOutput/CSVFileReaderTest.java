@@ -9,73 +9,44 @@ import static org.junit.Assert.assertEquals;
 
 public class CSVFileReaderTest {
 
-    private ArrayList<Tool> testList = new ArrayList<>();
+    private static final double EPSILON = 1e-6;
 
     @Test
     public void updateTest() throws IOException {
-
-        String path = "C:/Users/franz-lokal/logfile.csv";
+        String path = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("multiple-tools.csv")
+                .getPath();
         CSVFileReader myReader = new CSVFileReader(path);
 
-        Tool testtool1 = new Tool();
-        testtool1.setData(188138.0, 1.0, 73.5664539062506, 75.3365062500002,
-                -58.9611234374996, 0.0, 0.0, 0.0, 1.0, "Mega");
+        Tool testTool1 = new Tool();
+        testTool1.setData(2100502, 1, 77.987652886439, 12.3151565717349,
+                445.369278569562, -0.438100248347888, 0.80324400339826, 0.328079843044433, 0.23501246773358, "Tool0");
 
-        Tool testtool2 = new Tool();
-        testtool2.setData(188150.0, 1.0, -127.2664015625, -194.487728906251,
-                34.1103312500008, 0.0, 0.0, 0.0, 1.0, "Geiler");
-
-        Tool testtool3 = new Tool();
-        testtool3.setData(188162.0, 1.0, -54.7602851562496, -259.4175390625,
-                44.6227570312496, 0.0, 0.0, 0.0, 1.0, "Typ");
+        Tool testTool2 = new Tool();
+        testTool2.setData(2100502, 1, 62.3730812318003, 5.13397572152332,
+                436.379757362176, -0.469096638136285, 0.78435027049366, 0.319787545528856, 0.249957842426255, "Tool1");
 
         // read csv-file
-        for (int i = 1; i <= 1; i++) {
-            testList = myReader.update();
-        }
+        ArrayList<Tool> testList = myReader.update();
 
-        // test too1 correct import
-        assertEquals(true, testequality(testtool1, 0));
+        // test tool1 correct import
+        testEquality(testTool1, testList.get(0));
 
-        // test too2 correct import
-        assertEquals(true, testequality(testtool2, 1));
-
-        // test too3 correct import
-        assertEquals(true, testequality(testtool3, 2));
+        // test tool2 correct import
+        testEquality(testTool2, testList.get(1));
     }
 
-    private boolean testequality(Tool testtool, int index) {
-        boolean helptest = true;
-
-        if (testtool.getCoordinate().getX() != testList.get(index)
-                .getCoordinate().getX()) {
-            helptest = false;
-        } else if (testtool.getCoordinate().getY() != testList.get(index)
-                .getCoordinate().getY()) {
-            helptest = false;
-        } else if (testtool.getCoordinate().getZ() != testList.get(index)
-                .getCoordinate().getZ()) {
-            helptest = false;
-        } else if (testtool.getRotationX() != testList.get(index)
-                .getRotationX()) {
-            helptest = false;
-        } else if (testtool.getRotationY() != testList.get(index)
-                .getRotationY()) {
-            helptest = false;
-        } else if (testtool.getRotationZ() != testList.get(index)
-                .getRotationZ()) {
-            helptest = false;
-        } else if (testtool.getRotationR() != testList.get(index)
-                .getRotationR()) {
-            helptest = false;
-        } else if (testtool.getTimestamp() != testList.get(index).getTimestamp()) {
-            helptest = false;
-        } else if (testtool.getValid() != testList.get(index).getValid()) {
-            helptest = false;
-        } else if (!testtool.getName().equals(testList.get(index).getName())) {
-            helptest = false;
-        }
-
-        return helptest;
+    private void testEquality(final Tool tool1, final Tool tool2) {
+        assertEquals(tool1.getCoordinate().getX(), tool2.getCoordinate().getX(), EPSILON);
+        assertEquals(tool1.getCoordinate().getY(), tool2.getCoordinate().getY(), EPSILON);
+        assertEquals(tool1.getCoordinate().getZ(), tool2.getCoordinate().getZ(), EPSILON);
+        assertEquals(tool1.getRotationX(), tool2.getRotationX(), EPSILON);
+        assertEquals(tool1.getRotationY(), tool2.getRotationY(), EPSILON);
+        assertEquals(tool1.getRotationZ(), tool2.getRotationZ(), EPSILON);
+        assertEquals(tool1.getRotationR(), tool2.getRotationR(), EPSILON);
+        assertEquals(tool1.getTimestamp(), tool2.getTimestamp(), EPSILON);
+        assertEquals(tool1.getValid(), tool2.getValid(), EPSILON);
+        assertEquals(tool1.getName(), tool2.getName());
     }
 }
