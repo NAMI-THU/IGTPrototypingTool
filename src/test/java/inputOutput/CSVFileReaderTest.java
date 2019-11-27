@@ -6,11 +6,31 @@ import org.junit.Test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class CSVFileReaderTest {
+
+    @Test
+    public void testRepeat() throws IOException {
+        String path = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("multiple-tools.csv")
+                .getPath();
+        CSVFileReader file = new CSVFileReader(path);
+        file.setRepeatMode(true);
+        List<Tool> record1stTime = file.update();
+
+        file.update();
+        file.update();
+        file.update();
+
+        List<Tool> record2ndTime = file.update();
+        for (int i = 0; i < record1stTime.size(); ++i) {
+            assertTrue(record1stTime.get(i).equals(record2ndTime.get(i)));
+        }
+    }
 
     @Test
     public void testFileNotFound() {
@@ -46,7 +66,7 @@ public class CSVFileReaderTest {
     @Test
     public void testEmptyFile() throws IOException {
         CSVFileReader myReader = new CSVFileReader(new StringReader(""));
-        ArrayList<Tool> result = myReader.update();
+        List<Tool> result = myReader.update();
         Assert.assertTrue(result.isEmpty());
     }
 
@@ -55,7 +75,7 @@ public class CSVFileReaderTest {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String path = loader.getResource("testdata.csv").getPath();
         CSVFileReader myReader = new CSVFileReader(path);
-        ArrayList<Tool> tools = myReader.update();
+        List<Tool> tools = myReader.update();
 
         // Sample data loaded from the first measurement of the sample data
         Tool actual = new Tool();
@@ -86,7 +106,7 @@ public class CSVFileReaderTest {
                 0.319787545528856, 0.249957842426255, "Tool1");
 
         // read csv-file
-        ArrayList<Tool> testList = myReader.update();
+        List<Tool> testList = myReader.update();
 
         // test tool1 correct import
         assertTrue(testTool1.equals(testList.get(0)));

@@ -81,9 +81,12 @@ public class CSVFileReader extends TrackingDataSource {
      */
     public ArrayList<Tool> update() {
         ArrayList<Tool> list = new ArrayList<>(toolNames.size());
-        if (recordNumber >= records.size()) {
+        if (recordNumber >= records.size() && repeatMode) {
+            recordNumber = 0;
+        } else if (recordNumber >= records.size()) {
             return list;
         }
+
         CSVRecord currentRecord = records.get(recordNumber);
         String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_", "QX_", "QY_", "QZ_", "QR_"};
         for (String toolName : toolNames) {
