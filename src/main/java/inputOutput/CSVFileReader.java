@@ -1,9 +1,6 @@
 package inputOutput;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -21,15 +18,27 @@ public class CSVFileReader extends TrackingDataSource {
     private String[] data = null;
     private int numberOfTools = 0;
     private String[] toolName = null;
-    private String path;
     private boolean repeatMode = false;
-    private BufferedReader csvFile = null;
+    private BufferedReader csvFile;
 
-    public CSVFileReader(BufferedReader reader) {
+    /**
+     * Constructs a CSVFileReader from a BufferedReader.
+     * @param reader The reader to use.
+     * @throws IOException
+     */
+    public CSVFileReader(final BufferedReader reader) throws IOException {
         csvFile = reader;
+        if (csvFile.markSupported()) {
+            csvFile.mark(0);
+        }
     }
 
-    public CSVFileReader(String path) throws IOException {
+    /**
+     * Constructs a CSVFileReader by reading a file from the filesystem.
+     * @param path The path to read.
+     * @throws IOException If the file does not exist.
+     */
+    public CSVFileReader(final String path) throws IOException {
         this(new BufferedReader(new InputStreamReader(
                 new FileInputStream(path))));
     }
@@ -59,21 +68,17 @@ public class CSVFileReader extends TrackingDataSource {
 
         // reader for CSV-file
         try {
-
-            if ((lineCounter == 0) || (csvFile == null)) {
-                lineCounter = 0;
+            if (lineCounter == 0) {
                 init();
             }
 
             if (csvFile.readLine() != null) {
-
                 lineCounter++;
                 match();
                 return toolList;
             } else {
                 if (repeatMode) {
-                    csvFile.close();
-                    csvFile = null;
+                    csvFile.reset();
                     lineCounter = 0;
                 }
                 return toolList;
@@ -97,12 +102,14 @@ public class CSVFileReader extends TrackingDataSource {
      */
     private void init() throws IOException {
 
-        read();
+        toolList = new ArrayList<>();
+        if (!read()) { // this is an empty file.
+            return;
+        }
 
         // find the number of the tools
         numberOfTools = (data.length) / 9;
         toolName = new String[numberOfTools];
-        toolList = new ArrayList<Tool>();
 
         // creating tools depending on the number of tools and adding them to the
         // Tool list
@@ -151,28 +158,21 @@ public class CSVFileReader extends TrackingDataSource {
      * this method creates a file reader for the CSV-file which is found by the
      * method setPath()
      */
-    private void read() {
+    private boolean read() {
         // create the file reader for the CSV data
-        csvFile = null;
         try {
-            // reader for CSV-file
-            csvFile = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(path)));
-
             // splits the CSV-data by semicolon and saves the Values in an
             // array
-            for (int j = 0; j <= lineCounter; j++) {
+            for (int j = 0; j < lineCounter; j++) {
                 String line = csvFile.readLine();
                 data = line.split(";");
-
             }
 
         } catch (IOException e) {
             // error message output
             System.out.println("Read error " + e);
-
         }
-
+        return data != null;
     }
 
     /**

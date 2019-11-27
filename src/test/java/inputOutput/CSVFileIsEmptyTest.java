@@ -1,8 +1,11 @@
 package inputOutput;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 public class CSVFileIsEmptyTest {
@@ -10,21 +13,11 @@ public class CSVFileIsEmptyTest {
     @Test
     public void updateTest() throws IOException {
 
-        String path = "C:/Users/franz-lokal/logfile.csv";
-        CSVFileReader myReader = new CSVFileReader(path);
+//        String path = "C:/Users/franz-lokal/logfile.csv";
+//        CSVFileReader myReader = new CSVFileReader(path);
+        CSVFileReader myReader = new CSVFileReader(new BufferedReader(new StringReader("")));
 
-        for (int i = 1; i <= 150; i++) {
-            ArrayList<Tool> testList = myReader.update();
-            if (testList.isEmpty()) {
-                inputOutput.ExceptionData.checkException();
-                break;
-            }
-        }
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ArrayList<Tool> result = myReader.update();
+        Assert.assertTrue(result.isEmpty());
     }
 }
