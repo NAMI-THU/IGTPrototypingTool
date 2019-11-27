@@ -33,6 +33,18 @@ public class CSVFileReaderTest {
     }
 
     @Test
+    public void testGetLast() throws IOException {
+        String path = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("multiple-tools.csv")
+                .getPath();
+        CSVFileReader reader = new CSVFileReader(path);
+        List<Tool> records = reader.update();
+
+        assertEquals(reader.getLastToolList(), records);
+    }
+
+    @Test
     public void testFileNotFound() {
         String path = "/file/does/not/exist.csv";
         try {

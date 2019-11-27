@@ -80,27 +80,32 @@ public class CSVFileReader extends TrackingDataSource {
      * @return ArrayList of tools
      */
     public ArrayList<Tool> update() {
-        ArrayList<Tool> list = new ArrayList<>(toolNames.size());
+        toolList = new ArrayList<>(toolNames.size());
         if (recordNumber >= records.size() && repeatMode) {
             recordNumber = 0;
         } else if (recordNumber >= records.size()) {
-            return list;
+            return toolList;
         }
 
         CSVRecord currentRecord = records.get(recordNumber);
-        String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_", "QX_", "QY_", "QZ_", "QR_"};
         for (String toolName : toolNames) {
-            double[] data = Arrays.stream(headers)
-                    .map(s -> s + toolName)
-                    .map(currentRecord::get)
-                    .mapToDouble(Double::parseDouble)
-                    .toArray();
-
-            Tool t = new Tool();
-            t.setData(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], toolName);
-            list.add(t);
+            toolList.add(parseTool(currentRecord, toolName));
         }
         recordNumber += 1;
-        return list;
+        return toolList;
+    }
+
+    private Tool parseTool(final CSVRecord record, final String toolName) {
+        String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_", "QX_", "QY_", "QZ_", "QR_"};
+        Tool t = new Tool();
+
+        double[] data = Arrays.stream(headers)
+                .map(s -> s + toolName)
+                .map(record::get)
+                .mapToDouble(Double::parseDouble)
+                .toArray();
+
+        t.setData(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], toolName);
+        return t;
     }
 }
