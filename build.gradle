@@ -15,6 +15,9 @@ plugins {
     // Apply the application plugin to add support for building a CLI application
     id 'application'
 
+	// Apply JavaFX plugin, necessary for GUI
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+    
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
 
@@ -26,11 +29,8 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()    
 }
-
-// Run in Java 8 mode due to dependency compatibility issues
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
 dependencies {
     implementation 'org.hamcrest:hamcrest-core:1.3'
@@ -47,6 +47,11 @@ dependencies {
 application {
     // Define the main class for the application
     mainClassName = 'mainMethod.Main'
+}
+
+javafx {
+	version = '14'
+	modules = ['javafx.controls', 'javafx.fxml']
 }
 
 checkstyle {
