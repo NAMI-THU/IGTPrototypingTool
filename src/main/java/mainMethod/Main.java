@@ -1,6 +1,6 @@
 package mainMethod;
 
-import userinterface.Diagramm;
+import userinterface.TrackingDataView;
 
 public class Main {
 
@@ -9,7 +9,7 @@ public class Main {
         new Thread() {
             @Override
             public void run() {
-                javafx.application.Application.launch(Diagramm.class);
+                javafx.application.Application.launch(TrackingDataView.class);
             }
         }.start();
 
