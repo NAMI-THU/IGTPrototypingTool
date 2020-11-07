@@ -9,6 +9,7 @@ import com.github.spotbugs.SpotBugsTask
  */
 
 plugins {
+
     // Apply the java plugin to add support for Java
     id 'java'
 
@@ -41,7 +42,14 @@ dependencies {
     implementation 'org.apache.commons:commons-csv:1.7'
 
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+
+}
+
+// JUnit 5 support
+test {
+    useJUnitPlatform()
 }
 
 application {
