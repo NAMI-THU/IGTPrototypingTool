@@ -1,14 +1,17 @@
 package inputOutput;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CSVFileReaderTest {
 
@@ -79,7 +82,7 @@ public class CSVFileReaderTest {
     public void testEmptyFile() throws IOException {
         CSVFileReader myReader = new CSVFileReader(new StringReader(""));
         List<Tool> result = myReader.update();
-        Assert.assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test

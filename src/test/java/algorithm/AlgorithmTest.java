@@ -2,14 +2,15 @@ package algorithm;
 
 import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AlgorithmTest {
 
