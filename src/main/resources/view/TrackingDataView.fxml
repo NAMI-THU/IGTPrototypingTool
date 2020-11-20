@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="controller.TrackingDataController">
+	<AnchorPane prefHeight="900.0" prefWidth="975.0">
+	       <children>
+	          <ScatterChart fx:id="s1" layoutY="8.0" prefHeight="300.0" prefWidth="400.0" title="XY-Plane">
+	            <xAxis>
+	              <NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+	            </xAxis>
+	            <yAxis>
+	              <NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" minorTickVisible="false" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+	            </yAxis>
+	          </ScatterChart>
+	          <ScatterChart fx:id="s2" layoutX="383.0" layoutY="8.0" prefHeight="300" prefWidth="400" title="ZY-Plane">
+	             <xAxis>
+	                <NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+	             </xAxis>
+	             <yAxis>
+	                <NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+	             </yAxis>
+	          </ScatterChart>
+	          <ScatterChart fx:id="s3" layoutY="295.0" prefHeight="300" prefWidth="400" title="XZ-Plane">
+	             <xAxis>
+	                <NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+	             </xAxis>
+	             <yAxis>
+	                <NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+	             </yAxis>
+	          </ScatterChart>
+	          <Button layoutX="805.0" layoutY="53.0" mnemonicParsing="false" onAction="#connect" text="Connect via OpenIGTLink (localhost)" />
+	          <Button layoutX="805.0" layoutY="88.0" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" />
+	          <Button layoutX="805.0" layoutY="133.0" mnemonicParsing="false" onAction="#visualizeTracking" text="Start Visualization" />
+	          <Button layoutX="806.0" layoutY="165.0" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" />
+         <StackPane layoutX="448.0" layoutY="335.0" prefHeight="276.0" prefWidth="566.0">
+            <children>
+      	          <HBox prefHeight="160.0" prefWidth="592.0">
+      	             <children>
+      	                <VBox fx:id="posBox" prefHeight="160.0" prefWidth="250.0">
+      	                   <children>
+      	                      <Label prefHeight="17.0" prefWidth="62.0" text="Position" />
+      	                   </children>
+      	                </VBox>
+      	                <VBox fx:id="rotBox" prefHeight="200.0" prefWidth="250.0">
+      	                   <children>
+      	                      <Label prefHeight="17.0" prefWidth="62.0" text="Rotation" />
+      	                   </children>
+      	                </VBox>
+      	             </children>
+      	          </HBox>
+            </children>
+         </StackPane>
+	       </children>
+           </AnchorPane>
+</VBox>
