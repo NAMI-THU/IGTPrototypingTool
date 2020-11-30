@@ -28,50 +28,57 @@ import userinterface.ImageScatterChart;
 import util.FormatManager;
 
 public class ThrombectomyController implements Controller {
-	
-	@FXML ImageScatterChart chart1, chart2, chart3;
-	HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
-	TrackingDataController trackingDataController;
-	
-	@FXML Button setPositionBtn, loadCoronalBtn, loadSagittalBtn, loadAxialBtn;
-	@FXML Label imageLabel;
-	@FXML TextField imageXValue, imageYValue, imageScale;
-	@FXML AnchorPane positionDetailBox;
-	
+
+	@FXML private ImageScatterChart chart1;
+	@FXML private ImageScatterChart chart2;
+	@FXML private ImageScatterChart chart3;
+	@FXML private Button setPositionBtn;
+	@FXML private Button loadCoronalBtn;
+	@FXML private Button loadSagittalBtn;
+	@FXML private Button loadAxialBtn;
+	@FXML private Label imageLabel;
+	@FXML private TextField imageXValue;
+	@FXML private TextField imageYValue;
+	@FXML private TextField imageScale;
+	@FXML private AnchorPane positionDetailBox;
+	private HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
+	private TrackingDataController trackingDataController;
+
 	public ThrombectomyController() {
-		
 	}
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		toolSeriesMap = new HashMap<String, XYChart.Series<Double, Double>[]>();
 	}
-	
+
 	public void setTrackingDataController(TrackingDataController trackingDataController) {
 		this.trackingDataController = trackingDataController;
 	}
 	
 	@FXML
 	private void loadFile(Event e) {
-		if(e.getSource().equals(loadCoronalBtn)) {
+
+		if (e.getSource().equals(loadCoronalBtn)) {
 			loadFile(chart1);
-		} else if(e.getSource().equals(loadAxialBtn)) {
+		} else if (e.getSource().equals(loadAxialBtn)) {
 			loadFile(chart2);
-		} else if(e.getSource().equals(loadSagittalBtn)) {
+		} else if (e.getSource().equals(loadSagittalBtn)) {
 			loadFile(chart3);
 		}
 	}
-	
+
 	/**
-	 * this method opens a file chooser to select an image file (png or jpg) to be displayed behind the visualization
+	 * this method opens a file chooser to select an image file (png/jpg) 
+	 * to be displayed behind the visualization
 	 * of the tracking data
-	 * @param id to identify which image is loaded
+	 * @param chart - ImageScatterChart to load img into
 	 */
 	private void loadFile(ImageScatterChart chart) throws NumberFormatException {
-		
+
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Load image");
-		fc.getExtensionFilters().add(new ExtensionFilter("Image Files", "*.jpg","*.png"));
+		fc.getExtensionFilters().add(new ExtensionFilter("Image Files", "*.jpg", "*.png"));
 		File file = fc.showOpenDialog(new Stage());
 		
 		if(file != null) {
@@ -96,22 +103,22 @@ public class ThrombectomyController implements Controller {
 			
 			// make image values manually editable for selected chart
 			setPositionBtn.addEventHandler(ActionEvent.ACTION,(event2 -> {
-				if(chart.getTitle().equals(imageLabel.getText())) {
-					if(Double.valueOf(imageXValue.getText()) != null) {
+				if (chart.getTitle().equals(imageLabel.getText())) {
+					if (Double.valueOf(imageXValue.getText()) != null) {
 						chart.getIv().setX((Double.parseDouble(imageXValue.getText())));
 						imageXValue.setStyle("-fx-border-color: transparent;");
 					} else {
 						imageXValue.setStyle("-fx-border-color: red;");
 					}
-					
-					if(Double.valueOf(imageYValue.getText()) != null) {
+
+					if (Double.valueOf(imageYValue.getText()) != null) {
 						chart.getIv().setY((Double.parseDouble(imageYValue.getText())));
 						imageYValue.setStyle("-fx-border-color: transparent;");
 					} else {
 						imageYValue.setStyle("-fx-border-color: red;");
 					}
-					
-					if(Double.valueOf(imageScale.getText()) != null) {
+
+					if (Double.valueOf(imageScale.getText()) != null) {
 						chart.getIv().setScaleX(Double.parseDouble(imageScale.getText()));
 						imageScale.setStyle("-fx-border-color: transparent;");
 					} else {
@@ -124,15 +131,15 @@ public class ThrombectomyController implements Controller {
 			System.out.println("No file selected");
 		}
 	}
-	
+
 	/**
 	 * displays position and scale of the selected chart's image
 	 * enables manually setting position and scale of that image
 	 * @param chart is the selected imagescatterchart
 	 */
 	public void editImagePosition(ImageScatterChart chart) throws NumberFormatException {
-		
-		if(chart.getIv() != null) {
+
+		if (chart.getIv() != null) {
 			// use values of selected image when image is clicked
 			chart.setOnMouseClicked(event -> {
 				positionDetailBox.setVisible(true);
@@ -141,7 +148,7 @@ public class ThrombectomyController implements Controller {
 				imageYValue.setText(FormatManager.toString(chart.getIv().getY()));
 				imageScale.setText(FormatManager.toString(chart.getIv().getScaleX()));
 			});
-			
+
 			// use values of selected image when scale is changed by scrolling
 			chart.getIv().scaleXProperty().addListener((event, oldX, newX) -> {
 				positionDetailBox.setVisible(true);
@@ -149,44 +156,41 @@ public class ThrombectomyController implements Controller {
 				imageXValue.setText(FormatManager.toString(chart.getIv().getX()));
 				imageYValue.setText(FormatManager.toString(chart.getIv().getY()));
 				imageScale.setText(FormatManager.toString(chart.getIv().getScaleX()));
-				
 			});
 		}
 	}
-	
+
 	@FXML
 	private void showTrackingData() {
-					
-					if(trackingDataController.source != null) {
-						if(trackingDataController.timeline != null) {
-				
+
+		if (trackingDataController.source != null) {
+			if (trackingDataController.timeline != null) {
 				// vllt noch anders lösen
 //				this.toolSeriesMap.forEach((tool, seriesArray) -> {
 //					for(XYChart.Series<Double, Double> dataSeries : seriesArray) {
 //            			dataSeries.getData().clear();
 //            		}
 //				});
-				
-					trackingDataController.timeline.getKeyFrames().add(
+				trackingDataController.timeline.getKeyFrames().add(
 						new KeyFrame(Duration.millis(100),
 								event2 -> updateThrombectomyDiagrams())
 						);
 				// timeline has not been started in trackingdata view
-				} else {
-//					message.setText("Start Tracking in Main Window first.");
-				}
 			} else {
+//					message.setText("Start Tracking in Main Window first.");
+			}
+		} else {
 				// no data source
 //				message.setText("No Tracking Data Source.");
-			}
+		}
 	}
-	
+
 	private void updateThrombectomyDiagrams() {
-			
+
 			List<ToolMeasure> tools = trackingDataController.ds.loadNextData(1);
-			if(tools.isEmpty()) return;
+			if (tools.isEmpty()) return;
 			
-			for(ToolMeasure tool : tools) {
+			for (ToolMeasure tool : tools) {
 				
 				List<Measurement> measurements = tool.getMeasurement();
 				
@@ -195,16 +199,14 @@ public class ThrombectomyController implements Controller {
 				}
 				
 				XYChart.Series<Double, Double>[] toolSeries = toolSeriesMap.get(tool.getName());
-		        for(XYChart.Series<Double, Double> s : toolSeries) {
+		        for (XYChart.Series<Double, Double> s : toolSeries) {
 		        	s.getData().clear();
 		        }
-		        
-		        for (int i = 1; i < 5; i++) { //use the last 5 measurements, otherwise blending will be a problem during motion
-		
+		        //use the last 5 measurements, otherwise blending will be a problem during motion
+		        for (int i = 1; i < 5; i++) { 
 		            if (measurements.size() - i < 0) {
 		                break;
 		            }
-		
 		            double x = measurements.get(measurements.size() - i).getPoint().getX();
 		            double y = measurements.get(measurements.size() - i).getPoint().getY();
 		            // use positive values so tracking data is displayed like in reality
@@ -216,27 +218,26 @@ public class ThrombectomyController implements Controller {
 		        }
 			}
 		}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void createSeriesForTool(String toolname) {
 		XYChart.Series[] seriesArray = new XYChart.Series[3];
-    	
+
     	// Series needs to have a dataset so name and symbol are set correctly
-    	for(int i=0; i<3; i++) {
+    	for (int i = 0; i < 3; i++) {
     		seriesArray[i] = new XYChart.Series();
     		seriesArray[i].getData().add(new XYChart.Data(0,0));
     		seriesArray[i].setName(toolname);
     	}
-    	
+
     	chart1.getData().addAll(seriesArray[0]);
     	chart2.getData().addAll(seriesArray[1]);
     	chart3.getData().addAll(seriesArray[2]);
-    	
+
     	this.toolSeriesMap.put(toolname, seriesArray);
 	}
-	
-	public void close() {}
-	
+
+	public void close() {
+
+	}
 }
-
-

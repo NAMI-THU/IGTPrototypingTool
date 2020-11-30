@@ -66,10 +66,12 @@ public class CSVFileReader extends TrackingDataSource {
         return repeatMode;
     }
 
-    // interface for the other groups
-
     public void setRepeatMode(boolean repeatMode) {
         this.repeatMode = repeatMode;
+    }
+
+    public List<String> getToolNames() {
+    	return toolNames;
     }
 
     /**
@@ -96,7 +98,8 @@ public class CSVFileReader extends TrackingDataSource {
     }
 
     private Tool parseTool(final CSVRecord record, final String toolName) {
-        String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_", "QX_", "QY_", "QZ_", "QR_"};
+        String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_",
+        		"QX_", "QY_", "QZ_", "QR_"};
         Tool t = new Tool();
 
         double[] data = Arrays.stream(headers)
@@ -105,7 +108,14 @@ public class CSVFileReader extends TrackingDataSource {
                 .mapToDouble(Double::parseDouble)
                 .toArray();
 
-        t.setData(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], toolName);
+        t.setData(data[0], data[1], data[2], data[3], data[4], data[5],
+        		data[6], data[7], data[8], toolName);
         return t;
+    }
+
+    /**
+     * TODO interrupt update loop without closing app completely
+     * */
+    public void stopUpdate() {
     }
 }

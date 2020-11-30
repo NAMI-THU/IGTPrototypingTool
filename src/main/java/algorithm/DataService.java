@@ -45,43 +45,45 @@ public class DataService {
     }
 
     /**
-     * This method checks if the tool exists. A for-loop is used to go through the
-     * list of tools of type ToolMeasure. If the name of the searched tool is the
-     * same as in the list then the tool will be returned, if there is no tool with
-     * the name, the exception will be thrown.
+     * This method checks if the tool exists. A for-loop is used to go
+     * through the list of tools of type ToolMeasure. If the name of the 
+     * searched tool is the same as in the list then the tool will be 
+     * returned, if there is no tool with the name, the exception is thrown.
      *
-     * @param Name - name from a tool of type String @return toolMeasure - of type
-     *             ToolMeasure @exception
+     * @param Name - name from a tool of type String 
+     * @return toolMeasure - of type ToolMeasure
+     * @exception
      */
 
-    public ToolMeasure getToolByName(String Name) throws Exception {
-        for (ToolMeasure toolMeasure : dataManager.getToolMeasures()) {
-            if (toolMeasure.getName().equals(Name)) {
+    public ToolMeasure getToolByName(String name) throws Exception {
+        for(ToolMeasure toolMeasure : dataManager.getToolMeasures()) {
+            if(toolMeasure.getName().equals(name)) {
                 return toolMeasure;
             }
         }
         /* If the tool doesn't exists, the exception is thrown */
-        throw new Exception("Tool not found: " + Name);
+        throw new Exception("Tool not found: " + name);
     }
 
     /**
-     * This method checks if the tool exists and returns the average measurement
-     * of all collected data of that tool
+     * This method checks if the tool exists and returns the average 
+     * measurement of all collected data of that tool
      *
      * @param Name name of a tool of type String
      * @return average measurement of that tool
      * @throws throws an exception if the tool was not found
      */
-    public AverageMeasurement getAverageMeasurement(String name) throws Exception {
+    public AverageMeasurement getAverageMeasurement(String name) 
+    		throws Exception {
         return getToolByName(name).getAverageMeasurement();
     }
 
     /**
-     * The method loadNextData gets a number of how much data should be reloaded. In
-     * a loop the tools of DataMangager are brought. A list of measurements is
-     * created. AverageMeasurment is called and calculated. LoadNextData calls
-     * different methods and computes them. The results where added to average
-     * Measurement..
+     * The method loadNextData gets a number of how much data should be 
+     * reloaded. In a loop the tools of DataMangager are brought. A list of 
+     * measurements is created. AverageMeasurment is called and calculated.
+     * LoadNextData calls different methods and computes them. The results are
+     * added to average Measurement..
      *
      * @param countToGetNext - number of the reloaded data
      * @return dataManager.getToolMeasures() - list of tools of type ToolMesure
@@ -93,9 +95,10 @@ public class DataService {
         return dataManager.getToolMeasures();
     }
 
-    public List<ToolMeasure> loadNextData(int countToGetNext, boolean updateSource) {
+    public List<ToolMeasure> loadNextData(int countToGetNext,
+    									  boolean updateSource) {
 
-        if (updateSource) dataManager.getSource().update();
+        if(updateSource) dataManager.getSource().update();
         /* calls method getNextData */
         dataManager.getNextData(countToGetNext);
         return dataManager.getToolMeasures();
@@ -113,10 +116,12 @@ public class DataService {
      *secondAverangeMeasurement) -
      */
 
-    public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
+    public double getAccuracy(double expectedDistance,
+    						  AverageMeasurement firstAverangeMeasurement,
                               AverageMeasurement secondAverangeMeasurement) {
         /* method getAccuracy from class DataProcessor */
-        return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
+        return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement,
+        		secondAverangeMeasurement);
     }
 
     /**
@@ -130,8 +135,10 @@ public class DataService {
      *secondMeasurement) -
      */
 
-    public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+    public Quaternion getAccuracyRotation(Quaternion expectedRotation,
+    									  Measurement firstMeasurement,
                                           Measurement secondMeasurement) {
-        return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
+        return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement,
+        		secondMeasurement);
     }
 }

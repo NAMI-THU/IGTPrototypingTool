@@ -11,32 +11,34 @@ import java.util.List;
  * This class provides the methods for processing the measurements.
  */
 public class DataProcessor {
-
+	
     /**
-     * This method computes the distance of two average points. Then the expected
-     * distance is subtracted from the distance of the points.
+     * This method computes the distance of two average points. Then the
+     * expected distance is subtracted from the distance of the points.
      *
      * @param expectedDistance          - value of type double
      * @param firstAverangeMeasurement  - value of type AverageMeasurement
      * @param secondAverangeMeasurement - value of type AverageMeasurement
      * @return accurate - the distance
      */
-    public double getAccuracy(double expectedDistance, AverageMeasurement firstAverangeMeasurement,
-                              AverageMeasurement secondAverangeMeasurement) {
+    public double getAccuracy(double expectedDistance,
+    		AverageMeasurement firstAverangeMeasurement,
+            AverageMeasurement secondAverangeMeasurement) {
 
         /**
-         * calculates the distance between the point of firstAverangeMeasurement and the
-         * point of secondAverangeMeasurement
+         * calculates the distance between the points of 
+         * firstAverangeMeasurement and secondAverangeMeasurement
          */
-        double accurate = getDistance(firstAverangeMeasurement.getPoint(), secondAverangeMeasurement.getPoint())
-                - expectedDistance;
+        double accurate = getDistance(firstAverangeMeasurement.getPoint(),
+        		secondAverangeMeasurement.getPoint()) - expectedDistance;
         return accurate;
     }
 
     /**
-     * This method gets a quaternion (four double values) and two measurements. With
-     * the method getRotation the quaternion of firstMeasurement is fetched. From
-     * this value, the second quaternion is subtracted from the second measurement.
+     * This method gets a quaternion (four double values) and two 
+     * measurements. With the method getRotation the quaternion of 
+     * firstMeasurement is fetched. From this value, the second 
+     * quaternion is subtracted from the second measurement.
      * Then the expected quaternion is subtracted.
      *
      * @param expectedRotation  - of type quaternion
@@ -45,9 +47,11 @@ public class DataProcessor {
      * @return result - of type quaternion
      */
 
-    public Quaternion getAccuracyRotation(Quaternion expectedRotation, Measurement firstMeasurement,
+    public Quaternion getAccuracyRotation(Quaternion expectedRotation,
+    									  Measurement firstMeasurement,
                                           Measurement secondMeasurement) {
-        Quaternion result = secondMeasurement.getRotation().subtract(firstMeasurement.getRotation())
+        Quaternion result = secondMeasurement.getRotation()
+        		.subtract(firstMeasurement.getRotation())
                 .subtract(expectedRotation);
         return result;
 
@@ -90,8 +94,9 @@ public class DataProcessor {
     double[] toDoubleArray(List<Double> list) {
         double[] ret = new double[list.size()];
         int i = 0;
-        for (Double e : list)
+        for (Double e : list) {
             ret[i++] = e.intValue();
+        }
         return ret;
     }
 
@@ -108,5 +113,4 @@ public class DataProcessor {
         double distance = firstPoint.distance(secondPoint);
         return distance;
     }
-
 }

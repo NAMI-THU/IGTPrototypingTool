@@ -6,6 +6,10 @@ import javafx.geometry.Point3D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The class ToolMeasure represents the name of a tool and
+ * its respective measurements.
+ */
 public class ToolMeasure {
 
     private String name;
@@ -115,13 +119,14 @@ public class ToolMeasure {
      * positionAtTime is returned as average rotation.
      *
      * @param measurements - list of measurements
-     * @return firstRotation.slerp(firstRotation, lastRotation, positionAtTime) - a
-     * quaternion
+     * @return firstRotation.slerp(firstRotation, lastRotation, positionAtTime)
+     * - a quaternion
      */
     public Quaternion getAverageRotation() {
 
         Quaternion firstRotation = measurements.get(0).getRotation();
-        Quaternion lastRotation = measurements.get(measurements.size() - 1).getRotation();
+        Quaternion lastRotation = measurements.get(measurements.size() - 1)
+        		.getRotation();
 
         float positionAtTime = 1 / measurements.size();
 
@@ -157,7 +162,8 @@ public class ToolMeasure {
             Quaternion rotationMovement = measurements.get(i).getRotation();
 
             if (i > 0) {
-                rotationMovement = rotationMovement.subtract(measurements.get(i - 1).getRotation());
+                rotationMovement = rotationMovement.subtract(measurements.get(i - 1)
+                		.getRotation());
             }
 
             Quaternion errorRotationOfIterate = rotationMovement.subtract(avgRotation);
@@ -177,11 +183,12 @@ public class ToolMeasure {
         }
         /* Calculation of the jitter. */
         /*
-        Quaternion rotationError = new Quaternion((float) getRMSE(rotationErrorX), (float) getRMSE(rotationErrorY),
-                (float) getRMSE(rotationErrorZ), (float) getRMSE(rotationErrorW));*/
+        Quaternion rotationError = new Quaternion((float) getRMSE(rotationErrorX),
+        										  (float) getRMSE(rotationErrorY),
+                								  (float) getRMSE(rotationErrorZ),
+                								  (float) getRMSE(rotationErrorW));*/
         Quaternion rotationError = new Quaternion(0, 0, 0, 1);
 
         return rotationError;
     }
-
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AverageMeasurement extends Measurement {
 
-    Quaternion RotationJitter;
+    private Quaternion rotationJitter;
     private Quaternion rotationError;
     private List<Double> errors = new ArrayList<>();
     private BoxPlot boxPlot;
@@ -17,15 +17,15 @@ public class AverageMeasurement extends Measurement {
     }
 
     public Quaternion getRotationJitter() {
-        return RotationJitter;
+        return this.rotationJitter;
     }
 
     public void setRotationJitter(Quaternion rotationJitter) {
-        RotationJitter = rotationJitter;
+        this.rotationJitter = rotationJitter;
     }
 
     public BoxPlot getBoxPlot() {
-        return boxPlot;
+        return this.boxPlot;
     }
 
     public void setBoxPlot(BoxPlot boxPlot) {
@@ -33,7 +33,7 @@ public class AverageMeasurement extends Measurement {
     }
 
     public List<Double> getErrors() {
-        return errors;
+        return this.errors;
     }
 
     public void setErrors(List<Double> errors) {
@@ -41,7 +41,7 @@ public class AverageMeasurement extends Measurement {
     }
 
     public Quaternion getRotationError() {
-        return rotationError;
+        return this.rotationError;
     }
 
     public void setRotationError(Quaternion rotationError) {
@@ -54,8 +54,8 @@ public class AverageMeasurement extends Measurement {
      * calculated with the square of additionalPowError divided by the number of
      * errors.
      *
-     * @return rmse - the Root Mean Square Error, which is just the square root of
-     * the mean square error
+     * @return rmse - the Root Mean Square Error, which is just the square root
+     * of the mean square error
      */
     private double getRMSE() {
         double additionalPowError = 0;
@@ -68,8 +68,8 @@ public class AverageMeasurement extends Measurement {
     }
 
     /**
-     * The method getJitter computes the root mean square error. She receives a list
-     * of errors and called method getRMSE, where the RMSE is calculated.
+     * The method getJitter computes the root mean square error. She receives a
+     * list of errors and called method getRMSE, where the RMSE is calculated.
      *
      * @return getRMSE - the root mean square error
      */

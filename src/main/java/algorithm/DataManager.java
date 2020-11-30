@@ -74,10 +74,10 @@ public class DataManager {
     }
 
     /**
-     * This methods manages the tools. AddMeasurementToTool controls if a tool with
-     * this name exists. If there is already a tool with this name, then the method
-     * added the new measurements to this tool. If there is no tool with this name,
-     * then there will a new tool be created
+     * This methods manages the tools. AddMeasurementToTool controls if a tool
+     * with this name exists. If there is already a tool with this name, then
+     * the method adds the new measurements to this tool. If there is no 
+     * tool with this name,then a new tool is created
      *
      * @param measurement - variable of type Measurement
      */
@@ -99,5 +99,4 @@ public class DataManager {
         newTool.addMeasurement(measurement);
         toolMeasures.add(newTool);
     }
-
 }
