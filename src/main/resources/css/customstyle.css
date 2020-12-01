@@ -1,0 +1,17 @@
+/**
+ * Stylesheet of TrackingDataAnalysisTool
+ * Can be extended to modify appearance of UI elements.
+ * 01.12.2020
+ */
+.success-message {
+	-fx-text-fill: green;
+}
+
+.error-message {
+	-fx-text-fill: red;
+}
+
+.error-textfield {
+	-fx-border-color: red;
+	-fx-border-radius: 5px;
+}
