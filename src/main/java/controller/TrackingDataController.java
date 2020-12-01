@@ -30,18 +30,18 @@ import userinterface.ExceptionWindow;
 
 public class TrackingDataController implements Controller {
 
+	@FXML ScatterChart<Number, Number> s1;
+	@FXML ScatterChart<Number, Number> s2;
+	@FXML ScatterChart<Number, Number> s3;
+	@FXML VBox posBox;
+	@FXML VBox rotBox;
 	public DataService ds;
 	public Timeline timeline;
 	TrackingDataSource source;
 	HashMap<String, Label> position;
 	HashMap<String, Label> rotation;
 	HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
-
-	@FXML ScatterChart<Number, Number> s1;
-	@FXML ScatterChart<Number, Number> s2;
-	@FXML ScatterChart<Number, Number> s3;
-	@FXML VBox posBox;
-	@FXML VBox rotBox;
+	Label statusLabel;	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -53,6 +53,10 @@ public class TrackingDataController implements Controller {
 
 	public TrackingDataSource getSource() {
 		return source;
+	}
+
+	public void setStatusLabel(Label statusLabel) {
+		this.statusLabel = statusLabel;
 	}
 
 	/**
@@ -78,6 +82,7 @@ public class TrackingDataController implements Controller {
             // csv fängt von vorn an anstatt bei der letzten reihe zu bleiben
             newSource.setRepeatMode(true);
             source = newSource;
+            statusLabel.setText("CSV file loaded");
         }
 	}
 
@@ -193,19 +198,17 @@ public class TrackingDataController implements Controller {
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	private void createSeriesForTool(String toolname) {
 
+    	/* create arrays for each tool and each chart */
     	XYChart.Series[] seriesArray = new XYChart.Series[3];
-
     	// Series needs to have a dataset so name and symbol are set correctly
     	for (int i = 0; i < 3; i++) {
     		seriesArray[i] = new XYChart.Series();
     		seriesArray[i].getData().add(new XYChart.Data(0,0));
     		seriesArray[i].setName(toolname);
     	}
-
     	s1.getData().addAll(seriesArray[0]);
     	s2.getData().addAll(seriesArray[1]);
     	s3.getData().addAll(seriesArray[2]);
-
     	toolSeriesMap.put(toolname, seriesArray);
 
     	/* create labels for tool position and rotation */
@@ -221,9 +224,11 @@ public class TrackingDataController implements Controller {
 			switch (timeline.getStatus()) {
 			case RUNNING:
 				timeline.pause();
+				statusLabel.setText("Animation paused");
 				break;
 			case PAUSED:
 				timeline.play();
+				statusLabel.setText("Animation running");
 				break;
 			default: break;
 			}

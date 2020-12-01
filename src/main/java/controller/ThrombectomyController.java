@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
@@ -44,8 +46,8 @@ public class ThrombectomyController implements Controller {
 	private HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
 	private TrackingDataController trackingDataController;
 
-	public ThrombectomyController() {
-	}
+	private final static Logger LOGGER = Logger.getLogger(ThrombectomyController.class.toString());
+	private Label statusLabel;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -55,7 +57,16 @@ public class ThrombectomyController implements Controller {
 	public void setTrackingDataController(TrackingDataController trackingDataController) {
 		this.trackingDataController = trackingDataController;
 	}
-	
+
+	public void setStatusLabel(Label statusLabel) {
+		this.statusLabel = statusLabel;
+		this.statusLabel.setText("");
+	}
+
+	/**
+	 * method with only event as parameter so it can be used in fxml
+	 * @param e
+	 */
 	@FXML
 	private void loadFile(Event e) {
 
@@ -74,62 +85,56 @@ public class ThrombectomyController implements Controller {
 	 * of the tracking data
 	 * @param chart - ImageScatterChart to load img into
 	 */
-	private void loadFile(ImageScatterChart chart) throws NumberFormatException {
+	private void loadFile(ImageScatterChart chart) {
 
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Load image");
 		fc.getExtensionFilters().add(new ExtensionFilter("Image Files", "*.jpg", "*.png"));
 		File file = fc.showOpenDialog(new Stage());
 		
-		if(file != null) {
-			ImageView iv = new ImageView();
-			iv.setPreserveRatio(true);
-			Image img;
-			try {
-				img = new Image(file.toURI().toURL().toString());
-				iv.setImage(img);
-				iv.setFitHeight(chart.getHeight());
-				iv.setFitHeight(chart.getWidth());
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-			
-			if(chart.getIv() != null) {
-				chart.removeImage();
-			}
-			chart.setIv(iv);
-			// add eventlisteners
-			editImagePosition(chart);
-			
-			// make image values manually editable for selected chart
-			setPositionBtn.addEventHandler(ActionEvent.ACTION,(event2 -> {
-				if (chart.getTitle().equals(imageLabel.getText())) {
-					if (Double.valueOf(imageXValue.getText()) != null) {
-						chart.getIv().setX((Double.parseDouble(imageXValue.getText())));
-						imageXValue.setStyle("-fx-border-color: transparent;");
-					} else {
-						imageXValue.setStyle("-fx-border-color: red;");
-					}
-
-					if (Double.valueOf(imageYValue.getText()) != null) {
-						chart.getIv().setY((Double.parseDouble(imageYValue.getText())));
-						imageYValue.setStyle("-fx-border-color: transparent;");
-					} else {
-						imageYValue.setStyle("-fx-border-color: red;");
-					}
-
-					if (Double.valueOf(imageScale.getText()) != null) {
-						chart.getIv().setScaleX(Double.parseDouble(imageScale.getText()));
-						imageScale.setStyle("-fx-border-color: transparent;");
-					} else {
-						imageScale.setStyle("-fx-border-color: red;");
-					}
-				}
-			}));
-			
-		} else {
-			System.out.println("No file selected");
+		if(file == null) {
+			statusLabel.setText("No file selected");
+			return;
 		}
+
+		ImageView iv = new ImageView();
+		iv.setPreserveRatio(true);
+		try {
+			Image img = new Image(file.toURI().toURL().toString());
+			iv.setImage(img);
+			iv.setFitHeight(chart.getHeight());
+			iv.setFitHeight(chart.getWidth());
+		} catch (MalformedURLException e) {
+			LOGGER.log(Level.SEVERE, "File could not be read.", e);
+		}
+
+		chart.setIv(iv);
+		// add eventlisteners
+		editImagePosition(chart);
+
+		// make image values manually editable for selected chart
+		setPositionBtn.addEventHandler(ActionEvent.ACTION,(event2 -> {
+			if (chart.getTitle().equals(imageLabel.getText())) {
+				try {
+					chart.getIv().setX((Double.parseDouble(imageXValue.getText())));
+					imageXValue.getStyleClass().removeIf(style -> style.equals("error-textfield"));
+				} catch (NumberFormatException e) {
+					imageXValue.getStyleClass().add("error-textfield");
+				}
+				try {
+					chart.getIv().setY((Double.parseDouble(imageYValue.getText())));
+					imageYValue.getStyleClass().removeIf(style -> style.equals("error-textfield"));
+				} catch (NumberFormatException e) {
+					imageYValue.getStyleClass().add("error-textfield");
+				}
+				try {
+					chart.getIv().setScaleX(Double.parseDouble(imageScale.getText()));
+					imageScale.getStyleClass().removeIf(style -> style.equals("error-textfield"));
+				} catch (NumberFormatException e) {
+					imageScale.getStyleClass().add("error-textfield");
+				}
+			}
+		}));
 	}
 
 	/**
@@ -137,7 +142,7 @@ public class ThrombectomyController implements Controller {
 	 * enables manually setting position and scale of that image
 	 * @param chart is the selected imagescatterchart
 	 */
-	public void editImagePosition(ImageScatterChart chart) throws NumberFormatException {
+	public void editImagePosition(ImageScatterChart chart) {
 
 		if (chart.getIv() != null) {
 			// use values of selected image when image is clicked
@@ -160,48 +165,53 @@ public class ThrombectomyController implements Controller {
 		}
 	}
 
+	/**
+	 * start showing tracking data from source in charts
+	 * if source is set and visualization was started in
+	 * trackingdataview
+	 */
 	@FXML
 	private void showTrackingData() {
 
-		if (trackingDataController.source != null) {
-			if (trackingDataController.timeline != null) {
-				// vllt noch anders lösen
-//				this.toolSeriesMap.forEach((tool, seriesArray) -> {
-//					for(XYChart.Series<Double, Double> dataSeries : seriesArray) {
-//            			dataSeries.getData().clear();
-//            		}
-//				});
-				trackingDataController.timeline.getKeyFrames().add(
-						new KeyFrame(Duration.millis(100),
-								event2 -> updateThrombectomyDiagrams())
-						);
-				// timeline has not been started in trackingdata view
-			} else {
-//					message.setText("Start Tracking in Main Window first.");
-			}
-		} else {
-				// no data source
-//				message.setText("No Tracking Data Source.");
+		if (trackingDataController.source == null) {
+			statusLabel.setText("No Tracking Data Source");
+			return;
 		}
+		// timeline has not been started in trackingdata view
+		if (trackingDataController.timeline == null) {
+			statusLabel.setText("Start Tracking in Main Window first");
+			return;
+		}
+		trackingDataController.timeline.getKeyFrames().add(
+				new KeyFrame(Duration.millis(100),
+						event2 -> updateThrombectomyDiagrams())
+				);
 	}
 
+	/**
+	 * Visualize tracking data from source. Checks if there are tools
+	 * available and creates data series for each tool. Visualization
+	 * uses last 5 measurements for blending.
+	 */
 	private void updateThrombectomyDiagrams() {
 
 			List<ToolMeasure> tools = trackingDataController.ds.loadNextData(1);
-			if (tools.isEmpty()) return;
-			
+			if (tools.isEmpty()) {
+				statusLabel.setText("No tools available");
+				return;
+			}
+
 			for (ToolMeasure tool : tools) {
-				
-				List<Measurement> measurements = tool.getMeasurement();
-				
 				if(!toolSeriesMap.containsKey(tool.getName())) {
 					createSeriesForTool(tool.getName());
 				}
-				
+				// clear old data
 				XYChart.Series<Double, Double>[] toolSeries = toolSeriesMap.get(tool.getName());
 		        for (XYChart.Series<Double, Double> s : toolSeries) {
 		        	s.getData().clear();
 		        }
+
+				List<Measurement> measurements = tool.getMeasurement();			
 		        //use the last 5 measurements, otherwise blending will be a problem during motion
 		        for (int i = 1; i < 5; i++) { 
 		            if (measurements.size() - i < 0) {
@@ -211,7 +221,7 @@ public class ThrombectomyController implements Controller {
 		            double y = measurements.get(measurements.size() - i).getPoint().getY();
 		            // use positive values so tracking data is displayed like in reality
 		            double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
-	
+
 		            toolSeries[0].getData().add(new XYChart.Data<Double, Double>(x,y));
 		            toolSeries[1].getData().add(new XYChart.Data<Double, Double>(x,z));
 		            toolSeries[2].getData().add(new XYChart.Data<Double, Double>(z,y));
@@ -219,21 +229,24 @@ public class ThrombectomyController implements Controller {
 			}
 		}
 
+	/**
+	 * data series for new tool are created, so it can
+	 * be visualized in chart
+	 * @param toolname to identify tool
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void createSeriesForTool(String toolname) {
-		XYChart.Series[] seriesArray = new XYChart.Series[3];
 
+		XYChart.Series[] seriesArray = new XYChart.Series[3];
     	// Series needs to have a dataset so name and symbol are set correctly
     	for (int i = 0; i < 3; i++) {
     		seriesArray[i] = new XYChart.Series();
     		seriesArray[i].getData().add(new XYChart.Data(0,0));
     		seriesArray[i].setName(toolname);
     	}
-
     	chart1.getData().addAll(seriesArray[0]);
     	chart2.getData().addAll(seriesArray[1]);
     	chart3.getData().addAll(seriesArray[2]);
-
     	this.toolSeriesMap.put(toolname, seriesArray);
 	}
 
