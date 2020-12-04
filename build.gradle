@@ -25,6 +25,10 @@ plugins {
     // Spotbugs is a static analyzer for java
     id 'com.github.spotbugs' version '2.0.1'
 }
+// enforce utf-8 encoding
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -63,7 +67,8 @@ javafx {
 }
 
 checkstyle {
-    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    // change path to use other checkstyle configuration
+    configFile = rootProject.file('config/checkstyle/minimalcheck.xml')
     toolVersion = '8.25'
 }
 
