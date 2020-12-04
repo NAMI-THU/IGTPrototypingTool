@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * this class creates a networkconnection
+ * this class creates a network connection
  *
  * @author
  */
@@ -31,7 +31,8 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
     }
 
     /**
-     * @param args
+     * @param ipAddress is the hostname of server to be connected to
+     * @param port is the port number of server
      */
     public void connect(String ipAddress, int port) {
 

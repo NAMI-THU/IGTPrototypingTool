@@ -12,7 +12,7 @@ public class FrameTransformation {
     public FrameTransformation(double[][] transformMatrix) {
         this.setTransformMatrix(transformMatrix);
     }
-    
+
     /*public void setTransformMatrix(double[][] rotationMatrix, double[] positionVector) {
         this.transformMatrix[0][0] = rotationMatrix[0][0];
         this.transformMatrix[1][0] = rotationMatrix[1][0];

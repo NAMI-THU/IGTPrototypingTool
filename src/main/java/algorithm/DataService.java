@@ -46,11 +46,11 @@ public class DataService {
 
     /**
      * This method checks if the tool exists. A for-loop is used to go
-     * through the list of tools of type ToolMeasure. If the name of the 
-     * searched tool is the same as in the list then the tool will be 
+     * through the list of tools of type ToolMeasure. If the name of the
+     * searched tool is the same as in the list then the tool will be
      * returned, if there is no tool with the name, the exception is thrown.
      *
-     * @param Name - name from a tool of type String 
+     * @param Name - name from a tool of type String
      * @return toolMeasure - of type ToolMeasure
      * @exception
      */
@@ -66,21 +66,21 @@ public class DataService {
     }
 
     /**
-     * This method checks if the tool exists and returns the average 
+     * This method checks if the tool exists and returns the average
      * measurement of all collected data of that tool
      *
      * @param Name name of a tool of type String
      * @return average measurement of that tool
      * @throws throws an exception if the tool was not found
      */
-    public AverageMeasurement getAverageMeasurement(String name) 
-    		throws Exception {
+    public AverageMeasurement getAverageMeasurement(String name)
+            throws Exception {
         return getToolByName(name).getAverageMeasurement();
     }
 
     /**
-     * The method loadNextData gets a number of how much data should be 
-     * reloaded. In a loop the tools of DataMangager are brought. A list of 
+     * The method loadNextData gets a number of how much data should be
+     * reloaded. In a loop the tools of DataMangager are brought. A list of
      * measurements is created. AverageMeasurment is called and calculated.
      * LoadNextData calls different methods and computes them. The results are
      * added to average Measurement..
@@ -95,8 +95,7 @@ public class DataService {
         return dataManager.getToolMeasures();
     }
 
-    public List<ToolMeasure> loadNextData(int countToGetNext,
-    									  boolean updateSource) {
+    public List<ToolMeasure> loadNextData(int countToGetNext, boolean updateSource) {
 
         if(updateSource) dataManager.getSource().update();
         /* calls method getNextData */
@@ -117,11 +116,11 @@ public class DataService {
      */
 
     public double getAccuracy(double expectedDistance,
-    						  AverageMeasurement firstAverangeMeasurement,
+                              AverageMeasurement firstAverangeMeasurement,
                               AverageMeasurement secondAverangeMeasurement) {
         /* method getAccuracy from class DataProcessor */
         return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement,
-        		secondAverangeMeasurement);
+                              secondAverangeMeasurement);
     }
 
     /**
@@ -136,9 +135,9 @@ public class DataService {
      */
 
     public Quaternion getAccuracyRotation(Quaternion expectedRotation,
-    									  Measurement firstMeasurement,
+                                          Measurement firstMeasurement,
                                           Measurement secondMeasurement) {
         return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement,
-        		secondMeasurement);
+                             secondMeasurement);
     }
 }

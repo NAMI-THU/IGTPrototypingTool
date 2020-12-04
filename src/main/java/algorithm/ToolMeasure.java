@@ -126,7 +126,7 @@ public class ToolMeasure {
 
         Quaternion firstRotation = measurements.get(0).getRotation();
         Quaternion lastRotation = measurements.get(measurements.size() - 1)
-        		.getRotation();
+                .getRotation();
 
         float positionAtTime = 1 / measurements.size();
 
@@ -163,7 +163,7 @@ public class ToolMeasure {
 
             if (i > 0) {
                 rotationMovement = rotationMovement.subtract(measurements.get(i - 1)
-                		.getRotation());
+                        .getRotation());
             }
 
             Quaternion errorRotationOfIterate = rotationMovement.subtract(avgRotation);
@@ -184,9 +184,9 @@ public class ToolMeasure {
         /* Calculation of the jitter. */
         /*
         Quaternion rotationError = new Quaternion((float) getRMSE(rotationErrorX),
-        										  (float) getRMSE(rotationErrorY),
-                								  (float) getRMSE(rotationErrorZ),
-                								  (float) getRMSE(rotationErrorW));*/
+                                                  (float) getRMSE(rotationErrorY),
+                                                  (float) getRMSE(rotationErrorZ),
+                                                  (float) getRMSE(rotationErrorW));*/
         Quaternion rotationError = new Quaternion(0, 0, 0, 1);
 
         return rotationError;

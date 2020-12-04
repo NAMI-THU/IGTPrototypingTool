@@ -4,6 +4,9 @@ import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
 
+/*
+ * TODO add check if measurement is in volume (valid flag)
+ */
 public class Measurement {
 
     private Point3D point;
@@ -13,9 +16,13 @@ public class Measurement {
     private Quaternion rotation;
 
     public Measurement(Tool tool) {
-        this.setPoint(new Point3D(tool.getCoordinate().getX(), tool.getCoordinate().getY(), tool.getCoordinate().getZ()));
-        this.setRotation(new Quaternion().set((float) tool.getRotationX(), (float) tool.getRotationY(),
-                (float) tool.getRotationZ(), (float) tool.getRotationR()));
+        this.setPoint(new Point3D(tool.getCoordinate().getX(),
+                tool.getCoordinate().getY(),
+                tool.getCoordinate().getZ()));
+        this.setRotation(new Quaternion().set((float) tool.getRotationX(),
+                (float) tool.getRotationY(),
+                (float) tool.getRotationZ(),
+                (float) tool.getRotationR()));
         this.setTimestamp(tool.getTimestamp());
         this.setToolname(tool.getName());
 
@@ -64,5 +71,4 @@ public class Measurement {
     public void setError(double error) {
         this.error = error;
     }
-
 }

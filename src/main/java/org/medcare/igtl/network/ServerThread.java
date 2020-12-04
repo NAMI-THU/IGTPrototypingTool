@@ -96,7 +96,7 @@ public class ServerThread extends Thread {
                         }
                     }
 //                                        Log.debug("New Header: "+header);
-//                                        BytesArray b = new BytesArray(); 
+//                                        BytesArray b = new BytesArray();
 //                                        b.putBytes(bodyBuf);
 //                                        Log.debug("New Body: "+b);
                     messageQueue.addMessage(openIGTServer.getMessageHandler(header, bodyBuf, this));

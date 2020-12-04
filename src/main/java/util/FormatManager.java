@@ -9,17 +9,13 @@ import java.util.Locale;
  *
  */
 public class FormatManager {
-	
-	public static String toString(Double input) {
-		DecimalFormat df = new DecimalFormat("#0.00",
-			new DecimalFormatSymbols(Locale.US));
-		return df.format(input);
-	}
-	
-	public static String toString(Object input) {
-		DecimalFormat df = new DecimalFormat("#0.00",
-				new DecimalFormatSymbols(Locale.US));
-			return df.format(input);
-	}
+    public static String toString(Double input) {
+        DecimalFormat df = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.US));
+        return df.format(input);
+    }
 
+    public static String toString(Object input) {
+        DecimalFormat df = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.US));
+        return df.format(input);
+    }
 }

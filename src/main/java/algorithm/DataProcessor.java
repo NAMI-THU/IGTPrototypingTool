@@ -11,7 +11,7 @@ import java.util.List;
  * This class provides the methods for processing the measurements.
  */
 public class DataProcessor {
-	
+
     /**
      * This method computes the distance of two average points. Then the
      * expected distance is subtracted from the distance of the points.
@@ -22,22 +22,22 @@ public class DataProcessor {
      * @return accurate - the distance
      */
     public double getAccuracy(double expectedDistance,
-    		AverageMeasurement firstAverangeMeasurement,
+            AverageMeasurement firstAverangeMeasurement,
             AverageMeasurement secondAverangeMeasurement) {
 
         /**
-         * calculates the distance between the points of 
+         * calculates the distance between the points of
          * firstAverangeMeasurement and secondAverangeMeasurement
          */
         double accurate = getDistance(firstAverangeMeasurement.getPoint(),
-        		secondAverangeMeasurement.getPoint()) - expectedDistance;
+                secondAverangeMeasurement.getPoint()) - expectedDistance;
         return accurate;
     }
 
     /**
-     * This method gets a quaternion (four double values) and two 
-     * measurements. With the method getRotation the quaternion of 
-     * firstMeasurement is fetched. From this value, the second 
+     * This method gets a quaternion (four double values) and two
+     * measurements. With the method getRotation the quaternion of
+     * firstMeasurement is fetched. From this value, the second
      * quaternion is subtracted from the second measurement.
      * Then the expected quaternion is subtracted.
      *
@@ -48,13 +48,12 @@ public class DataProcessor {
      */
 
     public Quaternion getAccuracyRotation(Quaternion expectedRotation,
-    									  Measurement firstMeasurement,
+                                          Measurement firstMeasurement,
                                           Measurement secondMeasurement) {
         Quaternion result = secondMeasurement.getRotation()
-        		.subtract(firstMeasurement.getRotation())
+                .subtract(firstMeasurement.getRotation())
                 .subtract(expectedRotation);
         return result;
-
     }
 
     /**

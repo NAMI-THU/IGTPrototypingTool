@@ -14,7 +14,7 @@
 
   Edited By Nirav Patel(napatel@wpi.edu) on Aug 10 2013
   ---Making server run and listen for multiple devices and maintain server status information
-  
+
 =========================================================================*/
 
 package org.medcare.igtl.network;

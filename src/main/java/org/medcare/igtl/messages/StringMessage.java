@@ -12,7 +12,7 @@
   PURPOSE.  See the above copyright notices for more information.
 
   Author: Nirav Patel
-  
+
   //TODO this class is yet not fully implemented and should not be used
 =========================================================================*/
 package org.medcare.igtl.messages;

@@ -28,7 +28,6 @@ public class ExceptionData {
             /*
             if (CSVFileReader.getLine_counter() == 0) {
                 ExceptionWindow.setExceptionText("Data is empty");
-                
 
             } else {*/
                 ExceptionWindow.setExceptionText("End of file");

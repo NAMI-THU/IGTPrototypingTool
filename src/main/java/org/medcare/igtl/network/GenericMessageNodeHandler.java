@@ -53,7 +53,7 @@ public class GenericMessageNodeHandler {
             Log.error("This method is not complete");
             DataArrayMessage datMesg = new DataArrayMessage(head, body);
             openIGTMessage = datMesg;
-            node.onRxDataArray(openIGTMessage.getDeviceName(), datMesg.getDataMatrix());// this is a non functional stub    
+            node.onRxDataArray(openIGTMessage.getDeviceName(), datMesg.getDataMatrix());// this is a non functional stub
 
         } else if (messageType.equals("STRING")) {
             StringMessage strMsg = new StringMessage(head, body);
@@ -66,20 +66,20 @@ public class GenericMessageNodeHandler {
             */
             //For string message we have to skip first 4 bytes as 0-1:ENcodinng and 1-2:Length
             //currently using only US-ASCII encoding and we don't need length
-            String msgBody = strMsg.getMessage(); //new String(body,4,body.length-4,"US-ASCII");    
+            String msgBody = strMsg.getMessage(); //new String(body,4,body.length-4,"US-ASCII");
 
-            node.onRxString(openIGTMessage.getDeviceName(), msgBody);// this is a non functional stub    
+            node.onRxString(openIGTMessage.getDeviceName(), msgBody);// this is a non functional stub
         } else if (messageType.equals("GET_STATUS")) {
             StatusMessage statMsg = new StatusMessage(head, body);
             statMsg.unpackBody();
             openIGTMessage = statMsg;
             System.out.println("Received Get_Status request");
-            node.onGetStatus(openIGTMessage.getDeviceName());// this is a non functional stub    
+            node.onGetStatus(openIGTMessage.getDeviceName());// this is a non functional stub
         } else if (messageType.equals("NDARRAY")) {
             NDArrayMessage ndArrayMsg = new NDArrayMessage(head, body);
             ndArrayMsg.unpackBody();
             openIGTMessage = ndArrayMsg;
-            node.onRxNDArray(openIGTMessage.getDeviceName(), ndArrayMsg.get1DFloatData());// this is a non functional stub    
+            node.onRxNDArray(openIGTMessage.getDeviceName(), ndArrayMsg.get1DFloatData());// this is a non functional stub
         } else {
 
             Log.debug("Message Type : " + messageType + " not implemented");

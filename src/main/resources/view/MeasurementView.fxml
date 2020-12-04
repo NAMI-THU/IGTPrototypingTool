@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -11,8 +13,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MeasurementController">
    <children>
@@ -48,7 +48,7 @@
             </VBox>
          </children>
       </HBox>
-      <HBox prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: lightblue;">
+      <HBox prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: lightblue;">
          <children>
             <Label text="Capture continuous data">
                <HBox.margin>
@@ -57,12 +57,12 @@
             </Label>
             <Button mnemonicParsing="false" onAction="#startMeasurement" text="Start Measurement">
                <HBox.margin>
-                  <Insets right="5.0" top="5.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Button>
             <Button mnemonicParsing="false" onAction="#endMeasurement" text="End Measurement">
                <HBox.margin>
-                  <Insets top="5.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Button>
          </children>
@@ -70,13 +70,16 @@
       <VBox prefHeight="200.0" prefWidth="480.0">
          <children>
             <Label text="Captured Measurements" />
-            <ListView fx:id="measurementList" prefHeight="183.0" prefWidth="135.0" />
+            <ListView fx:id="measurementList" minWidth="-Infinity" prefHeight="300.0" prefWidth="250.0" />
          </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
       </VBox>
       <TilePane prefHeight="200.0" prefWidth="200.0">
          <children>
             <Label text="Type of Measurement" />
-            <ChoiceBox fx:id="measurementTyp" prefWidth="150.0" onAction="#switchType">
+            <ChoiceBox fx:id="measurementTyp" onAction="#switchType" prefWidth="150.0">
 	            <items>
 			        <FXCollections fx:factory="observableArrayList">
 			            <String fx:value="Jitter" />
@@ -87,8 +90,7 @@
             <Label text="Expected Distance [mm]" />
             <TextField fx:id="expDistance" text="30" />
             <Label text="Quaternion" TilePane.alignment="TOP_CENTER" />
-            <FlowPane hgap="5.0" maxWidth="-Infinity" prefHeight="108.0" prefWidth="42.0" vgap="5.0" TilePane.alignment="TOP_LEFT"
-            	fx:id="quaternionPane">
+            <FlowPane fx:id="quaternionPane" hgap="5.0" maxWidth="-Infinity" prefHeight="108.0" prefWidth="42.0" vgap="5.0" TilePane.alignment="TOP_LEFT">
                <children>
                   <Label style="-fx-font-weight: bold;" text="X:" />
                   <TextField fx:id="rotationX" maxWidth="-Infinity" prefHeight="25.0" prefWidth="25.0" />
@@ -102,10 +104,30 @@
             </FlowPane>
             <VBox prefHeight="78.0" prefWidth="150.0" spacing="5.0">
                <children>
-                  <CheckBox fx:id="jitterP" mnemonicParsing="false" text="Jitter Position" />
-                  <CheckBox fx:id="jitterR" mnemonicParsing="false" text="Accuracy Position" />
-                  <CheckBox fx:id="correctnessP" mnemonicParsing="false" text="Jitter Rotation" />
-                  <CheckBox fx:id="correctnessR" mnemonicParsing="false" text="Accuracy Rotation" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                     <children>
+                        <CheckBox fx:id="jitterP" mnemonicParsing="false" text="Jitter Position" />
+                        <Label fx:id="lCalcJP" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                     <children>
+                        <CheckBox fx:id="jitterR" mnemonicParsing="false" text="Jitter Rotation" />
+                        <Label fx:id="lCalcJR" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                     <children>
+                        <CheckBox fx:id="correctnessP" mnemonicParsing="false" text="Accuracy Position" />
+                        <Label fx:id="lCalcCP" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                     <children>
+                        <CheckBox fx:id="correctnessR" mnemonicParsing="false" text="Accuracy Rotation" />
+                        <Label fx:id="lCalcCR" />
+                     </children>
+                  </HBox>
                </children>
                <TilePane.margin>
                   <Insets />
@@ -114,15 +136,6 @@
             <Button mnemonicParsing="false" onAction="#calculate" text="Calculate" TilePane.alignment="BOTTOM_RIGHT" />
          </children>
       </TilePane>
-      <HBox prefHeight="41.0" prefWidth="662.0">
-         <children>
-            <Label alignment="BOTTOM_LEFT" text="Result:" />
-            <Label fx:id="lCalcJR" />
-            <Label fx:id="lCalcC" />
-            <Label fx:id="lCalcJP" />
-            <Label fx:id="lCalcJR" />
-         </children>
-      </HBox>
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

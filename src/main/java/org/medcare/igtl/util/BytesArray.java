@@ -213,14 +213,14 @@ public class BytesArray {
      * ** Write an array of bytes to the bytesArray
      * **
      *
-     * @param n The bytes to write to the bytesArray è¦�å†™å…¥çš„å­—ç¬¦
+     * @param n The bytes to write to the bytesArray
      *          ** @param nOfs
-     *          The offset into <code>n</code> to start reading from å†™å¼€å§‹çš„ä½�ç½®
+     *          The offset into <code>n</code> to start reading from
      *          ** @param nLen
-     *          The number of bytes to write from <code>n</code> å†™å…¥çš„é•¿åº¦
+     *          The number of bytes to write from <code>n</code>
      *          ** @return The number of bytes written
      **/
-    // ä¸‰ç§�putBytes å½¢å¼�ï¼Œç¬¬ä¸€ç§�æ˜¯æœ€å…¨çš„
+
     public int putBytes(byte[] n, int nOfs, int nLen) {
         /* check for nothing to write */
         if (nLen > 0 && nOfs >= 0 && n != null && (n.length - nOfs >= nLen)) {
@@ -318,7 +318,6 @@ public class BytesArray {
         // return the full copy bytesArray (regardless of the state of
         // 'this.index')
         byte[] n = new byte[this.size];
-        // æº�æ–‡ä»¶ï¼Œèµ·å§‹ä½�ç½®ï¼Œç›®æ ‡æ–‡ä»¶ï¼Œèµ·å§‹ä½�ç½®ï¼Œ å¤�åˆ¶çš„å­—èŠ‚é•¿åº¦
         System.arraycopy(bytesArray, 0, n, 0, this.size);
         return n;
     }
@@ -431,7 +430,6 @@ public class BytesArray {
      *               on a null)
      *               ** @return The read String
      **/
-    // 2ç§�getStringç‰ˆæœ¬
     public String getString(int length, boolean varLength) {
         // Read until (whichever comes first):
         // 1) length bytes have been read
@@ -453,8 +451,6 @@ public class BytesArray {
 
     /**
      * ** Converts the byte array to a String based on the US-ASCII character set.
-     * å­—ç¬¦æ•°ç»„è½¬æ�¢æˆ�å­—ç¬¦ä¸²
-     * **
      * ** @param len
      * The number of bytes to convert to a String
      * ** @return The String representation of the specified byte array
@@ -906,13 +902,12 @@ public class BytesArray {
         }
         return crc;
 
-        
         /*int i=0;
             while (i<len){
                 ByteBuffer b = ByteBuffer.allocate(Long.SIZE);
                 b.putLong(crc >> 56);
                 byte lastByte = b.get(16); //get Last byte in Long CRC
-                
+
                 int tableIndex = Math.abs(buffer[i] ^ Math.abs(lastByte));
                 crc = CRC_TABLE[tableIndex] ^ (crc << 8);
                 i++;
