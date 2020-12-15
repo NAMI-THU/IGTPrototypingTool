@@ -73,9 +73,6 @@ checkstyle {
 }
 
 tasks.withType(Checkstyle) {
-    // Don't make checkstyle warnings fatal.  This needs to be removed once the
-    // code is cleaned up and checkstyle doesn't have any complaints.
-    ignoreFailures = true
     reports {
         xml.enabled = false
         html.enabled = true
