@@ -5,7 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
- * This class includes custom formats to use in this project.
+ * This class defines custom formats to use in this project.
  *
  */
 public class FormatManager {

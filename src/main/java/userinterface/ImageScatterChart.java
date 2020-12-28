@@ -9,7 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 /*
- * this class consists of scatter chart and image view, so data can be
+ * this class consists of a scatter chart and image view, so data can be
  * displayed on top of an image.
  * the image position and size can be adjusted so the tracking data can
  * be displayed in relation to it.
@@ -18,11 +18,9 @@ import javafx.scene.input.ScrollEvent;
 public class ImageScatterChart extends ScatterChart<Number, Number> {
 
     private ImageView iv;
-//    @FXML NumberAxis xAxis, yAxis;
     private Double oldX = 0.0;
     private Double oldY = 0.0;
 
-    // this works but not w fxml loader so far
     public ImageScatterChart(@NamedArg("xAxis") NumberAxis xAxis, @NamedArg("yAxis") NumberAxis yAxis) {
         super(xAxis, yAxis);
     }
@@ -52,7 +50,7 @@ public class ImageScatterChart extends ScatterChart<Number, Number> {
 
     /**
      * sets old x and y values for reference when mouse is pressed
-     * @return mouseevent on mouse pressed
+     * @return mouse event on mouse pressed
      */
     private EventHandler<MouseEvent> grabImage() {
         return event -> {
@@ -63,7 +61,7 @@ public class ImageScatterChart extends ScatterChart<Number, Number> {
 
     /**
      * moves imageview according to mouse movement
-     * @return mouseevent on mouse dragged
+     * @return mouse event on mouse dragged
      */
     private EventHandler<MouseEvent> dragImage() {
         return event -> {

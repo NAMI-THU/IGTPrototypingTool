@@ -4,9 +4,6 @@ import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
 
-/*
- * TODO add check if measurement is in volume (valid flag)
- */
 public class Measurement {
 
     private Point3D point;
