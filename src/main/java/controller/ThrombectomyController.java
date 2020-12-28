@@ -3,7 +3,7 @@ package controller;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -27,13 +27,14 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import userinterface.ImageScatterChart;
+import userinterface.TrackingDataDisplay;
 import util.FormatManager;
 
 public class ThrombectomyController implements Controller {
 
-    @FXML private ImageScatterChart chart1;
-    @FXML private ImageScatterChart chart2;
-    @FXML private ImageScatterChart chart3;
+    @FXML private ImageScatterChart chartCoronal;
+    @FXML private ImageScatterChart chartAxial;
+    @FXML private ImageScatterChart chartSagittal;
     @FXML private Button setPositionBtn;
     @FXML private Button loadCoronalBtn;
     @FXML private Button loadSagittalBtn;
@@ -43,7 +44,7 @@ public class ThrombectomyController implements Controller {
     @FXML private TextField imageYValue;
     @FXML private TextField imageScale;
     @FXML private AnchorPane positionDetailBox;
-    private HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
+    private List<TrackingDataDisplay> toolDisplayList;
     private TrackingDataController trackingDataController;
 
     private final static Logger LOGGER = Logger.getLogger(ThrombectomyController.class.toString());
@@ -51,7 +52,7 @@ public class ThrombectomyController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toolSeriesMap = new HashMap<String, XYChart.Series<Double, Double>[]>();
+        this.toolDisplayList = new ArrayList<TrackingDataDisplay>();
     }
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
@@ -71,11 +72,11 @@ public class ThrombectomyController implements Controller {
     private void loadFile(Event e) {
 
         if (e.getSource().equals(loadCoronalBtn)) {
-            loadFile(chart1);
+            loadFile(chartCoronal);
         } else if (e.getSource().equals(loadAxialBtn)) {
-            loadFile(chart2);
+            loadFile(chartAxial);
         } else if (e.getSource().equals(loadSagittalBtn)) {
-            loadFile(chart3);
+            loadFile(chartSagittal);
         }
     }
 
@@ -105,7 +106,7 @@ public class ThrombectomyController implements Controller {
             iv.setFitHeight(chart.getHeight());
             iv.setFitHeight(chart.getWidth());
         } catch (MalformedURLException e) {
-            LOGGER.log(Level.SEVERE, "File could not be read.", e);
+            LOGGER.log(Level.SEVERE, "Image file could not be opened.", e);
         }
 
         chart.setIv(iv);
@@ -176,9 +177,10 @@ public class ThrombectomyController implements Controller {
         }
         // timeline has not been started in trackingdata view
         if (trackingDataController.timeline == null) {
-            statusLabel.setText("Start Tracking in Main Window first");
+            statusLabel.setText("Start Tracking in Tracking Data View first");
             return;
         }
+        statusLabel.setText("");
         trackingDataController.timeline.getKeyFrames().add(
                 new KeyFrame(Duration.millis(100),
                     event2 -> updateThrombectomyDiagrams())
@@ -193,60 +195,54 @@ public class ThrombectomyController implements Controller {
     private void updateThrombectomyDiagrams() {
 
         List<ToolMeasure> tools = trackingDataController.ds.loadNextData(1);
-        if (tools.isEmpty()) {
-            statusLabel.setText("No tools available");
-            return;
-        }
+        if (tools.isEmpty()) return;
 
         for (ToolMeasure tool : tools) {
-            if(!toolSeriesMap.containsKey(tool.getName())) {
-                createSeriesForTool(tool.getName());
-            }
+
+            TrackingDataDisplay display = checkToolDisplayList(tool.getName());
             // clear old data
-            XYChart.Series<Double, Double>[] toolSeries = toolSeriesMap.get(tool.getName());
-            for (XYChart.Series<Double, Double> s : toolSeries) {
-                s.getData().clear();
-            }
+            display.clearData();
 
             List<Measurement> measurements = tool.getMeasurement();
-            //use the last 5 measurements, otherwise blending will be a problem during motion
-            for (int i = 1; i < 5; i++) {
+            //use the last 10 measurements, otherwise blending will be a problem during motion
+            for (int i = 1; i < 10; i++) {
                 if (measurements.size() - i < 0) {
                     break;
                 }
-                double x = measurements.get(measurements.size() - i).getPoint().getX();
-                double y = measurements.get(measurements.size() - i).getPoint().getY();
-                // use positive values so tracking data is displayed like in reality
+                // invert tracking data, so display fits the experiment's setup
+                double x = measurements.get(measurements.size() - i).getPoint().getX() * -1;
+                double y = measurements.get(measurements.size() - i).getPoint().getY() * -1;
                 double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
 
-                toolSeries[0].getData().add(new XYChart.Data<Double, Double>(x,y));
-                toolSeries[1].getData().add(new XYChart.Data<Double, Double>(x,z));
-                toolSeries[2].getData().add(new XYChart.Data<Double, Double>(z,y));
+                display.addDataToSeries1(new XYChart.Data<Double, Double>(y,x));
+                display.addDataToSeries2(new XYChart.Data<Double, Double>(x,z));
+                display.addDataToSeries3(new XYChart.Data<Double, Double>(y,z));
             }
         }
     }
 
     /**
-     * data series for new tool are created, so it can
-     * be visualized in chart
+     * check if display data exists for this tool
+     * create display data if it does not exist
      * @param toolname to identify tool
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void createSeriesForTool(String toolname) {
-
-        XYChart.Series[] seriesArray = new XYChart.Series[3];
-        // Series needs to have a dataset so name and symbol are set correctly
-        for (int i = 0; i < 3; i++) {
-            seriesArray[i] = new XYChart.Series();
-            seriesArray[i].getData().add(new XYChart.Data(0,0));
-            seriesArray[i].setName(toolname);
+    @SuppressWarnings("unchecked")
+    private TrackingDataDisplay checkToolDisplayList(String toolName) {
+        if (toolDisplayList.size() > 0) {
+            for (TrackingDataDisplay d : toolDisplayList) {
+                if (d.getToolName().equals(toolName)) return d;
+            }
         }
-        chart1.getData().addAll(seriesArray[0]);
-        chart2.getData().addAll(seriesArray[1]);
-        chart3.getData().addAll(seriesArray[2]);
-        this.toolSeriesMap.put(toolname, seriesArray);
+        // create display data for tool
+        TrackingDataDisplay newDisplay = new TrackingDataDisplay(toolName);
+        chartCoronal.getData().addAll(newDisplay.getDataSeries1());
+        chartAxial.getData().addAll(newDisplay.getDataSeries2());
+        chartSagittal.getData().addAll(newDisplay.getDataSeries3());
+        toolDisplayList.add(newDisplay);
+        return newDisplay;
     }
 
-     public void close() {
-     }
+    public void close() {
+        statusLabel.setText("");
+    }
 }

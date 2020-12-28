@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import algorithm.DataService;
 import algorithm.Measurement;
@@ -25,8 +28,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
+import userinterface.TrackingDataDisplay;
 import javafx.stage.Stage;
-import userinterface.ExceptionWindow;
 
 public class TrackingDataController implements Controller {
 
@@ -38,17 +41,18 @@ public class TrackingDataController implements Controller {
     public DataService ds;
     public Timeline timeline;
     TrackingDataSource source;
+    List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
-    HashMap<String, XYChart.Series<Double, Double>[]> toolSeriesMap;
     Label statusLabel;
+
+    private final static Logger LOGGER = Logger.getLogger(TrackingDataController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toolSeriesMap = new HashMap<String, XYChart.Series<Double, Double>[]>();
+        toolDisplayList = new ArrayList<TrackingDataDisplay>();
         position = new HashMap<String, Label>();
         rotation = new HashMap<String, Label>();
-        //pos& rot evtl an fxml zeug anpassen
     }
 
     public TrackingDataSource getSource() {
@@ -73,16 +77,13 @@ public class TrackingDataController implements Controller {
         if (file != null) {
             try {
                 newSource = new CSVFileReader(file.getAbsolutePath());
-                for (String name : newSource.getToolNames()) {
-                    System.out.println(name);
-                }
+                LOGGER.info("CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
-                new ExceptionWindow();
+                LOGGER.log(Level.SEVERE, "Error loading CSV file", e);
+                statusLabel.setText("Error loading CSV file");
             }
-            // csv faengt von vorn an anstatt bei der letzten reihe zu bleiben
             newSource.setRepeatMode(true);
             source = newSource;
-            statusLabel.setText("CSV file loaded");
         }
     }
 
@@ -96,25 +97,15 @@ public class TrackingDataController implements Controller {
     }
 
     /**
-     * add action on the button "start" if the button is clicked, there will
-     * be shown the values x, y and z on the axes of the scatter-charts
+     * Start the visualization of tracking data that is read from CSV or IGT connection
      */
     @FXML
     public void visualizeTracking() {
 
         if (timeline == null && source != null) {
-            // if tool/dataseries mapping is not empty, delete dataseries entries
-            toolSeriesMap.forEach((tool,seriesarray) -> {
-                for (XYChart.Series<Double, Double> dataseries : seriesarray) {
-                    dataseries.getData().clear();
-                }
-            });
-
-            // create an object from the class "DataService" in package
-            // algorithm which is later used to load tool measurements to this class
+            // this is used to load tracking data from source
             ds = new DataService(source);
 
-            // start timeline and add new keyframe update every 100 ms
             timeline = new Timeline();
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().add(
@@ -130,32 +121,19 @@ public class TrackingDataController implements Controller {
     }
 
     public void updateDiagrams() {
-        /* all Tools with all measurements
-         * update csv: create new arraylist (size of toolname list),
-         * add measurements of new record to this arraylist everytime
-         * update igtlink: create networkconnection if null;
-         * get synchronized tooldatalist from networkconnection & set values
-         * in openigtlinkconnection */
+        // loads the next set of tracking data
         source.update();
-
-        /* gets one new measurement from source (via dataservice->datamanager-> source.getLastToolList)
-        * lastToolList in TrackingDataSource is set w each update
-        * -> tools = list of measurements of different tools at the same time () */
+        // this returns tracking data from all tools at one point in time
         List<ToolMeasure> tools = ds.loadNextData(1);
+
         if (tools.isEmpty()) return;
+
         for (ToolMeasure tool : tools) {
-            // all measurements from one tool
+
+            TrackingDataDisplay display = checkToolDisplayList(tool.getName());
+            display.clearData();
+
             List<Measurement> li = tool.getMeasurement();
-
-            if (!toolSeriesMap.containsKey(tool.getName())) {
-                createSeriesForTool(tool.getName());
-            }
-
-            XYChart.Series<Double, Double>[] toolSeries = toolSeriesMap.get(tool.getName());
-            for (XYChart.Series<Double, Double> s : toolSeries) {
-                s.getData().clear();
-            }
-
             //use the last 5 measurements, otherwise blending will be a problem during motion
             for (int i = 1; i < 5; i++) {
                 if (li.size() - i < 0) {
@@ -183,38 +161,36 @@ public class TrackingDataController implements Controller {
                             + df.format(qR) + "]");
                 }
 
-                toolSeries[0].getData().add(new XYChart.Data<Double, Double>(x, y));
-                toolSeries[1].getData().add(new XYChart.Data<Double, Double>(x, z));
-                toolSeries[2].getData().add(new XYChart.Data<Double, Double>(z, y));
+                display.addDataToSeries1(new XYChart.Data<Double, Double>(x, y));
+                display.addDataToSeries2(new XYChart.Data<Double, Double>(x, z));
+                display.addDataToSeries3(new XYChart.Data<Double, Double>(z, y));
             }
         }
     }
 
     /**
-     * This method is called when a tool is returned by DataService
-     * loadNextData that is not yet in toolSeriesMap.
+     * This method creates a new series to store tracking data
+     * and position and rotation labels for one tool.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void createSeriesForTool(String toolname) {
-
-        /* create arrays for each tool and each chart */
-        XYChart.Series[] seriesArray = new XYChart.Series[3];
-        // Series needs to have a dataset so name and symbol are set correctly
-        for (int i = 0; i < 3; i++) {
-            seriesArray[i] = new XYChart.Series();
-            seriesArray[i].getData().add(new XYChart.Data(0,0));
-            seriesArray[i].setName(toolname);
+    @SuppressWarnings({ "unchecked" })
+    private TrackingDataDisplay checkToolDisplayList(String toolName) {
+        if (toolDisplayList.size() > 0) {
+            for (TrackingDataDisplay d : toolDisplayList) {
+                if (d.getToolName().equals(toolName)) return d;
+            }
         }
-        s1.getData().addAll(seriesArray[0]);
-        s2.getData().addAll(seriesArray[1]);
-        s3.getData().addAll(seriesArray[2]);
-        toolSeriesMap.put(toolname, seriesArray);
+        // create display data for tool
+        TrackingDataDisplay newDisplay = new TrackingDataDisplay(toolName);
+        s1.getData().addAll(newDisplay.getDataSeries1());
+        s2.getData().addAll(newDisplay.getDataSeries2());
+        s3.getData().addAll(newDisplay.getDataSeries3());
+        toolDisplayList.add(newDisplay);
 
-        /* create labels for tool position and rotation */
-        position.put(toolname, new Label(toolname + ": [-]"));
-        posBox.getChildren().add(position.get(toolname));
-        rotation.put(toolname, new Label(toolname + ": [-]"));
-        rotBox.getChildren().add(rotation.get(toolname));
+        position.put(toolName, new Label(toolName + ": [-]"));
+        posBox.getChildren().add(position.get(toolName));
+        rotation.put(toolName, new Label(toolName + ": [-]"));
+        rotBox.getChildren().add(rotation.get(toolName));
+        return newDisplay;
     }
 
     @FXML
@@ -223,17 +199,16 @@ public class TrackingDataController implements Controller {
             switch (timeline.getStatus()) {
             case RUNNING:
                 timeline.pause();
-                statusLabel.setText("Animation paused");
+                statusLabel.setText("Visualization paused");
                 break;
             case PAUSED:
                 timeline.play();
-                statusLabel.setText("Animation running");
+                statusLabel.setText("");
                 break;
             default: break;
             }
         }
     }
 
-    public void close() {
-    }
+    public void close() {}
 }
