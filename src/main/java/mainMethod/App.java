@@ -12,7 +12,7 @@ import util.CustomLogger;
 
 public class App extends Application {
 
-	private final static Logger LOGGER = Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
+    private final static Logger LOGGER = Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
     @Override
     public void start(Stage primaryStage) throws IOException {

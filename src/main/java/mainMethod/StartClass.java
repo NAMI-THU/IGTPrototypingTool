@@ -2,9 +2,9 @@ package mainMethod;
 
 import javafx.application.Application;
 
-public class Main {
+public class StartClass {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         Application.launch(App.class);
     }
 }
