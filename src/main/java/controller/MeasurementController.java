@@ -34,6 +34,7 @@ import util.FormatManager;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MeasurementController implements Controller {
+    private final static Logger LOGGER = Logger.getLogger(MeasurementController.class.getName());
     private int measurementCounter = 0;
     private Timer timer;
     private boolean timerOn = false;
@@ -43,8 +44,6 @@ public class MeasurementController implements Controller {
     private Map<String, ToolMeasure> storedMeasurements;
     private TrackingDataController trackingDataController;
     private Label statusLabel;
-    private final static Logger LOGGER = Logger.getLogger(
-            MeasurementController.class.getName());
 
     @FXML ListView<String> toolList, measurementList;
     @FXML ChoiceBox<String> measurementTyp;
@@ -61,6 +60,9 @@ public class MeasurementController implements Controller {
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
         this.trackingDataController = trackingDataController;
+        if(trackingDataController.source != null) {
+            this.setTrackingDataSource(trackingDataController.source);
+        }
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -68,12 +70,6 @@ public class MeasurementController implements Controller {
         this.statusLabel.setText("");
     }
 
-//    public MeasurementController(TrackingDataController trackingDataController) {
-//        this.trackingDataController = trackingDataController;
-//        if(source != null) {
-//            dataS = trackingDataController.ds;
-//        }
-//    }
     public void setTrackingDataSource(TrackingDataSource source) {
         this.source = source;
         this.dataS.setTrackingDataSource(source);
@@ -101,6 +97,7 @@ public class MeasurementController implements Controller {
                     toolList.getItems().add(t.getName());
                 }
             } catch (IOException e) {
+                LOGGER.warning("Error reading CSV file");
                 statusLabel.setText("Error reading CSV file");
             }
         }
@@ -121,6 +118,7 @@ public class MeasurementController implements Controller {
 
         if (source != null && trackingDataController.timeline != null
                 && !timerOn) {
+            this.statusLabel.setText("Capturing...");
             dataS.restartMeasurements();
             timerOn = true;
             timer = new Timer();
@@ -149,6 +147,7 @@ public class MeasurementController implements Controller {
                     + ")", dataS.getDataManager().getToolMeasures().get(0));
             this.updateMeasurementList();
             measurementCounter++;
+            this.statusLabel.setText("");
         }
     }
 
@@ -179,66 +178,60 @@ public class MeasurementController implements Controller {
                      .toArray()[measurementList.getSelectionModel().getSelectedIndex()];
             AverageMeasurement avgMes = tool.getAverageMeasurement();
 
-            // Jitter Rotation
-            if (jitterR.isSelected()) {
-                try {
-                    lCalcJR.setText(FormatManager.toString(avgMes.getRotationError() + " mm"));
-                } catch (IllegalArgumentException e) {
-                    LOGGER.log(Level.WARNING, "Error calculating Jitter", e);
-                    statusLabel.setText("Jitter Rotation could not be calculated");
+            try {
+                // Jitter Position
+                if (jitterP.isSelected()) {
+                    lCalcJP.setText(FormatManager.toString(avgMes.getJitter()) + " mm");
                 }
-            }
-            // Jitter Position
-            if (jitterP.isSelected()) {
-                try {
-                    lCalcJP.setText(FormatManager.toString(avgMes.getJitter() + " mm"));
-                } catch (IllegalArgumentException e) {
-                    LOGGER.log(Level.WARNING, "Error calculating Jitter", e);
-                    statusLabel.setText("Jitter Position could not be calculated");
+                // Jitter Rotation
+                if (jitterR.isSelected()) {
+                    if(avgMes.getRotationError() != null) {
+                        lCalcJR.setText(FormatManager.toString(avgMes.getRotationError()) + " mm");
+                    } else {
+                        LOGGER.warning("Rotation Error cannot be calculated.");
+                    }
                 }
-            }
-            // Correctness calculation needs two measurements
-            if(storedMeasurements.values().size() > 1) {
-                // Correctness Rotation
-                if (correctnessR.isSelected()) {
+                // Correctness calculation needs two measurements
+                if(storedMeasurements.values().size() > 1) {
+                    // Correctness Rotation
+                    if (correctnessR.isSelected()) {
 
-                    Quaternion expectedrotation = new Quaternion().set(
+                        Quaternion expectedrotation = new Quaternion().set(
                             (float) Double.parseDouble(rotationX.getText()),
                             (float) Double.parseDouble(rotationY.getText()),
                             (float) Double.parseDouble(rotationZ.getText()),
                             (float) Double.parseDouble(rotationR.getText()));
 
-                    ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                    ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
+                        ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
 
-                    lCalcCR.setText(String.valueOf(dataS.getAccuracyRotation(
+                        lCalcCR.setText(String.valueOf(dataS.getAccuracyRotation(
                             expectedrotation,
                             firstTool.getMeasurement().get(0),
                             secondTool.getMeasurement().get(0))));
-                }
-                // Correctness Position
-                if (correctnessP.isSelected()) {
-                    lCalcCP.setText("0,00");
-                    ToolMeasure firstTool = null;
-                    ToolMeasure secondTool = null;
-                    firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                    secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
-//                    for (String m : storedMeasurements.keySet()) {
-//                        System.out.println("Tool:" + m);
-//                    }
-//                    System.out.println("Avgmes1:" + firstTool.getAverageMeasurement().getPoint());
-//                    System.out.println("Avgmes2:" + secondTool.getAverageMeasurement().getPoint());
-                    lCalcJP.setText(String.valueOf(dataS.getAccuracy(
+                    }
+                    // Correctness Position
+                    if (correctnessP.isSelected()) {
+                        lCalcCP.setText("0,00");
+                        ToolMeasure firstTool = null;
+                        ToolMeasure secondTool = null;
+                        firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
+                        secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        lCalcJP.setText(String.valueOf(dataS.getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
                             secondTool.getAverageMeasurement())));
+                    }
                 }
+            } catch (IllegalArgumentException e) {
+                LOGGER.log(Level.WARNING, "Calculation error", e);
+                statusLabel.setText("Calculation error");
             }
         }
     }
 
     @FXML
-    private void addMeasurement() throws Exception {
+    private void addMeasurement(){
         if (toolList.getItems().size() > 0
                 && toolList.getSelectionModel().getSelectedItem() != null) {
             try {
@@ -255,11 +248,13 @@ public class MeasurementController implements Controller {
                         + ", from file)", newMeasurement);
                 this.updateMeasurementList();
                 measurementCounter++;
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error when adding a measurement", e);
             }
         }
     }
 
     public void close() {
+        this.statusLabel.setText("");
     }
 }

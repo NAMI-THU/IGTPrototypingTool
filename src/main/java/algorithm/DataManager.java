@@ -5,6 +5,7 @@ import inputOutput.TrackingDataSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * The class DataManager represents the interface to team 3 and manages our
@@ -14,6 +15,7 @@ public class DataManager {
 
     List<ToolMeasure> toolMeasures = new ArrayList<>();
     private TrackingDataSource source;
+    private final static Logger LOGGER = Logger.getLogger(DataManager.class.getName());
 
     public List<ToolMeasure> getToolMeasures() {
         return toolMeasures;
@@ -38,7 +40,7 @@ public class DataManager {
     public List<ToolMeasure> getNextData(int countToGetNext) {
 
         if (source == null) {
-            System.err.println("Tracking data source is not set. Aborting!");
+            LOGGER.warning("Tracking data source is not set. Aborting!");
             return toolMeasures;
         }
 
@@ -47,7 +49,7 @@ public class DataManager {
             List<Tool> tools = source.getLastToolList();
 
             if (tools.isEmpty()) {
-                //inputOutput.ExceptionData.checkException();
+                LOGGER.warning("Toollist is empty.");
                 break;
             }
 
@@ -76,7 +78,7 @@ public class DataManager {
     /**
      * This methods manages the tools. AddMeasurementToTool controls if a tool
      * with this name exists. If there is already a tool with this name, then
-     * the method adds the new measurements to this tool. If there is no 
+     * the method adds the new measurements to this tool. If there is no
      * tool with this name,then a new tool is created
      *
      * @param measurement - variable of type Measurement

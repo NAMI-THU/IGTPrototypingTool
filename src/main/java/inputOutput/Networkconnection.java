@@ -11,6 +11,8 @@ import org.medcare.igtl.util.Status;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * this class creates a network connection
@@ -20,6 +22,7 @@ import java.util.List;
 
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
 
+    private final static Logger LOGGER = Logger.getLogger(Networkconnection.class.getName());
     private boolean exit = true;
     private boolean stop = true;
 
@@ -51,9 +54,9 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 
             client.addIOpenIgtOnPacket(this);
             toolDataList = Collections.synchronizedList(new LinkedList<>());
+            LOGGER.info("Connected to Server");
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
 
     }
