@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
@@ -17,17 +18,19 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#openSettings" text="Settings" />              
+              <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Window">
             <items>
-                  <Menu mnemonicParsing="false" text="Show View">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
-                    <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
-                    </items>
-                  </Menu>
+              <Menu mnemonicParsing="false" text="Show View">
+                <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
+                  <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
+                  </items>
+                </Menu>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
