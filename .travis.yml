@@ -2,8 +2,9 @@ language: java
 
 jdk:
   - openjdk12
-  - openjdk14
-  - openjdk15
+  # test against multiple jdks when gradle version is upgraded
+  # openjdk14
+  # openjdk15
 
 addons:
   apt:
