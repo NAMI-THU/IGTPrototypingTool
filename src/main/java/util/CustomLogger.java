@@ -41,9 +41,9 @@ public class CustomLogger {
      * @param t throwable
      */
     public static void log(Level level, String message, Throwable t) {
-    	Logger.getLogger(CustomLogger.class.getName()).log(level, message, t);
+        Logger.getLogger(CustomLogger.class.getName()).log(level, message, t);
     }
-    
+
     /**
      * Stop stream to log file
      */

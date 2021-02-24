@@ -123,7 +123,7 @@ public class TrackingDataController implements Controller {
         source.update();
         // this returns tracking data from all tools at one point in time
         List<ToolMeasure> tools = ds.loadNextData(1);
-        
+
         if (tools.isEmpty()) return;
 
         for (ToolMeasure tool : tools) {

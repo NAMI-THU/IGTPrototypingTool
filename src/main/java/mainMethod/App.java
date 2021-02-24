@@ -31,9 +31,9 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
+
     @Override
     public void stop() {
-    	CustomLogger.closeLogger();
+        CustomLogger.closeLogger();
     }
 }
