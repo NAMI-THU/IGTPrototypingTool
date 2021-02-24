@@ -15,10 +15,10 @@
          <children>
          	<ImageScatterChart fx:id="chartCoronal" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" prefHeight="300" prefWidth="400" title="Coronal" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
 				<xAxis>
-         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Y" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" upperBound="82.5" />
+         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="X" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" upperBound="182.5" />
          		</xAxis>
          		<yAxis>
-         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="X" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="106" />
+         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Y" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="106" />
          		</yAxis>
          	</ImageScatterChart>
          	<ImageScatterChart fx:id="chartAxial" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" prefHeight="300" prefWidth="400" title="Axial" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
@@ -35,10 +35,10 @@
          <children>
 			<ImageScatterChart fx:id="chartSagittal" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" prefHeight="300" prefWidth="400" title="Sagittal" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
                 <xAxis>
-         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Y" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" upperBound="82.5" />
+         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Z" lowerBound="200" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" upperBound="382.5" />
          		</xAxis>
          		<yAxis>
-         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Z" lowerBound="200" minorTickCount="0" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="306" />
+         			<NumberAxis autoRanging="false" forceZeroInRange="false" label="Y" lowerBound="-100" minorTickCount="0" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="106" />
          		</yAxis>
          	</ImageScatterChart>
             <AnchorPane fx:id="positionDetailBox" prefHeight="360.0" prefWidth="408.0" visible="false">

@@ -209,13 +209,13 @@ public class ThrombectomyController implements Controller {
                     break;
                 }
                 // invert tracking data, so display fits the experiment's setup
-                double x = measurements.get(measurements.size() - i).getPoint().getX() * -1;
-                double y = measurements.get(measurements.size() - i).getPoint().getY() * -1;
+                double x = measurements.get(measurements.size() - i).getPoint().getX();
+                double y = measurements.get(measurements.size() - i).getPoint().getY();
                 double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
 
-                display.addDataToSeries1(new XYChart.Data<Double, Double>(y,x));
+                display.addDataToSeries1(new XYChart.Data<Double, Double>(x,y));
                 display.addDataToSeries2(new XYChart.Data<Double, Double>(x,z));
-                display.addDataToSeries3(new XYChart.Data<Double, Double>(y,z));
+                display.addDataToSeries3(new XYChart.Data<Double, Double>(z,y));
             }
         }
     }
