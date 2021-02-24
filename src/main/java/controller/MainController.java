@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,8 +26,6 @@ public class MainController implements Controller {
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
 
-    private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         trackingDataController.setStatusLabel(status);
@@ -48,7 +45,7 @@ public class MainController implements Controller {
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.measurementController.close());
         } catch(IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading Measurement View", e);
+            CustomLogger.log(Level.SEVERE, "Error loading Measurement View", e);
         }
     }
 
@@ -68,7 +65,7 @@ public class MainController implements Controller {
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
         } catch(IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading Thrombectomy View", e);
+            CustomLogger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
         }
     }
 
@@ -87,7 +84,7 @@ public class MainController implements Controller {
             this.settingsController = this.loader.getController();
             newWindow.setOnCloseRequest(e -> this.settingsController.close());
         } catch(IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading Settings View", e);
+            CustomLogger.log(Level.SEVERE, "Error loading Settings View", e);
         }
     }
 
@@ -101,7 +98,6 @@ public class MainController implements Controller {
      */
     @FXML
     public void close() {
-        CustomLogger.closeLogger();
         Platform.exit();
     }
 }

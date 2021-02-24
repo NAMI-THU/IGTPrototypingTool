@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import algorithm.DataService;
 import algorithm.Measurement;
@@ -29,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import userinterface.TrackingDataDisplay;
+import util.CustomLogger;
 import javafx.stage.Stage;
 
 public class TrackingDataController implements Controller {
@@ -45,8 +45,6 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
-
-    private final static Logger LOGGER = Logger.getLogger(TrackingDataController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -77,9 +75,9 @@ public class TrackingDataController implements Controller {
         if (file != null) {
             try {
                 newSource = new CSVFileReader(file.getAbsolutePath());
-                LOGGER.info("CSV file read from: " + file.getAbsolutePath());
+                CustomLogger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error loading CSV file", e);
+                CustomLogger.log(Level.SEVERE, "Error loading CSV file", e);
                 statusLabel.setText("Error loading CSV file");
             }
             newSource.setRepeatMode(true);
@@ -125,7 +123,7 @@ public class TrackingDataController implements Controller {
         source.update();
         // this returns tracking data from all tools at one point in time
         List<ToolMeasure> tools = ds.loadNextData(1);
-
+        
         if (tools.isEmpty()) return;
 
         for (ToolMeasure tool : tools) {

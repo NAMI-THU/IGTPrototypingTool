@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
@@ -28,6 +27,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import userinterface.ImageScatterChart;
 import userinterface.TrackingDataDisplay;
+import util.CustomLogger;
 import util.FormatManager;
 
 public class ThrombectomyController implements Controller {
@@ -47,7 +47,6 @@ public class ThrombectomyController implements Controller {
     private List<TrackingDataDisplay> toolDisplayList;
     private TrackingDataController trackingDataController;
 
-    private final static Logger LOGGER = Logger.getLogger(ThrombectomyController.class.toString());
     private Label statusLabel;
 
     @Override
@@ -106,7 +105,7 @@ public class ThrombectomyController implements Controller {
             iv.setFitHeight(chart.getHeight());
             iv.setFitHeight(chart.getWidth());
         } catch (MalformedURLException e) {
-            LOGGER.log(Level.SEVERE, "Image file could not be opened.", e);
+            CustomLogger.log(Level.SEVERE, "Image file could not be opened.", e);
         }
 
         chart.setIv(iv);

@@ -1,6 +1,8 @@
 package inputOutput;
 
 import Jama.Matrix;
+import util.CustomLogger;
+
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.ImageMessage;
@@ -12,7 +14,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * this class creates a network connection
@@ -22,7 +23,6 @@ import java.util.logging.Logger;
 
 public class Networkconnection extends Thread implements IOpenIgtPacketListener {
 
-    private final static Logger LOGGER = Logger.getLogger(Networkconnection.class.getName());
     private boolean exit = true;
     private boolean stop = true;
 
@@ -54,9 +54,9 @@ public class Networkconnection extends Thread implements IOpenIgtPacketListener 
 
             client.addIOpenIgtOnPacket(this);
             toolDataList = Collections.synchronizedList(new LinkedList<>());
-            LOGGER.info("Connected to Server");
+            CustomLogger.log(Level.INFO, "Connected to Server");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
+            CustomLogger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
 
     }

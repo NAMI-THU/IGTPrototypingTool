@@ -1,7 +1,6 @@
 package mainMethod;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +11,6 @@ import util.CustomLogger;
 
 public class App extends Application {
 
-    private final static Logger LOGGER = Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -20,7 +18,6 @@ public class App extends Application {
         try {
             CustomLogger.setup();
         } catch (IOException e) {
-            LOGGER.warning("Log file was not set up");
             e.printStackTrace();
         }
 
@@ -33,5 +30,10 @@ public class App extends Application {
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+    
+    @Override
+    public void stop() {
+    	CustomLogger.closeLogger();
     }
 }
