@@ -49,7 +49,7 @@ public class CustomLogger {
      */
     public static void closeLogger() {
         Handler[] handlers = Logger.getLogger(CustomLogger.class.getName()).getHandlers();
-        if(handlers[0] instanceof FileHandler) {
+        if(handlers.length > 0 && handlers[0] instanceof FileHandler) {
             handlers[0].close();
         }
     }
