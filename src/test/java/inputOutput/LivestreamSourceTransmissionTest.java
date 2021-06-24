@@ -13,34 +13,33 @@ import org.junit.jupiter.api.Test;
  *
  */
 class LivestreamSourceTransmissionTest {
-	LivestreamSource livestream;
-	
-	
-	/**
-	 * This method is called before each test.
-	 * It creates an object of the class LivestreamSource and establishes a connection to the selected device.
-	 * Here the first device is selected in the constructor.
-	 */
-	@BeforeEach
-	void open() {
-		livestream = new LivestreamSource(0);
-		livestream.openConnection();
-	}
-	
-	/**
-	 * This method is testing if a matrix is returned after the transmission.
-	 */
-	@Test
-	void TestGetNextMat() {
-		assertNotNull(livestream.getNextMat());
-	}
-	
-	/**
-	 * This method is called after each test. It is for closing the connection.
-	 */
-	@AfterEach
-	void close() {
-		livestream.closeConnection();
-	}
+    LivestreamSource livestream;
+
+    /**
+     * This method is called before each test.
+     * It creates an object of the class LivestreamSource and establishes a connection to the selected device.
+     * Here the first device is selected in the constructor.
+     */
+    @BeforeEach
+    void open() {
+        livestream = new LivestreamSource(0);
+        livestream.openConnection();
+    }
+
+    /**
+     * This method is testing if a matrix is returned after the transmission.
+     */
+    @Test
+    void TestGetNextMat() {
+        assertNotNull(livestream.getNextMat());
+    }
+
+    /**
+     * This method is called after each test. It is for closing the connection.
+     */
+    @AfterEach
+    void close() {
+        livestream.closeConnection();
+    }
 
 }

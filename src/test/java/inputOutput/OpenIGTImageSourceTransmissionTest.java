@@ -15,32 +15,31 @@ import org.junit.jupiter.api.Test;
  */
 class JUOpenIGTImageSourceTransmission {
 
-    OpenIGTImageSource igtSrc;
+    OIGTImageSource igtSrc;
 
-	/**
-	 * This method is called before each test. It creates an object of the class
-	 * OpenIGTImageSource and establishes a connection to OpenIGTLink (with MITK).
-	 */
-	@BeforeEach
-	void open() {
-		igtSrc = new OpenIGTImageSource();
-		igtSrc.openConnection();
-	}
-	
-	/**
-	 * This method is testing if a matrix is returned after the transmission.
-	 */
-	@Test
-	void TestGetNextMat() {
-		assertNotNull(igtSrc.getNextMat());
-	}
-	
-	/**
-	 * This method is called after each test. It is for closing the connection.
-	 */
-	@AfterEach
-	void close() {
-		igtSrc.closeConnection();
-	}
+    /**
+     * This method is called before each test. It creates an object of the class
+     * OpenIGTImageSource and establishes a connection to OpenIGTLink (with MITK).
+     */
+    @BeforeEach
+    void open() {
+        igtSrc = new OIGTImageSource();
+        igtSrc.openConnection();
+    }
 
+    /**
+     * This method is testing if a matrix is returned after the transmission.
+     */
+    @Test
+    void TestGetNextMat() {
+        assertNotNull(igtSrc.getNextMat());
+    }
+
+    /**
+     * This method is called after each test. It is for closing the connection.
+     */
+    @AfterEach
+    void close() {
+        igtSrc.closeConnection();
+    }
 }

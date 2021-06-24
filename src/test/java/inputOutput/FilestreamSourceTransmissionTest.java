@@ -13,32 +13,31 @@ import org.junit.jupiter.api.Test;
  *
  */
 class FilestreamSourceTransmissionTest {
-	FilestreamSource Filestream;
-	
-	/**
-	 * This method is called before each test. It creates an object of the class FilestreamSource and establishes a connection to the selected video file.
-	 */
-	@BeforeEach
-	void open() {
-		Filestream = new FilestreamSource("US_video.avi");
-		Filestream.openConnection();
-	}
-	
-	/**
-	 * This method is testing if a matrix is returned after the transmission.
-	 */
-	@Test
-	void TestGetNextMat() {
-		assertNotNull(Filestream.getNextMat());
-	}
-	
-	
-	/**
-	 * This method is called after each test. It is for closing the connection.
-	 */
-	@AfterEach
-	void close() {
-		Filestream.closeConnection();
-	}
+    FilestreamSource Filestream;
+
+    /**
+     * This method is called before each test. It creates an object of the class FilestreamSource and establishes a connection to the selected video file.
+     */
+    @BeforeEach
+    void open() {
+        Filestream = new FilestreamSource("US_video.avi");
+        Filestream.openConnection();
+    }
+
+    /**
+     * This method is testing if a matrix is returned after the transmission.
+     */
+    @Test
+    void TestGetNextMat() {
+        assertNotNull(Filestream.getNextMat());
+    }
+
+    /**
+     * This method is called after each test. It is for closing the connection.
+     */
+    @AfterEach
+    void close() {
+        Filestream.closeConnection();
+    }
 
 }

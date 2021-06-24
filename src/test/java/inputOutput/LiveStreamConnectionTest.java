@@ -11,37 +11,36 @@ import org.junit.jupiter.api.Test;
  *
  */
 class LiveStreamConnectionTest {
-	
-	/**
-	 * This method tests instantiating the class LivestreamSource.
-	 */
-	@Test
-	void testObject() {
-		LivestreamSource livestream = new LivestreamSource(0); 
-		assertTrue(livestream!=null);
-	}
-	
-	
-	/**
-	 * This method tests if the connection to the device can be established.
-	 * Here the parameter 0 in the constructor means that the first connected device to the computer is selected.
-	 * (The device manager can help to identify the order of devices.)
-	 * The connection can only work if the instantiating was successful.
-	 */
-	@Test
-	void testOpenConnection() {
-		LivestreamSource livestream = new LivestreamSource(0);
-		assertTrue(livestream.openConnection());
-	}
-	
-	/**
-	 * This method tests the closing of an existing connection.
-	 * Prior to that it is important to ensure that opening the connection is working.
-	 */
-	@Test
-	void testCloseConnection() {
-		LivestreamSource livestream = new LivestreamSource(0);
-		livestream.openConnection();
-		assertTrue(livestream.closeConnection());
-	}
+
+    /**
+     * This method tests instantiating the class LivestreamSource.
+     */
+    @Test
+    void testObject() {
+        LivestreamSource livestream = new LivestreamSource(0);
+        assertTrue(livestream!=null);
+    }
+
+    /**
+     * This method tests if the connection to the device can be established.
+     * Here the parameter 0 in the constructor means that the first connected device to the computer is selected.
+     * (The device manager can help to identify the order of devices.)
+     * The connection can only work if the instantiating was successful.
+     */
+    @Test
+    void testOpenConnection() {
+        LivestreamSource livestream = new LivestreamSource(0);
+        assertTrue(livestream.openConnection());
+    }
+
+    /**
+     * This method tests the closing of an existing connection.
+     * Prior to that it is important to ensure that opening the connection is working.
+     */
+    @Test
+    void testCloseConnection() {
+        LivestreamSource livestream = new LivestreamSource(0);
+        livestream.openConnection();
+        assertTrue(livestream.closeConnection());
+    }
 }

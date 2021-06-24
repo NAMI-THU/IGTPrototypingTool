@@ -5,9 +5,8 @@ package inputOutput;
  */
 
 public class ConnectionAndDisplayTest extends Thread {
-	public static void main(String args[]) {
-		TestFrame.startTestMainCV1();
-		//test ob es wieder geht im Master
-	}
+    public static void main(String args[]) {
+        TestFrame.startTestMainCV1();
+    }
 
 }
