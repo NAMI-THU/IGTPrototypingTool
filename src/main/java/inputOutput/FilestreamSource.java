@@ -1,11 +1,14 @@
 package inputOutput;
 
+import java.util.logging.Level;
+
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 import nu.pattern.OpenCV;
+import util.CustomLogger;
 
 /**
  * provides the footage from a file with these formats: mp4, avi, mkv, mov, 3GP, mpg,
@@ -15,7 +18,7 @@ import nu.pattern.OpenCV;
  */
 public class FilestreamSource extends AbstractImageSource {
 
-	private VideoCapture vc;
+    private VideoCapture vc;
     private String path;
     private int frameTotalNumber;
 
@@ -27,9 +30,8 @@ public class FilestreamSource extends AbstractImageSource {
      *            describes the path of the file
      */
     public FilestreamSource(String path) {
-//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		OpenCV.loadLocally();
-		frameMatrix = new Mat();
+        OpenCV.loadLocally();
+        frameMatrix = new Mat();
         this.path = path;
     }
 
@@ -43,11 +45,11 @@ public class FilestreamSource extends AbstractImageSource {
         vc = new VideoCapture(path);
 
         if (vc.isOpened()) {
-            System.out.println("found VideoSource " + vc.toString());
+            CustomLogger.log(Level.INFO, "found VideoSource " + vc.toString());
             isConnected = true;
             frameTotalNumber = (int) vc.get(Videoio.CAP_PROP_FRAME_COUNT);
         } else {
-            System.out.println("!!! Did not connect to camera !!!");
+            CustomLogger.log(Level.WARNING, "!!! Did not find video file !!!");
         }
         return isConnected;
     }
@@ -62,7 +64,7 @@ public class FilestreamSource extends AbstractImageSource {
         vc.read(frameMatrix);
 
         if (frameMatrix.empty()) {
-            System.out.println("!!! Nothing captured from webcam !!!");
+            CustomLogger.log(Level.WARNING, "!!! Nothing captured from video file !!!");
         }
 
         return frameMatrix;

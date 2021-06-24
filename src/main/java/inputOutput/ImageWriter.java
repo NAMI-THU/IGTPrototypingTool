@@ -10,7 +10,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.videoio.VideoWriter;
 
-
 /**
  * saves the imported frames as Mat Objects (OpenCV). For the saving process the VideoWriter class from the OpenCV library is used.
  * @author team3
@@ -37,7 +36,7 @@ public class ImageWriter {
         size = new Size(width, height);
 
         int fourcc = VideoWriter.fourcc('D','V','I','X');
-	    writer = new VideoWriter(path + ".mpg", fourcc, 30, size);
+        writer = new VideoWriter(path + ".mpg", fourcc, 30, size);
     }
 
     /**
@@ -48,7 +47,6 @@ public class ImageWriter {
     public void writeMat(Mat frameMatrix) {
         writer.write(frameMatrix);
     }
-
 
     /**
      * This method is for saving one single Image given as a parameter on the computer. A destination path is also necessary here as a parameter.

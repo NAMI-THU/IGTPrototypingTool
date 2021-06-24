@@ -1,12 +1,14 @@
 package inputOutput;
 
+import java.util.logging.Level;
+
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 
 import nu.pattern.OpenCV;
+import util.CustomLogger;
 
 /**
  * provides the livestream footage from a webcam, ultrasound device or any other
@@ -27,7 +29,6 @@ public class LivestreamSource extends AbstractImageSource {
      * @param id  describes which device is used
      */
     public LivestreamSource(int id) {
-//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         OpenCV.loadLocally();
         frameMatrix = new Mat();
         deviceID = id;
@@ -41,14 +42,13 @@ public class LivestreamSource extends AbstractImageSource {
      */
     public boolean openConnection() {
 
-        System.out.println("capDev");
         vc = new VideoCapture(deviceID);
 
         if (vc.isOpened()) {
-            System.out.println("found VideoSource " + vc.toString());
+            CustomLogger.log(Level.INFO,"found VideoSource " + vc.toString());
             isConnected = true;
         } else {
-            System.out.println("!!! Did not connect to camera !!!");
+            CustomLogger.log(Level.WARNING,"!!! Did not connect to camera !!!");
             isConnected = false;
         }
 
@@ -61,16 +61,15 @@ public class LivestreamSource extends AbstractImageSource {
      * @return <code>frameMatrix</code>
      */
     public Mat getNextMat() {
-	    fps = (int) vc.get(Videoio.CAP_PROP_FPS);
-	    System.out.println(fps);
-	    vc.read(frameMatrix);
+        fps = (int) vc.get(Videoio.CAP_PROP_FPS);
+        vc.read(frameMatrix);
 
-	    if (frameMatrix.empty()) {
-	        System.out.println("!!! Nothing captured from webcam !!!");
-	    }
+        if (frameMatrix.empty()) {
+            CustomLogger.log(Level.WARNING,"!!! Nothing captured from webcam !!!");
+        }
 
-	    return frameMatrix;
-	}
+        return frameMatrix;
+    }
 
     /**
      * closes connection to the device and sets <code>isConnected = false</code>
