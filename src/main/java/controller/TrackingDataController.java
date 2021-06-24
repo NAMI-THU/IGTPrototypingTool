@@ -14,8 +14,8 @@ import algorithm.DataService;
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
-import inputOutput.OpenIGTLinkConnection;
-import inputOutput.TrackingDataSource;
+import inputOutput.OIGTTrackingDataSource;
+import inputOutput.AbstractTrackingDataSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -40,7 +40,7 @@ public class TrackingDataController implements Controller {
     @FXML VBox rotBox;
     public DataService ds;
     public Timeline timeline;
-    TrackingDataSource source;
+    AbstractTrackingDataSource source;
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
@@ -53,7 +53,7 @@ public class TrackingDataController implements Controller {
         rotation = new HashMap<String, Label>();
     }
 
-    public TrackingDataSource getSource() {
+    public AbstractTrackingDataSource getSource() {
         return source;
     }
 
@@ -90,7 +90,7 @@ public class TrackingDataController implements Controller {
      */
     @FXML
     private void connect() {
-        OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
+        OIGTTrackingDataSource newSource = new OIGTTrackingDataSource();
         source = newSource;
     }
 

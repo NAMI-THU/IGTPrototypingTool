@@ -1,21 +1,21 @@
 package algorithm;
 
 import inputOutput.Tool;
-import inputOutput.TrackingDataSource;
+import util.CustomLogger;
+import inputOutput.AbstractTrackingDataSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * The class DataManager represents the interface to team 3 and manages our
- * data.
+ * The class TrackingDataManager represents the interface between the GUI and
+ * data from InputOutput. It manages all collected tracking data.
  */
-public class DataManager {
+public class TrackingDataManager {
 
     List<ToolMeasure> toolMeasures = new ArrayList<>();
-    private TrackingDataSource source;
-    private final static Logger LOGGER = Logger.getLogger(DataManager.class.getName());
+    private AbstractTrackingDataSource source;
 
     public List<ToolMeasure> getToolMeasures() {
         return toolMeasures;
@@ -40,7 +40,7 @@ public class DataManager {
     public List<ToolMeasure> getNextData(int countToGetNext) {
 
         if (source == null) {
-            LOGGER.warning("Tracking data source is not set. Aborting!");
+            CustomLogger.log(Level.WARNING,"Tracking data source is not set. Aborting!");
             return toolMeasures;
         }
 
@@ -49,7 +49,7 @@ public class DataManager {
             List<Tool> tools = source.getLastToolList();
 
             if (tools.isEmpty()) {
-                LOGGER.warning("Toollist is empty.");
+                CustomLogger.log(Level.WARNING,"Toollist is empty.");
                 break;
             }
 
@@ -63,15 +63,14 @@ public class DataManager {
         return toolMeasures;
     }
 
-    public TrackingDataSource getSource() {
+    public AbstractTrackingDataSource getSource() {
         return source;
     }
 
     /**
-     * @param source Sets the TrackingDataSource that is
-     *               to get all data.
+     * @param source Sets the TrackingDataSource that is used to get all data.
      */
-    public void setSource(TrackingDataSource source) {
+    public void setSource(AbstractTrackingDataSource source) {
         this.source = source;
     }
 

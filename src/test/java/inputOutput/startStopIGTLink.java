@@ -20,7 +20,7 @@ public class startStopIGTLink extends JFrame implements ActionListener {
     private JTextField ipAddress;
     private JTextField filename;
     private Timer timer;
-    private TrackingDataSource source;
+    private AbstractTrackingDataSource source;
 
     public startStopIGTLink() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -112,8 +112,7 @@ public class startStopIGTLink extends JFrame implements ActionListener {
                 newSource.setRepeatMode(true);
                 source = newSource;
             } else {
-                OpenIGTLinkConnection newSource = new OpenIGTLinkConnection();
-                newSource.setIpAddress(this.ipAddress.getText());
+                OIGTTrackingDataSource newSource = new OIGTTrackingDataSource();
                 newSource.update();
                 source = newSource;
             }
@@ -132,7 +131,7 @@ public class startStopIGTLink extends JFrame implements ActionListener {
             System.exit(0);
         } else if (src == exitConnection) {
             if (this.rdbtnOpenIgtLink.isSelected()) {
-                ((OpenIGTLinkConnection) source).closeConnection();
+                ((OIGTTrackingDataSource) source).closeConnection();
             }
         } else {
             ArrayList<Tool> tools = source.update();

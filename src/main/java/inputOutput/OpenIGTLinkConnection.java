@@ -1,108 +1,265 @@
 package inputOutput;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.Log;
 
-import java.util.ArrayList;
+import Jama.Matrix;
+import util.CustomLogger;
+
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+
+import org.medcare.igtl.messages.ImageMessage;
+import org.medcare.igtl.network.GenericIGTLinkClient;
+import org.medcare.igtl.network.IOpenIgtPacketListener;
+import org.medcare.igtl.util.Status;
 
 /**
- * this class makes it possible to connect with OpenIGTLink so the tracking data of the tools (coordinates, rotation, name, etc.)
- * can be transfered directly without saving it in a CSV-file in advance
+ * builds a connection based on OpenIGTLink for tracking data and image data.
+ * As a prerequisite MITK v2016.11 has to run in the background.
+ * The connection is established by using the online stream.
+ * @author team3
  */
+public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
 
-public class OpenIGTLinkConnection extends TrackingDataSource {
-
-    private static boolean testapp = false;
-    private double coordinate_x;
-    private double coordinate_y;
-    private double coordinate_z;
-    private double rotation_r;
-    private double rotation_x;
-    private double rotation_y;
-    private double rotation_z;
-    private String name;
-    private double timestamp;
-    private double valid = 1;
-    private String ipAddress = "127.0.0.1";
+    private GenericIGTLinkClient client;
+    private String ip = "127.0.0.1";
     private int port = 18944;
-    private Networkconnection myOpenIGTLinkConnection;
+    private ImageMessage imgMsg;
+    private String name;
+    private byte[] imgData;
+    private long time1;
+    private long time2;
+    private long timeRes;
+    public long fps;
 
-    @Override
-    public ArrayList<Tool> update() {
-        if (myOpenIGTLinkConnection == null) {
-            myOpenIGTLinkConnection = new Networkconnection();
-            myOpenIGTLinkConnection.connect(ipAddress, port);
-            toolList = new ArrayList<Tool>();
+    private List<ToolData> toolDataList = Collections.synchronizedList(new LinkedList<ToolData>());
+    private boolean exit = true;
+    private boolean stop = true;
+
+    /**
+     * This constructor establishes a connection to a OpenIGTLink server using the default ip-address and port.
+     */
+    public OpenIGTLinkConnection() {
+        try {
+            Log.enableDebugPrint(false);
+            Log.enableSystemPrint(false);
+
+            Log.debug("Starting client");
+            this.client = new GenericIGTLinkClient(this.ip, this.port);
+
+            this.client.addIOpenIgtOnPacket(this);
+            this.toolDataList = Collections.synchronizedList(new LinkedList<>());
+        } catch (Exception e) {
+            CustomLogger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
-        List<Networkconnection.ToolData> rawToolList = myOpenIGTLinkConnection.getToolDataList();
-        synchronized (rawToolList) {
-            for (Networkconnection.ToolData t : rawToolList)
-                this.setValues(t.name, t.t);
+        this.time1 = System.currentTimeMillis();
+    }
+
+    /**
+     * An IP-address and a port number is needed for the connection. Here both are set through the constructor.
+     * @param ip
+     * @param port
+     */
+    public OpenIGTLinkConnection(String ip, int port) {
+
+        this.setIp(ip);
+        this.setPort(port);
+
+        try {
+            Log.enableDebugPrint(false);
+            Log.enableSystemPrint(false);
+
+            Log.debug("Starting client");
+            this.client = new GenericIGTLinkClient(this.ip, this.port);
+
+            client.addIOpenIgtOnPacket(this);
+            this.toolDataList = Collections.synchronizedList(new LinkedList<>());
+        } catch (Exception e) {
+            CustomLogger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
-
-        return toolList;
+        this.time1 = System.currentTimeMillis();
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
-
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-
-    public int getPort() {
-        return port;
-    }
-
 
     public void setPort(int port) {
         this.port = port;
     }
 
-
     /**
-     * this method assigns the values of each tool to an object of a toollist
-     *
-     * @param n is the name of the tool
-     * @param t is a matrix which tells us the coordinates and the rotation of each tool
+     * This method is receiving an image as ImageMessage from the server, while it is running in the background during the connection.
+     * After getting an ImageMessage, the <code>setImageMessage(ImageMessage img)</code> method is called in order to set the received ImageMessage and the body of ImageMessage is unpacked in order to get the image data, which is also set by calling <code>setImageData(byte[] imgData)</code>.
+     * The framerate is also determined here.
      */
-    public void setValues(String n, TransformNR t) {
+    @Override
+    public void onRxImage(String name, ImageMessage image) {
 
-        timestamp = org.medcare.igtl.util.Header.getTimeStamp();
+        setImageMessage(image);
 
-        name = n;
-        coordinate_x = t.getX();
-        coordinate_y = t.getY();
-        coordinate_z = t.getZ();
+        try {
+//    image.UnpackBody();
+            setImageDataByte(image.getImageData());
 
-        rotation_r = t.getRotation().getRotationMatrix2QuaturnionW();
-        rotation_x = t.getRotation().getRotationMatrix2QuaturnionX();
-        rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
-        rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
-
-        for (Tool cur_tool : toolList) {
-            if (cur_tool.getName().equals(n)) {
-                cur_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
-                        coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
-                        name);
-                return;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-
-        Tool newTool = new Tool();
-        newTool.setData(timestamp, valid, coordinate_x, coordinate_y,
-                coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
-                name);
-        this.toolList.add(newTool);
-
+        this.name = name;
+        this.time2 = System.currentTimeMillis();
+        this.timeRes = this.time2 - this.time1;
+        this.time1= System.currentTimeMillis();
+        this.fps = 1000 / this.timeRes;
     }
 
-    public void closeConnection() {
-        myOpenIGTLinkConnection.setExit(false);
+    /**
+     * This method is for getting the current ImageMessage.
+     * @return ImageMessage
+     */
+    public ImageMessage getImageMessage() {
+        return this.imgMsg;
+    }
+
+    /**
+     * This method is for setting an ImageMessage.
+     */
+    public void setImageMessage(ImageMessage img) {
+        this.imgMsg = img;
+    }
+
+    /**
+     * This method is for setting an image data in the form of a byte.
+     */
+    public void setImageDataByte(byte[] imgData) {
+        this.imgData = imgData;
+    }
+
+    /**
+     * This method is for getting the current image data.
+     * @return It returns the image data as a byte[]
+     */
+    public byte[] getImageDataByte() {
+        return this.imgData;
+    }
+
+    /**
+     * This method is for stopping the connection (the client).
+     * @return <code>client.isInterrupted()</code> is true if closing the connection was successful
+     */
+    public boolean stop() {
+        this.client.stopClient();
+        return this.client.isInterrupted();
+    }
+
+    /**
+     * This method is for checking the connection while the application is running.
+     * @return <code>isConnected</code>
+     */
+    public boolean isConnected() {
+        return this.client.isConnected();
+    }
+
+    // from networkconnection
+    @Override
+    public void onRxTransform(String name, TransformNR t) {
+        Log.debug("Received Transform: " + t);
+
+        if (this.exit && this.stop) {
+
+            boolean foundTool = false;
+
+            synchronized (this.toolDataList) {
+                for (ToolData d : this.toolDataList) {
+                    if (d.name.equals(name)) {
+                        d.t = t;
+                        foundTool = true;
+                    }
+                }
+
+                if (!foundTool) {
+                    ToolData newData = new ToolData();
+                    newData.name = name;
+                    newData.t = t;
+                    this.toolDataList.add(newData);
+                }
+            }
+
+
+        } else if (this.exit == false) {
+            this.client.stopClient();
+        }
+
+        if (name.equals("RegistrationTransform") || name.equals("CALIBRATION")) {
+            // System.err.println("Received Registration Transform");
+            Log.debug("Setting fiducial registration matrix: " + t);
+            return;
+        } else if (name.equals("TARGET")) {
+            // System.err.println("Received RAS Transform: TARGET");
+            Log.debug("Setting task space pose: " + t);
+
+        } else if (name.equals("myTransform")) {
+            // System.err.println("Received Transformation Matrix: myTransform");
+            Log.debug("Setting task space pose: " + t);
+
+        } else {
+            // System.err.println("Received unidentified transform matrix");
+            Log.debug("Setting task space pose: " + t);
+        }
+    }
+
+    public List<ToolData> getToolDataList() {
+        return this.toolDataList;
+    }
+
+    public class ToolData {
+        String name;
+        TransformNR t;
+    }
+
+    public static void parseXMLStringMessage(String msg) {
+        String msg1 = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
+    }
+
+    /**
+     * The methods below are not used during a connection over MITK
+     */
+    @Override
+    public TransformNR getTxTransform(String name) {
+        return null;
+    }
+
+    @Override
+    public Status onGetStatus(String name) {
+        return null;
+    }
+
+    @Override
+    public void onRxString(String name, String body) {
+    }
+
+    @Override
+    public String onTxString(String name) {
+        return null;
+    }
+
+    @Override
+    public void onRxDataArray(String name, Matrix data) {
+    }
+
+    @Override
+    public double[] onTxDataArray(String name) {
+        return null;
+    }
+
+    @Override
+    public void onTxNDArray(String name) {
+    }
+
+    @Override
+    public void onRxNDArray(String name, float[] data) {
     }
 
 }

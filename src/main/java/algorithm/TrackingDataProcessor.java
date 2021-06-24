@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class provides the methods for processing the measurements.
+ * This class provides the methods for processing the measurements. (
  */
-public class DataProcessor {
+public class TrackingDataProcessor {
 
     /**
      * This method computes the distance of two average points. Then the

@@ -1,30 +1,32 @@
 package algorithm;
 
 import com.jme3.math.Quaternion;
-import inputOutput.TrackingDataSource;
+import inputOutput.AbstractTrackingDataSource;
 
 import java.util.List;
 
 /**
  * The class DataService represents the interface to team 1
+ * Access to calculation with trackingdata over DataProcessor.
+ * Access to trackingtool data and its source over DataManager.
  */
 
 public class DataService {
-    private DataProcessor dataProcessor;
-    private DataManager dataManager;
+    private TrackingDataProcessor dataProcessor;
+    private TrackingDataManager dataManager;
 
     public DataService() {
-        dataManager = new DataManager();
-        dataProcessor = new DataProcessor();
+        dataManager = new TrackingDataManager();
+        dataProcessor = new TrackingDataProcessor();
     }
 
-    public DataService(TrackingDataSource source) {
-        dataManager = new DataManager();
+    public DataService(AbstractTrackingDataSource source) {
+        dataManager = new TrackingDataManager();
         dataManager.setSource(source);
-        dataProcessor = new DataProcessor();
+        dataProcessor = new TrackingDataProcessor();
     }
 
-    public void setTrackingDataSource(TrackingDataSource source) {
+    public void setTrackingDataSource(AbstractTrackingDataSource source) {
         dataManager.setSource(source);
     }
 
@@ -36,11 +38,11 @@ public class DataService {
         dataManager.restartMeasurements();
     }
 
-    public DataManager getDataManager() {
+    public TrackingDataManager getDataManager() {
         return dataManager;
     }
 
-    public void setDataManager(DataManager dataManager) {
+    public void setDataManager(TrackingDataManager dataManager) {
         this.dataManager = dataManager;
     }
 

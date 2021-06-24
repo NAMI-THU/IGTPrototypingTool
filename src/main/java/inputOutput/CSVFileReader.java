@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author
  */
-public class CSVFileReader extends TrackingDataSource {
+public class CSVFileReader extends AbstractTrackingDataSource {
     private static int exceptionNumber = 0;
     private int recordNumber = 0;
     private List<String> toolNames;

@@ -18,14 +18,14 @@ public class AlgorithmTest {
     AverageMeasurement secondAverangeMeasurement;
     Measurement firstMeasurement;
     Measurement secondMeasurement;
-    private DataProcessor processor;
+    private TrackingDataProcessor processor;
     private DataService dataService;
     private ToolMeasure testTool;
 
     @Test
     /**
-     * {@link DataProcessor}
-     * {@link DataProcessor#getAverageMeasurement(AverageMeasurement)}
+     * {@link TrackingDataProcessor}
+     * {@link TrackingDataProcessor#getAverageMeasurement(AverageMeasurement)}
      */
     public void getAverageMeasurementIsCorrect() {
         setUpData();
@@ -43,7 +43,7 @@ public class AlgorithmTest {
 
     @Test
     /**
-     * {@link DataProcessor} {@link DataProcessor#getJitter(double)}
+     * {@link TrackingDataProcessor} {@link TrackingDataProcessor#getJitter(double)}
      */
     public void getJitterIsCorrect() {
         setUpData();
@@ -56,7 +56,7 @@ public class AlgorithmTest {
 
     @Test
     /**
-     * {@link DataProcessor} {@link DataProcessor#getAccuracy(double)}
+     * {@link TrackingDataProcessor} {@link TrackingDataProcessor#getAccuracy(double)}
      */
     public void getAccuracyIsCorrect() {
 
@@ -71,7 +71,7 @@ public class AlgorithmTest {
 
     @Test
     /**
-     * {@link DataProcessor} {@link DataProcessor#getRotationJitter(List)}
+     * {@link TrackingDataProcessor} {@link TrackingDataProcessor#getRotationJitter(List)}
      */
     public void getRotationJitterIsCorrect() {
         setUpData();
@@ -84,7 +84,7 @@ public class AlgorithmTest {
 
     @Test
     /**
-     * {@link DataProcessor} {@link DataProcessor#getAccuracyRotation(Measurement)}
+     * {@link TrackingDataProcessor} {@link TrackingDataProcessor#getAccuracyRotation(Measurement)}
      */
     public void getAccuracyRotationIsCorrect() {
 
@@ -99,11 +99,11 @@ public class AlgorithmTest {
 
     @Test
     /**
-     * {@link DataProcessor} {@link DataProcessor#getBoxPlot(double)}
+     * {@link TrackingDataProcessor} {@link TrackingDataProcessor#getBoxPlot(double)}
      */
     public void getBoxPlotIsCorrect() {
 
-        processor = new DataProcessor();
+        processor = new TrackingDataProcessor();
 
         List<Double> values = new ArrayList<>();
         values.add(1.0);
@@ -149,7 +149,7 @@ public class AlgorithmTest {
     }
 
     private void setUpDataAccuracy() {
-        processor = new DataProcessor();
+        processor = new TrackingDataProcessor();
 
         firstAverangeMeasurement = new AverageMeasurement();
         secondAverangeMeasurement = new AverageMeasurement();
@@ -170,7 +170,7 @@ public class AlgorithmTest {
 
     private void setUpData() {
 
-        processor = new DataProcessor();
+        processor = new TrackingDataProcessor();
         testTool = new ToolMeasure("TestTool");
         List<Measurement> measurements = new ArrayList<>();
 

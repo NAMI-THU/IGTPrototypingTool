@@ -17,7 +17,7 @@ import algorithm.DataService;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
 import inputOutput.Tool;
-import inputOutput.TrackingDataSource;
+import inputOutput.AbstractTrackingDataSource;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
@@ -37,8 +37,8 @@ public class MeasurementController implements Controller {
     private int measurementCounter = 0;
     private Timer timer;
     private boolean timerOn = false;
-    private TrackingDataSource source; // continuous tracking
-    private TrackingDataSource sourceFileReader;
+    private AbstractTrackingDataSource source; // continuous tracking
+    private AbstractTrackingDataSource sourceFileReader;
     private DataService dataS = new DataService();
     private Map<String, ToolMeasure> storedMeasurements;
     private TrackingDataController trackingDataController;
@@ -69,7 +69,7 @@ public class MeasurementController implements Controller {
         this.statusLabel.setText("");
     }
 
-    public void setTrackingDataSource(TrackingDataSource source) {
+    public void setTrackingDataSource(AbstractTrackingDataSource source) {
         this.source = source;
         this.dataS.setTrackingDataSource(source);
     }

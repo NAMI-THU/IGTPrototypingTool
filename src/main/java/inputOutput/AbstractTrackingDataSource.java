@@ -2,7 +2,7 @@ package inputOutput;
 
 import java.util.ArrayList;
 
-public abstract class TrackingDataSource {
+public abstract class AbstractTrackingDataSource {
 
     protected ArrayList<Tool> toolList = new ArrayList<>();
 
