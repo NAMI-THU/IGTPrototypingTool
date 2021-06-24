@@ -29,8 +29,9 @@
                 <items>
                   <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
                   <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
-                  </items>
-                </Menu>
+                  <MenuItem mnemonicParsing="false" onAction="#openVideoView" text="Video Test" />
+                </items>
+              </Menu>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
