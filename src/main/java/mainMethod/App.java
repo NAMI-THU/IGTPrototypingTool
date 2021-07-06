@@ -26,7 +26,9 @@ public class App extends Application {
         loader.setLocation(getClass().getResource(path));
         Parent root = loader.load();
         primaryStage.setTitle("Tracking Data Analysis Tool");
-        Scene scene = new Scene(root, 1050, 700);
+        primaryStage.setMinHeight(300);
+        primaryStage.setMinWidth(500);
+        Scene scene = new Scene(root);
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();
