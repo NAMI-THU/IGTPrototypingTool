@@ -17,6 +17,7 @@
           <items>
 	          <FXCollections fx:factory="observableArrayList">
 	              <String fx:value="Webcam" />
+	              <String fx:value="OpenIGTLink" />
 	              <String fx:value="Video file" />
 	              <String fx:value="External device" />
 	          </FXCollections>
