@@ -19,7 +19,7 @@ public class CustomLogger {
      */
     public static void setup() throws IOException {
         Logger log = Logger.getLogger(CustomLogger.class.getName());
-        txtFile = new FileHandler("logging.log", true);
+        txtFile = new FileHandler("logging%u.log", true);
         formatter = new SimpleFormatter();
         txtFile.setFormatter(formatter);
         log.addHandler(txtFile);
