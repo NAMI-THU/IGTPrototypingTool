@@ -12,7 +12,7 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
 <content>
-<VBox prefHeight="780.0" prefWidth="514.0">
+<VBox prefHeight="700.0" prefWidth="514.0">
 	<AnchorPane>
 	    <children>
 	        <ScatterChart fx:id="s1" layoutY="8.0" prefHeight="300.0" prefWidth="400.0" title="XY-Plane">
@@ -45,7 +45,7 @@
 	        <Button layoutX="659.0" layoutY="634.0" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" />
             <StackPane layoutX="448.0" layoutY="335.0" prefHeight="276.0" prefWidth="566.0">
                 <children>
-      	            <HBox prefHeight="160.0" prefWidth="592.0">
+      	            <HBox prefHeight="160.0" prefWidth="500.0">
       	                <children>
       	                    <VBox fx:id="posBox" prefHeight="160.0" prefWidth="250.0">
       	                        <children>
