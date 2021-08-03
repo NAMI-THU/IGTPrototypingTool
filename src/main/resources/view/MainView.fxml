@@ -50,10 +50,10 @@
           </Tab>
         </tabs>
       </TabPane>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
-            <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Label fx:id="status" prefHeight="17.0" textAlignment="RIGHT" HBox.hgrow="ALWAYS">
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="status" prefHeight="12.0" textAlignment="RIGHT" HBox.hgrow="ALWAYS">
                <padding>
                   <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                </padding>
