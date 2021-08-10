@@ -83,3 +83,14 @@ tasks.withType(Checkstyle) {
 spotbugs {
     ignoreFailures = true
 }
+
+task createExe(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'mainMethod.StartClass'
+    }
+    baseName = 'TestApp'
+    from {
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)}
+    }
+    with jar
+}
