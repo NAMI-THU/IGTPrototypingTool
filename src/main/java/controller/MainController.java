@@ -76,7 +76,7 @@ public class MainController implements Controller {
 
         try {
             setupFXMLLoader("VideoView");
-            Tab t = new Tab("Video Test", this.loader.load());
+            Tab t = new Tab("Video View", this.loader.load());
 
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
