@@ -53,7 +53,7 @@ public class ImageDataProcessor {
      * 2: FilestreamSource
      * @param x int
      */
-    public void openConnection(int x){
+    public boolean openConnection(int x){
         switch (x) {
         case 0:
             imgSrc = new LivestreamSource(x);
@@ -67,14 +67,15 @@ public class ImageDataProcessor {
         }
 
        if(imgSrc != null) {
-            imgSrc.openConnection();
+            return imgSrc.openConnection();
         } else {
             CustomLogger.log(Level.WARNING, "Image source could not be set.");
+            return false;
         }
     }
 
-    public void closeConnection(){
-        imgSrc.closeConnection();
+    public boolean closeConnection(){
+        return imgSrc.closeConnection();
     }
 
     public void setFilePath(String filePath) {

@@ -29,7 +29,6 @@
                   <items>
                     <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
                     <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
-                    <MenuItem mnemonicParsing="false" onAction="#openVideoView" text="Video Test" />
                   </items>
                 </Menu>
               </items>
@@ -45,9 +44,14 @@
     <center>
         <TabPane fx:id="tabPane">
           <tabs>
-            <Tab closable="false" text="Tracking Data View">
+            <Tab closable="false" text="Tracking Data Input">
               <content>
-				<fx:include fx:id="trackingData" source="TrackingDataView.fxml" />
+		  <fx:include fx:id="trackingData" source="TrackingDataView.fxml" />
+              </content>
+            </Tab>
+            <Tab closable="false" text="Video Input">
+              <content>
+                  <fx:include source="VideoView.fxml" />
               </content>
             </Tab>
           </tabs>

@@ -11,6 +11,9 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,8 +24,11 @@ public class VideoController implements Controller {
     @FXML Button connectButton;
     @FXML Button startButton;
     @FXML Button stopButton;
+    @FXML TextField ivHeight;
+    @FXML TextField ivWidth;
     @FXML ImageView iv;
     @FXML ChoiceBox<String> sourceChoiceBox;
+    Label status;
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
 
@@ -62,6 +68,8 @@ public class VideoController implements Controller {
     @FXML
     public void startVideo() {
         if(dataManager.getDataProcessor() != null && dataManager.getDataProcessor().isConnected()) {
+        	// set iv size according to image size from source
+        	setInitialImageSize();
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().add(
                 new KeyFrame(Duration.millis(100),
@@ -77,6 +85,12 @@ public class VideoController implements Controller {
         timeline.stop();
     }
 
+    @FXML
+    public void setIvSize() {
+        iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
+        iv.setFitWidth(Double.parseDouble(ivWidth.getText()));
+    }
+
     private void update() {
         iv.setImage(dataManager.readImg());
     }
@@ -88,6 +102,12 @@ public class VideoController implements Controller {
         File file = fc.showOpenDialog(new Stage());
 
         return file;
+    }
+
+    private void setInitialImageSize() {
+    	Image i = dataManager.readImg();
+    	iv.setFitHeight(i.getHeight());
+    	iv.setFitWidth(i.getWidth());
     }
 
 }

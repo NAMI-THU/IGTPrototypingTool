@@ -25,7 +25,6 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
-    private VideoController videoController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,22 +66,6 @@ public class MainController implements Controller {
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
         } catch(IOException e) {
             CustomLogger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
-        }
-    }
-
-    @FXML
-    private void openVideoView() {
-        if (this.videoController != null) return;
-
-        try {
-            setupFXMLLoader("VideoView");
-            Tab t = new Tab("Video View", this.loader.load());
-
-            this.tabPane.getTabs().add(t);
-            this.tabPane.getSelectionModel().select(t);
-            t.setOnCloseRequest(e -> this.videoController = null);
-        } catch (Exception e) {
-            CustomLogger.log(Level.SEVERE, "Error loading Video View", e);
         }
     }
 

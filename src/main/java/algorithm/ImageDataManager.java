@@ -16,12 +16,12 @@ public class ImageDataManager {
 
     ImageDataProcessor dataProcessor = new ImageDataProcessor();
 
-    public void openConnection (int x){
-        dataProcessor.openConnection(x);
+    public boolean openConnection (int x){
+        return dataProcessor.openConnection(x);
     }
 
-    public void closeConnection(){
-        dataProcessor.closeConnection();
+    public boolean closeConnection(){
+        return dataProcessor.closeConnection();
     }
 
     public BufferedImage readBufImg() {

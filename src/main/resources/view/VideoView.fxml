@@ -6,14 +6,15 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TextField?>
 
 <AnchorPane prefHeight="546.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VideoController">
    <children>
-      <ImageView fx:id="iv" fitHeight="448.0" fitWidth="632.0" layoutX="24.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="iv" fitHeight="480" fitWidth="640" layoutX="24.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
       <Button fx:id="connectButton" layoutX="800.0" layoutY="41.0" mnemonicParsing="false" onAction="#connectToSource" prefHeight="25.0" prefWidth="63.0" text="Connect" />
       <Button fx:id="startButton" layoutX="800.0" layoutY="78.0" mnemonicParsing="false" onAction="#startVideo" prefHeight="25.0" prefWidth="63.0" text="Start" />
       <Button fx:id="stopButton" layoutX="800.0" layoutY="116.0" mnemonicParsing="false" onAction="#stopVideo" prefHeight="25.0" prefWidth="63.0" text="Stop" />
-      <ChoiceBox fx:id="sourceChoiceBox" value="Webcam" layoutX="725.0" layoutY="160.0" prefWidth="150.0">
+      <ChoiceBox fx:id="sourceChoiceBox" value="Webcam" layoutX="800.0" layoutY="160.0" prefWidth="150.0">
           <items>
 	          <FXCollections fx:factory="observableArrayList">
 	              <String fx:value="Webcam" />
@@ -23,5 +24,8 @@
 	          </FXCollections>
 		  </items>
       </ChoiceBox>
+      <TextField fx:id="ivWidth" layoutX="800.0" layoutY="241.0" />
+      <TextField fx:id="ivHeight" layoutX="800.0" layoutY="281.0" />
+      <Button onAction="#setIvSize" layoutX="800.0" layoutY="321.0" prefHeight="25.0" prefWidth="100.0" text="Set Image Size" />
    </children>
 </AnchorPane>
