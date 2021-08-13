@@ -24,6 +24,38 @@ public class ImageDataProcessor {
 
     AbstractImageSource imgSrc;
     String filePath;
+    int topCrop = 0;
+    int bottomCrop = 0;
+    int leftCrop = 0;
+    int rightCrop = 0;
+
+    public void setTopCrop(int topCrop) {
+        this.topCrop = topCrop;
+    }
+
+    public void setBottomCrop(int bottomCrop) {
+        this.bottomCrop = bottomCrop;
+    }
+
+    public void setLeftCrop(int leftCrop) {
+        this.leftCrop = leftCrop;
+    }
+
+    public void setRightCrop(int rightCrop) {
+        this.rightCrop = rightCrop;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    public boolean isConnected() {
+        return imgSrc != null ? imgSrc.isConnected : false;
+    }
 
     /**
      * Old method to read image data. Uses Java.awt.BufferedImage
@@ -36,14 +68,30 @@ public class ImageDataProcessor {
     }
 
     /**
-     * Reads an image from video source and converts the matrix to a JavaFx image
+     * Reads an image from video source and crops it.
+     * The matrix is then converted to a JavaFx image
      * @return Image
      */
     public Image readImg() {
+        Mat cropMat = this.cropMat(imgSrc.getNextMat());
         MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".png", imgSrc.getNextMat(), buffer);
+        Imgcodecs.imencode(".png", cropMat, buffer);
         Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
         return img;
+    }
+
+    /**
+     * Matrix is cropped from all four sides.
+     * @param oldMat Matrix that should be cropped
+     * @return cropped Matrix
+     */
+    private Mat cropMat(Mat oldMat) {
+        int rowStart = 0 + this.topCrop;
+        int rowEnd = oldMat.rows() - this.bottomCrop;
+        int colStart = 0 + this.leftCrop;
+        int colEnd = oldMat.cols() - this.rightCrop;
+
+        return oldMat.submat(rowStart, rowEnd, colStart, colEnd);
     }
 
     /**
@@ -78,15 +126,4 @@ public class ImageDataProcessor {
         return imgSrc.closeConnection();
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getFilePath() {
-        return this.filePath;
-    }
-
-    public boolean isConnected() {
-        return imgSrc != null ? imgSrc.isConnected : false;
-    }
 }

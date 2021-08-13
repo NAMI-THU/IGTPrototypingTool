@@ -11,7 +11,7 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,12 +28,18 @@ public class VideoController implements Controller {
     @FXML TextField ivWidth;
     @FXML ImageView iv;
     @FXML ChoiceBox<String> sourceChoiceBox;
-    Label status;
+    @FXML Spinner<Integer> topSpinner;
+    @FXML Spinner<Integer> bottomSpinner;
+    @FXML Spinner<Integer> rightSpinner;
+    @FXML Spinner<Integer> leftSpinner;
+
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.sourceChoiceBox.getSelectionModel().selectFirst();
+        this.setCropListener();
     }
 
     @Override
@@ -43,37 +49,40 @@ public class VideoController implements Controller {
         }
     }
 
+    /**
+     * The connection to an image source is created according to the selected
+     * option of the choice box.
+     */
     @FXML
     public void connectToSource() {
         switch(sourceChoiceBox.getValue()) {
-        case "Webcam":
+        case "Video Source":
             this.dataManager.openConnection(0);
             break;
         case "OpenIGTLink":
-        	this.dataManager.openConnection(1);
+            this.dataManager.openConnection(1);
             break;
-        case "Video file":
-        	File file = this.loadFile();
+        case "Video File":
+            File file = this.loadFile();
             if(file != null) {
                 this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
                 this.dataManager.openConnection(2);
             }
             break;
-        case "External device":
-        	break;
-
         }
     }
 
+    /**
+     * If an image source is connected, image transmission starts.
+     */
     @FXML
     public void startVideo() {
         if(dataManager.getDataProcessor() != null && dataManager.getDataProcessor().isConnected()) {
-        	// set iv size according to image size from source
-        	setInitialImageSize();
+            this.setInitialImageSize();
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().add(
                 new KeyFrame(Duration.millis(100),
-                         event -> update())
+                         event -> this.update())
             );
             timeline.play();
         }
@@ -85,6 +94,10 @@ public class VideoController implements Controller {
         timeline.stop();
     }
 
+    /**
+     * Change ImageView size. If preserveRatio is not explicitly set to true,
+     * height and width can be changed independently from each other.
+     */
     @FXML
     public void setIvSize() {
         iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
@@ -104,10 +117,34 @@ public class VideoController implements Controller {
         return file;
     }
 
+    /**
+     * Set size of imageview according to size of the first transmitted image
+     * and display values in text fields that are used to scale the image.
+     */
     private void setInitialImageSize() {
-    	Image i = dataManager.readImg();
-    	iv.setFitHeight(i.getHeight());
-    	iv.setFitWidth(i.getWidth());
+        Image i = dataManager.readImg();
+        iv.setFitHeight(i.getHeight());
+        iv.setFitWidth(i.getWidth());
+        ivHeight.setText(Double.toString(i.getHeight()));
+        ivWidth.setText(Double.toString(i.getWidth()));
     }
 
+    /**
+     * Add ChangeListeners to all spinners, so images from source are being cropped
+     * before they are displayed.
+     */
+    private void setCropListener() {
+        this.topSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            this.dataManager.getDataProcessor().setTopCrop(newValue.intValue());
+        });
+        this.bottomSpinner.valueProperty().addListener((o ,oldValue, newValue) -> {
+            this.dataManager.getDataProcessor().setBottomCrop(newValue.intValue());
+        });
+        this.rightSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            this.dataManager.getDataProcessor().setRightCrop(newValue.intValue());
+        });
+        this.leftSpinner.valueProperty().addListener((o ,oldValue, newValue) -> {
+            this.dataManager.getDataProcessor().setLeftCrop(newValue.intValue());
+        });
+    }
 }
