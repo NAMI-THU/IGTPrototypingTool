@@ -1,5 +1,5 @@
 /**
  * This package contains utility/helper classes for the
- * TrackingDataAnalysisTool project.
+ * IGTPrototypingTool project.
  */
 package util;

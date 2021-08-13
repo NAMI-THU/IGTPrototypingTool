@@ -25,7 +25,7 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(path));
         Parent root = loader.load();
-        primaryStage.setTitle("Tracking Data Analysis Tool");
+        primaryStage.setTitle("IGT Prototyping Tool");
         primaryStage.setMinHeight(300);
         primaryStage.setMinWidth(500);
         Scene scene = new Scene(root);

@@ -1,6 +1,6 @@
-# TrackingDataAnalysisTool
+# IGTPrototypingTool
 
-A tool to perform data analysis on tools exposed over an OpenIGTLink interface.
+A tool that provides basic functionalities for IGT. Tracking and image data can be loaded and displayed.
 
 # Building
 [![Build Status](https://travis-ci.org/Alfred-Franz/TrackingDataAnalysisTool.svg?branch=master)](https://travis-ci.org/Alfred-Franz/TrackingDataAnalysisTool) 
