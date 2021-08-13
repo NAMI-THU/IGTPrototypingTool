@@ -21,6 +21,8 @@ public class FilestreamSource extends AbstractImageSource {
     private VideoCapture vc;
     private String path;
     private int frameTotalNumber;
+    private int currentFrame;
+    private boolean repeatMode = true;
 
     /**
      * constructs a new FilestreamSource object with the transmitted
@@ -62,6 +64,12 @@ public class FilestreamSource extends AbstractImageSource {
     public Mat getNextMat() {
         fps = (int) vc.get(Videoio.CAP_PROP_FPS);
         vc.read(frameMatrix);
+        this.currentFrame++;
+
+        if(repeatMode && (this.currentFrame == this.frameTotalNumber)) {
+            vc.set(Videoio.CAP_PROP_POS_FRAMES, 0);
+            this.currentFrame = 0;
+        }
 
         if (frameMatrix.empty()) {
             CustomLogger.log(Level.WARNING, "!!! Nothing captured from video file !!!");
