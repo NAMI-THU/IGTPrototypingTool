@@ -3,7 +3,7 @@
 A tool that provides basic functionalities for IGT. Tracking and image data can be loaded and displayed.
 
 # Building
-[![Build Status](https://travis-ci.org/Alfred-Franz/TrackingDataAnalysisTool.svg?branch=master)](https://travis-ci.org/Alfred-Franz/TrackingDataAnalysisTool) 
+[![Build Status](https://app.travis-ci.com/Alfred-Franz/IGTPrototypingTool.svg?branch=master)](https://app.travis-ci.com/Alfred-Franz/IGTPrototypingTool)
 \
 To build, you can import this project as a Gradle project into your IDE, or you
 can run in a terminal:
