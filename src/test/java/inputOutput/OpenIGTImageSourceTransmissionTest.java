@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
  * @author team3
  *
  */
-class JUOpenIGTImageSourceTransmission {
+class OpenIGTImageSourceTransmissionTest {
 
     OIGTImageSource igtSrc;
 
