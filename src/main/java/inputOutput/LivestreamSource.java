@@ -31,7 +31,7 @@ public class LivestreamSource extends AbstractImageSource {
      */
     public LivestreamSource(int id) {
 //        OpenCV.loadLocally();
-    	System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         frameMatrix = new Mat();
         deviceID = id;
     }
