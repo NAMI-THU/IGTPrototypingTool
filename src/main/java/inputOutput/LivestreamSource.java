@@ -2,6 +2,7 @@ package inputOutput;
 
 import java.util.logging.Level;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.videoio.VideoCapture;
@@ -29,7 +30,8 @@ public class LivestreamSource extends AbstractImageSource {
      * @param id  describes which device is used
      */
     public LivestreamSource(int id) {
-        OpenCV.loadLocally();
+//        OpenCV.loadLocally();
+    	System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         frameMatrix = new Mat();
         deviceID = id;
     }
