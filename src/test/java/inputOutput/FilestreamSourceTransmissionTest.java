@@ -20,7 +20,7 @@ class FilestreamSourceTransmissionTest {
      */
     @BeforeEach
     void open() {
-        Filestream = new FilestreamSource("US_video.avi");
+        Filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
         Filestream.openConnection();
     }
 

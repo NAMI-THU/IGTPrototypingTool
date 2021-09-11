@@ -59,6 +59,8 @@ test {
     filter {
          // exclude openIGTLink connection and transmission tests in automated testing
          excludeTestsMatching "inputOutput.OpenIGTImageSource*"
+         // exclude livestream tests that connect to video device
+         excludeTestsMatching "inputOutput.LiveStream*"
     }
 }
 
