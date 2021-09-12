@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class FilestreamSourceConnectionTest {
 
-    String filepath = "src/test/resources/US-Video1.wmv";
+    String filepath = "src/test/resources/US-Video1.avi";
 
     /**
      * Adjust file path, if test is executed on linux.
