@@ -31,6 +31,8 @@ compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
 
+test.jvmArgs = ["--illegal-access=permit"]
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -60,7 +62,7 @@ test {
          // exclude openIGTLink connection and transmission tests in automated testing
          excludeTestsMatching "inputOutput.OpenIGTImageSource*"
          // exclude livestream tests that connect to video device
-         excludeTestsMatching "inputOutput.LiveStream*"
+         excludeTestsMatching "inputOutput.Livestream*"
     }
     testLogging {
         // set options for log level LIFECYCLE
