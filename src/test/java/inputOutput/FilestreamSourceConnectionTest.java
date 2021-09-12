@@ -2,16 +2,30 @@ package inputOutput;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class FilestreamSourceConnectionTest {
+
+    String filepath = "src/test/resources/US-Video1.wmv";
+
+    /**
+     * Adjust file path, if test is executed on linux.
+     */
+    @BeforeEach
+    void setFilepath() {
+        String os = System.getProperty("os.name");
+        if(os.contains("Linux")) {
+            filepath = "/".concat(filepath);
+        }
+    }
 
     /**
      * This method tests instantiating the class FilestreamSource.
      */
     @Test
     void testObject() {
-        FilestreamSource filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
+        FilestreamSource filestream = new FilestreamSource(filepath);
         assertTrue(filestream!=null);
     }
 
@@ -21,7 +35,7 @@ class FilestreamSourceConnectionTest {
      */
     @Test
     void testOpenConnection() {
-        FilestreamSource filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
+        FilestreamSource filestream = new FilestreamSource(filepath);
         assertTrue(filestream.openConnection());
     }
 
@@ -31,7 +45,7 @@ class FilestreamSourceConnectionTest {
      */
     @Test
     void testCloseConnection() {
-        FilestreamSource filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
+        FilestreamSource filestream = new FilestreamSource(filepath);
         filestream.openConnection();
         assertTrue(filestream.closeConnection());
         }

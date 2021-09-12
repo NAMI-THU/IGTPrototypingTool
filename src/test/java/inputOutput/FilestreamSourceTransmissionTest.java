@@ -14,13 +14,18 @@ import org.junit.jupiter.api.Test;
  */
 class FilestreamSourceTransmissionTest {
     FilestreamSource Filestream;
+    String filepath = "src/test/resources/US-Video1.wmv";
 
     /**
      * This method is called before each test. It creates an object of the class FilestreamSource and establishes a connection to the selected video file.
      */
     @BeforeEach
     void open() {
-        Filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
+        if(System.getProperty("os.name").contains("Linux")) {
+            filepath = "/".concat(filepath);
+        }
+
+        Filestream = new FilestreamSource(filepath);
         Filestream.openConnection();
     }
 
