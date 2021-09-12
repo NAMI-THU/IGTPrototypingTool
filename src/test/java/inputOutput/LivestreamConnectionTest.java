@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * @author sahin
  *
  */
-class LiveStreamConnectionTest {
+class LivestreamConnectionTest {
 
     /**
      * This method tests instantiating the class LivestreamSource.
@@ -18,7 +18,7 @@ class LiveStreamConnectionTest {
     @Test
     void testObject() {
         LivestreamSource livestream = new LivestreamSource(0);
-        assertTrue(livestream!=null);
+        assertTrue(livestream==null);
     }
 
     /**

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class FileStreamSourceConnectionTest {
+class FilestreamSourceConnectionTest {
 
     /**
      * This method tests instantiating the class FilestreamSource.
