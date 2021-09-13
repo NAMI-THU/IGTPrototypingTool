@@ -1,6 +1,9 @@
 package inputOutput;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -13,20 +16,19 @@ import org.junit.jupiter.api.Test;
  *
  */
 class FilestreamSourceTransmissionTest {
-    FilestreamSource Filestream;
-    String filepath = "src/test/resources/US-Video1.avi";
+    FilestreamSource filestream;
+    String filepath;
+    String seperator = File.separator;
 
     /**
      * This method is called before each test. It creates an object of the class FilestreamSource and establishes a connection to the selected video file.
      */
     @BeforeEach
     void open() {
-        if(System.getProperty("os.name").contains("Linux")) {
-            filepath = "/".concat(filepath);
-        }
-
-        Filestream = new FilestreamSource(filepath);
-        Filestream.openConnection();
+        String path = System.getProperty("user.dir");
+        filepath = path + seperator + "src" + seperator + "test" + seperator + "resources" + seperator + "US-Video1.avi";
+        filestream = new FilestreamSource(filepath);
+        filestream.openConnection();
     }
 
     /**
@@ -34,7 +36,7 @@ class FilestreamSourceTransmissionTest {
      */
     @Test
     void TestGetNextMat() {
-        assertNotNull(Filestream.getNextMat());
+        assertNotNull(filestream.getNextMat());
     }
 
     /**
@@ -42,7 +44,7 @@ class FilestreamSourceTransmissionTest {
      */
     @AfterEach
     void close() {
-        Filestream.closeConnection();
+        filestream.closeConnection();
     }
 
 }

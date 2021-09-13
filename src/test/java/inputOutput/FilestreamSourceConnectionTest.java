@@ -2,22 +2,23 @@ package inputOutput;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class FilestreamSourceConnectionTest {
 
-    String filepath = "src/test/resources/US-Video1.avi";
+    String filepath;
+    String seperator = File.separator;
 
     /**
-     * Adjust file path, if test is executed on linux.
+     * Use absolute path to load file
      */
     @BeforeEach
     void setFilepath() {
-        String os = System.getProperty("os.name");
-        if(os.contains("Linux")) {
-            filepath = "/".concat(filepath);
-        }
+        String path = System.getProperty("user.dir");
+        filepath = path + seperator + "src" + seperator + "test" + seperator + "resources" + seperator + "US-Video1.avi";
     }
 
     /**
