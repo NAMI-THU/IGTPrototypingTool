@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * @author sahin
  *
  */
-class LiveStreamConnectionTest {
+class LivestreamConnectionTest {
 
     /**
      * This method tests instantiating the class LivestreamSource.
