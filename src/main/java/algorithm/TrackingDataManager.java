@@ -1,12 +1,12 @@
 package algorithm;
 
 import inputOutput.Tool;
-import util.CustomLogger;
 import inputOutput.AbstractTrackingDataSource;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The class TrackingDataManager represents the interface between the GUI and
@@ -16,6 +16,7 @@ public class TrackingDataManager {
 
     List<ToolMeasure> toolMeasures = new ArrayList<>();
     private AbstractTrackingDataSource source;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public List<ToolMeasure> getToolMeasures() {
         return toolMeasures;
@@ -40,7 +41,7 @@ public class TrackingDataManager {
     public List<ToolMeasure> getNextData(int countToGetNext) {
 
         if (source == null) {
-            CustomLogger.log(Level.WARNING,"Tracking data source is not set. Aborting!");
+            logger.log(Level.WARNING,"Tracking data source is not set. Aborting!");
             return toolMeasures;
         }
 
@@ -49,7 +50,7 @@ public class TrackingDataManager {
             List<Tool> tools = source.getLastToolList();
 
             if (tools.isEmpty()) {
-                CustomLogger.log(Level.WARNING,"Toollist is empty.");
+                logger.log(Level.WARNING,"Toollist is empty.");
                 break;
             }
 

@@ -3,6 +3,7 @@ package algorithm;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -14,7 +15,6 @@ import inputOutput.FilestreamSource;
 import inputOutput.LivestreamSource;
 import inputOutput.OIGTImageSource;
 import javafx.scene.image.Image;
-import util.CustomLogger;
 
 /**
  * ImageDataProcessor accesses AbstractImageSource to control the connection and read images.
@@ -28,6 +28,7 @@ public class ImageDataProcessor {
     int bottomCrop = 0;
     int leftCrop = 0;
     int rightCrop = 0;
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     public void setTopCrop(int topCrop) {
         this.topCrop = topCrop;
@@ -117,7 +118,7 @@ public class ImageDataProcessor {
        if(imgSrc != null) {
             return imgSrc.openConnection();
         } else {
-            CustomLogger.log(Level.WARNING, "Image source could not be set.");
+            logger.log(Level.WARNING, "Image source could not be set.");
             return false;
         }
     }

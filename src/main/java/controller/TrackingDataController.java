@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import algorithm.DataService;
 import algorithm.Measurement;
@@ -28,7 +29,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import userinterface.TrackingDataDisplay;
-import util.CustomLogger;
 import javafx.stage.Stage;
 
 public class TrackingDataController implements Controller {
@@ -45,6 +45,7 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -75,9 +76,9 @@ public class TrackingDataController implements Controller {
         if (file != null) {
             try {
                 newSource = new CSVFileReader(file.getAbsolutePath());
-                CustomLogger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
+                logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
-                CustomLogger.log(Level.SEVERE, "Error loading CSV file", e);
+                logger.log(Level.SEVERE, "Error loading CSV file", e);
                 statusLabel.setText("Error loading CSV file");
             }
             newSource.setRepeatMode(true);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -14,7 +15,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.CustomLogger;
 
 public class MainController implements Controller {
 
@@ -25,6 +25,7 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,7 +46,7 @@ public class MainController implements Controller {
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.measurementController.close());
         } catch(IOException e) {
-            CustomLogger.log(Level.SEVERE, "Error loading Measurement View", e);
+            logger.log(Level.SEVERE, "Error loading Measurement View", e);
         }
     }
 
@@ -65,7 +66,7 @@ public class MainController implements Controller {
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
         } catch(IOException e) {
-            CustomLogger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
+            logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
         }
     }
 
@@ -84,7 +85,7 @@ public class MainController implements Controller {
             this.settingsController = this.loader.getController();
             newWindow.setOnCloseRequest(e -> this.settingsController.close());
         } catch(IOException e) {
-            CustomLogger.log(Level.SEVERE, "Error loading Settings View", e);
+            logger.log(Level.SEVERE, "Error loading Settings View", e);
         }
     }
 

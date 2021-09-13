@@ -4,12 +4,12 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 
 import Jama.Matrix;
-import util.CustomLogger;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.network.GenericIGTLinkClient;
@@ -34,6 +34,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
     private long time2;
     private long timeRes;
     public long fps;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private List<ToolData> toolDataList = Collections.synchronizedList(new LinkedList<ToolData>());
     private boolean exit = true;
@@ -53,7 +54,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
             this.client.addIOpenIgtOnPacket(this);
             this.toolDataList = Collections.synchronizedList(new LinkedList<>());
         } catch (Exception e) {
-            CustomLogger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
+            logger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
         this.time1 = System.currentTimeMillis();
     }
@@ -78,7 +79,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
             client.addIOpenIgtOnPacket(this);
             this.toolDataList = Collections.synchronizedList(new LinkedList<>());
         } catch (Exception e) {
-            CustomLogger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
+            logger.log(Level.SEVERE, "Error establishing connection to IGTLink server.", e);
         }
         this.time1 = System.currentTimeMillis();
     }

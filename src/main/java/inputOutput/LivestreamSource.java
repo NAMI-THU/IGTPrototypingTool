@@ -1,6 +1,7 @@
 package inputOutput;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
@@ -8,7 +9,6 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 import nu.pattern.OpenCV;
-import util.CustomLogger;
 
 /**
  * provides the livestream footage from a webcam, ultrasound device or any other
@@ -21,6 +21,7 @@ public class LivestreamSource extends AbstractImageSource {
 
     private VideoCapture vc;
     private int deviceID = 0;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
      * constructs a new LivestreamSource object with the transmitted
@@ -45,10 +46,10 @@ public class LivestreamSource extends AbstractImageSource {
         vc = new VideoCapture(deviceID);
 
         if (vc.isOpened()) {
-            CustomLogger.log(Level.INFO,"found VideoSource " + vc.toString());
+            logger.log(Level.INFO,"found VideoSource " + vc.toString());
             isConnected = true;
         } else {
-            CustomLogger.log(Level.WARNING,"!!! Did not connect to camera !!!");
+            logger.log(Level.WARNING,"!!! Did not connect to camera !!!");
             isConnected = false;
         }
 
@@ -65,7 +66,7 @@ public class LivestreamSource extends AbstractImageSource {
         vc.read(frameMatrix);
 
         if (frameMatrix.empty()) {
-            CustomLogger.log(Level.WARNING,"!!! Nothing captured from webcam !!!");
+            logger.log(Level.WARNING,"!!! Nothing captured from webcam !!!");
         }
 
         return frameMatrix;

@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme3.math.Quaternion;
 
@@ -29,7 +30,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import util.CustomLogger;
 import util.FormatManager;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -43,6 +43,7 @@ public class MeasurementController implements Controller {
     private Map<String, ToolMeasure> storedMeasurements;
     private TrackingDataController trackingDataController;
     private Label statusLabel;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML ListView<String> toolList, measurementList;
     @FXML ChoiceBox<String> measurementTyp;
@@ -96,7 +97,7 @@ public class MeasurementController implements Controller {
                     toolList.getItems().add(t.getName());
                 }
             } catch (IOException e) {
-                CustomLogger.log(Level.WARNING, "Error reading CSV file");
+                logger.log(Level.WARNING, "Error reading CSV file");
                 statusLabel.setText("Error reading CSV file");
             }
         }
@@ -187,7 +188,7 @@ public class MeasurementController implements Controller {
                     if(avgMes.getRotationError() != null) {
                         lCalcJR.setText(FormatManager.toString(avgMes.getRotationError()) + " mm");
                     } else {
-                        CustomLogger.log(Level.WARNING, "Rotation Error cannot be calculated.");
+                        logger.log(Level.WARNING, "Rotation Error cannot be calculated.");
                     }
                 }
                 // Correctness calculation needs two measurements
@@ -223,7 +224,7 @@ public class MeasurementController implements Controller {
                     }
                 }
             } catch (IllegalArgumentException e) {
-                CustomLogger.log(Level.WARNING, "Calculation error", e);
+                logger.log(Level.WARNING, "Calculation error", e);
                 statusLabel.setText("Calculation error");
             }
         }
@@ -248,7 +249,7 @@ public class MeasurementController implements Controller {
                 this.updateMeasurementList();
                 measurementCounter++;
             } catch (Exception e) {
-                CustomLogger.log(Level.WARNING, "Error when adding a measurement", e);
+                logger.log(Level.WARNING, "Error when adding a measurement", e);
             }
         }
     }

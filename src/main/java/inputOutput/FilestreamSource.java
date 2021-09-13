@@ -1,6 +1,7 @@
 package inputOutput;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
@@ -8,7 +9,6 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 import nu.pattern.OpenCV;
-import util.CustomLogger;
 
 /**
  * provides the footage from a file with these formats: mp4, avi, mkv, mov, 3GP, mpg,
@@ -23,6 +23,7 @@ public class FilestreamSource extends AbstractImageSource {
     private int frameTotalNumber;
     private int currentFrame;
     private boolean repeatMode = true;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
      * constructs a new FilestreamSource object with the transmitted
@@ -47,11 +48,11 @@ public class FilestreamSource extends AbstractImageSource {
         vc = new VideoCapture(path);
 
         if (vc.isOpened()) {
-            CustomLogger.log(Level.INFO, "found VideoSource " + vc.toString());
+            logger.log(Level.INFO, "found VideoSource " + vc.toString());
             isConnected = true;
             frameTotalNumber = (int) vc.get(Videoio.CAP_PROP_FRAME_COUNT);
         } else {
-            CustomLogger.log(Level.WARNING, "!!! Did not find video file !!!");
+            logger.log(Level.WARNING, "!!! Did not find video file !!!");
         }
         return isConnected;
     }
@@ -72,7 +73,7 @@ public class FilestreamSource extends AbstractImageSource {
         }
 
         if (frameMatrix.empty()) {
-            CustomLogger.log(Level.WARNING, "!!! Nothing captured from video file !!!");
+            logger.log(Level.WARNING, "!!! Nothing captured from video file !!!");
         }
 
         return frameMatrix;
