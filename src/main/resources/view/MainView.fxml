@@ -29,6 +29,7 @@
                   <items>
                     <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
                     <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
+                    <MenuItem mnemonicParsing="false" onAction="#openUSNavigationView" text="US Navigation" />
                   </items>
                 </Menu>
               </items>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+
+<ScrollPane prefHeight="451.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.USNavigationController">
+<content>
+<AnchorPane>
+   <children>
+       <Label>US Navigation</Label>
+   </children>
+</AnchorPane>
+</content>
+</ScrollPane>

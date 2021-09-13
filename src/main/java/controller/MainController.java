@@ -70,6 +70,18 @@ public class MainController implements Controller {
     }
 
     @FXML
+    private void openUSNavigationView() {
+        try {
+            setupFXMLLoader("USNavigationView");
+            Tab t = new Tab("US Navigation View", this.loader.load());
+            this.tabPane.getTabs().add(t);
+            this.tabPane.getSelectionModel().select(t);
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Error loading US Navigation View", e);
+        }
+    }
+
+    @FXML
     private void openSettings() {
         try {
             setupFXMLLoader("SettingsView");
