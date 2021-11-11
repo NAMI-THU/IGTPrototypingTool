@@ -126,7 +126,7 @@ public class ToolMeasure {
         Quaternion lastRotation = measurements.get(measurements.size() - 1)
                 .getRotation();
 
-        float positionAtTime = 1 / measurements.size();
+        float positionAtTime = 1f / measurements.size();
 
         return firstRotation.slerp(firstRotation, lastRotation, positionAtTime);
     }
