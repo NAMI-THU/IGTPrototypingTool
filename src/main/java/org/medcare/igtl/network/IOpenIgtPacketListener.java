@@ -71,7 +71,6 @@ public interface IOpenIgtPacketListener {
      *
      * @param name  A string of what type of data to get
      * @param image the image
-     * @param t     A transform of where the image is
      */
     void onRxImage(String name, ImageMessage image);
 

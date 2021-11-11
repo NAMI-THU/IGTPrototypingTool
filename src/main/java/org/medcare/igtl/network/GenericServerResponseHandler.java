@@ -5,7 +5,7 @@ import org.medcare.igtl.util.Header;
 
 
 public class GenericServerResponseHandler extends MessageHandler {
-    private IOpenIgtPacketListener server;
+    private final IOpenIgtPacketListener server;
     public OpenIGTMessage openIGTMessage;
 
     public GenericServerResponseHandler(Header header, byte[] body, ServerThread serverThread, IOpenIgtPacketListener server) {

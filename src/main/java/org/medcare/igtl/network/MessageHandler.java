@@ -23,7 +23,7 @@ public abstract class MessageHandler {
     private byte[] body;
     private Header header;
     public ServerThread serverThread;
-    public ArrayList<String> capabilityList = new ArrayList<String>();
+    public ArrayList<String> capabilityList = new ArrayList<>();
 
     /***************************************************************************
      * Default MessageQueueManager constructor.

@@ -29,14 +29,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class RequestQueueManager extends Thread {
-    private static String VERSION = "0.1a";
+    private static final String VERSION = "0.1a";
 
     private long sleep;
-    public ConcurrentLinkedQueue<byte[]> openIGT_Queue = new ConcurrentLinkedQueue<byte[]>();
+    public ConcurrentLinkedQueue<byte[]> openIGT_Queue = new ConcurrentLinkedQueue<>();
     private boolean alive = true;
     private OpenIGTClient openIGTClient = null;
 
-    private ErrorManager errorManager;
+    private final ErrorManager errorManager;
 
     /***************************************************************************
      * Default RequestQueueManager constructor.

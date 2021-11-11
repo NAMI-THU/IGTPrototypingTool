@@ -176,7 +176,6 @@ public abstract class OpenIGTServer {
     /**
      * Sends a message up the link
      *
-     * @param messageHandler
      * @throws Exception
      */
     public void sendMessage(OpenIGTMessage message) throws Exception {
@@ -224,7 +223,6 @@ public abstract class OpenIGTServer {
     }
 
     /**
-     * @param killAlive the killAlive to set
      */
     public void setKeepAlive(boolean keepAlive) {
         this.keepAlive = keepAlive;

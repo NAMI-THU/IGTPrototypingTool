@@ -1,9 +1,12 @@
 package org.medcare.igtl.util;
 
+import java.io.Serial;
+
 public class CrcException extends RuntimeException {
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 8854925645976405597L;
 
     /**

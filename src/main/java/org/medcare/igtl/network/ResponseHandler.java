@@ -26,7 +26,7 @@ public abstract class ResponseHandler {
     private byte[] body;
     private Header header;
     private OpenIGTClient openIGTClient;
-    private ArrayList<String> capabilityList = new ArrayList<String>();
+    private ArrayList<String> capabilityList = new ArrayList<>();
 
     /***************************************************************************
      * Default ResponseHandler constructor.
