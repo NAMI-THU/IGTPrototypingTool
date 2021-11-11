@@ -46,13 +46,13 @@ public class ThrombectomyController implements Controller {
     @FXML private AnchorPane positionDetailBox;
     private List<TrackingDataDisplay> toolDisplayList;
     private TrackingDataController trackingDataController;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private Label statusLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.toolDisplayList = new ArrayList<TrackingDataDisplay>();
+        this.toolDisplayList = new ArrayList<>();
     }
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
@@ -214,9 +214,9 @@ public class ThrombectomyController implements Controller {
                 double y = measurements.get(measurements.size() - i).getPoint().getY();
                 double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
 
-                display.addDataToSeries1(new XYChart.Data<Double, Double>(x,y));
-                display.addDataToSeries2(new XYChart.Data<Double, Double>(x,z));
-                display.addDataToSeries3(new XYChart.Data<Double, Double>(z,y));
+                display.addDataToSeries1(new XYChart.Data<>(x, y));
+                display.addDataToSeries2(new XYChart.Data<>(x, z));
+                display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
     }
@@ -224,7 +224,6 @@ public class ThrombectomyController implements Controller {
     /**
      * check if display data exists for this tool
      * create display data if it does not exist
-     * @param toolname to identify tool
      */
     @SuppressWarnings("unchecked")
     private TrackingDataDisplay checkToolDisplayList(String toolName) {

@@ -21,7 +21,7 @@ public class ServerSample implements IOpenIgtPacketListener {
     HashMap<String, Object> IGTData = null;
 
     public ServerSample() {
-        IGTData = new HashMap<String, Object>();
+        IGTData = new HashMap<>();
 
         IGTData.put("theta", 0);
         IGTData.put("insertion_depth", 2.0);

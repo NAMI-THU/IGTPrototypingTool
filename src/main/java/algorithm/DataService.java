@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public class DataService {
-    private TrackingDataProcessor dataProcessor;
+    private final TrackingDataProcessor dataProcessor;
     private TrackingDataManager dataManager;
 
     public DataService() {
@@ -52,7 +52,6 @@ public class DataService {
      * searched tool is the same as in the list then the tool will be
      * returned, if there is no tool with the name, the exception is thrown.
      *
-     * @param Name - name from a tool of type String
      * @return toolMeasure - of type ToolMeasure
      * @exception
      */
@@ -71,7 +70,6 @@ public class DataService {
      * This method checks if the tool exists and returns the average
      * measurement of all collected data of that tool
      *
-     * @param Name name of a tool of type String
      * @return average measurement of that tool
      * @throws throws an exception if the tool was not found
      */

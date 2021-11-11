@@ -5,7 +5,7 @@ import java.util.List;
 
 public class BoxPlot {
 
-    private List<Double> errors = new ArrayList<Double>();
+    private List<Double> errors = new ArrayList<>();
     private double min;
     private double max;
     private double q1;

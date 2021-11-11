@@ -21,7 +21,7 @@ public class LivestreamSource extends AbstractImageSource {
 
     private VideoCapture vc;
     private int deviceID = 0;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
      * constructs a new LivestreamSource object with the transmitted

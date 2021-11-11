@@ -9,24 +9,24 @@ import javafx.scene.chart.XYChart;
 @SuppressWarnings("rawtypes")
 public class TrackingDataDisplay {
 
-    private String toolName;
-    private XYChart.Series<Double, Double> dataSeries1;
-    private XYChart.Series<Double, Double> dataSeries2;
-    private XYChart.Series<Double, Double> dataSeries3;
+    private final String toolName;
+    private final XYChart.Series<Double, Double> dataSeries1;
+    private final XYChart.Series<Double, Double> dataSeries2;
+    private final XYChart.Series<Double, Double> dataSeries3;
 
     public TrackingDataDisplay(String toolName) {
         this.toolName = toolName;
-        dataSeries1 = new XYChart.Series<Double, Double>();
-        dataSeries2 = new XYChart.Series<Double, Double>();
-        dataSeries3 = new XYChart.Series<Double, Double>();
+        dataSeries1 = new XYChart.Series<>();
+        dataSeries2 = new XYChart.Series<>();
+        dataSeries3 = new XYChart.Series<>();
         // set names, so labels display tool name
         dataSeries1.setName(toolName);
         dataSeries2.setName(toolName);
         dataSeries3.setName(toolName);
         // Series need to have a data set so name and symbol are set correctly
-        dataSeries1.getData().add(new XYChart.Data<Double, Double>(0.0,0.0));
-        dataSeries2.getData().add(new XYChart.Data<Double, Double>(0.0,0.0));
-        dataSeries3.getData().add(new XYChart.Data<Double, Double>(0.0,0.0));
+        dataSeries1.getData().add(new XYChart.Data<>(0.0, 0.0));
+        dataSeries2.getData().add(new XYChart.Data<>(0.0, 0.0));
+        dataSeries3.getData().add(new XYChart.Data<>(0.0, 0.0));
     }
 
     public String getToolName() {

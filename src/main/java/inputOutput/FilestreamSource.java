@@ -19,11 +19,11 @@ import nu.pattern.OpenCV;
 public class FilestreamSource extends AbstractImageSource {
 
     private VideoCapture vc;
-    private String path;
+    private final String path;
     private int frameTotalNumber;
     private int currentFrame;
-    private boolean repeatMode = true;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final boolean repeatMode = true;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
      * constructs a new FilestreamSource object with the transmitted

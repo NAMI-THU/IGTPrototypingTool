@@ -23,13 +23,13 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
     private double rotation_z;
     private String name;
     private double timestamp;
-    private double valid = 1;
+    private final double valid = 1;
 
     @Override
     public ArrayList<Tool> update() {
         if (myOpenIGTLinkConnection == null) {
             myOpenIGTLinkConnection = new OpenIGTLinkConnection();
-            toolList = new ArrayList<Tool>();
+            toolList = new ArrayList<>();
         }
         List<OpenIGTLinkConnection.ToolData> rawToolList = myOpenIGTLinkConnection.getToolDataList();
         synchronized (rawToolList) {

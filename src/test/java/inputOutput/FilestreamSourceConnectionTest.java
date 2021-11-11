@@ -12,7 +12,7 @@ class FilestreamSourceConnectionTest {
     @Test
     void testObject() {
         FilestreamSource filestream = new FilestreamSource("src/test/resources/US-Video1.wmv");
-        assertTrue(filestream!=null);
+        assertNotNull(filestream);
     }
 
     /**

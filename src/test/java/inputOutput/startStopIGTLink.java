@@ -12,11 +12,11 @@ public class startStopIGTLink extends JFrame implements ActionListener {
     private final ButtonGroup buttonGroup = new ButtonGroup();
     JRadioButton rdbtnCsvFileReader;
     JRadioButton rdbtnOpenIgtLink;
-    private JButton start = new JButton("Start");
-    private JButton stop = new JButton("Stop");
-    private JButton close = new JButton("Close Application");
-    private JButton exitConnection = new JButton("Exit Connection");
-    private JLabel label = new JLabel("Simple Test Application");
+    private final JButton start = new JButton("Start");
+    private final JButton stop = new JButton("Stop");
+    private final JButton close = new JButton("Close Application");
+    private final JButton exitConnection = new JButton("Exit Connection");
+    private final JLabel label = new JLabel("Simple Test Application");
     private JTextField ipAddress;
     private JTextField filename;
     private Timer timer;

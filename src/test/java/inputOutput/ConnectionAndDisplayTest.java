@@ -5,7 +5,7 @@ package inputOutput;
  */
 
 public class ConnectionAndDisplayTest extends Thread {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         TestFrame.startTestMainCV1();
     }
 

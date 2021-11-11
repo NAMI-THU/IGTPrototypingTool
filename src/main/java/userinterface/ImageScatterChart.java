@@ -44,7 +44,7 @@ public class ImageScatterChart extends ScatterChart<Number, Number> {
             iv.setOnMouseDragged(dragImage());
             // bind y to x scale, so image stays proportional
             iv.scaleYProperty().bind(iv.scaleXProperty());
-            setOnMouseEntered(e -> {setOnScroll(zoom());});
+            setOnMouseEntered(e -> setOnScroll(zoom()));
         }
     }
 

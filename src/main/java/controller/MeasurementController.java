@@ -39,11 +39,11 @@ public class MeasurementController implements Controller {
     private boolean timerOn = false;
     private AbstractTrackingDataSource source; // continuous tracking
     private AbstractTrackingDataSource sourceFileReader;
-    private DataService dataS = new DataService();
+    private final DataService dataS = new DataService();
     private Map<String, ToolMeasure> storedMeasurements;
     private TrackingDataController trackingDataController;
     private Label statusLabel;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML ListView<String> toolList, measurementList;
     @FXML ChoiceBox<String> measurementTyp;
@@ -55,7 +55,7 @@ public class MeasurementController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        storedMeasurements = new LinkedHashMap<String, ToolMeasure>();
+        storedMeasurements = new LinkedHashMap<>();
     }
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
@@ -156,15 +156,11 @@ public class MeasurementController implements Controller {
         switch(measurementTyp.getValue()) {
             case "Correctness":
                 quaternionPane.getChildren().forEach(
-                    (item) -> {
-                        item.setDisable(false);
-                    });
+                    (item) -> item.setDisable(false));
                 break;
             case "Jitter":
                 quaternionPane.getChildren().forEach(
-                    (item) -> {
-                        item.setDisable(true);
-                    });
+                    (item) -> item.setDisable(true));
                 break;
         }
     }

@@ -34,11 +34,11 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
     private long time2;
     private long timeRes;
     public long fps;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    private List<ToolData> toolDataList = Collections.synchronizedList(new LinkedList<ToolData>());
-    private boolean exit = true;
-    private boolean stop = true;
+    private List<ToolData> toolDataList = Collections.synchronizedList(new LinkedList<>());
+    private final boolean exit = true;
+    private final boolean stop = true;
 
     /**
      * This constructor establishes a connection to a OpenIGTLink server using the default ip-address and port.
@@ -215,7 +215,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
         return this.toolDataList;
     }
 
-    public class ToolData {
+    public static class ToolData {
         String name;
         TransformNR t;
     }

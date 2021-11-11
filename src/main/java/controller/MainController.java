@@ -25,7 +25,7 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
