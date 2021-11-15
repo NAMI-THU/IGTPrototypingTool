@@ -132,7 +132,6 @@ public class GenericIGTLinkServer extends OpenIGTServer implements IOpenIgtPacke
      *
      * @param name  A string of what type of data to get
      * @param image the image
-     * @param t     A TransformNR of where the image is
      */
     public void onRxImage(String name, ImageMessage image) {
         for (IOpenIgtPacketListener l : listeners) {

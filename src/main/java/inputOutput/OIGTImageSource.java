@@ -32,7 +32,7 @@ public class OIGTImageSource extends AbstractImageSource {
     }
 
     /**
-     * This method is starting the connection by creating an object of OpenIGTConnection. A </code>ip</code> address and <code>port</code> number is necessary. <code>Thread.sleep</code> is needed here to wait (2 seconds) for the connection to establish.
+     * This method is starting the connection by creating an object of OpenIGTConnection. A <code>ip</code> address and <code>port</code> number is necessary. <code>Thread.sleep</code> is needed here to wait (2 seconds) for the connection to establish.
      * The height and width of the image adapts here to the given dimensions from MITK by usig the <code>getDimensions</code> method from the OpenIGT library. The parameter 0 returns the width, 1 returns the height and 2 returns the type.
      *
      * @return whether the connection was successful or not
@@ -58,7 +58,7 @@ public class OIGTImageSource extends AbstractImageSource {
     }
 
     /**
-     * This method is for closing the connection. It calls the <code>stop()</code method from OpenIGTConnection
+     * This method is for closing the connection. It calls the <code>stop()</code> method from OpenIGTConnection
      *
      * @return <code>exit</code> is true if closing the connection was successful
      */

@@ -53,7 +53,7 @@ public class DataService {
      * returned, if there is no tool with the name, the exception is thrown.
      *
      * @return toolMeasure - of type ToolMeasure
-     * @exception
+     * @exception Exception if tool is not found
      */
 
     public ToolMeasure getToolByName(String name) throws Exception {
@@ -71,7 +71,7 @@ public class DataService {
      * measurement of all collected data of that tool
      *
      * @return average measurement of that tool
-     * @throws throws an exception if the tool was not found
+     * @throws Exception an exception if the tool was not found
      */
     public AverageMeasurement getAverageMeasurement(String name)
             throws Exception {

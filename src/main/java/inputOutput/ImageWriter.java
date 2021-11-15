@@ -23,7 +23,7 @@ public class ImageWriter {
     private int fps;
 
     /**
-     * This method needs a filename, frames-per-second and width & height of the matrix for creating an object of VideoWriter.
+     * This method needs a filename, frames-per-second and width and height of the matrix for creating an object of VideoWriter.
      * @param path
      * @param fps
      * @param width
