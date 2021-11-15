@@ -50,6 +50,7 @@ public class PositionMessage extends OpenIGTMessage {
      * **
      *
      * @param deviceName  Device Name
+     * @param quaternion2
      * @param ds
      **/
 

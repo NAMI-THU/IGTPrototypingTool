@@ -48,8 +48,8 @@ public abstract class OpenIGTClient extends Thread {
     private InputStream instr;
     private ResponseQueueManager responseQueue = null;
     private boolean alive = true;
-    private final String host;
-    private final int port;
+    private String host;
+    private int port;
     private Status status;
 
     /***************************************************************************

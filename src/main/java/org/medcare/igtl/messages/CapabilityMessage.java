@@ -33,7 +33,7 @@ import java.util.Iterator;
 public class CapabilityMessage extends OpenIGTMessage {
 
     public static int IGTL_CAPABILITY_TYPE_LENGTH = 12;
-    ArrayList<String> capabilityList = new ArrayList<>();
+    ArrayList<String> capabilityList = new ArrayList<String>();
     private byte[] capability_data;
 
     /**

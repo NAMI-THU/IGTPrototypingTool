@@ -31,13 +31,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class MessageQueueManager extends Thread {
-    private static final String VERSION = "0.1a";
+    private static String VERSION = "0.1a";
 
     private long sleep;
-    private ConcurrentLinkedQueue<MessageHandler> openIGT_Queue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<MessageHandler> openIGT_Queue = new ConcurrentLinkedQueue<MessageHandler>();
     private boolean alive = true;
     ServerThread serverThread;
-    private final ErrorManager errorManager;
+    private ErrorManager errorManager;
 
     /***************************************************************************
      * Default MessageQueueManager constructor.

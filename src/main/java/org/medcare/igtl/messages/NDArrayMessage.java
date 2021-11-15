@@ -32,20 +32,20 @@ import java.util.ArrayList;
  */
 public class NDArrayMessage extends OpenIGTMessage {
 
-    private static final byte TYPE_INT8 = 2;
-    private static final byte TYPE_UINT8 = 3;
-    private static final byte TYPE_INT16 = 4;
-    private static final byte TYPE_UINT16 = 5;
-    private static final byte TYPE_INT32 = 6;
-    private static final byte TYPE_UINT32 = 7;
-    private static final byte TYPE_FLOAT32 = 10;
-    private static final byte TYPE_FLOAT64 = 11;
-    private static final byte TYPE_COMPLEX = 13;
+    private static byte TYPE_INT8 = 2,
+            TYPE_UINT8 = 3,
+            TYPE_INT16 = 4,
+            TYPE_UINT16 = 5,
+            TYPE_INT32 = 6,
+            TYPE_UINT32 = 7,
+            TYPE_FLOAT32 = 10,
+            TYPE_FLOAT64 = 11,
+            TYPE_COMPLEX = 13;
     private byte type;
     private byte dim;
     private short[] size;
     private byte[] byteData;
-    private ArrayList<Float> data;
+    private ArrayList data;
 
     /**
      * ** Constructor to be used to create message to send them with this
@@ -97,7 +97,7 @@ public class NDArrayMessage extends OpenIGTMessage {
         this.size = new short[dim];
         this.size[0] = (short) data.length;
 
-        this.data = new ArrayList<>();
+        this.data = new ArrayList<Float>();
 
         BytesArray bytesArray = new BytesArray();
         for (int i = 0; i < data.length; i++) {
@@ -109,7 +109,7 @@ public class NDArrayMessage extends OpenIGTMessage {
     }
 
     public void set1D_FloatData() {
-        this.data = new ArrayList<>();
+        this.data = new ArrayList<Float>();
 
         BytesArray bytesArray = new BytesArray();
         bytesArray.putBytes(byteData);
@@ -122,7 +122,7 @@ public class NDArrayMessage extends OpenIGTMessage {
     public float[] get1DFloatData() {
         float[] floatData = new float[data.size()];
         for (int i = 0; i < data.size(); i++) {
-            floatData[i] = data.get(i);
+            floatData[i] = ((Float) data.get(i)).floatValue();
         }
         return floatData;
     }

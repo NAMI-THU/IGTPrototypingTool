@@ -33,13 +33,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class ResponseQueueManager extends Thread {
-    private static final String VERSION = "0.1a";
+    private static String VERSION = "0.1a";
 
     private long sleep;
-    public ConcurrentLinkedQueue<ResponseHandler> openIGT_Queue = new ConcurrentLinkedQueue<>();
+    public ConcurrentLinkedQueue<ResponseHandler> openIGT_Queue = new ConcurrentLinkedQueue<ResponseHandler>();
     private boolean alive = true;
 
-    private final ErrorManager errorManager;
+    private ErrorManager errorManager;
 
     /***************************************************************************
      * Default ResponseQueueManager constructor.

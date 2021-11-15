@@ -199,6 +199,7 @@ public class TransformMessage extends OpenIGTMessage {
     /**
      * ** To set Image origin
      *
+     * @param origin **
      */
     public void setPosition(double a, double b, double c) {
         double[] o = {a, b, c};
@@ -218,8 +219,10 @@ public class TransformMessage extends OpenIGTMessage {
         }
         double[] o = new double[origin.length];
         //System.out.print("\nGetting Origins: [");
-        //System.out.print(origin[i]+" ");
-        System.arraycopy(origin, 0, o, 0, origin.length);
+        for (int i = 0; i < origin.length; i++) {
+            o[i] = origin[i];
+            //System.out.print(origin[i]+" ");
+        }
         //System.out.print("]\n");
 
 //            for(int i = 0; i < o.length; i++){
@@ -249,8 +252,10 @@ public class TransformMessage extends OpenIGTMessage {
             origin = new double[3];
         }
         //System.out.print("\nSetting Origins: [");
-        //System.out.print(origin[i]+" ");
-        System.arraycopy(o, 0, origin, 0, origin.length);
+        for (int i = 0; i < origin.length; i++) {
+            origin[i] = o[i];
+            //System.out.print(origin[i]+" ");
+        }
         //System.out.print("]\n");
     }
 
@@ -261,8 +266,10 @@ public class TransformMessage extends OpenIGTMessage {
      */
     void setRotationMatrix(double[][] normals) {
         for (int i = 0; i < 3; i++) {
-            //  Log.debug("setting normals...");
-            System.arraycopy(normals[i], 0, this.rotationMatrixArray[i], 0, 3);
+            for (int j = 0; j < 3; j++) {
+                this.rotationMatrixArray[i][j] = normals[i][j];
+                //  Log.debug("setting normals...");
+            }
         }
     }
 

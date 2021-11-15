@@ -39,9 +39,9 @@ import java.util.Arrays;
  */
 public class ServerThread extends Thread {
     private java.net.Socket socket = null;
-    private final OpenIGTServer openIGTServer;
-    private final OutputStream outstr;
-    private final InputStream instr;
+    private OpenIGTServer openIGTServer;
+    private OutputStream outstr;
+    private InputStream instr;
     private MessageQueueManager messageQueue = null;
     private boolean alive;
     public ErrorManager errorManager;

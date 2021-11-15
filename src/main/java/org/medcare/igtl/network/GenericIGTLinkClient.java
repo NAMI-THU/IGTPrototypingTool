@@ -14,7 +14,7 @@ import java.util.Queue;
 
 
 public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacketListener {
-    ArrayList<IOpenIgtPacketListener> listeners = new ArrayList<>();
+    ArrayList<IOpenIgtPacketListener> listeners = new ArrayList<IOpenIgtPacketListener>();
     Sender s = new Sender();
 
     public GenericIGTLinkClient(String hostName, int port) throws Exception {
@@ -133,6 +133,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
      *
      * @param name  A string of what type of data to get
      * @param image the image
+     * @param t     A transform of where the image is
      */
     public void onRxImage(String name, ImageMessage image) {
         for (IOpenIgtPacketListener l : listeners) {
@@ -204,7 +205,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
 
     public class Sender extends Thread {
         TransformMessage curPos = null;
-        private final Queue<OpenIGTMessage> messageQueue = new LinkedList<>();
+        private Queue<OpenIGTMessage> messageQueue = new LinkedList<OpenIGTMessage>();
 
         public synchronized void onTaskSpaceUpdate(PositionMessage msg) {
             messageQueue.add(msg);
