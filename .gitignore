@@ -3,6 +3,7 @@
 
 # Log file
 *.log
+*.log.lck
 
 # BlueJ files
 *.ctxt
@@ -39,4 +40,3 @@ hs_err_pid*
 
 # Gradle 
 .gradle
-logging.log.lck
