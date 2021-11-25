@@ -16,7 +16,7 @@ public class TrackingDataManager {
 
     List<ToolMeasure> toolMeasures = new ArrayList<>();
     private AbstractTrackingDataSource source;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public List<ToolMeasure> getToolMeasures() {
         return toolMeasures;

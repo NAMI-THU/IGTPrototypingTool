@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
  * @author
  */
 public class CSVFileReader extends AbstractTrackingDataSource {
-    private static int exceptionNumber = 0;
+    private static final int exceptionNumber = 0;
     private int recordNumber = 0;
-    private List<String> toolNames;
+    private final List<String> toolNames;
     private boolean repeatMode = false;
-    private List<CSVRecord> records;
+    private final List<CSVRecord> records;
 
     /**
      * Constructs a CSVFileReader from a Reader object.

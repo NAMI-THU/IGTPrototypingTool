@@ -13,7 +13,7 @@ import java.util.List;
 public class ToolMeasure {
 
     private String name;
-    private List<Measurement> measurements;
+    private final List<Measurement> measurements;
 
     public ToolMeasure(String name) {
         this.name = name;
@@ -82,7 +82,6 @@ public class ToolMeasure {
      * points from addPoint are pitched by the size of the list. An average
      * measurement and an average point is created.
      *
-     * @param measurements - list with measurements
      * @return averageMeasurement - a average measurement
      */
     public AverageMeasurement getAverageMeasurement() {
@@ -118,7 +117,6 @@ public class ToolMeasure {
      * called by class quaternion. The first and the last quaternion plus
      * positionAtTime is returned as average rotation.
      *
-     * @param measurements - list of measurements
      * @return firstRotation.slerp(firstRotation, lastRotation, positionAtTime)
      * - a quaternion
      */
@@ -128,7 +126,7 @@ public class ToolMeasure {
         Quaternion lastRotation = measurements.get(measurements.size() - 1)
                 .getRotation();
 
-        float positionAtTime = 1 / measurements.size();
+        float positionAtTime = 1f / measurements.size();
 
         return firstRotation.slerp(firstRotation, lastRotation, positionAtTime);
     }
@@ -142,7 +140,6 @@ public class ToolMeasure {
      * list from above is added. Every list is added in rotationError. From
      * rotation error the root mean square error is calculated.
      *
-     * @param avgRotation - average rotation of type Quaternion
      * @return rotationError - of type quaternion
      */
 

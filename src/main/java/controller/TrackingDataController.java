@@ -45,13 +45,13 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toolDisplayList = new ArrayList<TrackingDataDisplay>();
-        position = new HashMap<String, Label>();
-        rotation = new HashMap<String, Label>();
+        toolDisplayList = new ArrayList<>();
+        position = new HashMap<>();
+        rotation = new HashMap<>();
     }
 
     public AbstractTrackingDataSource getSource() {
@@ -160,9 +160,9 @@ public class TrackingDataController implements Controller {
                             + df.format(qR) + "]");
                 }
 
-                display.addDataToSeries1(new XYChart.Data<Double, Double>(x, y));
-                display.addDataToSeries2(new XYChart.Data<Double, Double>(x, z));
-                display.addDataToSeries3(new XYChart.Data<Double, Double>(z, y));
+                display.addDataToSeries1(new XYChart.Data<>(x, y));
+                display.addDataToSeries2(new XYChart.Data<>(x, z));
+                display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
     }

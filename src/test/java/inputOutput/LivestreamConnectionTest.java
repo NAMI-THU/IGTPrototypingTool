@@ -18,7 +18,7 @@ class LivestreamConnectionTest {
     @Test
     void testObject() {
         LivestreamSource livestream = new LivestreamSource(0);
-        assertTrue(livestream!=null);
+        assertNotNull(livestream);
     }
 
     /**

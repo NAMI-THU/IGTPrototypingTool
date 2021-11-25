@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AlgorithmTest {
@@ -35,9 +36,9 @@ public class AlgorithmTest {
         Point3D expectedPoint = new Point3D(2, 2, 2);
         Point3D avgPoint = result.getPoint();
 
-        assertTrue(avgPoint.getX() == expectedPoint.getX());
-        assertTrue(avgPoint.getY() == expectedPoint.getY());
-        assertTrue(avgPoint.getZ() == expectedPoint.getZ());
+        assertEquals(avgPoint.getX(), expectedPoint.getX());
+        assertEquals(avgPoint.getY(), expectedPoint.getY());
+        assertEquals(avgPoint.getZ(), expectedPoint.getZ());
 
     }
 
@@ -50,7 +51,7 @@ public class AlgorithmTest {
 
         double result = testTool.getAverageMeasurement().getJitter();
         System.out.println("result:" + result);
-        assertTrue(result == 1.414213562373095);
+        assertEquals(1.414213562373095, result);
 
     }
 
@@ -66,7 +67,7 @@ public class AlgorithmTest {
         double result = processor.getAccuracy(expectedDistance, firstAverangeMeasurement, secondAverangeMeasurement);
 
         // no deviation expected
-        assertTrue(result == 0);
+        assertEquals(0, result);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class AlgorithmTest {
 
         Quaternion result = testTool.getAverageRotation();
 
-        assertTrue(result.equals(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
+        assertEquals(result, new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
 
     }
 
@@ -94,7 +95,7 @@ public class AlgorithmTest {
         Quaternion result = processor.getAccuracyRotation(expectedRotation, firstMeasurement, secondMeasurement);
 
         // no deviation expected
-        assertTrue(result.equals(new Quaternion((float) 0, (float) 0, (float) 0, (float) -1)));
+        assertEquals(result, new Quaternion((float) 0, (float) 0, (float) 0, (float) -1));
     }
 
     @Test
@@ -115,11 +116,11 @@ public class AlgorithmTest {
         BoxPlot result = processor.getBoxPlot(values);
 
         // no deviation expected
-        assertTrue(result.getMin() == 1);
-        assertTrue(result.getQ1() == 1.5);
-        assertTrue(result.getMedian() == 3);
-        assertTrue(result.getQ3() == 4.5);
-        assertTrue(result.getMax() == 5);
+        assertEquals(1, result.getMin());
+        assertEquals(1.5, result.getQ1());
+        assertEquals(3, result.getMedian());
+        assertEquals(4.5, result.getQ3());
+        assertEquals(5, result.getMax());
 
         System.out.println(
                 "BoxPlot Werte: \n Min: " + result.getMin() + "\n" + " 1.Q : " + result.getQ1() + "\n" + " Median: "
@@ -143,7 +144,7 @@ public class AlgorithmTest {
 
         } catch (Exception e) {
 
-            assertTrue(e.getMessage().equals("Tool not found: TestTool"));
+            assertEquals("Tool not found: TestTool", e.getMessage());
         }
 
     }

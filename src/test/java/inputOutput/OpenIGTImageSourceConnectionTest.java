@@ -12,7 +12,7 @@ class OpenIGTImageSourceConnectionTest {
     @Test
     void testObject() {
         OIGTImageSource igtSrc = new OIGTImageSource();
-        assertTrue(igtSrc!=null);
+        assertNotNull(igtSrc);
     }
 
     /**

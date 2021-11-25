@@ -199,7 +199,6 @@ public class TransformMessage extends OpenIGTMessage {
     /**
      * ** To set Image origin
      *
-     * @param origin **
      */
     public void setPosition(double a, double b, double c) {
         double[] o = {a, b, c};

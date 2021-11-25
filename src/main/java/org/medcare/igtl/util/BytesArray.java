@@ -325,7 +325,7 @@ public class BytesArray {
     // ------------------------------------------------------------------------
 
     /**
-     * ** Read <code>length</code< of bytes from the bytesArray
+     * ** Read <code>length</code> of bytes from the bytesArray
      * **
      *
      * @param length The number fo bytes to read from the bytesArray
@@ -417,10 +417,10 @@ public class BytesArray {
     /**
      * ** Read a string from the bytesArray. The string is read until (whichever
      * comes first):
-     * ** <ol>
-     * <li><code>length</code> bytes have been read</li>
-     * ** <li>a null (0x00) byte is found (if <code>varLength==true</code>)</li>
-     * ** <li>end of data is reached</li>
+     * <ol>
+     *     <li><code>length</code> bytes have been read</li>
+     *     <li>a null (0x00) byte is found (if <code>varLength==true</code>)</li>
+     *     <li>end of data is reached</li>
      * </ol>
      * **
      *

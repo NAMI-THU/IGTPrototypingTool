@@ -71,7 +71,6 @@ public interface IOpenIgtPacketListener {
      *
      * @param name  A string of what type of data to get
      * @param image the image
-     * @param t     A transform of where the image is
      */
     void onRxImage(String name, ImageMessage image);
 
@@ -80,7 +79,7 @@ public interface IOpenIgtPacketListener {
      * THis is a request for an array of data
      *
      * @param name A string of what type of data to get
-     * @return an array of data
+     * returns an array of data
      */
     void onTxNDArray(String name);
 
@@ -88,7 +87,7 @@ public interface IOpenIgtPacketListener {
      * THis is a request for an array of data
      *
      * @param name A string of what type of data to get
-     * @return an array of data
+     * returns an array of data
      */
     void onRxNDArray(String name, float[] data);
 }

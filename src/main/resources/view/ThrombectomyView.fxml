@@ -10,7 +10,7 @@
 <?import userinterface.ImageScatterChart?>
 <?import javafx.scene.control.ScrollPane?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ThrombectomyController">
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ThrombectomyController">
 <content>
 <AnchorPane>
    <children>
