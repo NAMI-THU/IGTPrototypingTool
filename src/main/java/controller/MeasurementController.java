@@ -20,14 +20,9 @@ import inputOutput.CSVFileReader;
 import inputOutput.Tool;
 import inputOutput.AbstractTrackingDataSource;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import util.FormatManager;
@@ -51,7 +46,7 @@ public class MeasurementController implements Controller {
     @FXML TextField address, numberToLoad, expDistance, rotationX,
       rotationY, rotationZ, rotationR;
     @FXML CheckBox jitterR, jitterP, correctnessR, correctnessP;
-    @FXML FlowPane quaternionPane;
+    @FXML TitledPane quaternionPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -106,7 +101,22 @@ public class MeasurementController implements Controller {
     @FXML
     private void startMeasurement() {
         if (source == null) {
-            statusLabel.setText("No source. Tracking has not started");
+            statusLabel.setText("No source connected. No Measurement possible.");
+            Alert a = new Alert(AlertType.ERROR);
+            a.setTitle("Error");
+            a.setHeaderText(null);
+            a.setContentText("There is no tracking source connected. No measurements can be calculated.");
+            a.show();
+            return;
+        }
+
+        if(trackingDataController.timeline == null){
+            statusLabel.setText("Tracking has not started yet. No Measurement possible.");
+            Alert a = new Alert(AlertType.ERROR);
+            a.setTitle("Error");
+            a.setHeaderText(null);
+            a.setContentText("You need to start tracking in the TrackingView at first. Otherwise no measurements can be calculated.");
+            a.show();
             return;
         }
 
@@ -181,43 +191,57 @@ public class MeasurementController implements Controller {
                 }
                 // Jitter Rotation
                 if (jitterR.isSelected()) {
-                    if(avgMes.getRotationError() != null) {
-                        lCalcJR.setText(FormatManager.toString(avgMes.getRotationError()) + " mm");
+                    // This was before set to rotationError, which was never calculated.
+                    var rotationJitter = avgMes.getRotationJitter();
+                    if(rotationJitter != null) {
+                        lCalcJR.setText(rotationJitter + " mm");
                     } else {
                         logger.log(Level.WARNING, "Rotation Error cannot be calculated.");
                     }
                 }
                 // Correctness calculation needs two measurements
+                // Correctness will take an expected distance and calculate how exact the measurements were (eg, how close they were to the expected distance)
                 if(storedMeasurements.values().size() > 1) {
                     // Correctness Rotation
                     if (correctnessR.isSelected()) {
-
-                        Quaternion expectedrotation = new Quaternion().set(
-                            (float) Double.parseDouble(rotationX.getText()),
-                            (float) Double.parseDouble(rotationY.getText()),
-                            (float) Double.parseDouble(rotationZ.getText()),
-                            (float) Double.parseDouble(rotationR.getText()));
-
+                        Quaternion expectedRotation = new Quaternion();
+                        try {
+                             expectedRotation = new Quaternion().set(
+                                     Float.parseFloat(rotationX.getText()),
+                                     Float.parseFloat(rotationY.getText()),
+                                     Float.parseFloat(rotationZ.getText()),
+                                     Float.parseFloat(rotationR.getText()));
+                        }catch(NumberFormatException ex){
+                            Alert a = new Alert(AlertType.ERROR);
+                            a.setTitle("Error");
+                            a.setHeaderText(null);
+                            a.setContentText("The values you entered for the expected rotation are not valid.");
+                            a.showAndWait();
+                        }
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
 
                         lCalcCR.setText(String.valueOf(dataS.getAccuracyRotation(
-                            expectedrotation,
+                            expectedRotation,
                             firstTool.getMeasurement().get(0),
                             secondTool.getMeasurement().get(0))));
                     }
                     // Correctness Position
                     if (correctnessP.isSelected()) {
                         lCalcCP.setText("0,00");
-                        ToolMeasure firstTool = null;
-                        ToolMeasure secondTool = null;
-                        firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                        secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
-                        lCalcJP.setText(String.valueOf(dataS.getAccuracy(
+                        ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
+                        ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        lCalcCP.setText(String.valueOf(dataS.getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
                             secondTool.getAverageMeasurement())));
                     }
+                }else{
+                    Alert a = new Alert(AlertType.WARNING);
+                    a.setTitle("Warning");
+                    a.setHeaderText(null);
+                    a.setContentText("You need two measurements to calculate the accuracy.");
+                    a.show();
                 }
             } catch (IllegalArgumentException e) {
                 logger.log(Level.WARNING, "Calculation error", e);

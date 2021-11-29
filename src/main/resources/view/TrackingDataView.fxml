@@ -50,7 +50,7 @@
                      </HBox.margin></ProgressIndicator>
 			</HBox>
 	        <Button layoutX="43.0" layoutY="629.0" mnemonicParsing="false" fx:id="loadCSVBtn" onAction="#loadCSVFile" text="Load CSV" />
-	        <Button layoutX="658.0" layoutY="600.0" mnemonicParsing="false" fx:id="visualizeTrackingBtn" onAction="#visualizeTracking" text="Start Visualization" />
+	        <Button layoutX="658.0" layoutY="600.0" mnemonicParsing="false" fx:id="visualizeTrackingBtn" onAction="#visualizeTracking" text="Start Tracking and Visualization" />
 	        <ToggleButton layoutX="659.0" layoutY="634.0" fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" />
             <StackPane layoutX="448.0" layoutY="335.0" prefHeight="260.0" prefWidth="566.0">
                 <children>
