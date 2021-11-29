@@ -127,12 +127,14 @@ public class TrackingDataController implements Controller {
     }
 
     private void disconnectSource(){
-        if(timeline.getStatus() == Animation.Status.PAUSED){
-            statusLabel.setText("");    // To remove the label
-            freezeTglBtn.setSelected(false);
+        if(timeline != null) {
+            if(timeline.getStatus() == Animation.Status.PAUSED){
+                statusLabel.setText("");    // To remove the label
+                freezeTglBtn.setSelected(false);
+            }
+            timeline.stop();
+            timeline = null;
         }
-        timeline.stop();
-        timeline = null;
         visualizationRunning.setValue(false);
         source.closeConnection();
         source = null;
