@@ -126,6 +126,9 @@ public class TrackingDataController implements Controller {
         source = newSource;
     }
 
+    /**
+     * This method disconnects the current source, closes the connection and resets the timeline.
+     */
     private void disconnectSource(){
         if(timeline != null) {
             if(timeline.getStatus() == Animation.Status.PAUSED){

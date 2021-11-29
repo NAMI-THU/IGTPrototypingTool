@@ -7,9 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -100,5 +102,17 @@ public class MainController implements Controller {
     @FXML
     public void close() {
         Platform.exit();
+    }
+
+    /**
+     * Creates a dialogue to display some information about the application
+     */
+    @FXML
+    public void openAboutView() {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("About");
+        a.setHeaderText("IGT Prototyping Tool");
+        a.setContentText("This application was and currently is developed by students of THU.\nIt is actively supervised by Prof. Dr. Alfred Franz.\nThe source code can be found at https://github.com/Alfred-Franz/IGTPrototypingTool");
+        a.showAndWait();
     }
 }
