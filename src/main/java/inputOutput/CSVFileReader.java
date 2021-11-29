@@ -97,6 +97,9 @@ public class CSVFileReader extends AbstractTrackingDataSource {
         return toolList;
     }
 
+    @Override
+    public void closeConnection() {}
+
     private Tool parseTool(final CSVRecord record, final String toolName) {
         String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_",
                 "QX_", "QY_", "QZ_", "QR_"};

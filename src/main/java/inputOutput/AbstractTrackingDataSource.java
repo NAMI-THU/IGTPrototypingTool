@@ -12,4 +12,5 @@ public abstract class AbstractTrackingDataSource {
         return toolList;
     }
 
+    public abstract void closeConnection();
 }

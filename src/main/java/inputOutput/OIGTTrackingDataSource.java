@@ -25,18 +25,24 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
     private double timestamp;
     private final double valid = 1;
 
-    @Override
-    public ArrayList<Tool> update() {
+    public void connect(){
         if (myOpenIGTLinkConnection == null) {
             myOpenIGTLinkConnection = new OpenIGTLinkConnection();
             toolList = new ArrayList<>();
         }
+    }
+
+    @Override
+    public ArrayList<Tool> update() {
+        if(myOpenIGTLinkConnection == null){
+            connect();
+        }
+
         List<OpenIGTLinkConnection.ToolData> rawToolList = myOpenIGTLinkConnection.getToolDataList();
         synchronized (rawToolList) {
             for (OpenIGTLinkConnection.ToolData t : rawToolList)
                 this.setValues(t.name, t.t);
         }
-
         return toolList;
     }
 
@@ -78,6 +84,7 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
 
     }
 
+    @Override
     public void closeConnection() {
         myOpenIGTLinkConnection.stop();
     }

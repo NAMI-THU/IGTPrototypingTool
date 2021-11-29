@@ -202,6 +202,7 @@ public abstract class OpenIGTClient extends Thread {
      **************************************************************************/
     public void interrupt() {
         alive = false;
+        responseQueue.destroy();    // To stop the background threat
         try {
             socket.close();
         } catch (IOException e) {
