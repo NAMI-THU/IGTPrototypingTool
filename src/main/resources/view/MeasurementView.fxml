@@ -25,7 +25,7 @@
    <children>
             <TitledPane text="CSV Import">
                <content>
-            <HBox prefHeight="207.0" prefWidth="662.0">
+            <HBox>
                <children>
                   <TilePane hgap="5.0" prefHeight="55.0" prefWidth="510.0" vgap="5.0">
                      <children>
@@ -62,7 +62,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
             </TitledPane>
-      <HBox prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: lightblue;">
+      <HBox style="-fx-background-color: lightblue;">
          <children>
             <Label text="Capture continuous data">
                <HBox.margin>
@@ -81,10 +81,10 @@
             </Button>
          </children>
       </HBox>
-      <VBox prefHeight="190.0" prefWidth="480.0">
+      <VBox prefHeight="150.0">
          <children>
             <Label text="Captured Measurements" />
-            <ListView fx:id="measurementList" minWidth="-Infinity" prefHeight="300.0" prefWidth="250.0" />
+            <ListView fx:id="measurementList" minWidth="-Infinity" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
