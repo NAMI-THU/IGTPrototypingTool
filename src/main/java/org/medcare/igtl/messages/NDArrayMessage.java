@@ -16,6 +16,14 @@ PURPOSE.  See the above copyright notices for more information.
 Author: Nirav Patel: napatel@wpi.edu
 =========================================================================*/
 
+/*=========================================================================
+Modifications:
+    06.12.2021:
+        - Specify type of ArrayList to comply with modern Java versions
+        - Removed unnecessary unboxing
+=========================================================================*/
+
+
 import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
 
@@ -45,7 +53,7 @@ public class NDArrayMessage extends OpenIGTMessage {
     private byte dim;
     private short[] size;
     private byte[] byteData;
-    private ArrayList data;
+    private ArrayList<Float> data;
 
     /**
      * ** Constructor to be used to create message to send them with this
@@ -122,7 +130,7 @@ public class NDArrayMessage extends OpenIGTMessage {
     public float[] get1DFloatData() {
         float[] floatData = new float[data.size()];
         for (int i = 0; i < data.size(); i++) {
-            floatData[i] = ((Float) data.get(i)).floatValue();
+            floatData[i] = data.get(i);
         }
         return floatData;
     }
