@@ -46,7 +46,7 @@ public class MeasurementController implements Controller {
     @FXML TextField address, numberToLoad, expDistance, rotationX,
       rotationY, rotationZ, rotationR;
     @FXML CheckBox jitterR, jitterP, correctnessR, correctnessP;
-    @FXML TitledPane quaternionPane;
+    @FXML FlowPane quaternionPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
