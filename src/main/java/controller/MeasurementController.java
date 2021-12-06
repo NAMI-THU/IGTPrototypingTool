@@ -237,11 +237,13 @@ public class MeasurementController implements Controller {
                             secondTool.getAverageMeasurement())));
                     }
                 }else{
-                    Alert a = new Alert(AlertType.WARNING);
-                    a.setTitle("Warning");
-                    a.setHeaderText(null);
-                    a.setContentText("You need two measurements to calculate the accuracy.");
-                    a.show();
+                    if(correctnessR.isSelected() || correctnessP.isSelected()) {
+                        Alert a = new Alert(AlertType.WARNING);
+                        a.setTitle("Warning");
+                        a.setHeaderText(null);
+                        a.setContentText("You need two measurements to calculate the accuracy.");
+                        a.show();
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 logger.log(Level.WARNING, "Calculation error", e);
