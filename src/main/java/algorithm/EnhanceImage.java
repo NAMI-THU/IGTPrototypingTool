@@ -12,19 +12,19 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public class EnhanceImage {
     public static List<Mat> test = new ArrayList<Mat>();
-    public static Image SharpenImage(Mat src, double sigmaColor, double sigmaSpace){        
-       
+    public static Image SharpenImage(Mat src, double sigmaColor, double sigmaSpace){
+
         Mat graySrc = new Mat();
         Imgproc.cvtColor(src, graySrc, Imgproc.COLOR_BGR2GRAY);
 
         Mat resizedSrc = new Mat();
         Size scaleSize = new Size(960,540);
-        Imgproc.resize(graySrc, resizedSrc, scaleSize);   
+        Imgproc.resize(graySrc, resizedSrc, scaleSize);
         Mat dst = new Mat(scaleSize, resizedSrc.type());
-       
+
         //Photo.fastNlMeansDenoising(resizedSrc,dst, 5);//, 3, 9);
         //Imgproc.GaussianBlur(resizedSrc, dst, new Size(7, 7), 0);
-        //Imgproc.medianBlur(resizedSrc, dst, 7);  
+        //Imgproc.medianBlur(resizedSrc, dst, 7);
         // if(test.isEmpty()){
         //     test.add(resizedSrc);
         // }
@@ -34,7 +34,7 @@ public class EnhanceImage {
             Imgproc.bilateralFilter(resizedSrc, dst, 7, sigmaColor, sigmaSpace);
         }else{
             dst = resizedSrc;
-        } 
+        }
 
         //convolution matrix to sharpen image
         Mat kernel = new Mat(3,3, CvType.CV_32F);
@@ -45,8 +45,8 @@ public class EnhanceImage {
         Mat newResult = new Mat();
         Imgproc.filter2D(dst, newResult, -1, kernel);
         MatOfByte buffer2 = new MatOfByte();
-        Imgcodecs.imencode(".png", newResult, buffer2);       
-        return new Image(new ByteArrayInputStream(buffer2.toArray()));       
+        Imgcodecs.imencode(".png", newResult, buffer2);
+        return new Image(new ByteArrayInputStream(buffer2.toArray()));
 
     }
 

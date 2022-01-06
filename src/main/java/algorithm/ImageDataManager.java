@@ -34,7 +34,7 @@ public class ImageDataManager {
         return dataProcessor.readImg();
     }
 
-    public Mat readMatImg() {  
+    public Mat readMatImg() {
         return dataProcessor.readMatImg();
     }
 

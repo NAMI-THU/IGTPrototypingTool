@@ -117,7 +117,7 @@ public class VideoController implements Controller {
         }
         else{
             iv.setImage(dataManager.readImg());
-        }        
+        }
     }
 
     private File loadFile() {
@@ -136,7 +136,7 @@ public class VideoController implements Controller {
     private void setInitialImageSize() {
         //Image i = dataManager.readImg();
         double initialValueW = 960;
-        double initialValueH = 540;        
+        double initialValueH = 540;
         iv.setFitHeight(initialValueH);
         iv.setFitWidth(initialValueW);
         ivHeight.setText(Double.toString(initialValueH));

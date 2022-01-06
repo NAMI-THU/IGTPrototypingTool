@@ -72,7 +72,7 @@ public class ImageDataProcessor {
      * Get raw Mat image to process it
      * @return
      */
-    Mat readMatImg() {     
+    Mat readMatImg() {
         return imgSrc.getNextMat();
     }
 
