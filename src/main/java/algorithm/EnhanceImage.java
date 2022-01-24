@@ -12,24 +12,16 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public class EnhanceImage {
     public static List<Mat> test = new ArrayList<Mat>();
-    public static Image SharpenImage(Mat src, double sigmaColor, double sigmaSpace){
+    public static Image SharpenImage(Mat src, double sigmaColor, double sigmaSpace, double width, double height) {
 
         Mat graySrc = new Mat();
         Imgproc.cvtColor(src, graySrc, Imgproc.COLOR_BGR2GRAY);
 
         Mat resizedSrc = new Mat();
-        Size scaleSize = new Size(960,540);
+        Size scaleSize = new Size(width, height);
         Imgproc.resize(graySrc, resizedSrc, scaleSize);
         Mat dst = new Mat(scaleSize, resizedSrc.type());
 
-        //Photo.fastNlMeansDenoising(resizedSrc,dst, 5);//, 3, 9);
-        //Imgproc.GaussianBlur(resizedSrc, dst, new Size(7, 7), 0);
-        //Imgproc.medianBlur(resizedSrc, dst, 7);
-        // if(test.isEmpty()){
-        //     test.add(resizedSrc);
-        // }
-        // Photo.denoise_TVL1(test, dst);
-        //Imgproc.blur(resizedSrc, dst, new Size(5,5));
         if( sigmaColor > 0 || sigmaSpace > 0){
             Imgproc.bilateralFilter(resizedSrc, dst, 7, sigmaColor, sigmaSpace);
         }else{

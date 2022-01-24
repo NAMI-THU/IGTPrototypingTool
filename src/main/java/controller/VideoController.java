@@ -42,6 +42,9 @@ public class VideoController implements Controller {
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
 
+    private double imageWidth = 960;
+    private double imageHeight = 540;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.sourceChoiceBox.getSelectionModel().selectFirst();
@@ -106,13 +109,17 @@ public class VideoController implements Controller {
      */
     @FXML
     public void setIvSize() {
-        iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
-        iv.setFitWidth(Double.parseDouble(ivWidth.getText()));
+        var width = Double.parseDouble(ivWidth.getText());
+        var height = Double.parseDouble(ivHeight.getText());
+        imageHeight = height;
+        imageWidth = width;
+        iv.setFitHeight(height);
+        iv.setFitWidth(width);
     }
 
     private void update() {
         if(denoiseCheckbox.isSelected()){
-            Image newImage = EnhanceImage.SharpenImage(dataManager.readMatImg(), sigmaColor.getValue(), sigmaColor.getValue());
+            Image newImage = EnhanceImage.SharpenImage(dataManager.readMatImg(), sigmaColor.getValue(), sigmaColor.getValue(), imageWidth, imageHeight);
             iv.setImage(newImage);
         }
         else{
@@ -134,9 +141,9 @@ public class VideoController implements Controller {
      * and display values in text fields that are used to scale the image.
      */
     private void setInitialImageSize() {
-        //Image i = dataManager.readImg();
-        double initialValueW = 960;
-        double initialValueH = 540;
+        Image i = dataManager.readImg();
+        double initialValueW = Math.min(imageWidth, i.getWidth());
+        double initialValueH = Math.min(imageHeight, i.getHeight());
         iv.setFitHeight(initialValueH);
         iv.setFitWidth(initialValueW);
         ivHeight.setText(Double.toString(initialValueH));
