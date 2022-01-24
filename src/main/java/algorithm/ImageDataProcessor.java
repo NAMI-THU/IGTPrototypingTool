@@ -69,6 +69,14 @@ public class ImageDataProcessor {
     }
 
     /**
+     * Get raw Mat image to process it
+     * @return
+     */
+    Mat readMatImg() {
+        return imgSrc.getNextMat();
+    }
+
+    /**
      * Reads an image from video source and crops it.
      * The matrix is then converted to a JavaFx image
      * @return Image

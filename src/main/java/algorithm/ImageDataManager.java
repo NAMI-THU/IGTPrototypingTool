@@ -2,6 +2,8 @@ package algorithm;
 
 import java.awt.image.BufferedImage;
 
+import org.opencv.core.Mat;
+
 import javafx.scene.image.Image;
 
 /**
@@ -30,6 +32,10 @@ public class ImageDataManager {
 
     public Image readImg() {
         return dataProcessor.readImg();
+    }
+
+    public Mat readMatImg() {
+        return dataProcessor.readMatImg();
     }
 
     public ImageDataProcessor getDataProcessor() {

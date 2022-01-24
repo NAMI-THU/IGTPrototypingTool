@@ -4,13 +4,16 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import algorithm.EnhanceImage;
 import algorithm.ImageDataManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -32,6 +35,9 @@ public class VideoController implements Controller {
     @FXML Spinner<Integer> bottomSpinner;
     @FXML Spinner<Integer> rightSpinner;
     @FXML Spinner<Integer> leftSpinner;
+    @FXML CheckBox denoiseCheckbox;
+    @FXML Slider sigmaColor;
+    @FXML Slider sigmaSpace;
 
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
@@ -105,7 +111,13 @@ public class VideoController implements Controller {
     }
 
     private void update() {
-        iv.setImage(dataManager.readImg());
+        if(denoiseCheckbox.isSelected()){
+            Image newImage = EnhanceImage.SharpenImage(dataManager.readMatImg(), sigmaColor.getValue(), sigmaColor.getValue());
+            iv.setImage(newImage);
+        }
+        else{
+            iv.setImage(dataManager.readImg());
+        }
     }
 
     private File loadFile() {
@@ -122,11 +134,13 @@ public class VideoController implements Controller {
      * and display values in text fields that are used to scale the image.
      */
     private void setInitialImageSize() {
-        Image i = dataManager.readImg();
-        iv.setFitHeight(i.getHeight());
-        iv.setFitWidth(i.getWidth());
-        ivHeight.setText(Double.toString(i.getHeight()));
-        ivWidth.setText(Double.toString(i.getWidth()));
+        //Image i = dataManager.readImg();
+        double initialValueW = 960;
+        double initialValueH = 540;
+        iv.setFitHeight(initialValueH);
+        iv.setFitWidth(initialValueW);
+        ivHeight.setText(Double.toString(initialValueH));
+        ivWidth.setText(Double.toString(initialValueW));
     }
 
     /**
