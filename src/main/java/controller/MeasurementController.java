@@ -70,6 +70,15 @@ public class MeasurementController implements Controller {
         this.dataS.setTrackingDataSource(source);
     }
 
+    private void updateTrackingDataSource(){
+        var newSource = this.trackingDataController.getSource();
+        if(!newSource.equals(this.source)){
+            logger.info("Updating TrackingDataSource. Had before: "+this.source+", updating to: "+newSource);
+            this.source =  newSource;
+            this.dataS.setTrackingDataSource(newSource);
+        }
+    }
+
     private void updateMeasurementList() {
         measurementList.getItems().clear();
         for (String n : storedMeasurements.keySet()) {
@@ -100,6 +109,10 @@ public class MeasurementController implements Controller {
 
     @FXML
     private void startMeasurement() {
+        if(source == null) {
+            updateTrackingDataSource();
+        }
+        // Check, if it is still null
         if (source == null) {
             statusLabel.setText("No source connected. No Measurement possible.");
             Alert a = new Alert(AlertType.ERROR);
@@ -249,6 +262,12 @@ public class MeasurementController implements Controller {
                 logger.log(Level.WARNING, "Calculation error", e);
                 statusLabel.setText("Calculation error");
             }
+        }else{
+            Alert a = new Alert(AlertType.INFORMATION);
+            a.setTitle("No measurement selected");
+            a.setHeaderText(null);
+            a.setContentText("You need to select a measurement to calculate these values.");
+            a.show();
         }
     }
 
