@@ -50,6 +50,7 @@ public class MeasurementController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         storedMeasurements = new LinkedHashMap<>();
     }
 
@@ -295,7 +296,9 @@ public class MeasurementController implements Controller {
         }
     }
 
+    @Override
     public void close() {
         this.statusLabel.setText("");
+        unregisterController();
     }
 }

@@ -31,6 +31,7 @@ public class MainController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         trackingDataController.setStatusLabel(status);
     }
 
@@ -100,6 +101,7 @@ public class MainController implements Controller {
      * Close application
      */
     @FXML
+    @Override
     public void close() {
         Platform.exit();
     }

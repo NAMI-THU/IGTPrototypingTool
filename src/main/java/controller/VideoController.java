@@ -38,6 +38,7 @@ public class VideoController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         this.sourceChoiceBox.getSelectionModel().selectFirst();
         this.setCropListener();
     }
@@ -47,6 +48,7 @@ public class VideoController implements Controller {
         if(this.dataManager.getDataProcessor().isConnected()) {
             this.dataManager.closeConnection();
         }
+        unregisterController();
     }
 
     /**

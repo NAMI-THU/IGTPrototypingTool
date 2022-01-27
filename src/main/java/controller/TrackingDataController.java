@@ -62,6 +62,7 @@ public class TrackingDataController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         toolDisplayList = new ArrayList<>();
         position = new HashMap<>();
         rotation = new HashMap<>();
@@ -139,8 +140,10 @@ public class TrackingDataController implements Controller {
             timeline = null;
         }
         visualizationRunning.setValue(false);
-        source.closeConnection();
-        source = null;
+        if(source != null) {
+            source.closeConnection();
+            source = null;
+        }
         sourceConnected.setValue(false);
     }
 
@@ -261,7 +264,9 @@ public class TrackingDataController implements Controller {
         }
     }
 
+    @Override
     public void close() {
-        source.closeConnection();
+        disconnectSource();
+        unregisterController();
     }
 }
