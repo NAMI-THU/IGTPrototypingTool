@@ -1,8 +1,10 @@
 package mainMethod;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import controller.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,7 +41,7 @@ public class App extends Application {
     @Override
     public void stop() {
         CustomLogger.closeLogger();
-        var controllers = ControllerCollector.getInstance().getControllers().stream().toList();
+        var controllers = new ArrayList<>(ControllerCollector.getInstance().getControllers());
         for(var controller : controllers){
             controller.close();
         }

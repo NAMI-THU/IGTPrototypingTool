@@ -3,11 +3,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,7 +78,12 @@ public class MeasurementController implements Controller {
 
     private void updateToolList(){
         this.toolList.getItems().clear();
-        this.toolList.getItems().addAll(source.getLastToolList().stream().map(Tool::getName).toList());
+        List<String> list = new ArrayList<>();
+        for (Tool tool : source.getLastToolList()) {
+            String name = tool.getName();
+            list.add(name);
+        }
+        this.toolList.getItems().addAll(list);
     }
 
     private void updateTrackingDataSource(){
