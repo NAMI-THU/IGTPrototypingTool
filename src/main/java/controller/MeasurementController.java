@@ -47,6 +47,7 @@ public class MeasurementController implements Controller {
       rotationY, rotationZ, rotationR;
     @FXML CheckBox jitterR, jitterP, correctnessR, correctnessP;
     @FXML FlowPane quaternionPane;
+    @FXML Button loadToolMeasurementBtn, startMeasurementBtn, endMeasurementBtn, reloadConnectionBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,9 +57,7 @@ public class MeasurementController implements Controller {
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
         this.trackingDataController = trackingDataController;
-        if(trackingDataController.source != null) {
-            this.setTrackingDataSource(trackingDataController.source);
-        }
+        this.setTrackingDataSource(trackingDataController.source);
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -69,14 +68,28 @@ public class MeasurementController implements Controller {
     public void setTrackingDataSource(AbstractTrackingDataSource source) {
         this.source = source;
         this.dataS.setTrackingDataSource(source);
+
+        if(this.source == null){
+            startMeasurementBtn.setDisable(true);
+            endMeasurementBtn.setDisable(true);
+        }else{
+            startMeasurementBtn.setDisable(false);
+            endMeasurementBtn.setDisable(false);
+
+            updateToolList();
+        }
+    }
+
+    private void updateToolList(){
+        this.toolList.getItems().clear();
+        this.toolList.getItems().addAll(source.getLastToolList().stream().map(Tool::getName).toList());
     }
 
     private void updateTrackingDataSource(){
         var newSource = this.trackingDataController.getSource();
-        if(!newSource.equals(this.source)){
+        if(newSource == null || !newSource.equals(this.source)){
             logger.info("Updating TrackingDataSource. Had before: "+this.source+", updating to: "+newSource);
-            this.source =  newSource;
-            this.dataS.setTrackingDataSource(newSource);
+            setTrackingDataSource(newSource);
         }
     }
 
@@ -101,6 +114,9 @@ public class MeasurementController implements Controller {
                 for (Tool t : sourceFileReader.update()) {
                     toolList.getItems().add(t.getName());
                 }
+                loadToolMeasurementBtn.setDisable(false);
+                startMeasurementBtn.setDisable(true);
+                endMeasurementBtn.setDisable(true);
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Error reading CSV file");
                 statusLabel.setText("Error reading CSV file");
@@ -110,10 +126,6 @@ public class MeasurementController implements Controller {
 
     @FXML
     private void startMeasurement() {
-        if(source == null) {
-            updateTrackingDataSource();
-        }
-        // Check, if it is still null
         if (source == null) {
             statusLabel.setText("No source connected. No Measurement possible.");
             Alert a = new Alert(AlertType.ERROR);
@@ -132,6 +144,21 @@ public class MeasurementController implements Controller {
             a.setContentText("You need to start tracking in the TrackingView at first. Otherwise no measurements can be calculated.");
             a.show();
             return;
+        }
+
+        if(toolList.getSelectionModel().isEmpty()){
+            if(toolList.getItems().size() == 1){
+                toolList.getSelectionModel().select(0);
+                statusLabel.setText("Tracking has not started yet. No Measurement possible.");
+                logger.info("No tool selected, but only 1 available, selecting it.");
+            }else {
+                Alert a = new Alert(AlertType.WARNING);
+                a.setTitle("Warning");
+                a.setHeaderText(null);
+                a.setContentText("Please select the tool you like to measure first.");
+                a.show();
+                return;
+            }
         }
 
         Alert a = new Alert(AlertType.INFORMATION);
@@ -166,13 +193,23 @@ public class MeasurementController implements Controller {
         if (timer != null && timerOn) {
             timer.cancel();
             timerOn = false;
+            var selectedToolIndex = toolList.getSelectionModel().getSelectedIndex();
+            if(selectedToolIndex == -1){
+                logger.warning("No tool selected, defaulting to tool 0");
+                selectedToolIndex = 0;
+            }
             storedMeasurements.put("Measurement " + measurementCounter + "("
-                    + dataS.getDataManager().getToolMeasures().get(0).getName()
-                    + ")", dataS.getDataManager().getToolMeasures().get(0));
+                    + dataS.getDataManager().getToolMeasures().get(selectedToolIndex).getName()
+                    + ")", dataS.getDataManager().getToolMeasures().get(selectedToolIndex));
             this.updateMeasurementList();
             measurementCounter++;
             this.statusLabel.setText("");
         }
+    }
+
+    @FXML
+    private void reloadConnectionClicked(){
+        updateTrackingDataSource();
     }
 
     @FXML
@@ -273,7 +310,7 @@ public class MeasurementController implements Controller {
     }
 
     @FXML
-    private void addMeasurement(){
+    private void addMeasurementFromFile(){
         if (toolList.getItems().size() > 0
                 && toolList.getSelectionModel().getSelectedItem() != null) {
             try {
