@@ -33,9 +33,9 @@ public class CSVFileReader extends AbstractTrackingDataSource {
      * @throws IOException
      */
     public CSVFileReader(final Reader reader) throws IOException {
-        CSVFormat format = CSVFormat.DEFAULT // first use the default csv format
-                .withDelimiter(';') // file uses ';' instead of ','
-                .withHeader(); // file has a header
+        CSVFormat format = CSVFormat.DEFAULT    // first use the default csv format
+                .builder().setDelimiter(';')    // file uses ';' instead of ','
+                .setHeader().build();         // file has a header
         CSVParser csvFile = new CSVParser(reader, format);
         records = csvFile.getRecords();
 
