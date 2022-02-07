@@ -101,8 +101,8 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#on_doSingleCapture" prefHeight="60.0" text="Capture Single Image" textAlignment="CENTER" wrapText="true" />
-                                    <ToggleButton fx:id="autoCaptureToggleButton" mnemonicParsing="false" prefHeight="60.0" styleClass="green-toggle-button" text="Auto Capture" />
+                                    <Button fx:id="singleCaptureButton" mnemonicParsing="false" onAction="#on_doSingleCapture" prefHeight="60.0" text="Capture Single Image" textAlignment="CENTER" wrapText="true" />
+                                    <ToggleButton fx:id="autoCaptureToggleButton" mnemonicParsing="false" prefHeight="60.0" styleClass="green-toggle-button" text="Auto Capture" onAction="#on_doAutoCapture"/>
                                  </children>
                               </HBox>
                            </children>
