@@ -1,27 +1,44 @@
 package algorithm;
 
+import com.google.gson.annotations.Expose;
 import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+
 public class Measurement {
 
     private Point3D point;
+    @Expose
     private double error;
+    @Expose
     private double timestamp;
+    @Expose
     private String toolname;
     private Quaternion rotation;
+    @Expose
+    private double x,y,z;
+    @Expose
+    private float rot_x, rot_y, rot_z, rot_r;
 
     public Measurement(Tool tool) {
-        this.setPoint(new Point3D(tool.getCoordinate().getX(),
-                tool.getCoordinate().getY(),
-                tool.getCoordinate().getZ()));
-        this.setRotation(new Quaternion().set((float) tool.getRotationX(),
-                (float) tool.getRotationY(),
-                (float) tool.getRotationZ(),
-                (float) tool.getRotationR()));
+        x = tool.getCoordinate().getX();
+        y = tool.getCoordinate().getY();
+        z = tool.getCoordinate().getZ();
+
+        rot_x = (float) tool.getRotationX();
+        rot_y = (float) tool.getRotationY();
+        rot_z = (float) tool.getRotationZ();
+        rot_r = (float) tool.getRotationR();
+
+        this.setPoint(new Point3D(x,y,z));
+        this.setRotation(new Quaternion().set(rot_x, rot_y, rot_z, rot_r));
         this.setTimestamp(tool.getTimestamp());
         this.setToolname(tool.getName());
+
 
     }
 
@@ -35,6 +52,10 @@ public class Measurement {
 
     public void setRotation(Quaternion rotation) {
         this.rotation = rotation;
+        rot_x = rotation.getX();
+        rot_y = rotation.getY();
+        rot_z = rotation.getZ();
+        rot_r = rotation.getW();
     }
 
     public Point3D getPoint() {
@@ -43,6 +64,9 @@ public class Measurement {
 
     public void setPoint(Point3D point) {
         this.point = point;
+        x = point.getX();
+        y = point.getY();
+        z = point.getZ();
     }
 
     public double getTimestamp() {

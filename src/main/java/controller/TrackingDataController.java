@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import algorithm.DataService;
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
-import com.jme3.app.Application;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import inputOutput.AbstractTrackingDataSource;
@@ -57,8 +56,8 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> rotation;
     Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
-    private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
+    public final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
+    public final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

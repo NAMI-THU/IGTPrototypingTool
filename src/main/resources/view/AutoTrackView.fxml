@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AutoTrackController">
+   <content>
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+         <children>
+            <ImageView fx:id="videoImage" fitHeight="540.0" fitWidth="960.0" pickOnBounds="true" preserveRatio="true" />
+            <HBox alignment="CENTER" spacing="20.0">
+               <children>
+                  <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" text="Connections" textAlignment="CENTER">
+                     <content>
+                        <VBox>
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <Label text="Video Input" textAlignment="CENTER" />
+                                    <ChoiceBox fx:id="sourceChoiceBox" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <BorderPane>
+                                 <center>
+                                    <Label text="Trackingsource" textAlignment="CENTER" />
+                                 </center>
+                                 <left>
+                                    <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </BorderPane>
+                              <BorderPane>
+                                 <center>
+                                    <Label text="Registration Matrix" textAlignment="CENTER">
+                                       <BorderPane.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </BorderPane.margin></Label>
+                                 </center>
+                                 <left>
+                                    <CheckBox fx:id="regMatrixStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <right>
+                                    <Button fx:id="regMatrixImportButton" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Import" BorderPane.alignment="CENTER" />
+                                 </right>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </BorderPane>
+                           </children>
+                        </VBox>
+                     </content>
+                     <graphic>
+                        <ProgressIndicator fx:id="connectionProgressSpinner" prefHeight="15.0" prefWidth="15.0" />
+                     </graphic>
+                  </TitledPane>
+                  <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" layoutX="10.0" layoutY="10.0" text="Capture Studio" textAlignment="CENTER">
+                     <content>
+                        <VBox>
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <Label text="Output Path" textAlignment="CENTER" />
+                                    <TextField fx:id="outputPathField" editable="false" prefColumnCount="15" />
+                                    <Button fx:id="outputPathButton" mnemonicParsing="false" onAction="#on_browseOutputDirectory" text="Browse" />
+                                    <Button mnemonicParsing="false" onAction="#on_openOutputDirectory" text="Open Folder" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <Label text="Auto Capture Each" textAlignment="CENTER" />
+                                    <ComboBox fx:id="captureRateComboBox" editable="true" prefWidth="150.0" visibleRowCount="5" />
+                                    <Label text="ms" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="20.0" layoutY="20.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="50.0">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#on_doSingleCapture" prefHeight="60.0" text="Capture Single Image" textAlignment="CENTER" wrapText="true" />
+                                    <ToggleButton fx:id="autoCaptureToggleButton" mnemonicParsing="false" prefHeight="60.0" styleClass="green-toggle-button" text="Auto Capture" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                     <graphic>
+                        <ProgressIndicator fx:id="captureProgressSpinner" prefHeight="15.0" prefWidth="15.0" />
+                     </graphic>
+                  </TitledPane>
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </VBox>
+   </content>
+</ScrollPane>

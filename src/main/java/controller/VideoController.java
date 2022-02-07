@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import algorithm.ImageDataManager;
+import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -59,16 +60,16 @@ public class VideoController implements Controller {
     public void connectToSource() {
         switch(sourceChoiceBox.getValue()) {
         case "Video Source":
-            this.dataManager.openConnection(0);
+            this.dataManager.openConnection(VideoSource.LIVESTREAM, 0);
             break;
         case "OpenIGTLink":
-            this.dataManager.openConnection(1);
+            this.dataManager.openConnection(VideoSource.OPENIGTLINK);
             break;
         case "Video File":
             File file = this.loadFile();
             if(file != null) {
                 this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
-                this.dataManager.openConnection(2);
+                this.dataManager.openConnection(VideoSource.FILE);
             }
             break;
         }

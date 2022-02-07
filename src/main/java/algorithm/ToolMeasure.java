@@ -1,5 +1,6 @@
 package algorithm;
 
+import com.google.gson.annotations.Expose;
 import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
 
@@ -12,7 +13,9 @@ import java.util.List;
  */
 public class ToolMeasure {
 
+    @Expose
     private String name;
+    @Expose
     private final List<Measurement> measurements;
 
     public ToolMeasure(String name) {

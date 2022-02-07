@@ -20,3 +20,10 @@
 	-fx-background-color: rgba(10, 156, 209, 0.4);
 	-fx-border-color: rgb(10, 156, 209);
 }
+
+.red-green-checkbox:selected{
+	-fx-border-color: green;
+}
+.red-green-checkbox{
+	-fx-border-color: red;
+}

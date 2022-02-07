@@ -26,6 +26,7 @@ public class MainController implements Controller {
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
+    private AutoTrackController autoTrackController;
     private SettingsController settingsController;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -70,6 +71,29 @@ public class MainController implements Controller {
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
         } catch(IOException e) {
             logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
+        }
+    }
+
+    @FXML
+    private void openAutoTrackView(){
+        if (this.autoTrackController != null) return;
+
+        try {
+            setupFXMLLoader("AutoTrackView");
+            Tab t = new Tab("Autotrack", this.loader.load());
+
+            this.autoTrackController = this.loader.getController();
+            this.autoTrackController.setTrackingDataController(this.trackingDataController);
+            this.autoTrackController.setStatusLabel(this.status);
+
+            this.tabPane.getTabs().add(t);
+            this.tabPane.getSelectionModel().select(t);
+            t.setOnCloseRequest(e -> {
+                this.autoTrackController.close();
+                this.autoTrackController = null;
+            });
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Error loading AutoTrack View", e);
         }
     }
 
