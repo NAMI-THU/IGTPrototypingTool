@@ -52,6 +52,7 @@ public class ThrombectomyController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         this.toolDisplayList = new ArrayList<>();
     }
 
@@ -241,7 +242,9 @@ public class ThrombectomyController implements Controller {
         return newDisplay;
     }
 
+    @Override
     public void close() {
         statusLabel.setText("");
+        unregisterController();
     }
 }

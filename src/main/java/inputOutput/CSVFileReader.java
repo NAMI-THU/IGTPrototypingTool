@@ -33,9 +33,9 @@ public class CSVFileReader extends AbstractTrackingDataSource {
      * @throws IOException
      */
     public CSVFileReader(final Reader reader) throws IOException {
-        CSVFormat format = CSVFormat.DEFAULT // first use the default csv format
-                .withDelimiter(';') // file uses ';' instead of ','
-                .withHeader(); // file has a header
+        CSVFormat format = CSVFormat.DEFAULT    // first use the default csv format
+                .builder().setDelimiter(';')    // file uses ';' instead of ','
+                .setHeader().build();         // file has a header
         CSVParser csvFile = new CSVParser(reader, format);
         records = csvFile.getRecords();
 
@@ -96,6 +96,9 @@ public class CSVFileReader extends AbstractTrackingDataSource {
         recordNumber += 1;
         return toolList;
     }
+
+    @Override
+    public void closeConnection() {}
 
     private Tool parseTool(final CSVRecord record, final String toolName) {
         String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_",
