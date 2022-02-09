@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.ScatterChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ScrollPane?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
 <content>
@@ -39,11 +42,17 @@
 	                <NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
 	            </yAxis>
 	        </ScatterChart>
-	        <Button layoutX="43.0" layoutY="595.0" mnemonicParsing="false" onAction="#connect" text="Connect via OpenIGTLink (localhost)" />
-	        <Button layoutX="43.0" layoutY="629.0" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" />
-	        <Button layoutX="658.0" layoutY="600.0" mnemonicParsing="false" onAction="#visualizeTracking" text="Start Visualization" />
-	        <Button layoutX="659.0" layoutY="634.0" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" />
-            <StackPane layoutX="448.0" layoutY="335.0" prefHeight="276.0" prefWidth="566.0">
+	        <HBox layoutX="43.0" layoutY="595.0">
+				<ToggleButton mnemonicParsing="false" onAction="#onConnectButtonClicked" styleClass="green-toggle-button" text="Connect via OpenIGTLink (localhost)" />
+				<ProgressIndicator fx:id="connectionIndicator" visible="false" maxHeight="25.0" maxWidth="25.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin></ProgressIndicator>
+			</HBox>
+	        <Button layoutX="43.0" layoutY="629.0" mnemonicParsing="false" fx:id="loadCSVBtn" onAction="#loadCSVFile" text="Load CSV" />
+	        <Button layoutX="658.0" layoutY="600.0" mnemonicParsing="false" fx:id="visualizeTrackingBtn" onAction="#visualizeTracking" text="Start Tracking and Visualization" />
+	        <ToggleButton layoutX="659.0" layoutY="634.0" fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" />
+            <StackPane layoutX="448.0" layoutY="335.0" prefHeight="260.0" prefWidth="566.0">
                 <children>
       	            <HBox prefHeight="160.0" prefWidth="500.0">
       	                <children>

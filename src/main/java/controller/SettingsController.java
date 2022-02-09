@@ -24,6 +24,7 @@ public class SettingsController implements Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         listItems.addAll("Logging");
         listView.setItems(listItems);
         listView.getSelectionModel().select(0);
@@ -33,7 +34,9 @@ public class SettingsController implements Controller {
     }
 
     @FXML
+    @Override
     public void close() {
         listItems.clear();
+        unregisterController();
     }
 }

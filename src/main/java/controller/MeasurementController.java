@@ -3,11 +3,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,14 +16,9 @@ import inputOutput.CSVFileReader;
 import inputOutput.Tool;
 import inputOutput.AbstractTrackingDataSource;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import util.FormatManager;
@@ -52,17 +43,17 @@ public class MeasurementController implements Controller {
       rotationY, rotationZ, rotationR;
     @FXML CheckBox jitterR, jitterP, correctnessR, correctnessP;
     @FXML FlowPane quaternionPane;
+    @FXML Button loadToolMeasurementBtn, startMeasurementBtn, endMeasurementBtn, reloadConnectionBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         storedMeasurements = new LinkedHashMap<>();
     }
 
     public void setTrackingDataController(TrackingDataController trackingDataController) {
         this.trackingDataController = trackingDataController;
-        if(trackingDataController.source != null) {
-            this.setTrackingDataSource(trackingDataController.source);
-        }
+        this.setTrackingDataSource(trackingDataController.source);
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -73,6 +64,34 @@ public class MeasurementController implements Controller {
     public void setTrackingDataSource(AbstractTrackingDataSource source) {
         this.source = source;
         this.dataS.setTrackingDataSource(source);
+
+        if(this.source == null){
+            startMeasurementBtn.setDisable(true);
+            endMeasurementBtn.setDisable(true);
+        }else{
+            startMeasurementBtn.setDisable(false);
+            endMeasurementBtn.setDisable(false);
+
+            updateToolList();
+        }
+    }
+
+    private void updateToolList(){
+        this.toolList.getItems().clear();
+        List<String> list = new ArrayList<>();
+        for (Tool tool : source.getLastToolList()) {
+            String name = tool.getName();
+            list.add(name);
+        }
+        this.toolList.getItems().addAll(list);
+    }
+
+    private void updateTrackingDataSource(){
+        var newSource = this.trackingDataController.getSource();
+        if(newSource == null || !newSource.equals(this.source)){
+            logger.info("Updating TrackingDataSource. Had before: "+this.source+", updating to: "+newSource);
+            setTrackingDataSource(newSource);
+        }
     }
 
     private void updateMeasurementList() {
@@ -96,6 +115,9 @@ public class MeasurementController implements Controller {
                 for (Tool t : sourceFileReader.update()) {
                     toolList.getItems().add(t.getName());
                 }
+                loadToolMeasurementBtn.setDisable(false);
+                startMeasurementBtn.setDisable(true);
+                endMeasurementBtn.setDisable(true);
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Error reading CSV file");
                 statusLabel.setText("Error reading CSV file");
@@ -106,8 +128,38 @@ public class MeasurementController implements Controller {
     @FXML
     private void startMeasurement() {
         if (source == null) {
-            statusLabel.setText("No source. Tracking has not started");
+            statusLabel.setText("No source connected. No Measurement possible.");
+            Alert a = new Alert(AlertType.ERROR);
+            a.setTitle("Error");
+            a.setHeaderText(null);
+            a.setContentText("There is no tracking source connected. No measurements can be calculated.");
+            a.show();
             return;
+        }
+
+        if(trackingDataController.timeline == null){
+            statusLabel.setText("Tracking has not started yet. No Measurement possible.");
+            Alert a = new Alert(AlertType.ERROR);
+            a.setTitle("Error");
+            a.setHeaderText(null);
+            a.setContentText("You need to start tracking in the TrackingView at first. Otherwise no measurements can be calculated.");
+            a.show();
+            return;
+        }
+
+        if(toolList.getSelectionModel().isEmpty()){
+            if(toolList.getItems().size() == 1){
+                toolList.getSelectionModel().select(0);
+                statusLabel.setText("Tracking has not started yet. No Measurement possible.");
+                logger.info("No tool selected, but only 1 available, selecting it.");
+            }else {
+                Alert a = new Alert(AlertType.WARNING);
+                a.setTitle("Warning");
+                a.setHeaderText(null);
+                a.setContentText("Please select the tool you like to measure first.");
+                a.show();
+                return;
+            }
         }
 
         Alert a = new Alert(AlertType.INFORMATION);
@@ -142,13 +194,23 @@ public class MeasurementController implements Controller {
         if (timer != null && timerOn) {
             timer.cancel();
             timerOn = false;
+            var selectedToolIndex = toolList.getSelectionModel().getSelectedIndex();
+            if(selectedToolIndex == -1){
+                logger.warning("No tool selected, defaulting to tool 0");
+                selectedToolIndex = 0;
+            }
             storedMeasurements.put("Measurement " + measurementCounter + "("
-                    + dataS.getDataManager().getToolMeasures().get(0).getName()
-                    + ")", dataS.getDataManager().getToolMeasures().get(0));
+                    + dataS.getDataManager().getToolMeasures().get(selectedToolIndex).getName()
+                    + ")", dataS.getDataManager().getToolMeasures().get(selectedToolIndex));
             this.updateMeasurementList();
             measurementCounter++;
             this.statusLabel.setText("");
         }
+    }
+
+    @FXML
+    private void reloadConnectionClicked(){
+        updateTrackingDataSource();
     }
 
     @FXML
@@ -181,53 +243,75 @@ public class MeasurementController implements Controller {
                 }
                 // Jitter Rotation
                 if (jitterR.isSelected()) {
-                    if(avgMes.getRotationError() != null) {
-                        lCalcJR.setText(FormatManager.toString(avgMes.getRotationError()) + " mm");
+                    // This was before set to rotationError, which was never calculated.
+                    var rotationJitter = avgMes.getRotationJitter();
+                    if(rotationJitter != null) {
+                        lCalcJR.setText(rotationJitter + " mm");
                     } else {
                         logger.log(Level.WARNING, "Rotation Error cannot be calculated.");
                     }
                 }
                 // Correctness calculation needs two measurements
+                // Correctness will take an expected distance and calculate how exact the measurements were (eg, how close they were to the expected distance)
                 if(storedMeasurements.values().size() > 1) {
                     // Correctness Rotation
                     if (correctnessR.isSelected()) {
-
-                        Quaternion expectedrotation = new Quaternion().set(
-                            (float) Double.parseDouble(rotationX.getText()),
-                            (float) Double.parseDouble(rotationY.getText()),
-                            (float) Double.parseDouble(rotationZ.getText()),
-                            (float) Double.parseDouble(rotationR.getText()));
-
+                        Quaternion expectedRotation = new Quaternion();
+                        try {
+                             expectedRotation = new Quaternion().set(
+                                     Float.parseFloat(rotationX.getText()),
+                                     Float.parseFloat(rotationY.getText()),
+                                     Float.parseFloat(rotationZ.getText()),
+                                     Float.parseFloat(rotationR.getText()));
+                        }catch(NumberFormatException ex){
+                            Alert a = new Alert(AlertType.ERROR);
+                            a.setTitle("Error");
+                            a.setHeaderText(null);
+                            a.setContentText("The values you entered for the expected rotation are not valid.");
+                            a.showAndWait();
+                        }
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
 
                         lCalcCR.setText(String.valueOf(dataS.getAccuracyRotation(
-                            expectedrotation,
+                            expectedRotation,
                             firstTool.getMeasurement().get(0),
                             secondTool.getMeasurement().get(0))));
                     }
                     // Correctness Position
                     if (correctnessP.isSelected()) {
                         lCalcCP.setText("0,00");
-                        ToolMeasure firstTool = null;
-                        ToolMeasure secondTool = null;
-                        firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                        secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
-                        lCalcJP.setText(String.valueOf(dataS.getAccuracy(
+                        ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
+                        ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        lCalcCP.setText(String.valueOf(dataS.getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
                             secondTool.getAverageMeasurement())));
+                    }
+                }else{
+                    if(correctnessR.isSelected() || correctnessP.isSelected()) {
+                        Alert a = new Alert(AlertType.WARNING);
+                        a.setTitle("Warning");
+                        a.setHeaderText(null);
+                        a.setContentText("You need two measurements to calculate the accuracy.");
+                        a.show();
                     }
                 }
             } catch (IllegalArgumentException e) {
                 logger.log(Level.WARNING, "Calculation error", e);
                 statusLabel.setText("Calculation error");
             }
+        }else{
+            Alert a = new Alert(AlertType.INFORMATION);
+            a.setTitle("No measurement selected");
+            a.setHeaderText(null);
+            a.setContentText("You need to select a measurement to calculate these values.");
+            a.show();
         }
     }
 
     @FXML
-    private void addMeasurement(){
+    private void addMeasurementFromFile(){
         if (toolList.getItems().size() > 0
                 && toolList.getSelectionModel().getSelectedItem() != null) {
             try {
@@ -250,7 +334,9 @@ public class MeasurementController implements Controller {
         }
     }
 
+    @Override
     public void close() {
         this.statusLabel.setText("");
+        unregisterController();
     }
 }

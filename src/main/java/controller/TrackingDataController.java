@@ -14,16 +14,23 @@ import java.util.logging.Logger;
 import algorithm.DataService;
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
+import com.jme3.app.Application;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import inputOutput.AbstractTrackingDataSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -38,6 +45,10 @@ public class TrackingDataController implements Controller {
     @FXML ScatterChart<Number, Number> s3;
     @FXML VBox posBox;
     @FXML VBox rotBox;
+    @FXML ProgressIndicator connectionIndicator;
+    @FXML ToggleButton freezeTglBtn;
+    @FXML Button loadCSVBtn;
+    @FXML Button visualizeTrackingBtn;
     public DataService ds;
     public Timeline timeline;
     AbstractTrackingDataSource source;
@@ -46,12 +57,19 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> rotation;
     Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
+    private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        registerController();
         toolDisplayList = new ArrayList<>();
         position = new HashMap<>();
         rotation = new HashMap<>();
+
+        loadCSVBtn.disableProperty().bind(visualizationRunning);
+        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
+        freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
     public AbstractTrackingDataSource getSource() {
@@ -74,15 +92,18 @@ public class TrackingDataController implements Controller {
 
         File file = fp.showOpenDialog(new Stage());
         if (file != null) {
+            if(source != null){
+                disconnectSource();
+            }
             try {
                 newSource = new CSVFileReader(file.getAbsolutePath());
+                newSource.setRepeatMode(true);
+                source = newSource;
                 logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);
                 statusLabel.setText("Error loading CSV file");
             }
-            newSource.setRepeatMode(true);
-            source = newSource;
         }
     }
 
@@ -90,9 +111,40 @@ public class TrackingDataController implements Controller {
      * Connect via OpenIGTLink.
      */
     @FXML
-    private void connect() {
+    private void onConnectButtonClicked() {
+        if(source != null) { // bit hacky
+            disconnectSource();
+        }
+        connectionIndicator.setVisible(true);
         OIGTTrackingDataSource newSource = new OIGTTrackingDataSource();
+        new Thread(() -> {
+            newSource.connect();
+            Platform.runLater(() -> {
+                connectionIndicator.setVisible(false);
+                sourceConnected.setValue(true);
+            });
+        }).start();
         source = newSource;
+    }
+
+    /**
+     * This method disconnects the current source, closes the connection and resets the timeline.
+     */
+    private void disconnectSource(){
+        if(timeline != null) {
+            if(timeline.getStatus() == Animation.Status.PAUSED){
+                statusLabel.setText("");    // To remove the label
+                freezeTglBtn.setSelected(false);
+            }
+            timeline.stop();
+            timeline = null;
+        }
+        visualizationRunning.setValue(false);
+        if(source != null) {
+            source.closeConnection();
+            source = null;
+        }
+        sourceConnected.setValue(false);
     }
 
     /**
@@ -100,7 +152,6 @@ public class TrackingDataController implements Controller {
      */
     @FXML
     public void visualizeTracking() {
-
         if (timeline == null && source != null) {
             // this is used to load tracking data from source
             ds = new DataService(source);
@@ -113,6 +164,7 @@ public class TrackingDataController implements Controller {
             );
             timeline.play();
             updateDiagrams();
+            visualizationRunning.setValue(true);
         }
         if (timeline != null) {
             timeline.play();
@@ -120,6 +172,9 @@ public class TrackingDataController implements Controller {
     }
 
     public void updateDiagrams() {
+        if(source == null){
+            return;
+        }
         // loads the next set of tracking data
         source.update();
         // this returns tracking data from all tools at one point in time
@@ -209,5 +264,9 @@ public class TrackingDataController implements Controller {
         }
     }
 
-    public void close() {}
+    @Override
+    public void close() {
+        disconnectSource();
+        unregisterController();
+    }
 }

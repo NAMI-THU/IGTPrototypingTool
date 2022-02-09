@@ -15,3 +15,8 @@
 	-fx-border-color: red;
 	-fx-border-radius: 5px;
 }
+
+.green-toggle-button:selected {
+	-fx-background-color: rgba(10, 156, 209, 0.4);
+	-fx-border-color: rgb(10, 156, 209);
+}
