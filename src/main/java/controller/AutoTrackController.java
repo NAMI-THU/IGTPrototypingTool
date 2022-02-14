@@ -1,17 +1,19 @@
 package controller;
 
-import algorithm.DataService;
-import algorithm.ImageDataManager;
-import algorithm.ImageDataProcessor;
-import algorithm.ToolMeasure;
+import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.javafx.collections.ImmutableObservableList;
+import com.sun.javafx.collections.ObservableListWrapper;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,6 +21,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
+import userinterface.ImageScatterChart;
+import userinterface.PlottableImage;
+import userinterface.TrackingDataDisplay;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,10 +33,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 public class AutoTrackController implements Controller {
 
@@ -39,8 +43,6 @@ public class AutoTrackController implements Controller {
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    @FXML
-    public ImageView videoImage;
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
     @FXML
@@ -63,12 +65,17 @@ public class AutoTrackController implements Controller {
     public ProgressIndicator captureProgressSpinner;
     @FXML
     public ProgressIndicator connectionProgressSpinner;
+    @FXML
+    public PlottableImage videoImagePlot;
+
     private TrackingDataController trackingDataController;
     private Label statusLabel;
     private Timeline videoTimeline;
     private Timeline autoCaptureTimeline;
     private BufferedImage currentShowingImage;
     private boolean captureScheduled = false;
+
+    private final ObservableList<XYChart.Series<Number, Number>> dataSeries = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,6 +89,8 @@ public class AutoTrackController implements Controller {
         var expression = trackingConnectedStatusBox.selectedProperty().and(regMatrixStatusBox.selectedProperty()).and(outputPathField.textProperty().isNotEmpty());
         autoCaptureToggleButton.disableProperty().bind(expression.not());
         singleCaptureButton.disableProperty().bind(expression.not());
+
+        videoImagePlot.setData(dataSeries);
 
         // For Testing Purpose only
         regMatrixStatusBox.setSelected(true);
@@ -192,6 +201,12 @@ public class AutoTrackController implements Controller {
     private void updateVideoImage() {
         var matrix = imageDataManager.readMat();
         currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
+
+        // Show Tracking Data
+        if(trackingConnectedStatusBox.isSelected()){
+            updateTrackingData();
+        }
+
         if (this.captureScheduled) {
             this.captureScheduled = false;
             dataService.setTrackingDataSource(trackingDataController.getSource());
@@ -199,7 +214,43 @@ public class AutoTrackController implements Controller {
             var trackingData = dataService.getDataManager().getNextData(1);
             saveCapturedData(currentShowingImage, trackingData);
         }
-        videoImage.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+        videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+    }
+
+    /**
+     * Loads the next tracking data point and displays it on the image-plot
+     */
+    private void updateTrackingData(){
+        var source = trackingDataController.getSource();
+        if(source == null){return;}
+        dataService.setTrackingDataSource(trackingDataController.getSource());  // TODO should make a property for this
+
+        source.update();
+        List<ToolMeasure> tools = dataService.loadNextData(1);
+
+        if (tools.isEmpty()) return;
+
+        for (int i = 0; i < tools.size(); i++) {
+            ToolMeasure tool = tools.get(i);
+            if (dataSeries.size() <= i) {
+                var series = new XYChart.Series<Number, Number>();
+                series.setName(tool.getName());
+                series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
+                dataSeries.add(series);
+                series.getData().remove(0);
+            }
+
+            var series = dataSeries.get(i);
+            var measurements = tool.getMeasurement();
+            var point = measurements.get(measurements.size() - 1).getPoint();
+            var data = series.getData();
+            var max_num_points = 5;
+
+            data.add(new XYChart.Data<>(point.getX(), point.getY()));
+            if(data.size() > max_num_points){
+                data.remove(0);
+            }
+        }
     }
 
     /**
