@@ -1,10 +1,12 @@
 package controller;
 
-import algorithm.*;
+import algorithm.DataService;
+import algorithm.ImageDataManager;
+import algorithm.ImageDataProcessor;
+import algorithm.ToolMeasure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.javafx.collections.ImmutableObservableList;
-import com.sun.javafx.collections.ObservableListWrapper;
+import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -18,24 +20,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import userinterface.ImageScatterChart;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 import userinterface.PlottableImage;
-import userinterface.TrackingDataDisplay;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
-import java.util.*;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class AutoTrackController implements Controller {
 
@@ -74,6 +78,8 @@ public class AutoTrackController implements Controller {
     private Timeline autoCaptureTimeline;
     private BufferedImage currentShowingImage;
     private boolean captureScheduled = false;
+
+    private TransformationMatrix transformationMatrix = new TransformationMatrix();
 
     private final ObservableList<XYChart.Series<Number, Number>> dataSeries = FXCollections.observableArrayList();
 
@@ -200,6 +206,7 @@ public class AutoTrackController implements Controller {
      */
     private void updateVideoImage() {
         var matrix = imageDataManager.readMat();
+        matrix = applyTransformations(matrix);
         currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
 
         // Show Tracking Data
@@ -342,5 +349,36 @@ public class AutoTrackController implements Controller {
                 captureProgressSpinner.setVisible(false);
             }
         }
+    }
+
+    /**
+     * Called, when "Import Matrix" Button is pressed.
+     */
+    @FXML
+    public void on_importMatrix() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Matrix JSON");
+        var inputFile = fileChooser.showOpenDialog(null);
+        if(inputFile == null){
+            return;
+        }
+        try {
+            transformationMatrix = TransformationMatrix.loadFromJSON(inputFile.getAbsolutePath());
+            regMatrixStatusBox.setSelected(true);
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Applies the transformation matrix to the image
+     * @param mat The image to be transformed
+     * @return The transformed image
+     */
+    private Mat applyTransformations(Mat mat){
+        // TODO: Make sure which dimensions of the matrix are needed. We can't use the 3D matrix directly
+        Mat warpDst = Mat.zeros( mat.rows(), mat.cols(), mat.type() );
+        Imgproc.warpAffine(mat, warpDst, transformationMatrix.toMat(), warpDst.size());
+        return warpDst;
     }
 }

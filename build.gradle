@@ -44,7 +44,7 @@ dependencies {
     implementation 'gov.nist.math:jama:1.0.3'
     implementation 'com.neuronrobotics:java-bowler:3.28.0'
     implementation 'org.apache.commons:commons-csv:1.9.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
     // Use JUnit test framework
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
