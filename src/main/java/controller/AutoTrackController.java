@@ -378,7 +378,7 @@ public class AutoTrackController implements Controller {
     private Mat applyTransformations(Mat mat){
         // TODO: Make sure which dimensions of the matrix are needed. We can't use the 3D matrix directly
         Mat warpDst = Mat.zeros( mat.rows(), mat.cols(), mat.type() );
-        Imgproc.warpAffine(mat, warpDst, transformationMatrix.toMat(), warpDst.size());
+        Imgproc.warpAffine(mat, warpDst, transformationMatrix.getOverallTransformationMat(), warpDst.size());
         return warpDst;
     }
 }
