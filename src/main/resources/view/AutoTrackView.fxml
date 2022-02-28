@@ -34,7 +34,7 @@
                               </HBox>
                               <BorderPane>
                                  <center>
-                                    <Label text="Trackingsource" textAlignment="CENTER" />
+                                    <Label text="Trackingsource" textAlignment="LEFT" />
                                  </center>
                                  <left>
                                     <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" BorderPane.alignment="CENTER" />
@@ -54,7 +54,10 @@
                                     <CheckBox fx:id="regMatrixStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" BorderPane.alignment="CENTER" />
                                  </left>
                                  <right>
-                                    <Button fx:id="regMatrixImportButton" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Import" BorderPane.alignment="CENTER" onAction="#on_importMatrix" />
+                                    <HBox alignment="CENTER_RIGHT">
+                                       <Button fx:id="regMatrixImportButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="Import" BorderPane.alignment="CENTER" onAction="#on_importMatrix" />
+                                       <Button alignment="CENTER_RIGHT" mnemonicParsing="false" text="Reload" BorderPane.alignment="CENTER" onAction="#on_reloadMatrix" />
+                                    </HBox>
                                  </right>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -1,9 +1,6 @@
 package controller;
 
-import algorithm.DataService;
-import algorithm.ImageDataManager;
-import algorithm.ImageDataProcessor;
-import algorithm.ToolMeasure;
+import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import inputOutput.TransformationMatrix;
@@ -78,6 +75,11 @@ public class AutoTrackController implements Controller {
     private Timeline autoCaptureTimeline;
     private BufferedImage currentShowingImage;
     private boolean captureScheduled = false;
+    private String lastMatrixPath = "";
+
+    // Used to crop the image to the actual content. Dirty describes whether the roi cache needs to be updated on the next transform, it's set when a new matrix is loaded
+    private int[] matrixRoi = new int[4];
+    private boolean roiDirty = true;
 
     private TransformationMatrix transformationMatrix = new TransformationMatrix();
 
@@ -206,8 +208,10 @@ public class AutoTrackController implements Controller {
      */
     private void updateVideoImage() {
         var matrix = imageDataManager.readMat();
-        matrix = applyTransformations(matrix);
-        currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
+        if(matrix != null && !matrix.empty()) {
+            matrix = applyTransformations(matrix);
+            currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
+        }
 
         // Show Tracking Data
         if(trackingConnectedStatusBox.isSelected()){
@@ -221,7 +225,9 @@ public class AutoTrackController implements Controller {
             var trackingData = dataService.getDataManager().getNextData(1);
             saveCapturedData(currentShowingImage, trackingData);
         }
-        videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+        if(matrix != null && !matrix.empty()) {
+            videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+        }
     }
 
     /**
@@ -363,10 +369,29 @@ public class AutoTrackController implements Controller {
             return;
         }
         try {
-            transformationMatrix = TransformationMatrix.loadFromJSON(inputFile.getAbsolutePath());
+            var path = inputFile.getAbsolutePath();
+            lastMatrixPath = path;
+            transformationMatrix = TransformationMatrix.loadFromJSON(path);
+            roiDirty = true;
             regMatrixStatusBox.setSelected(true);
         }catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Reloads the matrix from the last given path (so it's easier to change from the outside)
+     */
+    @FXML
+    public void on_reloadMatrix(){
+        if (lastMatrixPath != null && !lastMatrixPath.isEmpty()) {
+            try {
+                transformationMatrix = TransformationMatrix.loadFromJSON(lastMatrixPath);
+                roiDirty = true;
+                regMatrixStatusBox.setSelected(true);
+            }catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -376,9 +401,14 @@ public class AutoTrackController implements Controller {
      * @return The transformed image
      */
     private Mat applyTransformations(Mat mat){
-        // TODO: Make sure which dimensions of the matrix are needed. We can't use the 3D matrix directly
-        Mat warpDst = Mat.zeros( mat.rows(), mat.cols(), mat.type() );
+        Mat warpDst = Mat.zeros(mat.rows(), mat.cols(), mat.type() );
         Imgproc.warpAffine(mat, warpDst, transformationMatrix.getOverallTransformationMat(), warpDst.size());
+
+        if(roiDirty){
+            matrixRoi = MatHelper.calculateRoi(warpDst);
+            roiDirty = false;
+        }
+        warpDst = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
         return warpDst;
     }
 }

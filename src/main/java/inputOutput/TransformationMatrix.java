@@ -12,6 +12,7 @@ public class TransformationMatrix {
                                                 {0.0f, 0.0f, 1.0f}};
     public float[] translationVector3d = new float[]{0, 0, 0};
     public float[] scaleVector3d = new float[]{1, 1, 1};
+    public int[][] flip2d = new int[][]{{1, 0},{0, 1}};
 
     public int ignoreDimension = 2;
 
@@ -72,17 +73,18 @@ public class TransformationMatrix {
     }
 
     public Mat getOverallTransformationMat(){
+        // TODO: Matrix Mult
         var rotation = getRotationMat();
         var translation = getTranslationMat();
         var scale = getScaleMat();
 
         var mat = new Mat(2, 3, CvType.CV_32F);
-        mat.put(0,0,rotation.get(0,0)[0] * scale.get(0,0)[0]);
+        mat.put(0,0,rotation.get(0,0)[0] * scale.get(0,0)[0] * flip2d[0][0]);
         mat.put(0,1,rotation.get(0,1)[0]);
         mat.put(0,2,translation.get(0,0)[0]);
 
         mat.put(1,0,rotation.get(1,0)[0]);
-        mat.put(1,1,rotation.get(1,1)[0] * scale.get(0,1)[0]);
+        mat.put(1,1,rotation.get(1,1)[0] * scale.get(0,1)[0] * flip2d[1][1]);
         mat.put(1,2,translation.get(0,1)[0]);
 
         return mat;

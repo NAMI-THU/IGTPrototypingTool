@@ -24,10 +24,12 @@ public class PlottableImage extends ScatterChart<Number, Number> {
         ((NumberAxis) getYAxis()).setLowerBound(-image.getHeight()/2);
 
         // TODO: This might conflict with the Transformation Matrix
-        prefWidthProperty().bind(image.widthProperty());
-        prefHeightProperty().bind(image.heightProperty());
+//        prefWidthProperty().bind(image.widthProperty());
+//        prefHeightProperty().bind(image.heightProperty());
 
         maxWidthProperty().bind(image.widthProperty());
         maxHeightProperty().bind(image.heightProperty());
+
+        updateAxisRange();
     }
 }
