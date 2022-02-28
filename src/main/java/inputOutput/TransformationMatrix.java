@@ -7,7 +7,7 @@ import org.opencv.core.Mat;
 import java.io.*;
 
 public class TransformationMatrix {
-    public float[][] matrix3d = new float[][]{{1.0f,0.0f,0.0f},
+    public float[][] rotation3d = new float[][]{{1.0f,0.0f,0.0f},
                                                 {0.0f,1.0f,0.0f},
                                                 {0.0f, 0.0f, 1.0f}};
     public float[] translationVector3d = new float[]{0, 0, 0};
@@ -28,16 +28,16 @@ public class TransformationMatrix {
     public Mat getRotationMat(){
         var mat = new Mat(2,2, CvType.CV_64F);
         int row = 0;
-        for(int i = 0; i < matrix3d.length; i++){
+        for(int i = 0; i < rotation3d.length; i++){
             int col = 0;
             if(i == ignoreDimension){
                 continue;
             }
-            for(int j = 0; j < matrix3d[i].length; j++){
+            for(int j = 0; j < rotation3d[i].length; j++){
                 if(j == ignoreDimension){
                     continue;
                 }
-                mat.put(row, col, matrix3d[i][j]);
+                mat.put(row, col, rotation3d[i][j]);
                 col++;
             }
             row++;
