@@ -131,7 +131,10 @@ public class ImageDataProcessor {
     }
 
     public boolean closeConnection(){
-        return imgSrc.closeConnection();
+        if(imgSrc != null) {
+            return imgSrc.closeConnection();
+        }
+        return true;
     }
 
 }

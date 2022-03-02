@@ -411,12 +411,19 @@ public class AutoTrackController implements Controller {
 //        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
 //        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
 
-        Mat srcPoints = Converters.vector_Point_to_Mat(transformationMatrix.getImagePoints(), CvType.CV_32F);
-        Mat dstPoints = Converters.vector_Point_to_Mat(transformationMatrix.getTrackingPoints(), CvType.CV_32F);
+        var imagePoints = transformationMatrix.getImagePoints();
+        var trackingPoints = transformationMatrix.getTrackingPoints();
+        if(!imagePoints.isEmpty() && !trackingPoints.isEmpty()) {
+            Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
+            Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
 
-        var matrix = Imgproc.getPerspectiveTransform(srcPoints,dstPoints);
-        Imgproc.warpPerspective(mat,mat,matrix,mat.size());
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
+            var matrix = Imgproc.getPerspectiveTransform(srcPoints, dstPoints);
+            var outMat = Mat.zeros(mat.size(), CvType.CV_32F);
+            Imgproc.warpPerspective(mat, outMat, matrix, mat.size());
+            mat = outMat;
+            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
+            mat = outMat;
+        }
 
         if(roiDirty){
             matrixRoi = MatHelper.calculateRoi(mat);

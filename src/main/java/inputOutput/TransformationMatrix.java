@@ -8,6 +8,7 @@ import org.opencv.core.Point;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,8 @@ public class TransformationMatrix {
     public float[] scaleVector3d = new float[]{1, 1, 1};
     public int[][] flip2d = new int[][]{{1, 0},{0, 1}};
 
-    public float[][] imagePoints = new float[4][];
-    public float[][] trackingPoints = new float[4][];
+    public float[][] imagePoints;
+    public float[][] trackingPoints;
 
     public int ignoreDimension = 2;
 
@@ -35,10 +36,12 @@ public class TransformationMatrix {
     }
 
     public List<Point> getImagePoints(){
+        if(imagePoints == null){return new ArrayList<>();}
         return Arrays.stream(imagePoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
     }
 
     public List<Point> getTrackingPoints(){
+        if(trackingPoints == null){return new ArrayList<>();}
         return Arrays.stream(trackingPoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
     }
 
