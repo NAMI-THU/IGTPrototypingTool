@@ -150,7 +150,7 @@ public class AutoTrackController implements Controller {
     private void loadAvailableVideoDevicesAsync() {
         connectionProgressSpinner.setVisible(true);
         new Thread(() -> {
-            createDeviceIdMapping();
+            createDeviceIdMapping(true);
             Platform.runLater(() -> {
                 sourceChoiceBox.getItems().addAll(deviceIdMapping.keySet());
                 if (!deviceIdMapping.isEmpty()) {
@@ -167,7 +167,12 @@ public class AutoTrackController implements Controller {
      * Tests out available video device ids. All devices that don't throw an error are added to the list.
      * This is bad style, but openCV does not offer to list available devices.
      */
-    private void createDeviceIdMapping() {
+    private void createDeviceIdMapping(boolean fast) {
+        if(fast){
+            deviceIdMapping.put("Default Camera",0);
+            return;
+        }
+
         int currentDevice = 0;
         boolean deviceExists = imageDataManager.openConnection(VideoSource.LIVESTREAM, currentDevice);
         imageDataManager.closeConnection();
