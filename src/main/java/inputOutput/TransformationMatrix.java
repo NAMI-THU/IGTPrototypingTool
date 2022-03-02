@@ -3,16 +3,24 @@ package inputOutput;
 import com.google.gson.Gson;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TransformationMatrix {
     public float[][] rotation3d = new float[][]{{1.0f,0.0f,0.0f},
-                                                {0.0f,1.0f,0.0f},
-                                                {0.0f, 0.0f, 1.0f}};
+            {0.0f,1.0f,0.0f},
+            {0.0f, 0.0f, 1.0f}};
     public float[] translationVector3d = new float[]{0, 0, 0};
     public float[] scaleVector3d = new float[]{1, 1, 1};
     public int[][] flip2d = new int[][]{{1, 0},{0, 1}};
+
+    public float[][] imagePoints = new float[4][];
+    public float[][] trackingPoints = new float[4][];
 
     public int ignoreDimension = 2;
 
@@ -26,8 +34,16 @@ public class TransformationMatrix {
         }
     }
 
+    public List<Point> getImagePoints(){
+        return Arrays.stream(imagePoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
+    }
+
+    public List<Point> getTrackingPoints(){
+        return Arrays.stream(trackingPoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
+    }
+
     public Mat getRotationMat(){
-        var mat = new Mat(2,2, CvType.CV_64F);
+        var mat = Mat.eye(2,3, CvType.CV_64F);
         int row = 0;
         for(int i = 0; i < rotation3d.length; i++){
             int col = 0;
@@ -47,46 +63,29 @@ public class TransformationMatrix {
     }
 
     public Mat getTranslationMat(){
-        var mat = new Mat(1, 2, CvType.CV_64F);
-        int col = 0;
+        var mat = Mat.eye(2, 3, CvType.CV_64F);
+        int row = 0;
         for(int i = 0;i < translationVector3d.length; i++){
             if(i == ignoreDimension){
                 continue;
             }
-            mat.put(0,col,translationVector3d[i]);
-            col++;
+            mat.put(row,2,translationVector3d[i]);
+            row++;
         }
         return mat;
     }
 
     public Mat getScaleMat(){
-        var mat = new Mat(1, 2, CvType.CV_64F);
-        int col = 0;
-        for(int i = 0;i< scaleVector3d.length;i++){
-            if(i == ignoreDimension){
-                continue;
+        var mat = new Mat(2,3, CvType.CV_64F);
+        for(int i = 0;i<mat.rows();i++){
+            for(int j = 0;j<mat.cols();j++){
+                float value = 0f;
+                if(i == j){
+                    value = scaleVector3d[i]*flip2d[i][j];
+                }
+                mat.put(i,j,value);
             }
-            mat.put(0, col, scaleVector3d[i]);
-            col++;
         }
-        return mat;
-    }
-
-    public Mat getOverallTransformationMat(){
-        // TODO: Matrix Mult
-        var rotation = getRotationMat();
-        var translation = getTranslationMat();
-        var scale = getScaleMat();
-
-        var mat = new Mat(2, 3, CvType.CV_32F);
-        mat.put(0,0,rotation.get(0,0)[0] * scale.get(0,0)[0] * flip2d[0][0]);
-        mat.put(0,1,rotation.get(0,1)[0]);
-        mat.put(0,2,translation.get(0,0)[0]);
-
-        mat.put(1,0,rotation.get(1,0)[0]);
-        mat.put(1,1,rotation.get(1,1)[0] * scale.get(0,1)[0] * flip2d[1][1]);
-        mat.put(1,2,translation.get(0,1)[0]);
-
         return mat;
     }
 }

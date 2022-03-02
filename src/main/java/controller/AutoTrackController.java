@@ -20,8 +20,11 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.utils.Converters;
 import userinterface.PlottableImage;
 
 import javax.imageio.ImageIO;
@@ -33,10 +36,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 public class AutoTrackController implements Controller {
 
@@ -401,14 +402,22 @@ public class AutoTrackController implements Controller {
      * @return The transformed image
      */
     private Mat applyTransformations(Mat mat){
-        Mat warpDst = Mat.zeros(mat.rows(), mat.cols(), mat.type() );
-        Imgproc.warpAffine(mat, warpDst, transformationMatrix.getOverallTransformationMat(), warpDst.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
+
+        Mat srcPoints = Converters.vector_Point_to_Mat(transformationMatrix.getImagePoints(), CvType.CV_32F);
+        Mat dstPoints = Converters.vector_Point_to_Mat(transformationMatrix.getTrackingPoints(), CvType.CV_32F);
+
+        var matrix = Imgproc.getPerspectiveTransform(srcPoints,dstPoints);
+        Imgproc.warpPerspective(mat,mat,matrix,mat.size());
+        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
 
         if(roiDirty){
-            matrixRoi = MatHelper.calculateRoi(warpDst);
+            matrixRoi = MatHelper.calculateRoi(mat);
             roiDirty = false;
         }
-        warpDst = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
-        return warpDst;
+        mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
+        return mat;
     }
 }
