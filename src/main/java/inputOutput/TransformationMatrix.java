@@ -2,10 +2,7 @@ package inputOutput;
 
 import com.google.gson.Gson;
 import controller.AutoTrackController;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
+import org.opencv.core.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -100,5 +97,66 @@ public class TransformationMatrix {
             }
         }
         return mat;
+    }
+
+    public Mat getTransformMat(){
+        if(trackingPoints == null){
+            return Mat.eye(3,3,CvType.CV_32F);
+        }
+        Mat track_m1 = toMat(trackingPoints);
+        Mat track_m2 = toMat2(trackingPoints);
+        var tmp2 = new Mat(3,1,CvType.CV_32F);
+        Core.solve(track_m1, track_m2, tmp2);
+        var A = scale(track_m1, tmp2);
+
+        Mat img_m1 = toMat(imagePoints);
+        Mat img_m2 = toMat2(imagePoints);
+        var tmp1 = new Mat(3,1,CvType.CV_32F);
+        Core.solve(img_m1, img_m2, tmp1);
+        var B = scale(img_m1, tmp1);
+
+        var C = B.mul(A.inv());
+        return C;
+    }
+
+    private Mat scale(Mat m, Mat parameters){
+        var lambda = parameters.get(0,0)[0];
+        var mu = parameters.get(1,0)[0];
+        var psi = parameters.get(2,0)[0];
+
+        Mat out = new Mat(m.size(), CvType.CV_32F);
+        out.put(0,0,m.get(0,0)[0]*lambda);
+        out.put(1,0,m.get(1,0)[0]*lambda);
+        out.put(2,0,lambda);
+
+        out.put(0,1,m.get(0,1)[0]*mu);
+        out.put(1,1,m.get(1,1)[0]*mu);
+        out.put(2,1,mu);
+
+        out.put(0,2,m.get(0,2)[0]*psi);
+        out.put(1,2,m.get(1,2)[0]*psi);
+        out.put(2,2,psi);
+        return out;
+    }
+    private Mat toMat(float[][] points){
+        Mat m1 = new Mat(3,3, CvType.CV_32F);
+        m1.put(0,0,points[0][0]);
+        m1.put(1,0,points[0][1]);
+        m1.put(2,0,1);
+        m1.put(0,1,points[1][0]);
+        m1.put(1,1,points[1][1]);
+        m1.put(2,1,1);
+        m1.put(0,2,points[2][0]);
+        m1.put(1,2,points[2][1]);
+        m1.put(2,2,1);
+        return m1;
+    }
+
+    private Mat toMat2(float[][] points){
+        Mat m2 = new Mat(3,1, CvType.CV_32F);
+        m2.put(0,0,imagePoints[3][0]);
+        m2.put(1,0,imagePoints[3][1]);
+        m2.put(2,0,1);
+        return m2;
     }
 }

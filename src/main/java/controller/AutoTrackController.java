@@ -22,10 +22,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
+import org.opencv.core.*;
 import org.opencv.core.Point;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import userinterface.PlottableImage;
@@ -44,7 +42,7 @@ import java.util.List;
 
 public class AutoTrackController implements Controller {
 
-    public static final int TRACKING_SHIFT = 300;
+    public static final int TRACKING_SHIFT = 0;
     private final DataService dataService = new DataService();
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
@@ -278,11 +276,28 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 5;
 
-            data.add(new XYChart.Data<>(point.getX()+TRACKING_SHIFT, point.getY()+ TRACKING_SHIFT));
+            // TODO: Check if minus
+            var shifted_points = shiftTrackingData(point.getX()+TRACKING_SHIFT, point.getY()+ TRACKING_SHIFT);
+            data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
             if(data.size() > max_num_points){
                 data.remove(0);
             }
         }
+    }
+
+    private double[] shiftTrackingData(double x, double y){
+        var matrix = transformationMatrix.getTransformMat();
+        var vector = new Mat(3,1, CvType.CV_32F);
+        vector.put(0,0,x);
+        vector.put(1,0,y);
+        vector.put(2,0,1);
+
+        var pos_star = new Mat(3,1,CvType.CV_32F);
+        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        double[] out = new double[2];
+        out[0] = pos_star.get(0,0)[0]/pos_star.get(2,0)[0];
+        out[1] = pos_star.get(1,0)[0]/pos_star.get(2,0)[0];
+        return out;
     }
 
     /**
@@ -428,14 +443,14 @@ public class AutoTrackController implements Controller {
         var trackingPoints = transformationMatrix.getTrackingPoints();
         var outMat = new Mat();//Mat.zeros(mat.size(), CvType.CV_32F);
         if(!imagePoints.empty() && !trackingPoints.empty()) {
-            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
-            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
-
-            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
-            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
-
-            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
-            mat = outMat;
+//            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
+//            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
+//
+//            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
+//            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
+//
+//            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
+//            mat = outMat;
 //            mat = outMat;
 //            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
 //            mat = outMat;
