@@ -426,7 +426,7 @@ public class AutoTrackController implements Controller {
         }
 
         if(roiDirty){
-            matrixRoi = MatHelper.calculateRoi(mat);
+            matrixRoi = MatHelper.calculateRoi(mat, true);
             roiDirty = false;
         }
         mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
