@@ -3,6 +3,7 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.javafx.binding.StringFormatter;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
@@ -20,9 +21,11 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import userinterface.PlottableImage;
@@ -41,6 +44,7 @@ import java.util.List;
 
 public class AutoTrackController implements Controller {
 
+    public static final int TRACKING_SHIFT = 300;
     private final DataService dataService = new DataService();
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
@@ -100,6 +104,7 @@ public class AutoTrackController implements Controller {
         singleCaptureButton.disableProperty().bind(expression.not());
 
         videoImagePlot.setData(dataSeries);
+        videoImagePlot.registerImageClickedHandler(this::onImageClicked);
 
         // For Testing Purpose only
         regMatrixStatusBox.setSelected(true);
@@ -226,14 +231,22 @@ public class AutoTrackController implements Controller {
 
         if (this.captureScheduled) {
             this.captureScheduled = false;
-            dataService.setTrackingDataSource(trackingDataController.getSource());
-            dataService.getDataManager().restartMeasurements();
-            var trackingData = dataService.getDataManager().getNextData(1);
+            var trackingData = readTrackingData();
             saveCapturedData(currentShowingImage, trackingData);
         }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
         }
+    }
+
+    /**
+     * Reads the position of the tracker
+     * @return Measurement
+     */
+    private List<ToolMeasure> readTrackingData(){
+        dataService.setTrackingDataSource(trackingDataController.getSource());
+        dataService.getDataManager().restartMeasurements();
+        return dataService.getDataManager().getNextData(1);
     }
 
     /**
@@ -265,7 +278,7 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 5;
 
-            data.add(new XYChart.Data<>(point.getX(), point.getY()));
+            data.add(new XYChart.Data<>(point.getX()+TRACKING_SHIFT, point.getY()+ TRACKING_SHIFT));
             if(data.size() > max_num_points){
                 data.remove(0);
             }
@@ -413,16 +426,20 @@ public class AutoTrackController implements Controller {
 
         var imagePoints = transformationMatrix.getImagePoints();
         var trackingPoints = transformationMatrix.getTrackingPoints();
-        if(!imagePoints.isEmpty() && !trackingPoints.isEmpty()) {
-            Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
-            Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
+        var outMat = new Mat();//Mat.zeros(mat.size(), CvType.CV_32F);
+        if(!imagePoints.empty() && !trackingPoints.empty()) {
+            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
+            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
 
-            var matrix = Imgproc.getPerspectiveTransform(srcPoints, dstPoints);
-            var outMat = Mat.zeros(mat.size(), CvType.CV_32F);
-            Imgproc.warpPerspective(mat, outMat, matrix, mat.size());
+            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
+            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
+
+            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
             mat = outMat;
-            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
-            mat = outMat;
+//            mat = outMat;
+//            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
+//            mat = outMat;
+//            Imgproc.warpAffine(mat, outMat, transformationMatrix.getTranslationMat(), mat.size());
         }
 
         if(roiDirty){
@@ -431,5 +448,20 @@ public class AutoTrackController implements Controller {
         }
         mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
         return mat;
+    }
+
+    /**
+     * Called, when the user clicks on the live image. Used to get landmarks for transformation.
+     * @param x X-Coordinate in the image
+     * @param y Y-Coordinate in the image
+     */
+    private void onImageClicked(double x, double y){
+        System.out.println("Image: ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",y)+")\nImage (Relative): ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",(currentShowingImage.getHeight()-y))+")");
+        // We also directly save the tracking-coordinates at this point.
+        var trackingData = readTrackingData();
+        if(trackingData.size() != 0) {
+            var trackingPoint = trackingData.get(0).getMeasurement().get(trackingData.get(0).getMeasurement().size() - 1).getPoint();
+            System.out.println("Tracker: (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX()) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY()) + ")\nTracker (shifted): (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX() + TRACKING_SHIFT) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY() + TRACKING_SHIFT) + ")");
+        }
     }
 }

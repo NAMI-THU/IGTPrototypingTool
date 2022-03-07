@@ -1,8 +1,10 @@
 package inputOutput;
 
 import com.google.gson.Gson;
+import controller.AutoTrackController;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 
 import java.io.*;
@@ -35,14 +37,22 @@ public class TransformationMatrix {
         }
     }
 
-    public List<Point> getImagePoints(){
-        if(imagePoints == null){return new ArrayList<>();}
-        return Arrays.stream(imagePoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
+    public MatOfPoint2f getImagePoints(){
+        if(imagePoints == null){return new MatOfPoint2f();}
+        var array = new Point[4];
+        for(int i = 0;i<imagePoints.length;i++){
+            array[i] = new Point(imagePoints[i][0], imagePoints[i][1]);
+        }
+        return new MatOfPoint2f(array);
     }
 
-    public List<Point> getTrackingPoints(){
-        if(trackingPoints == null){return new ArrayList<>();}
-        return Arrays.stream(trackingPoints).map(p -> new Point(p[0], p[1])).collect(Collectors.toList());
+    public MatOfPoint2f getTrackingPoints(){
+        if(trackingPoints == null){return new MatOfPoint2f();}
+        var array = new Point[4];
+        for(int i = 0;i<trackingPoints.length;i++){
+            array[i] = new Point(trackingPoints[i][0]+ AutoTrackController.TRACKING_SHIFT, trackingPoints[i][1]+ AutoTrackController.TRACKING_SHIFT);
+        }
+        return new MatOfPoint2f(array);
     }
 
     public Mat getRotationMat(){
