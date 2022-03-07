@@ -115,7 +115,9 @@ public class TransformationMatrix {
         Core.solve(img_m1, img_m2, tmp1);
         var B = scale(img_m1, tmp1);
 
-        var C = B.mul(A.inv());
+        //var C = B.mul(A.inv());
+        var C = new Mat();
+        Core.gemm(B, A.inv(),1, new Mat(),1,C);
         return C;
     }
 
