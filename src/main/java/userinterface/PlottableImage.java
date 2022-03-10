@@ -38,15 +38,15 @@ public class PlottableImage extends ScatterChart<Number, Number> {
     public void setImage(Image image) {
         imageView.setImage(image);
 
-        ((NumberAxis) getXAxis()).setUpperBound(image.getWidth()/2);
-        ((NumberAxis) getXAxis()).setLowerBound(-image.getWidth()/2);
-        ((NumberAxis) getYAxis()).setUpperBound(image.getHeight()/2);
-        ((NumberAxis) getYAxis()).setLowerBound(-image.getHeight()/2);
+//        ((NumberAxis) getXAxis()).setUpperBound(image.getWidth()/2);
+//        ((NumberAxis) getXAxis()).setLowerBound(-image.getWidth()/2);
+//        ((NumberAxis) getYAxis()).setUpperBound(image.getHeight()/2);
+//        ((NumberAxis) getYAxis()).setLowerBound(-image.getHeight()/2);
 
-//        ((NumberAxis) getXAxis()).setUpperBound(image.getWidth());
-//        ((NumberAxis) getXAxis()).setLowerBound(0);
-//        ((NumberAxis) getYAxis()).setUpperBound(image.getHeight());
-//        ((NumberAxis) getYAxis()).setLowerBound(0);
+        ((NumberAxis) getXAxis()).setUpperBound(image.getWidth());
+        ((NumberAxis) getXAxis()).setLowerBound(0);
+        ((NumberAxis) getYAxis()).setUpperBound(image.getHeight());
+        ((NumberAxis) getYAxis()).setLowerBound(0);
 
         // TODO: This might conflict with the Transformation Matrix
         imageView.minWidth(image.getWidth());
