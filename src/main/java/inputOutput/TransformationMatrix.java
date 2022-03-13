@@ -2,6 +2,7 @@ package inputOutput;
 
 import com.google.gson.Gson;
 import controller.AutoTrackController;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
 import java.io.*;
@@ -119,6 +120,14 @@ public class TransformationMatrix {
         var C = new Mat();
         Core.gemm(B, A.inv(),1, new Mat(),1,C);
         return C;
+    }
+
+    public Mat getTransformMat2(){
+        var matrix = new Mat();
+        var imagePoints = getImagePoints();
+        var trackingPoints = getTrackingPoints();
+        Calib3d.estimateAffine3D(imagePoints, trackingPoints, matrix, new Mat());
+        return matrix;
     }
 
     private Mat scale(Mat m, Mat parameters){

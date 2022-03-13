@@ -286,14 +286,14 @@ public class AutoTrackController implements Controller {
     }
 
     private double[] shiftTrackingData(double x, double y){
-        var matrix = transformationMatrix.getTransformMat();
+        var matrix = transformationMatrix.getTransformMat2();   // TODO Test, maybe in Calib3d switch
         var vector = new Mat(3,1, CvType.CV_32F);
         vector.put(0,0,x);
         vector.put(1,0,y);
         vector.put(2,0,1);
 
         var pos_star = new Mat(3,1,CvType.CV_32F);
-        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);  // Todo: Maybe switch direction?
         double[] out = new double[2];
         out[0] = pos_star.get(0,0)[0]/pos_star.get(2,0)[0];
         out[1] = pos_star.get(1,0)[0]/pos_star.get(2,0)[0];
