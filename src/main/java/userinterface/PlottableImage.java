@@ -1,17 +1,13 @@
 package userinterface;
 
 import javafx.beans.NamedArg;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class PlottableImage extends ScatterChart<Number, Number> {
 
@@ -22,17 +18,10 @@ public class PlottableImage extends ScatterChart<Number, Number> {
         super(xAxis, yAxis);
         getPlotChildren().add(imageView);
         setAnimated(false);
-//        imageView.setOnMouseClicked(mouseEvent -> System.out.printf(Locale.ENGLISH,
-//                "(%.2f, %.2f)%n",
-//                xAxis.getValueForDisplay(mouseEvent.getX()),
-//                imageView.getImage().getHeight()-yAxis.getValueForDisplay(mouseEvent.getY()).intValue()
-//        ));
+
         imageView.setPreserveRatio(false);
         imageView.setOnMouseClicked(mouseEvent -> clickHandler.forEach(handler -> {
-            // System.out.println("MouseX: "+mouseEvent.getX()+" MouseY: "+mouseEvent.getY()+" Height: "+imageView.getImage().getHeight()+" Width:"+imageView.getImage().getWidth());
-            // TODO: Check if we need to use this or the coordinate-system-variant
-            handler.onMouseClicked(mouseEvent.getX(), mouseEvent.getY());
-            //handler.onMouseClicked(xAxis.getValueForDisplay(mouseEvent.getX()).doubleValue(), yAxis.getValueForDisplay(mouseEvent.getY()).doubleValue());
+            handler.onMouseClicked(xAxis.getValueForDisplay(mouseEvent.getX()).doubleValue(), yAxis.getValueForDisplay(mouseEvent.getY()).doubleValue());
         }));
     }
 

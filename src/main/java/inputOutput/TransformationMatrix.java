@@ -101,18 +101,18 @@ public class TransformationMatrix {
     }
 
     public Mat getTransformMat(){
-        if(trackingPoints == null){
-            return Mat.eye(3,3,CvType.CV_32F);
+        if(trackingPoints == null || imagePoints == null){
+            return Mat.eye(3,3,CvType.CV_64F);
         }
         Mat track_m1 = toMat(trackingPoints);
         Mat track_m2 = toMat2(trackingPoints);
-        var tmp2 = new Mat(3,1,CvType.CV_32F);
+        var tmp2 = new Mat(3,1,CvType.CV_64F);
         Core.solve(track_m1, track_m2, tmp2);
         var A = scale(track_m1, tmp2);
 
         Mat img_m1 = toMat(imagePoints);
         Mat img_m2 = toMat2(imagePoints);
-        var tmp1 = new Mat(3,1,CvType.CV_32F);
+        var tmp1 = new Mat(3,1,CvType.CV_64F);
         Core.solve(img_m1, img_m2, tmp1);
         var B = scale(img_m1, tmp1);
 
@@ -123,10 +123,13 @@ public class TransformationMatrix {
     }
 
     public Mat getTransformMat2(){
-        var matrix = new Mat();
+        if(trackingPoints == null || imagePoints == null){
+            return Mat.eye(2,3,CvType.CV_64F);
+        }
+        //var matrix = new Mat();
         var imagePoints = getImagePoints();
         var trackingPoints = getTrackingPoints();
-        Calib3d.estimateAffine3D(imagePoints, trackingPoints, matrix, new Mat());
+        var matrix = Calib3d.estimateAffine2D(trackingPoints,imagePoints);
         return matrix;
     }
 
