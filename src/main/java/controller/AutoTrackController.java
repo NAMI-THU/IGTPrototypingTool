@@ -3,7 +3,6 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.javafx.binding.StringFormatter;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
@@ -21,11 +20,8 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
-import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 import userinterface.PlottableImage;
 
 import javax.imageio.ImageIO;
@@ -42,7 +38,6 @@ import java.util.List;
 
 public class AutoTrackController implements Controller {
 
-    public static final int TRACKING_SHIFT = 0;
     private final DataService dataService = new DataService();
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
@@ -103,9 +98,6 @@ public class AutoTrackController implements Controller {
 
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
-
-        // For Testing Purpose only
-        regMatrixStatusBox.setSelected(true);
 
         loadAvailableVideoDevicesAsync();
     }
@@ -169,6 +161,7 @@ public class AutoTrackController implements Controller {
     /**
      * Tests out available video device ids. All devices that don't throw an error are added to the list.
      * This is bad style, but openCV does not offer to list available devices.
+     * @param fast Whether all available devices shall be enumerated. If set to true, there's a minimal performance gain.
      */
     private void createDeviceIdMapping(boolean fast) {
         if(fast){
@@ -218,7 +211,8 @@ public class AutoTrackController implements Controller {
     private void updateVideoImage() {
         var matrix = imageDataManager.readMat();
         if(matrix != null && !matrix.empty()) {
-            matrix = applyTransformations(matrix);
+            // Currently, we don't do image transformations, only tracking transformations
+            // matrix = applyImageTransformations(matrix);
             currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
         }
 
@@ -276,30 +270,12 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 1;
 
-            // TODO: Check if minus
-            var shifted_points = shiftTrackingData(point.getX()+TRACKING_SHIFT, point.getY()+ TRACKING_SHIFT);
+            var shifted_points = applyTrackingTransformation(point.getX(), point.getY());
             data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
             if(data.size() > max_num_points){
                 data.remove(0);
             }
         }
-    }
-
-    private double[] shiftTrackingData(double x, double y){
-        var matrix = transformationMatrix.getTransformMat2();   // TODO Test, maybe in Calib3d switch
-        var vector = new Mat(3,1, CvType.CV_64F);
-        vector.put(0,0,x);
-        vector.put(1,0,y);
-        vector.put(2,0,1);
-
-        var pos_star = new Mat(2,1,CvType.CV_64F);
-        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);  // Todo: Maybe switch direction?
-        double[] out = new double[2];
-//        out[0] = pos_star.get(0,0)[0]/pos_star.get(2,0)[0];
-        out[0] = pos_star.get(0,0)[0];
-        out[1] = pos_star.get(1,0)[0];
-//        out[1] = pos_star.get(1,0)[0]/pos_star.get(2,0)[0];
-        return out;
     }
 
     /**
@@ -436,36 +412,61 @@ public class AutoTrackController implements Controller {
      * @param mat The image to be transformed
      * @return The transformed image
      */
-    private Mat applyTransformations(Mat mat){
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
+    private Mat applyImageTransformations(Mat mat){
+        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
+        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
+        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
 
+        /*
         var imagePoints = transformationMatrix.getImagePoints();
         var trackingPoints = transformationMatrix.getTrackingPoints();
-        var outMat = new Mat();//Mat.zeros(mat.size(), CvType.CV_32F);
+        var outMat = new Mat();
         if(!imagePoints.empty() && !trackingPoints.empty()) {
-//            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_32F);
-//            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_32F);
-//
-//            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
-//            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
-//
-//            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
-//            mat = outMat;
-//            mat = outMat;
-//            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
-//            mat = outMat;
-//            Imgproc.warpAffine(mat, outMat, transformationMatrix.getTranslationMat(), mat.size());
+            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_64F);
+            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_64F);
+
+            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
+            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
+
+            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
+            mat = outMat;
+            mat = outMat;
+            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
+            mat = outMat;
+            Imgproc.warpAffine(mat, outMat, transformationMatrix.getTranslationMat(), mat.size());
         }
+        */
 
         if(roiDirty){
+            // Set noExecute to false if the Roi should be calculated (and thus, the image cropped)
             matrixRoi = MatHelper.calculateRoi(mat, true);
             roiDirty = false;
         }
         mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
         return mat;
     }
+
+    /**
+     * Applies the transformation on a tracking point
+     * @param x X-Coordinate of the point
+     * @param y Y-Coordinate of the point
+     * @return The transformed point as array
+     */
+    private double[] applyTrackingTransformation(double x, double y){
+        var matrix = transformationMatrix.getTransformMatOpenCvEstimated();
+        var vector = new Mat(3,1, CvType.CV_64F);
+        vector.put(0,0,x);
+        vector.put(1,0,y);
+        vector.put(2,0,1);
+
+        var pos_star = new Mat(2,1,CvType.CV_64F);
+        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        double[] out = new double[2];
+        out[0] = pos_star.get(0,0)[0];
+        out[1] = pos_star.get(1,0)[0];
+        return out;
+    }
+
 
     /**
      * Called, when the user clicks on the live image. Used to get landmarks for transformation.
@@ -478,7 +479,7 @@ public class AutoTrackController implements Controller {
         var trackingData = readTrackingData();
         if(trackingData.size() != 0) {
             var trackingPoint = trackingData.get(0).getMeasurement().get(trackingData.get(0).getMeasurement().size() - 1).getPoint();
-            System.out.println("Tracker: (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX()) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY()) + ")\nTracker (shifted): (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX() + TRACKING_SHIFT) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY() + TRACKING_SHIFT) + ")");
+            System.out.println("Tracker: (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX()) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY()) + ")\n");
         }
     }
 }

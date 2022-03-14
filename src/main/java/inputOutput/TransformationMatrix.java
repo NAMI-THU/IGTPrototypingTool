@@ -1,40 +1,78 @@
 package inputOutput;
 
+import algorithm.ProjectiveTransformation;
 import com.google.gson.Gson;
-import controller.AutoTrackController;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.*;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TransformationMatrix {
+    /**
+     * The rotation matrix, provided by MITK
+     */
     public float[][] rotation3d = new float[][]{{1.0f,0.0f,0.0f},
             {0.0f,1.0f,0.0f},
             {0.0f, 0.0f, 1.0f}};
+
+    /**
+     * The translation vector as provided by MITK
+     */
     public float[] translationVector3d = new float[]{0, 0, 0};
+
+    /**
+     * Scaling vector (applied in the respective dimensions)
+     */
     public float[] scaleVector3d = new float[]{1, 1, 1};
+
+    /**
+     * Factors for flipping (mirroring) the image
+     */
     public int[][] flip2d = new int[][]{{1, 0},{0, 1}};
 
+    /**
+     * The raw measurements of the image points (landmarks in image coordinates)
+     */
     public float[][] imagePoints;
+
+    /**
+     * The raw measurements of the tracker (landmarks in tracking coordinates)
+     */
     public float[][] trackingPoints;
 
+    /**
+     * Assuming that rotation, translation and scale matrix uses 3 dimension, we skip this dimension in order to use it for 2D
+     */
     public int ignoreDimension = 2;
 
+    /**
+     * Loads the attributes from a file
+     * @param file Path of the json file
+     * @return A TransformationMatrix-Object
+     * @throws FileNotFoundException If the path is invalid
+     */
     public static TransformationMatrix loadFromJSON(String file) throws FileNotFoundException {
         return new Gson().fromJson(new FileReader(file), TransformationMatrix.class);
     }
 
+    /**
+     * Writes the current configuration into a JSON file
+     * @param file The file to write to
+     * @throws IOException If problems occur
+     */
     public void saveToJSON(File file) throws IOException {
         try (FileWriter fw = new FileWriter(file)) {
             new Gson().toJson(this, fw);
         }
     }
 
+    /**
+     * Provides the image points as OpenCV-Matrix
+     * @return the points as MatOfPoint2f
+     */
     public MatOfPoint2f getImagePoints(){
         if(imagePoints == null){return new MatOfPoint2f();}
         var array = new Point[4];
@@ -44,15 +82,23 @@ public class TransformationMatrix {
         return new MatOfPoint2f(array);
     }
 
+    /**
+     * Provides the tracking points as OpenCV-Matrix
+     * @return the points as MatOfPoints2f
+     */
     public MatOfPoint2f getTrackingPoints(){
         if(trackingPoints == null){return new MatOfPoint2f();}
         var array = new Point[4];
         for(int i = 0;i<trackingPoints.length;i++){
-            array[i] = new Point(trackingPoints[i][0]+ AutoTrackController.TRACKING_SHIFT, trackingPoints[i][1]+ AutoTrackController.TRACKING_SHIFT);
+            array[i] = new Point(trackingPoints[i][0], trackingPoints[i][1]);
         }
         return new MatOfPoint2f(array);
     }
 
+    /**
+     * Converts the rotation matrix array into an OpenCV-Matrix
+     * @return The converted matrix
+     */
     public Mat getRotationMat(){
         var mat = Mat.eye(2,3, CvType.CV_64F);
         int row = 0;
@@ -73,6 +119,10 @@ public class TransformationMatrix {
         return mat;
     }
 
+    /**
+     * Converts the translation vector array into an OpenCV-Matrix
+     * @return The converted matrix
+     */
     public Mat getTranslationMat(){
         var mat = Mat.eye(2, 3, CvType.CV_64F);
         int row = 0;
@@ -86,6 +136,10 @@ public class TransformationMatrix {
         return mat;
     }
 
+    /**
+     * Converts the scale vector array into an OpenCV-Matrix
+     * @return The converted matrix
+     */
     public Mat getScaleMat(){
         var mat = new Mat(2,3, CvType.CV_64F);
         for(int i = 0;i<mat.rows();i++){
@@ -100,77 +154,27 @@ public class TransformationMatrix {
         return mat;
     }
 
-    public Mat getTransformMat(){
-        if(trackingPoints == null || imagePoints == null){
-            return Mat.eye(3,3,CvType.CV_64F);
-        }
-        Mat track_m1 = toMat(trackingPoints);
-        Mat track_m2 = toMat2(trackingPoints);
-        var tmp2 = new Mat(3,1,CvType.CV_64F);
-        Core.solve(track_m1, track_m2, tmp2);
-        var A = scale(track_m1, tmp2);
-
-        Mat img_m1 = toMat(imagePoints);
-        Mat img_m2 = toMat2(imagePoints);
-        var tmp1 = new Mat(3,1,CvType.CV_64F);
-        Core.solve(img_m1, img_m2, tmp1);
-        var B = scale(img_m1, tmp1);
-
-        //var C = B.mul(A.inv());
-        var C = new Mat();
-        Core.gemm(B, A.inv(),1, new Mat(),1,C);
-        return C;
+    /**
+     * Calculates a transformation matrix by the provided raw points.
+     * Uses the method of finding the projective transform.
+     * See also https://math.stackexchange.com/a/339033
+     * @return The resulting transformation matrix
+     */
+    public Mat getTransformMatProjectionTransform(){
+        return ProjectiveTransformation.getTransformMatProjectionTransform(imagePoints, trackingPoints);
     }
 
-    public Mat getTransformMat2(){
+    /**
+     * Calculates a transformation matrix by the provided raw points
+     * Uses OpenCV's estimate-method based on RANSAC method
+     * @return The transformation matrix
+     */
+    public Mat getTransformMatOpenCvEstimated(){
         if(trackingPoints == null || imagePoints == null){
             return Mat.eye(2,3,CvType.CV_64F);
         }
-        //var matrix = new Mat();
         var imagePoints = getImagePoints();
         var trackingPoints = getTrackingPoints();
-        var matrix = Calib3d.estimateAffine2D(trackingPoints,imagePoints);
-        return matrix;
-    }
-
-    private Mat scale(Mat m, Mat parameters){
-        var lambda = parameters.get(0,0)[0];
-        var mu = parameters.get(1,0)[0];
-        var psi = parameters.get(2,0)[0];
-
-        Mat out = new Mat(m.size(), CvType.CV_32F);
-        out.put(0,0,m.get(0,0)[0]*lambda);
-        out.put(1,0,m.get(1,0)[0]*lambda);
-        out.put(2,0,lambda);
-
-        out.put(0,1,m.get(0,1)[0]*mu);
-        out.put(1,1,m.get(1,1)[0]*mu);
-        out.put(2,1,mu);
-
-        out.put(0,2,m.get(0,2)[0]*psi);
-        out.put(1,2,m.get(1,2)[0]*psi);
-        out.put(2,2,psi);
-        return out;
-    }
-    private Mat toMat(float[][] points){
-        Mat m1 = new Mat(3,3, CvType.CV_32F);
-        m1.put(0,0,points[0][0]);
-        m1.put(1,0,points[0][1]);
-        m1.put(2,0,1);
-        m1.put(0,1,points[1][0]);
-        m1.put(1,1,points[1][1]);
-        m1.put(2,1,1);
-        m1.put(0,2,points[2][0]);
-        m1.put(1,2,points[2][1]);
-        m1.put(2,2,1);
-        return m1;
-    }
-
-    private Mat toMat2(float[][] points){
-        Mat m2 = new Mat(3,1, CvType.CV_32F);
-        m2.put(0,0,imagePoints[3][0]);
-        m2.put(1,0,imagePoints[3][1]);
-        m2.put(2,0,1);
-        return m2;
+        return Calib3d.estimateAffine2D(trackingPoints,imagePoints);
     }
 }
