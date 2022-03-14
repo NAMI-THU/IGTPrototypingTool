@@ -113,13 +113,20 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataProcessor()" class="member-name-link">getDataProcessor</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(int)" class="member-name-link">openConnection</a><wbr>(int&nbsp;x)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(inputOutput.VideoSource)" class="member-name-link">openConnection</a><wbr>(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/image/BufferedImage.html" title="class or interface in java.awt.image" class="external-link">BufferedImage</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readBufImg()" class="member-name-link">readBufImg</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(inputOutput.VideoSource,int)" class="member-name-link">openConnection</a><wbr>(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source,
+ int&nbsp;deviceId)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>javafx.scene.image.Image</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readImg()" class="member-name-link">readImg</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/image/BufferedImage.html" title="class or interface in java.awt.image" class="external-link">BufferedImage</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readBufImg()" class="member-name-link">readBufImg</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>javafx.scene.image.Image</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readImg()" class="member-name-link">readImg</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readMat()" class="member-name-link">readMat</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -153,9 +160,16 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="openConnection(int)">
+<section class="detail" id="openConnection(inputOutput.VideoSource)">
 <h3>openConnection</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(int&nbsp;x)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="openConnection(inputOutput.VideoSource,int)">
+<h3>openConnection</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source,
+ int&nbsp;deviceId)</span></div>
 </section>
 </li>
 <li>
@@ -174,6 +188,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="readImg()">
 <h3>readImg</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">javafx.scene.image.Image</span>&nbsp;<span class="element-name">readImg</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="readMat()">
+<h3>readMat</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">readMat</span>()</div>
 </section>
 </li>
 <li>

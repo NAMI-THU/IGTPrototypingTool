@@ -97,8 +97,14 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <div class="col-first even-row-color"><code><a href="../algorithm/DataService.html" title="class in algorithm">DataService</a></code></div>
 <div class="col-second even-row-color"><code><a href="#ds" class="member-name-link">ds</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>javafx.animation.Timeline</code></div>
-<div class="col-second odd-row-color"><code><a href="#timeline" class="member-name-link">timeline</a></code></div>
+<div class="col-first odd-row-color"><code>final javafx.beans.property.BooleanProperty</code></div>
+<div class="col-second odd-row-color"><code><a href="#sourceConnected" class="member-name-link">sourceConnected</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>javafx.animation.Timeline</code></div>
+<div class="col-second even-row-color"><code><a href="#timeline" class="member-name-link">timeline</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>final javafx.beans.property.BooleanProperty</code></div>
+<div class="col-second odd-row-color"><code><a href="#visualizationRunning" class="member-name-link">visualizationRunning</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -157,6 +163,9 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-controller.Controller">Methods inherited from interface&nbsp;controller.<a href="Controller.html" title="interface in controller">Controller</a></h3>
+<code><a href="Controller.html#registerController()">registerController</a>, <a href="Controller.html#unregisterController()">unregisterController</a></code></div>
 </section>
 </li>
 </ul>
@@ -178,6 +187,18 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <section class="detail" id="timeline">
 <h3>timeline</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">javafx.animation.Timeline</span>&nbsp;<span class="element-name">timeline</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="visualizationRunning">
+<h3>visualizationRunning</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">javafx.beans.property.BooleanProperty</span>&nbsp;<span class="element-name">visualizationRunning</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="sourceConnected">
+<h3>sourceConnected</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">javafx.beans.property.BooleanProperty</span>&nbsp;<span class="element-name">sourceConnected</span></div>
 </section>
 </li>
 </ul>
