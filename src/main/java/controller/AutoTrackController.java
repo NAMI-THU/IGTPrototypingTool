@@ -274,7 +274,7 @@ public class AutoTrackController implements Controller {
             var measurements = tool.getMeasurement();
             var point = measurements.get(measurements.size() - 1).getPoint();
             var data = series.getData();
-            var max_num_points = 5;
+            var max_num_points = 1;
 
             // TODO: Check if minus
             var shifted_points = shiftTrackingData(point.getX()+TRACKING_SHIFT, point.getY()+ TRACKING_SHIFT);

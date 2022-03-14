@@ -21,6 +21,7 @@ public class PlottableImage extends ScatterChart<Number, Number> {
     public PlottableImage(@NamedArg("xAxis") NumberAxis xAxis, @NamedArg("yAxis") NumberAxis yAxis) {
         super(xAxis, yAxis);
         getPlotChildren().add(imageView);
+        setAnimated(false);
 //        imageView.setOnMouseClicked(mouseEvent -> System.out.printf(Locale.ENGLISH,
 //                "(%.2f, %.2f)%n",
 //                xAxis.getValueForDisplay(mouseEvent.getX()),
