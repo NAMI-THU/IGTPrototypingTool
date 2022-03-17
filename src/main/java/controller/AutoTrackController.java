@@ -3,6 +3,7 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
@@ -74,6 +75,7 @@ public class AutoTrackController implements Controller {
     private BufferedImage currentShowingImage;
     private boolean captureScheduled = false;
     private String lastMatrixPath = "";
+    private List<ExportMeasurement> lastTrackingData = new ArrayList<>();
 
     // Used to crop the image to the actual content. Dirty describes whether the roi cache needs to be updated on the next transform, it's set when a new matrix is loaded
     private int[] matrixRoi = new int[4];
@@ -223,22 +225,11 @@ public class AutoTrackController implements Controller {
 
         if (this.captureScheduled) {
             this.captureScheduled = false;
-            var trackingData = readTrackingData();
-            saveCapturedData(currentShowingImage, trackingData);
+            saveCapturedData(currentShowingImage, lastTrackingData);
         }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
         }
-    }
-
-    /**
-     * Reads the position of the tracker
-     * @return Measurement
-     */
-    private List<ToolMeasure> readTrackingData(){
-        dataService.setTrackingDataSource(trackingDataController.getSource());
-        dataService.getDataManager().restartMeasurements();
-        return dataService.getDataManager().getNextData(1);
     }
 
     /**
@@ -254,6 +245,7 @@ public class AutoTrackController implements Controller {
 
         if (tools.isEmpty()) return;
 
+        lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
             ToolMeasure tool = tools.get(i);
             if (dataSeries.size() <= i) {
@@ -270,7 +262,9 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 1;
 
-            var shifted_points = applyTrackingTransformation(point.getX(), point.getY());
+            var shifted_points = applyTrackingTransformation(point.getX(), point.getY(), point.getZ());
+            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2]));
+
             data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
             if(data.size() > max_num_points){
                 data.remove(0);
@@ -293,7 +287,7 @@ public class AutoTrackController implements Controller {
      * @param image        The current image to save
      * @param trackingData The corresponding tracking data measurements
      */
-    private void saveCapturedData(BufferedImage image, List<ToolMeasure> trackingData) {
+    private void saveCapturedData(BufferedImage image, List<ExportMeasurement> trackingData) {
         try {
             File outputDirectory = new File(outputPathField.getText());
             var files = outputDirectory.listFiles();
@@ -450,9 +444,10 @@ public class AutoTrackController implements Controller {
      * Applies the transformation on a tracking point
      * @param x X-Coordinate of the point
      * @param y Y-Coordinate of the point
+     * @param z Z-Coordinate of the point - Currently ignored for transformation
      * @return The transformed point as array
      */
-    private double[] applyTrackingTransformation(double x, double y){
+    private double[] applyTrackingTransformation(double x, double y, double z){
         var matrix = transformationMatrix.getTransformMatOpenCvEstimated();
         var vector = new Mat(3,1, CvType.CV_64F);
         vector.put(0,0,x);
@@ -461,9 +456,11 @@ public class AutoTrackController implements Controller {
 
         var pos_star = new Mat(2,1,CvType.CV_64F);
         Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
-        double[] out = new double[2];
+        double[] out = new double[3];
         out[0] = pos_star.get(0,0)[0];
         out[1] = pos_star.get(1,0)[0];
+        // TODO: Include z-Coordinate in transformation
+        out[2] = z;
         return out;
     }
 
@@ -476,10 +473,9 @@ public class AutoTrackController implements Controller {
     private void onImageClicked(double x, double y){
         System.out.println("Image: ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",y)+")\nImage (Relative): ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",(currentShowingImage.getHeight()-y))+")");
         // We also directly save the tracking-coordinates at this point.
-        var trackingData = readTrackingData();
-        if(trackingData.size() != 0) {
-            var trackingPoint = trackingData.get(0).getMeasurement().get(trackingData.get(0).getMeasurement().size() - 1).getPoint();
-            System.out.println("Tracker: (" + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getX()) + "," + String.format(Locale.ENGLISH,"%.2f",trackingPoint.getY()) + ")\n");
+        var trackingData = lastTrackingData;
+        for(var measurement : trackingData){
+            System.out.println("Tracker "+measurement.toolName+": (" + String.format(Locale.ENGLISH,"%.2f",measurement.x_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.y_raw) + ")\n");
         }
     }
 }
