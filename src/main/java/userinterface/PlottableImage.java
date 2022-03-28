@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlottableImage extends ScatterChart<Number, Number> {
-
     private final ImageView imageView = new ImageView();
     private final List<PlottableImageCallback> clickHandler = new ArrayList<>();
+
+    private double panel_x_extra = 0; //57;
+    private double panel_y_extra = 0; //54;
+    private boolean panelAlreadyAdapted = false;
 
     public PlottableImage(@NamedArg("xAxis") NumberAxis xAxis, @NamedArg("yAxis") NumberAxis yAxis) {
         super(xAxis, yAxis);
@@ -24,6 +27,17 @@ public class PlottableImage extends ScatterChart<Number, Number> {
     }
 
     public void setImage(Image image) {
+        if(imageView.getImage() != null && !panelAlreadyAdapted){
+            // This extracts the size of the plot background. We use this to calculate how big the PlottableImage element should be so that the image is completely visible
+            // This is indeed quite hacky. However, this is the only way besides hardcoding the offsets.
+            var bounds = getChartChildren().get(0).getLayoutBounds();
+            panel_x_extra = image.getWidth()-bounds.getWidth();
+            panel_y_extra = image.getHeight()-bounds.getHeight();
+
+            // Only adapt the sizes once
+            panelAlreadyAdapted = true;
+        }
+
         imageView.setImage(image);
 
         ((NumberAxis) getXAxis()).setUpperBound(image.getWidth());
@@ -36,10 +50,11 @@ public class PlottableImage extends ScatterChart<Number, Number> {
         imageView.minHeight(image.getHeight());
         imageView.maxHeight(image.getHeight());
 
-        maxWidthProperty().bind(image.widthProperty());
-        maxHeightProperty().bind(image.heightProperty());
-        minWidthProperty().bind(image.widthProperty());
-        minHeightProperty().bind(image.heightProperty());
+        // The scatter plot has some overhead (padding, axis and so on) we need to compensate so that our image is of true size.
+        maxWidthProperty().bind(image.widthProperty().add(panel_x_extra));
+        maxHeightProperty().bind(image.heightProperty().add(panel_y_extra));
+        minWidthProperty().bind(image.widthProperty().add(panel_x_extra));
+        minHeightProperty().bind(image.heightProperty().add(panel_y_extra));
 
         updateAxisRange();
     }
