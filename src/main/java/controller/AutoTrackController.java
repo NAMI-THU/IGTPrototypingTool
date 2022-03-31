@@ -33,9 +33,11 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class AutoTrackController implements Controller {
 
@@ -43,6 +45,8 @@ public class AutoTrackController implements Controller {
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
+
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
     @FXML
@@ -310,10 +314,13 @@ public class AutoTrackController implements Controller {
     public void on_browseOutputDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Output Directory");
+        var lastLocation = userPreferences.get("outputDirectory",System.getProperty("user.home"));
+        directoryChooser.setInitialDirectory(new File(lastLocation));
         var directory = directoryChooser.showDialog(null);
         if (directory != null) {
             outputPathField.setText(directory.getAbsolutePath());
             outputPathField.positionCaret(directory.getAbsolutePath().length());
+            userPreferences.put("outputDirectory", directory.getAbsolutePath());
         }
     }
 
@@ -372,6 +379,8 @@ public class AutoTrackController implements Controller {
     public void on_importMatrix() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Matrix JSON");
+        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(new File(lastLocation));
         var inputFile = fileChooser.showOpenDialog(null);
         if(inputFile == null){
             return;
@@ -382,6 +391,7 @@ public class AutoTrackController implements Controller {
             transformationMatrix = TransformationMatrix.loadFromJSON(path);
             roiDirty = true;
             regMatrixStatusBox.setSelected(true);
+            userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
             e.printStackTrace();
         }
