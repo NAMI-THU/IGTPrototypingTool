@@ -32,22 +32,22 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
                               </HBox>
-                              <BorderPane>
-                                 <center>
-                                    <Label text="Trackingsource" textAlignment="LEFT" />
-                                 </center>
-                                 <left>
-                                    <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" BorderPane.alignment="CENTER" />
-                                 </left>
+                              <HBox>
+                                 <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox"/>
+                                 <Label text="Trackingsource">
+                                    <padding>
+                                       <Insets left="5.0"/>
+                                    </padding>
+                                 </Label>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
-                              </BorderPane>
+                              </HBox>
                               <BorderPane>
                                  <center>
                                     <Label text="Registration Matrix" textAlignment="CENTER">
                                        <BorderPane.margin>
-                                          <Insets left="10.0" right="10.0" />
+                                          <Insets left="5.0" right="10.0" />
                                        </BorderPane.margin></Label>
                                  </center>
                                  <left>
@@ -63,6 +63,11 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
                               </BorderPane>
+                              <CheckBox fx:id="use3dTransformCheckBox" mnemonicParsing="false" text="Use 3D transformation">
+                                 <padding>
+                                    <Insets left="10.0" right="10.0" top="5.0"/>
+                                 </padding>
+                              </CheckBox>
                            </children>
                         </VBox>
                      </content>

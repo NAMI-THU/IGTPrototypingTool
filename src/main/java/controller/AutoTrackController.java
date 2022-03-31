@@ -67,6 +67,8 @@ public class AutoTrackController implements Controller {
     public ProgressIndicator connectionProgressSpinner;
     @FXML
     public PlottableImage videoImagePlot;
+    @FXML
+    public CheckBox use3dTransformCheckBox;
 
     private TrackingDataController trackingDataController;
     private Label statusLabel;
@@ -262,7 +264,7 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 1;
 
-            var shifted_points = applyTrackingTransformation(point.getX(), point.getY(), point.getZ());
+            var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2]));
 
             data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
@@ -441,14 +443,14 @@ public class AutoTrackController implements Controller {
     }
 
     /**
-     * Applies the transformation on a tracking point
+     * Applies the (2D) transformation on a tracking point
      * @param x X-Coordinate of the point
      * @param y Y-Coordinate of the point
-     * @param z Z-Coordinate of the point - Currently ignored for transformation
-     * @return The transformed point as array
+     * @param z Z-Coordinate of the point - Ignored in the 2d version
+     * @return The transformed point as array of length 3 (xyz)
      */
-    private double[] applyTrackingTransformation(double x, double y, double z){
-        var matrix = transformationMatrix.getTransformMatOpenCvEstimated();
+    private double[] applyTrackingTransformation2d(double x, double y, double z){
+        var matrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
         var vector = new Mat(3,1, CvType.CV_64F);
         vector.put(0,0,x);
         vector.put(1,0,y);
@@ -459,23 +461,46 @@ public class AutoTrackController implements Controller {
         double[] out = new double[3];
         out[0] = pos_star.get(0,0)[0];
         out[1] = pos_star.get(1,0)[0];
-        // TODO: Include z-Coordinate in transformation
         out[2] = z;
+        return out;
+    }
+
+    /**
+     * Applies the (3D) transformation on a tracking point
+     * @param x X-Coordinate of the point
+     * @param y Y-Coordinate of the point
+     * @param z Z-Coordinate of the point
+     * @return The transformed point as array of length 3 (xyz)
+     */
+    private double[] applyTrackingTransformation3d(double x, double y, double z){
+        var matrix = transformationMatrix.getTransformMatOpenCvEstimated3d();
+        var vector = new Mat(4,1, CvType.CV_64F);
+        vector.put(0,0,x);
+        vector.put(1,0,y);
+        vector.put(2,0,z);
+        vector.put(3,0,1);
+
+        var pos_star = new Mat(3,1,CvType.CV_64F);
+        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        double[] out = new double[3];
+        out[0] = pos_star.get(0,0)[0];
+        out[1] = pos_star.get(1,0)[0];
+        out[2] = pos_star.get(2,0)[0];
         return out;
     }
 
 
     /**
-     * Called, when the user clicks on the live image. Used to get landmarks for transformation.
+     * Called, when the user clicks on the live image. Used to get landmarks for transformation. Uses 0 for the image plane as default
      * @param x X-Coordinate in the image
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
-        System.out.println("Image: ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",y)+")\nImage (Relative): ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",(currentShowingImage.getHeight()-y))+")");
+        System.out.println("Image: ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",y)+",0)\nImage (Relative): ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",(currentShowingImage.getHeight()-y))+",0)");
         // We also directly save the tracking-coordinates at this point.
         var trackingData = lastTrackingData;
         for(var measurement : trackingData){
-            System.out.println("Tracker "+measurement.toolName+": (" + String.format(Locale.ENGLISH,"%.2f",measurement.x_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.y_raw) + ")\n");
+            System.out.println("Tracker "+measurement.toolName+": (" + String.format(Locale.ENGLISH,"%.2f",measurement.x_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.y_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.z_raw) + ")\n");
         }
     }
 }

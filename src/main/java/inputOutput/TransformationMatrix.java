@@ -3,10 +3,7 @@ package inputOutput;
 import algorithm.ProjectiveTransformation;
 import com.google.gson.Gson;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
+import org.opencv.core.*;
 
 import java.io.*;
 
@@ -71,11 +68,12 @@ public class TransformationMatrix {
 
     /**
      * Provides the image points as OpenCV-Matrix
+     * Only uses the first two coordinates of the point (2D)
      * @return the points as MatOfPoint2f
      */
-    public MatOfPoint2f getImagePoints(){
+    public MatOfPoint2f getImagePoints2d(){
         if(imagePoints == null){return new MatOfPoint2f();}
-        var array = new Point[4];
+        var array = new Point[imagePoints.length];
         for(int i = 0;i<imagePoints.length;i++){
             array[i] = new Point(imagePoints[i][0], imagePoints[i][1]);
         }
@@ -84,15 +82,44 @@ public class TransformationMatrix {
 
     /**
      * Provides the tracking points as OpenCV-Matrix
+     * Only uses the first two coordinates of the point (2D)
      * @return the points as MatOfPoints2f
      */
-    public MatOfPoint2f getTrackingPoints(){
+    public MatOfPoint2f getTrackingPoints2d(){
         if(trackingPoints == null){return new MatOfPoint2f();}
-        var array = new Point[4];
+        var array = new Point[trackingPoints.length];
         for(int i = 0;i<trackingPoints.length;i++){
             array[i] = new Point(trackingPoints[i][0], trackingPoints[i][1]);
         }
         return new MatOfPoint2f(array);
+    }
+
+    /**
+     * Provides the image points as OpenCV-Matrix
+     * Uses three point coordinates, to calculate in 3D
+     * @return the points as MatOfPoint3f
+     */
+    public MatOfPoint3f getImagePoints3d(){
+        if(imagePoints == null){return new MatOfPoint3f();}
+        var array = new Point3[imagePoints.length];
+        for(int i = 0;i<imagePoints.length;i++){
+            array[i] = new Point3(imagePoints[i][0], imagePoints[i][1], imagePoints[i][2]);
+        }
+        return new MatOfPoint3f(array);
+    }
+
+    /**
+     * Provides the tracking points as OpenCV-Matrix
+     * Uses three point coordinates, to calculate in 3D
+     * @return the points as MatOfPoints3f
+     */
+    public MatOfPoint3f getTrackingPoints3d(){
+        if(trackingPoints == null){return new MatOfPoint3f();}
+        var array = new Point3[trackingPoints.length];
+        for(int i = 0;i<trackingPoints.length;i++){
+            array[i] = new Point3(trackingPoints[i][0], trackingPoints[i][1], trackingPoints[i][2]);
+        }
+        return new MatOfPoint3f(array);
     }
 
     /**
@@ -158,6 +185,7 @@ public class TransformationMatrix {
      * Calculates a transformation matrix by the provided raw points.
      * Uses the method of finding the projective transform.
      * See also https://math.stackexchange.com/a/339033
+     * !! Only works with a 2D-representation of the points. !!
      * @return The resulting transformation matrix
      */
     public Mat getTransformMatProjectionTransform(){
@@ -167,14 +195,33 @@ public class TransformationMatrix {
     /**
      * Calculates a transformation matrix by the provided raw points
      * Uses OpenCV's estimate-method based on RANSAC method
+     * Uses only the x,y coordinates of the points and hence only calculates a 2D projection matrix
      * @return The transformation matrix
      */
-    public Mat getTransformMatOpenCvEstimated(){
+    public Mat getTransformMatOpenCvEstimated2d(){
         if(trackingPoints == null || imagePoints == null){
             return Mat.eye(2,3,CvType.CV_64F);
         }
-        var imagePoints = getImagePoints();
-        var trackingPoints = getTrackingPoints();
+        var imagePoints = getImagePoints2d();
+        var trackingPoints = getTrackingPoints2d();
         return Calib3d.estimateAffine2D(trackingPoints,imagePoints);
+    }
+
+    /**
+     * Calculates a transformation matrix by the provided raw points
+     * Uses OpenCV's estimate-method based on RANSAC method
+     * Uses x,y,z coordinates of the points and hence calculates a 3D projection matrix
+     * @return The transformation matrix
+     */
+    public Mat getTransformMatOpenCvEstimated3d(){
+        if(trackingPoints == null || imagePoints == null){
+            return Mat.eye(3,4,CvType.CV_64F);
+        }
+        var imagePoints = getImagePoints3d();
+        var trackingPoints = getTrackingPoints3d();
+        var outputMat = new Mat();
+        var inlierMat = new Mat();
+        Calib3d.estimateAffine3D(trackingPoints,imagePoints, outputMat, inlierMat);
+        return outputMat;
     }
 }
