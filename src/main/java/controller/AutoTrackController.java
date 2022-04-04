@@ -3,6 +3,7 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.javafx.collections.ObservableListWrapper;
 import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
@@ -10,6 +11,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,6 +24,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 import userinterface.PlottableImage;
 
@@ -55,6 +58,8 @@ public class AutoTrackController implements Controller {
     public CheckBox regMatrixStatusBox;
     @FXML
     public Button regMatrixImportButton;
+    @FXML
+    public Button generateMatrixButton;
     @FXML
     public TextField outputPathField;
     @FXML
@@ -91,6 +96,9 @@ public class AutoTrackController implements Controller {
 
     private final ObservableList<XYChart.Series<Number, Number>> dataSeries = FXCollections.observableArrayList();
 
+    private final ObservableList<Point3> clicked_image_points = FXCollections.observableArrayList();
+    private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -103,6 +111,9 @@ public class AutoTrackController implements Controller {
         var expression = trackingConnectedStatusBox.selectedProperty().and(regMatrixStatusBox.selectedProperty()).and(outputPathField.textProperty().isNotEmpty());
         autoCaptureToggleButton.disableProperty().bind(expression.not());
         singleCaptureButton.disableProperty().bind(expression.not());
+
+        generateMatrixButton.disableProperty().bind(Bindings.size(clicked_image_points).lessThan(4));
+        generateMatrixButton.textProperty().bind(Bindings.concat("Generate (",Bindings.size(clicked_image_points),"/4)"));
 
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
@@ -413,6 +424,32 @@ public class AutoTrackController implements Controller {
         }
     }
 
+    @FXML
+    public void on_generateMatrix(){
+        var transformationMatrix = new TransformationMatrix();
+        transformationMatrix.imagePoints = new float[4][];
+        transformationMatrix.trackingPoints = new float[4][];
+        for(int i = 0;i<clicked_image_points.size();i++){
+            transformationMatrix.imagePoints[i] = new float[]{(float) clicked_image_points.get(i).x, (float) clicked_image_points.get(i).y, (float) clicked_image_points.get(i).z};
+            transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Set save location for matrix json");
+        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(new File(lastLocation));
+        fileChooser.setInitialFileName("transformationMatrix.json");
+        var saveFile = fileChooser.showSaveDialog(null);
+        if(saveFile != null){
+            try {
+                transformationMatrix.saveToJSON(saveFile);
+                userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Applies the transformation matrix to the image
      * @param mat The image to be transformed
@@ -506,11 +543,16 @@ public class AutoTrackController implements Controller {
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
-        System.out.println("Image: ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",y)+",0)\nImage (Relative): ("+String.format(Locale.ENGLISH,"%.2f",x)+","+String.format(Locale.ENGLISH,"%.2f",(currentShowingImage.getHeight()-y))+",0)");
-        // We also directly save the tracking-coordinates at this point.
         var trackingData = lastTrackingData;
-        for(var measurement : trackingData){
-            System.out.println("Tracker "+measurement.toolName+": (" + String.format(Locale.ENGLISH,"%.2f",measurement.x_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.y_raw) + "," + String.format(Locale.ENGLISH,"%.2f",measurement.z_raw) + ")\n");
+        if(trackingData.size() > 0 && clicked_image_points.size() < 4) {
+            // We also directly save the tracking-coordinates at this point.
+            System.out.println("Image: (" + String.format(Locale.ENGLISH, "%.2f", x) + "," + String.format(Locale.ENGLISH, "%.2f", y) + ",0)\nImage (Relative): (" + String.format(Locale.ENGLISH, "%.2f", x) + "," + String.format(Locale.ENGLISH, "%.2f", (currentShowingImage.getHeight() - y)) + ",0)");
+            for (var measurement : trackingData) {
+                System.out.println("Tracker " + measurement.toolName + ": (" + String.format(Locale.ENGLISH, "%.2f", measurement.x_raw) + "," + String.format(Locale.ENGLISH, "%.2f", measurement.y_raw) + "," + String.format(Locale.ENGLISH, "%.2f", measurement.z_raw) + ")\n");
+            }
+
+            clicked_image_points.add(new Point3(x, y, 0.0));
+            clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
         }
     }
 }

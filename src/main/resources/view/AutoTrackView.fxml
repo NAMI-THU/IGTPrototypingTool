@@ -56,7 +56,8 @@
                                  <right>
                                     <HBox alignment="CENTER_RIGHT">
                                        <Button fx:id="regMatrixImportButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="Import" BorderPane.alignment="CENTER" onAction="#on_importMatrix" />
-                                       <Button alignment="CENTER_RIGHT" mnemonicParsing="false" text="Reload" BorderPane.alignment="CENTER" onAction="#on_reloadMatrix" />
+                                       <Button alignment="CENTER" mnemonicParsing="false" text="Reload" BorderPane.alignment="CENTER" onAction="#on_reloadMatrix" />
+                                       <Button fx:id="generateMatrixButton" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Generate (0/4)" BorderPane.alignment="CENTER" onAction="#on_generateMatrix" />
                                     </HBox>
                                  </right>
                                  <padding>
