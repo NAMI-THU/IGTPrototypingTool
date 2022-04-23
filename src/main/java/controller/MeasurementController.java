@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import algorithm.TrackingService;
 import com.jme3.math.Quaternion;
 
 import algorithm.AverageMeasurement;
@@ -28,13 +29,12 @@ public class MeasurementController implements Controller {
     private int measurementCounter = 0;
     private Timer timer;
     private boolean timerOn = false;
-    private AbstractTrackingDataSource source; // continuous tracking
-    private AbstractTrackingDataSource sourceFileReader;
-    private final DataService dataS = new DataService();
     private Map<String, ToolMeasure> storedMeasurements;
-    private TrackingDataController trackingDataController;
     private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private CSVFileReader sourceFileReader;
+
+    private final TrackingService trackingService = TrackingService.getInstance();
 
     @FXML ListView<String> toolList, measurementList;
     @FXML ChoiceBox<String> measurementTyp;
@@ -49,37 +49,21 @@ public class MeasurementController implements Controller {
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         storedMeasurements = new LinkedHashMap<>();
+        trackingService.registerObserver((sourceChanged, serviceChanged, timelineChanged) -> {updateTrackingDataSource();});
+        updateTrackingDataSource();
     }
 
-    public void setTrackingDataController(TrackingDataController trackingDataController) {
-        this.trackingDataController = trackingDataController;
-        this.setTrackingDataSource(trackingDataController.source);
-    }
 
     public void setStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
         this.statusLabel.setText("");
     }
 
-    public void setTrackingDataSource(AbstractTrackingDataSource source) {
-        this.source = source;
-        this.dataS.setTrackingDataSource(source);
-
-        if(this.source == null){
-            startMeasurementBtn.setDisable(true);
-            endMeasurementBtn.setDisable(true);
-        }else{
-            startMeasurementBtn.setDisable(false);
-            endMeasurementBtn.setDisable(false);
-
-            updateToolList();
-        }
-    }
 
     private void updateToolList(){
         this.toolList.getItems().clear();
         List<String> list = new ArrayList<>();
-        for (Tool tool : source.getLastToolList()) {
+        for (Tool tool : trackingService.getTrackingDataSource().getLastToolList()) {
             String name = tool.getName();
             list.add(name);
         }
@@ -87,10 +71,14 @@ public class MeasurementController implements Controller {
     }
 
     private void updateTrackingDataSource(){
-        var newSource = this.trackingDataController.getSource();
-        if(newSource == null || !newSource.equals(this.source)){
-            logger.info("Updating TrackingDataSource. Had before: "+this.source+", updating to: "+newSource);
-            setTrackingDataSource(newSource);
+        if(trackingService.getTrackingDataSource() == null){
+            startMeasurementBtn.setDisable(true);
+            endMeasurementBtn.setDisable(true);
+        }else{
+            startMeasurementBtn.setDisable(false);
+            endMeasurementBtn.setDisable(false);
+
+            updateToolList();
         }
     }
 
@@ -127,6 +115,9 @@ public class MeasurementController implements Controller {
 
     @FXML
     private void startMeasurement() {
+        var source = trackingService.getTrackingDataSource();
+        var timeline = trackingService.getTimeline();
+
         if (source == null) {
             statusLabel.setText("No source connected. No Measurement possible.");
             Alert a = new Alert(AlertType.ERROR);
@@ -137,7 +128,7 @@ public class MeasurementController implements Controller {
             return;
         }
 
-        if(trackingDataController.timeline == null){
+        if(timeline == null){
             statusLabel.setText("Tracking has not started yet. No Measurement possible.");
             Alert a = new Alert(AlertType.ERROR);
             a.setTitle("Error");
@@ -168,16 +159,15 @@ public class MeasurementController implements Controller {
         a.setContentText("Please hold tracking tool in fixed position.");
         a.showAndWait();
 
-        if (source != null && trackingDataController.timeline != null
-                && !timerOn) {
+        if (!timerOn) {
             this.statusLabel.setText("Capturing...");
-            dataS.restartMeasurements();
+            trackingService.getDataService().restartMeasurements();
             timerOn = true;
             timer = new Timer();
             TimerTask tt = new TimerTask() {
                 @Override
                 public void run() {
-                    dataS.getDataManager().getNextData(1);
+                    trackingService.getDataService().getDataManager().getNextData(1);
                 }
             };
             timer.schedule(tt, 0, 50);
@@ -186,7 +176,7 @@ public class MeasurementController implements Controller {
 
     @FXML
     private void endMeasurement() {
-        if (source == null) {
+        if (trackingService.getTrackingDataSource() == null) {
             statusLabel.setText("No source. Tracking has not started");
             return;
         }
@@ -200,8 +190,8 @@ public class MeasurementController implements Controller {
                 selectedToolIndex = 0;
             }
             storedMeasurements.put("Measurement " + measurementCounter + "("
-                    + dataS.getDataManager().getToolMeasures().get(selectedToolIndex).getName()
-                    + ")", dataS.getDataManager().getToolMeasures().get(selectedToolIndex));
+                    + trackingService.getDataService().getDataManager().getToolMeasures().get(selectedToolIndex).getName()
+                    + ")", trackingService.getDataService().getDataManager().getToolMeasures().get(selectedToolIndex));
             this.updateMeasurementList();
             measurementCounter++;
             this.statusLabel.setText("");
@@ -273,7 +263,7 @@ public class MeasurementController implements Controller {
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
 
-                        lCalcCR.setText(String.valueOf(dataS.getAccuracyRotation(
+                        lCalcCR.setText(String.valueOf(trackingService.getDataService().getAccuracyRotation(
                             expectedRotation,
                             firstTool.getMeasurement().get(0),
                             secondTool.getMeasurement().get(0))));
@@ -283,7 +273,7 @@ public class MeasurementController implements Controller {
                         lCalcCP.setText("0,00");
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
-                        lCalcCP.setText(String.valueOf(dataS.getAccuracy(
+                        lCalcCP.setText(String.valueOf(trackingService.getDataService().getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
                             secondTool.getAverageMeasurement())));
