@@ -17,7 +17,6 @@ import algorithm.ToolMeasure;
 import algorithm.TrackingService;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
-import inputOutput.AbstractTrackingDataSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -234,7 +233,6 @@ public class TrackingDataController implements Controller {
      * This method creates a new series to store tracking data
      * and position and rotation labels for one tool.
      */
-    @SuppressWarnings({ "unchecked" })
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
         if (toolDisplayList.size() > 0) {
             for (TrackingDataDisplay d : toolDisplayList) {

@@ -15,7 +15,6 @@ import algorithm.DataService;
 import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
 import inputOutput.Tool;
-import inputOutput.AbstractTrackingDataSource;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
@@ -49,7 +48,7 @@ public class MeasurementController implements Controller {
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         storedMeasurements = new LinkedHashMap<>();
-        trackingService.registerObserver((sourceChanged, serviceChanged, timelineChanged) -> {updateTrackingDataSource();});
+        trackingService.registerObserver((sourceChanged, serviceChanged, timelineChanged) -> updateTrackingDataSource());
         updateTrackingDataSource();
     }
 
