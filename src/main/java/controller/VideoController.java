@@ -137,9 +137,9 @@ public class VideoController implements Controller {
      * before they are displayed.
      */
     private void setCropListener() {
-        this.topSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setTopCrop(newValue.intValue()));
-        this.bottomSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setBottomCrop(newValue.intValue()));
-        this.rightSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setRightCrop(newValue.intValue()));
-        this.leftSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setLeftCrop(newValue.intValue()));
+        this.topSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setTopCrop(newValue));
+        this.bottomSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setBottomCrop(newValue));
+        this.rightSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setRightCrop(newValue));
+        this.leftSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setLeftCrop(newValue));
     }
 }

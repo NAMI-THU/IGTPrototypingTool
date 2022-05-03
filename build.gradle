@@ -72,7 +72,7 @@ application {
 checkstyle {
     // change path to use other checkstyle configuration
     configFile = rootProject.file('config/checkstyle/minimalcheck.xml')
-    toolVersion = '9.2.1'
+    toolVersion = '10.0'
 }
 
 tasks.withType(Checkstyle) {
