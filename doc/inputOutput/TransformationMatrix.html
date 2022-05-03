@@ -152,49 +152,71 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.MatOfPoint2f</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getImagePoints()" class="member-name-link">getImagePoints</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getImagePoints2d()" class="member-name-link">getImagePoints2d</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Provides the image points as OpenCV-Matrix</div>
+<div class="block">Provides the image points as OpenCV-Matrix
+ Only uses the first two coordinates of the point (2D)</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRotationMat()" class="member-name-link">getRotationMat</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.MatOfPoint3f</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getImagePoints3d()" class="member-name-link">getImagePoints3d</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the image points as OpenCV-Matrix
+ Uses three point coordinates, to calculate in 3D</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRotationMat()" class="member-name-link">getRotationMat</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Converts the rotation matrix array into an OpenCV-Matrix</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScaleMat()" class="member-name-link">getScaleMat</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScaleMat()" class="member-name-link">getScaleMat</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Converts the scale vector array into an OpenCV-Matrix</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.MatOfPoint2f</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTrackingPoints()" class="member-name-link">getTrackingPoints</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.MatOfPoint2f</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTrackingPoints2d()" class="member-name-link">getTrackingPoints2d</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the tracking points as OpenCV-Matrix
+ Only uses the first two coordinates of the point (2D)</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.MatOfPoint3f</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTrackingPoints3d()" class="member-name-link">getTrackingPoints3d</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Provides the tracking points as OpenCV-Matrix</div>
+<div class="block">Provides the tracking points as OpenCV-Matrix
+ Uses three point coordinates, to calculate in 3D</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformMatOpenCvEstimated()" class="member-name-link">getTransformMatOpenCvEstimated</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformMatOpenCvEstimated2d()" class="member-name-link">getTransformMatOpenCvEstimated2d</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Calculates a transformation matrix by the provided raw points
- Uses OpenCV's estimate-method based on RANSAC method</div>
+ Uses OpenCV's estimate-method based on RANSAC method
+ Uses only the x,y coordinates of the points and hence only calculates a 2D projection matrix</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformMatProjectionTransform()" class="member-name-link">getTransformMatProjectionTransform</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformMatOpenCvEstimated3d()" class="member-name-link">getTransformMatOpenCvEstimated3d</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Calculates a transformation matrix by the provided raw points.</div>
+<div class="block">Calculates a transformation matrix by the provided raw points
+ Uses OpenCV's estimate-method based on RANSAC method
+ Uses x,y,z coordinates of the points and hence calculates a 3D projection matrix</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTranslationMat()" class="member-name-link">getTranslationMat</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformMatProjectionTransform()" class="member-name-link">getTransformMatProjectionTransform</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Calculates a transformation matrix by the provided raw points.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTranslationMat()" class="member-name-link">getTranslationMat</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Converts the translation vector array into an OpenCV-Matrix</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="TransformationMatrix.html" title="class in inputOutput">TransformationMatrix</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#loadFromJSON(java.lang.String)" class="member-name-link">loadFromJSON</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;file)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="TransformationMatrix.html" title="class in inputOutput">TransformationMatrix</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#loadFromJSON(java.lang.String)" class="member-name-link">loadFromJSON</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;file)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Loads the attributes from a file</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#saveToJSON(java.io.File)" class="member-name-link">saveToJSON</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;file)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#saveToJSON(java.io.File)" class="member-name-link">saveToJSON</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;file)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Writes the current configuration into a JSON file</div>
 </div>
 </div>
@@ -316,10 +338,11 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getImagePoints()">
-<h3>getImagePoints</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint2f</span>&nbsp;<span class="element-name">getImagePoints</span>()</div>
-<div class="block">Provides the image points as OpenCV-Matrix</div>
+<section class="detail" id="getImagePoints2d()">
+<h3>getImagePoints2d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint2f</span>&nbsp;<span class="element-name">getImagePoints2d</span>()</div>
+<div class="block">Provides the image points as OpenCV-Matrix
+ Only uses the first two coordinates of the point (2D)</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the points as MatOfPoint2f</dd>
@@ -327,13 +350,38 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getTrackingPoints()">
-<h3>getTrackingPoints</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint2f</span>&nbsp;<span class="element-name">getTrackingPoints</span>()</div>
-<div class="block">Provides the tracking points as OpenCV-Matrix</div>
+<section class="detail" id="getTrackingPoints2d()">
+<h3>getTrackingPoints2d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint2f</span>&nbsp;<span class="element-name">getTrackingPoints2d</span>()</div>
+<div class="block">Provides the tracking points as OpenCV-Matrix
+ Only uses the first two coordinates of the point (2D)</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the points as MatOfPoints2f</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getImagePoints3d()">
+<h3>getImagePoints3d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint3f</span>&nbsp;<span class="element-name">getImagePoints3d</span>()</div>
+<div class="block">Provides the image points as OpenCV-Matrix
+ Uses three point coordinates, to calculate in 3D</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the points as MatOfPoint3f</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getTrackingPoints3d()">
+<h3>getTrackingPoints3d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.MatOfPoint3f</span>&nbsp;<span class="element-name">getTrackingPoints3d</span>()</div>
+<div class="block">Provides the tracking points as OpenCV-Matrix
+ Uses three point coordinates, to calculate in 3D</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the points as MatOfPoints3f</dd>
 </dl>
 </section>
 </li>
@@ -376,7 +424,8 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">getTransformMatProjectionTransform</span>()</div>
 <div class="block">Calculates a transformation matrix by the provided raw points.
  Uses the method of finding the projective transform.
- See also https://math.stackexchange.com/a/339033</div>
+ See also https://math.stackexchange.com/a/339033
+ !! Only works with a 2D-representation of the points. !!</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The resulting transformation matrix</dd>
@@ -384,11 +433,25 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getTransformMatOpenCvEstimated()">
-<h3>getTransformMatOpenCvEstimated</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">getTransformMatOpenCvEstimated</span>()</div>
+<section class="detail" id="getTransformMatOpenCvEstimated2d()">
+<h3>getTransformMatOpenCvEstimated2d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">getTransformMatOpenCvEstimated2d</span>()</div>
 <div class="block">Calculates a transformation matrix by the provided raw points
- Uses OpenCV's estimate-method based on RANSAC method</div>
+ Uses OpenCV's estimate-method based on RANSAC method
+ Uses only the x,y coordinates of the points and hence only calculates a 2D projection matrix</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The transformation matrix</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getTransformMatOpenCvEstimated3d()">
+<h3>getTransformMatOpenCvEstimated3d</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">getTransformMatOpenCvEstimated3d</span>()</div>
+<div class="block">Calculates a transformation matrix by the provided raw points
+ Uses OpenCV's estimate-method based on RANSAC method
+ Uses x,y,z coordinates of the points and hence calculates a 3D projection matrix</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The transformation matrix</dd>
