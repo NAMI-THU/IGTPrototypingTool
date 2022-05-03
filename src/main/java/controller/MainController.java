@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -42,7 +41,6 @@ public class MainController implements Controller {
             Tab t = new Tab("Measurement View", this.loader.load());
             // set up connections between measurement and other parts of application
             this.measurementController = this.loader.getController();
-            this.measurementController.setTrackingDataController(this.trackingDataController);
             this.measurementController.setStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);
@@ -62,7 +60,6 @@ public class MainController implements Controller {
             Tab t = new Tab("Thrombectomy View", this.loader.load());
 
             this.thrombectomyController = this.loader.getController();
-            this.thrombectomyController.setTrackingDataController(this.trackingDataController);
             this.thrombectomyController.setStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);

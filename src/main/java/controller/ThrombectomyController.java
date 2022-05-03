@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
+import algorithm.TrackingService;
 import javafx.animation.KeyFrame;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -45,19 +46,15 @@ public class ThrombectomyController implements Controller {
     @FXML private TextField imageScale;
     @FXML private AnchorPane positionDetailBox;
     private List<TrackingDataDisplay> toolDisplayList;
-    private TrackingDataController trackingDataController;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private final TrackingService trackingService = TrackingService.getInstance();
     private Label statusLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         this.toolDisplayList = new ArrayList<>();
-    }
-
-    public void setTrackingDataController(TrackingDataController trackingDataController) {
-        this.trackingDataController = trackingDataController;
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -67,7 +64,6 @@ public class ThrombectomyController implements Controller {
 
     /**
      * method with only event as parameter so it can be used in fxml
-     * @param e
      */
     @FXML
     private void loadFile(Event e) {
@@ -172,17 +168,17 @@ public class ThrombectomyController implements Controller {
      */
     @FXML
     private void showTrackingData() {
-        if (trackingDataController.source == null) {
+        if (trackingService.getTrackingDataSource() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
         }
         // timeline has not been started in trackingdata view
-        if (trackingDataController.timeline == null) {
+        if (trackingService.getTimeline() == null) {
             statusLabel.setText("Start Tracking in Tracking Data View first");
             return;
         }
         statusLabel.setText("");
-        trackingDataController.timeline.getKeyFrames().add(
+        trackingService.getTimeline().getKeyFrames().add(
                 new KeyFrame(Duration.millis(100),
                     event2 -> updateThrombectomyDiagrams())
                 );
@@ -195,7 +191,7 @@ public class ThrombectomyController implements Controller {
      */
     private void updateThrombectomyDiagrams() {
 
-        List<ToolMeasure> tools = trackingDataController.ds.loadNextData(1);
+        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
         if (tools.isEmpty()) return;
 
         for (ToolMeasure tool : tools) {
@@ -226,7 +222,6 @@ public class ThrombectomyController implements Controller {
      * check if display data exists for this tool
      * create display data if it does not exist
      */
-    @SuppressWarnings("unchecked")
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
         if (toolDisplayList.size() > 0) {
             for (TrackingDataDisplay d : toolDisplayList) {
