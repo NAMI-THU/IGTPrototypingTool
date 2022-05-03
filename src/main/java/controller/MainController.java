@@ -80,7 +80,6 @@ public class MainController implements Controller {
             Tab t = new Tab("Autotrack", this.loader.load());
 
             this.autoTrackController = this.loader.getController();
-            this.autoTrackController.setTrackingDataController(this.trackingDataController);
             this.autoTrackController.setStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);

@@ -44,8 +44,8 @@ import java.util.prefs.Preferences;
 
 public class AutoTrackController implements Controller {
 
-    private final DataService dataService = new DataService();
     private final ImageDataManager imageDataManager = new ImageDataManager();
+    private final TrackingService trackingService = TrackingService.getInstance();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
@@ -102,6 +102,9 @@ public class AutoTrackController implements Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
+
+        trackingService.registerObserver((sourceChanged,dataServiceChanged,timelineChanged) -> updateTrackingInformation());
+
         connectionProgressSpinner.setVisible(false);
         captureProgressSpinner.setVisible(false);
         sourceChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> changeVideoView());
@@ -136,14 +139,10 @@ public class AutoTrackController implements Controller {
     /**
      * Enables the Main View to inject the tracking data controller
      *
-     * @param trackingDataController the controller to inject
      */
-    public void setTrackingDataController(TrackingDataController trackingDataController) {
-        this.trackingDataController = trackingDataController;
-        this.dataService.setTrackingDataSource(trackingDataController.getSource());
-
-        var trackingOkExpression = trackingDataController.sourceConnected.and(trackingDataController.visualizationRunning);
-        trackingConnectedStatusBox.selectedProperty().bind(trackingOkExpression);
+    public void updateTrackingInformation() {
+        var selected = trackingService.getTrackingDataSource() != null && trackingService.getTimeline() != null;
+        trackingConnectedStatusBox.setSelected(selected);
     }
 
     /**
@@ -253,12 +252,12 @@ public class AutoTrackController implements Controller {
      * Loads the next tracking data point and displays it on the image-plot
      */
     private void updateTrackingData(){
-        var source = trackingDataController.getSource();
-        if(source == null){return;}
-        dataService.setTrackingDataSource(trackingDataController.getSource());  // TODO should make a property for this
+        var source = trackingService.getTrackingDataSource();
+        var service = trackingService.getDataService();
+        if(source == null || service == null){return;}
 
         source.update();
-        List<ToolMeasure> tools = dataService.loadNextData(1);
+        List<ToolMeasure> tools = service.loadNextData(1);
 
         if (tools.isEmpty()) return;
 
