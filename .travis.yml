@@ -1,13 +1,5 @@
 language: java
 
-os:
- - windows
- - linux
- - osx
-
-dist: focal
-virt: lxd
-
 jdk:
   - openjdk11
   - openjdk17
@@ -17,3 +9,4 @@ addons:
     packages:
       - language-pack-en
       - language-pack-de
+
