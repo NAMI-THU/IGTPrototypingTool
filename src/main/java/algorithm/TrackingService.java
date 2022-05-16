@@ -37,6 +37,8 @@ public final class TrackingService {
      */
     public void registerObserver(TrackingServiceObserver observer){
         observers.add(observer);
+        // Inform them about the initial status
+        observer.onTrackingSourceChanged(trackingDataSource!=null, dataService!=null,timeline!=null);
     }
 
     /**
