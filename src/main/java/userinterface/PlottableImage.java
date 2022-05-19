@@ -1,6 +1,7 @@
 package userinterface;
 
 import javafx.beans.NamedArg;
+import javafx.scene.Cursor;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.image.Image;
@@ -24,6 +25,8 @@ public class PlottableImage extends ScatterChart<Number, Number> {
 
         imageView.setPreserveRatio(false);
         imageView.setOnMouseClicked(mouseEvent -> clickHandler.forEach(handler -> handler.onMouseClicked(xAxis.getValueForDisplay(mouseEvent.getX()).doubleValue(), yAxis.getValueForDisplay(mouseEvent.getY()).doubleValue())));
+        imageView.setOnMouseEntered(mouseEvent -> getScene().setCursor(Cursor.CROSSHAIR));
+        imageView.setOnMouseExited(mouseEvent -> getScene().setCursor(Cursor.DEFAULT));
     }
 
     public void setImage(Image image) {
