@@ -9,73 +9,63 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
    	<VBox maxHeight="Infinity" maxWidth="Infinity">
    		<VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
-			<FlowPane alignment="CENTER_LEFT" columnHalignment="CENTER" prefWrapLength="800.0" VBox.vgrow="ALWAYS">
-				<ScatterChart fx:id="s1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300" prefWidth="400"
-							  title="XY-Plane">
-					<xAxis>
-						<NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0"
-									upperBound="500.0"/>
-					</xAxis>
-					<yAxis>
-						<NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" minorTickVisible="false"
-									side="LEFT" tickUnit="100.0" upperBound="500.0"/>
-					</yAxis>
-				</ScatterChart>
-				<ScatterChart fx:id="s2" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300" prefWidth="400"
-							  title="ZY-Plane">
-					<xAxis>
-						<NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0"
-									upperBound="500.0"/>
-					</xAxis>
-					<yAxis>
-						<NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" side="LEFT" tickUnit="100.0"
-									upperBound="500.0"/>
-					</yAxis>
-				</ScatterChart>
-				<ScatterChart fx:id="s3" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300" prefWidth="400"
-							  title="XZ-Plane">
-					<xAxis>
-						<NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0"
-									upperBound="500.0"/>
-					</xAxis>
-					<yAxis>
-						<NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="LEFT" tickUnit="100.0"
-									upperBound="500.0"/>
-					</yAxis>
-				</ScatterChart>
-				<GridPane alignment="CENTER" gridLinesVisible="true" prefWidth="400.0" prefHeight="300">
-					<columnConstraints>
-						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-					</columnConstraints>
-					<rowConstraints>
-						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES"/>
-						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES"/>
-					</rowConstraints>
-					<children>
-						<VBox fx:id="posBox" alignment="TOP_CENTER">
-							<Label text="Position"/>
-						</VBox>
-						<VBox fx:id="rotBox" alignment="TOP_CENTER" GridPane.rowIndex="1">
-							<Label text="Rotation"/>
-						</VBox>
-					</children>
-					<FlowPane.margin>
-						<Insets/>
-					</FlowPane.margin>
-					<padding>
-						<Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
-					</padding>
-				</GridPane>
-			</FlowPane>
+         <TilePane alignment="CENTER" prefColumns="2" prefRows="2" prefTileHeight="400.0" prefTileWidth="400.0" VBox.vgrow="ALWAYS">
+            <children>
+   				<ScatterChart fx:id="s1" title="XY-Plane">
+   					<xAxis>
+   						<NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+   					</xAxis>
+   					<yAxis>
+   						<NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" minorTickVisible="false" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+   					</yAxis>
+   				</ScatterChart>
+   				<ScatterChart fx:id="s2" title="ZY-Plane">
+   					<xAxis>
+   						<NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+   					</xAxis>
+   					<yAxis>
+   						<NumberAxis autoRanging="false" label="Y" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+   					</yAxis>
+   				</ScatterChart>
+   				<ScatterChart fx:id="s3" title="XZ-Plane">
+   					<xAxis>
+   						<NumberAxis autoRanging="false" label="X" lowerBound="-500.0" side="BOTTOM" tickUnit="100.0" upperBound="500.0" />
+   					</xAxis>
+   					<yAxis>
+   						<NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
+   					</yAxis>
+   				</ScatterChart>
+   				<GridPane alignment="CENTER" gridLinesVisible="true">
+   					<columnConstraints>
+   						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   					</columnConstraints>
+   					<rowConstraints>
+   						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
+   						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
+   					</rowConstraints>
+   					<children>
+   						<VBox fx:id="posBox" alignment="TOP_CENTER">
+   							<Label text="Position" />
+   						</VBox>
+   						<VBox fx:id="rotBox" alignment="TOP_CENTER" GridPane.rowIndex="1">
+   							<Label text="Rotation" />
+   						</VBox>
+   					</children>
+   					<padding>
+   						<Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+   					</padding>
+   				</GridPane>
+            </children>
+         </TilePane>
          <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
             <VBox.margin>
                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
