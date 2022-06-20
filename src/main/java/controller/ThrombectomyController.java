@@ -57,7 +57,7 @@ public class ThrombectomyController implements Controller {
         this.toolDisplayList = new ArrayList<>();
     }
 
-    public void setStatusLabel(Label statusLabel) {
+    public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
         this.statusLabel.setText("");
     }

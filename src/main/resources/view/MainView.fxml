@@ -51,7 +51,7 @@
             </Tab>
             <Tab closable="false" text="Video Input">
                <content>
-                  <fx:include source="VideoView.fxml" />
+                  <fx:include fx:id="video" source="VideoView.fxml" />
                </content>
             </Tab>
          </tabs>

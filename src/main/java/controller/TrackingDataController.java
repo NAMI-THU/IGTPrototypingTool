@@ -70,7 +70,7 @@ public class TrackingDataController implements Controller {
         freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
-    public void setStatusLabel(Label statusLabel) {
+    public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 

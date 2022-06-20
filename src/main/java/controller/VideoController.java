@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import algorithm.ImageDataManager;
 import javafx.animation.Animation;
@@ -34,11 +35,19 @@ public class VideoController implements Controller {
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
 
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private Label statusLabel;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         this.sourceChoiceBox.getSelectionModel().selectFirst();
         this.setCropListener();
+    }
+
+    @Override
+    public void injectStatusLabel(Label statusLabel) {
+        this.statusLabel = statusLabel;
     }
 
     @Override
@@ -78,7 +87,14 @@ public class VideoController implements Controller {
             var success = dataManager.openConnection(connectionId);
             Platform.runLater(() -> {
                 connectionIndicator.setVisible(false);
-                startButton.setDisable(!success);
+                if(success) {
+                    startButton.setDisable(false);
+                    startButton.requestFocus();
+                }else{
+                    statusLabel.setText("Unable to establish connection.");
+                    logger.warning("Unable to esatblish connection for connection-id "+connectionId+", openConnection returned false.");
+                    new Alert(Alert.AlertType.ERROR, "Unable to establish a connection!").show();
+                }
             });
         }).start();
     }

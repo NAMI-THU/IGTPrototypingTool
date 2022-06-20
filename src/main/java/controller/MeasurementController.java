@@ -53,7 +53,7 @@ public class MeasurementController implements Controller {
     }
 
 
-    public void setStatusLabel(Label statusLabel) {
+    public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
         this.statusLabel.setText("");
     }
