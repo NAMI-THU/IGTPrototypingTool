@@ -12,13 +12,13 @@ plugins {
     id 'application'
 
 	// Apply JavaFX plugin, necessary for GUI
-    id 'org.openjfx.javafxplugin' version '0.0.12'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
     
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
 
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '5.0.6'
+    id 'com.github.spotbugs' version '5.0.8'
 }
 
 javafx {
