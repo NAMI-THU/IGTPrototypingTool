@@ -1,12 +1,19 @@
 package userinterface;
 
 import javafx.beans.NamedArg;
+import javafx.collections.ListChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.StrokeLineCap;
 
+import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +67,36 @@ public class PlottableImage extends ScatterChart<Number, Number> {
         minHeightProperty().bind(image.heightProperty().add(panel_y_extra));
 
         updateAxisRange();
+    }
+
+    public void initSensorCurve(XYChart.Series<Number, Number> dataSeries){
+        var sensorCurve = new CubicCurve();
+        sensorCurve.setStroke(Color.BLUEVIOLET);
+        sensorCurve.setStrokeWidth(4);
+        sensorCurve.setStrokeLineCap(StrokeLineCap.ROUND);
+        getPlotChildren().add(sensorCurve);
+        dataSeries.getData().addListener((ListChangeListener<? super Data<Number, Number>>) c -> {
+            var points = c.getList();
+
+            if(points.size() < 4){
+                // Don't do anything, and we do not want to throw an exception as this would cause cold-start problems
+                return;
+            }
+
+
+            sensorCurve.setStartX(points.get(0).getXValue().doubleValue());
+            sensorCurve.setStartY(points.get(0).getYValue().doubleValue());
+
+            sensorCurve.setControlX1(points.get(1).getXValue().doubleValue());
+            sensorCurve.setControlY1(points.get(1).getYValue().doubleValue());
+
+            sensorCurve.setControlX2(points.get(2).getXValue().doubleValue());
+            sensorCurve.setControlY2(points.get(2).getYValue().doubleValue());
+
+            sensorCurve.setEndX(points.get(3).getXValue().doubleValue());
+            sensorCurve.setEndY(points.get(3).getYValue().doubleValue());
+
+        });
     }
 
     public void registerImageClickedHandler(PlottableImageCallback handler){

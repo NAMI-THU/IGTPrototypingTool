@@ -270,13 +270,14 @@ public class AutoTrackController implements Controller {
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
                 dataSeries.add(series);
                 series.getData().remove(0);
+                videoImagePlot.initSensorCurve(series);
             }
 
             var series = dataSeries.get(i);
             var measurements = tool.getMeasurement();
             var point = measurements.get(measurements.size() - 1).getPoint();
             var data = series.getData();
-            var max_num_points = 1;
+            var max_num_points = 4; // 1
 
             var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2]));
