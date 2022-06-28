@@ -8,11 +8,12 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 
-<BorderPane prefHeight="850.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<BorderPane prefHeight="850.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <top>
       <MenuBar>
          <menus>
@@ -52,6 +53,16 @@
             <Tab closable="false" text="Video Input">
                <content>
                   <fx:include source="VideoView.fxml" />
+               </content>
+            </Tab>
+            <Tab closable="false" text="Visualizer">
+               <content>
+                  <fx:include fx:id="VisualData" source="VisualizerView.fxml" />
+               </content>
+            </Tab>
+            <Tab closable="false" text="View">
+               <content>
+                  <fx:include fx:id="ViewData" source="View.fxml" />
                </content>
             </Tab>
          </tabs>

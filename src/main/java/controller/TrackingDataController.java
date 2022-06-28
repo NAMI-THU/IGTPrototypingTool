@@ -66,8 +66,8 @@ public class TrackingDataController implements Controller {
         rotation = new HashMap<>();
 
         loadCSVBtn.disableProperty().bind(visualizationRunning);
-        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
-        freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
+//        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
+//        freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -231,7 +231,7 @@ public class TrackingDataController implements Controller {
 
     /**
      * This method creates a new series to store tracking data
-     * and position and rotation labels for one tool.
+     *      * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
         if (toolDisplayList.size() > 0) {
