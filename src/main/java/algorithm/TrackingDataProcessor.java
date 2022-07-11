@@ -17,20 +17,20 @@ public class TrackingDataProcessor {
      * expected distance is subtracted from the distance of the points.
      *
      * @param expectedDistance          - value of type double
-     * @param firstAverangeMeasurement  - value of type AverageMeasurement
-     * @param secondAverangeMeasurement - value of type AverageMeasurement
+     * @param firstAverageMeasurement  - value of type AverageMeasurement
+     * @param secondAverageMeasurement - value of type AverageMeasurement
      * @return accurate - the distance
      */
     public static double getAccuracy(double expectedDistance,
-            AverageMeasurement firstAverangeMeasurement,
-            AverageMeasurement secondAverangeMeasurement) {
+            AverageMeasurement firstAverageMeasurement,
+            AverageMeasurement secondAverageMeasurement) {
 
         /*
          * calculates the distance between the points of
-         * firstAverangeMeasurement and secondAverangeMeasurement
+         * firstAverageMeasurement and secondAverageMeasurement
          */
-        return getDistance(firstAverangeMeasurement.getPoint(),
-                secondAverangeMeasurement.getPoint()) - expectedDistance;
+        return getDistance(firstAverageMeasurement.getPoint(),
+                secondAverageMeasurement.getPoint()) - expectedDistance;
     }
 
     /**
