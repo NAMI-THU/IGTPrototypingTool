@@ -30,7 +30,7 @@
                 <Insets/>
             </VBox.margin>
             <HBox>
-                <TilePane hgap="5.0" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="510.0"
+                <TilePane hgap="5.0" prefHeight="55.0" prefWidth="510.0"
                           vgap="5.0">
                     <Label text="CSV-Datafile:"/>
                     <TextField fx:id="address"/>

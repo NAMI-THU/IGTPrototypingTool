@@ -15,10 +15,13 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
    	<VBox maxHeight="Infinity" maxWidth="Infinity">
    		<VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
-         <TilePane alignment="CENTER" prefColumns="2" prefRows="2" prefTileHeight="400.0" prefTileWidth="400.0" VBox.vgrow="ALWAYS">
+			<VBox.margin>
+				<Insets left="50.0" right="50.0" />
+			</VBox.margin>
+         <TilePane alignment="CENTER" hgap="20.0" prefColumns="2" prefRows="2" prefTileHeight="350.0" prefTileWidth="350.0" vgap="10.0" VBox.vgrow="ALWAYS">
             <children>
    				<ScatterChart fx:id="s1" title="XY-Plane">
    					<xAxis>
