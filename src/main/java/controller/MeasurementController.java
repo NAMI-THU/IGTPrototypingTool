@@ -7,12 +7,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import algorithm.TrackingService;
+import algorithm.*;
 import com.jme3.math.Quaternion;
 
-import algorithm.AverageMeasurement;
-import algorithm.DataService;
-import algorithm.ToolMeasure;
 import inputOutput.CSVFileReader;
 import inputOutput.Tool;
 import javafx.fxml.FXML;
@@ -262,7 +259,7 @@ public class MeasurementController implements Controller {
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
 
-                        lCalcCR.setText(String.valueOf(trackingService.getDataService().getAccuracyRotation(
+                        lCalcCR.setText(String.valueOf(TrackingDataProcessor.getAccuracyRotation(
                             expectedRotation,
                             firstTool.getMeasurement().get(0),
                             secondTool.getMeasurement().get(0))));
@@ -272,7 +269,7 @@ public class MeasurementController implements Controller {
                         lCalcCP.setText("0,00");
                         ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
                         ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
-                        lCalcCP.setText(String.valueOf(trackingService.getDataService().getAccuracy(
+                        lCalcCP.setText(String.valueOf(TrackingDataProcessor.getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
                             secondTool.getAverageMeasurement())));
