@@ -53,7 +53,8 @@ public class VideoController implements Controller {
     @Override
     public void close() {
         if(this.dataManager.getDataProcessor().isConnected()) {
-            this.dataManager.closeConnection();
+            // Stop the video stream and also the timeline
+            stopVideo();
         }
         unregisterController();
     }
