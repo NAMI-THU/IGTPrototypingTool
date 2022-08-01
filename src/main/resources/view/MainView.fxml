@@ -30,6 +30,7 @@
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement" />
                         <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy" />
+                        <MenuItem mnemonicParsing="false" onAction="#openVisualizationView" text="Visualization" />
                      </items>
                   </Menu>
                </items>
@@ -55,16 +56,11 @@
                   <fx:include source="VideoView.fxml" />
                </content>
             </Tab>
-            <Tab closable="false" text="Visualizer">
-               <content>
-                  <fx:include fx:id="VisualData" source="VisualizerView.fxml" />
-               </content>
-            </Tab>
-            <Tab closable="false" text="View">
-               <content>
-                  <fx:include fx:id="ViewData" source="View.fxml" />
-               </content>
-            </Tab>
+<!--            <Tab closable="false" text="View">-->
+<!--               <content>-->
+<!--                  <fx:include fx:id="ViewData" source="View.fxml" />-->
+<!--               </content>-->
+<!--            </Tab>-->
          </tabs>
       </TabPane>
    </center>
