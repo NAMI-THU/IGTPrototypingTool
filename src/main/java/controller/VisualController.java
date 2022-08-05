@@ -1,43 +1,36 @@
 package controller;
 
-import algorithm.DataService;
 import algorithm.Measurement;
 import algorithm.ToolMeasure;
 import algorithm.TrackingService;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Mesh;
-import javafx.scene.shape.MeshView;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import shapes.simple.ConeMesh;
 import userinterface.TrackingDataDisplay;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +45,7 @@ public class VisualController implements Controller {
     private static final double MODEL_X_OFFSET = 0; // standard
     private static final double MODEL_Y_OFFSET = 0; // standard
     private static final int VIEWPORT_SIZE = 800;
+    private static final int VIEWPORT_CENTER = VIEWPORT_SIZE/2;
     private double mouseOldX, mouseOldY = 0;
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
@@ -61,27 +55,30 @@ public class VisualController implements Controller {
     private static final Color jewelColor = Color.rgb(0, 190, 222);
 
     @FXML
-    private Group meshGroup;
+    Group meshGroup;
     @FXML
-    private Button loadStlFile;
+    Button loadStlFile;
     @FXML
-    private Button loadCsvFile;
+    Button loadCsvFile;
     @FXML
-    private Button loadOpenIgtLink;
+    Button loadOpenIgtLink;
     @FXML
-    private Button start;
+    Button start;
     @FXML
-    private Button freeze;
+    Button freeze;
     @FXML
-    private CheckBox rotate;
+    CheckBox rotate;
     @FXML
-    private CheckBox cullBack;
+    CheckBox cullBack;
     @FXML
-    private CheckBox wireframe;
+    CheckBox wireframe;
+    @FXML
+    HBox posBox;
+    @FXML
+    HBox rotBox;
 
     private PointLight pointLight;
     private MeshView[] meshView;
-
     private final TrackingService trackingService = TrackingService.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
@@ -91,15 +88,19 @@ public class VisualController implements Controller {
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
     private final BooleanProperty meshViewEmpty = new SimpleBooleanProperty(true);
 
+    private PhongMaterial phong = new PhongMaterial(Color.RED);
+
+
+
+    //    private ConeMesh cone = new ConeMesh();
+    private Sphere cone = new Sphere(0.33);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         initCamera();
         toolDisplayList = new ArrayList<>();
-        position = new HashMap<>();
-        rotation = new HashMap<>();
-
+        cone.setMaterial(phong);
 //        loadCsvFile.disableProperty().bind(visualizationRunning);
         start.disableProperty().bind(meshViewEmpty);
 
@@ -172,6 +173,12 @@ public class VisualController implements Controller {
      */
     private void updateThrombectomyDiagrams() {
 
+        if(trackingService.getTrackingDataSource() == null){
+            return;
+        }
+        // loads the next set of tracking data
+        trackingService.getTrackingDataSource().update();
+
         List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
         if (tools.isEmpty()) return;
 
@@ -182,19 +189,29 @@ public class VisualController implements Controller {
 //            display.clearData();
 
             List<Measurement> measurements = tool.getMeasurement();
-            //use the last 10 measurements, otherwise blending will be a problem during motion
-            for (int i = 1; i < 10; i++) {
+            //use the last 5 measurements, otherwise blending will be a problem during motion
+            for (int i = 1; i < 5; i++) {
                 if (measurements.size() - i < 0) {
                     break;
                 }
-                // invert tracking data, so display fits the experiment's setup
                 double x = measurements.get(measurements.size() - i).getPoint().getX();
-                double y = measurements.get(measurements.size() - i).getPoint().getY();
-                double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
+                // invert Y axis for correct display!
+                double y = measurements.get(measurements.size() - i).getPoint().getY() *-1;
+                // invert tracking data, so fits the experiment's setup
+                double z = measurements.get(measurements.size() - i).getPoint().getZ() *-1;
 
-                meshView[0].setTranslateX(x);
-                meshView[0].setTranslateY(y);
-                meshView[0].setTranslateZ(z);
+                cone.setTranslateX(x);
+                cone.setTranslateY(y);
+                cone.setTranslateZ(z);
+
+//                if (i == 1) {
+//                    position.get(tool.getName()).setText(": ["
+//                            + cone.getTranslateX() + ";"
+//                            + cone.getTranslateY() + ";"
+//                            + cone.getTranslateZ() + "]");
+//                }
+
+                //TODO: add rotation
             }
         }
     }
@@ -206,39 +223,43 @@ public class VisualController implements Controller {
         MeshView[] meshViews = loadMeshViews();
         for (MeshView view : meshViews) {
             // centre every mesh
-            view.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-            view.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-            view.setTranslateZ(VIEWPORT_SIZE / 2);
-            view.setScaleX(MODEL_SCALE_FACTOR);
-            view.setScaleY(MODEL_SCALE_FACTOR);
-            view.setScaleZ(MODEL_SCALE_FACTOR);
+//            view.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
+//            view.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
+//            view.setTranslateZ(VIEWPORT_SIZE / 2);
+//            view.setScaleX(MODEL_SCALE_FACTOR);
+//            view.setScaleY(MODEL_SCALE_FACTOR);
+//            view.setScaleZ(MODEL_SCALE_FACTOR);
 
-//            PhongMaterial sample = new PhongMaterial(jewelColor);
 //            sample.setSpecularColor(lightColor);
 //            sample.setSpecularPower(16);
 //            meshViews[i].setMaterial(sample);
-
 //            meshViews[i].getTransforms().setAll(new Rotate(38, Rotate.Z_AXIS), new Rotate(20, Rotate.X_AXIS));
+//            view.getTransforms().add(transform);
         }
 
-        Color ambientColor = Color.rgb(80, 80, 80, 0);
-        AmbientLight ambient = new AmbientLight(ambientColor);
+//        Color ambientColor = Color.rgb(80, 80, 80, 0);
+//        AmbientLight ambient = new AmbientLight(ambientColor);
 
         root.setRotationAxis(Rotate.Y_AXIS);
         root.setRotate(0);
-        rotateX.setPivotX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        rotateX.setPivotY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-        rotateX.setPivotZ(VIEWPORT_SIZE / 2);
+        rotateX.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
+        rotateX.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
+        rotateX.setPivotZ(VIEWPORT_CENTER);
 
-        rotateY.setPivotX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        rotateY.setPivotY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-        rotateY.setPivotZ(VIEWPORT_SIZE / 2);
+        rotateY.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
+        rotateY.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
+        rotateY.setPivotZ(VIEWPORT_CENTER);
 
-        rotateZ.setPivotX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        rotateZ.setPivotY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-        rotateZ.setPivotZ(VIEWPORT_SIZE / 2);
+        rotateZ.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
+        rotateZ.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
+        rotateZ.setPivotZ(VIEWPORT_CENTER);
+
+        cone.setScaleX(MODEL_SCALE_FACTOR);
+        cone.setScaleY(MODEL_SCALE_FACTOR);
+        cone.setScaleZ(MODEL_SCALE_FACTOR);
 
         root.getChildren().addAll(meshViews);
+        root.getChildren().addAll(cone);
 
         root.setScaleX(MODEL_SCALE_FACTOR);
         root.setScaleY(MODEL_SCALE_FACTOR);
@@ -255,7 +276,7 @@ public class VisualController implements Controller {
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(1000.0);
 
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
+        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, -10000));
         System.out.println("Near Clip: " + perspectiveCamera.getNearClip());
         System.out.println("Far Clip:  " + perspectiveCamera.getFarClip());
         System.out.println("FOV:       " + perspectiveCamera.getFieldOfView());
@@ -265,11 +286,11 @@ public class VisualController implements Controller {
 
     private SubScene createScene3D(Group meshGroup) {
         SubScene scene3d = new SubScene(meshGroup, 850, 800, true, SceneAntialiasing.BALANCED);
-//        scene3d.widthProperty().bind(((AnchorPane)meshGroup.getParent()).widthProperty());
-//        scene3d.heightProperty().bind(((AnchorPane)meshGroup.getParent()).heightProperty());
+        scene3d.widthProperty().bind(((AnchorPane) this.meshGroup.getParent()).widthProperty());
+        scene3d.heightProperty().bind(((AnchorPane) this.meshGroup.getParent()).heightProperty());
         PerspectiveCamera perspectiveCamera = initCamera();
 
-        scene3d.setFill(Color.BLACK);
+        scene3d.setFill(Color.DARKGREY);
         scene3d.setCamera(perspectiveCamera);
         scene3d.setPickOnBounds(true);
         return scene3d;
@@ -280,6 +301,7 @@ public class VisualController implements Controller {
     private void showFigure() {
         // Add MeshView to Group
         Group root = buildScene();
+//        initCamera();
         // Create subScene
         SubScene subScene = createScene3D(root);
         // Add subScene to meshGroup
@@ -290,7 +312,7 @@ public class VisualController implements Controller {
 
         // this will allow the user to zoom in and out
         subScene.setOnScroll(event -> {
-            double zoomFactor = 1.05;
+            double zoomFactor = 1.01;
             double deltaY = event.getDeltaY();
             if (deltaY < 0) {
                 zoomFactor = 2.0 - zoomFactor;
@@ -313,10 +335,6 @@ public class VisualController implements Controller {
             mouseOldY = event.getSceneY();
 
         });
-
-
-//        RotateTransition rotate = rotate3dGroup(meshInGroup);
-//        meshInGroup.createControls(rotate);
     }
 
     /**
@@ -329,8 +347,8 @@ public class VisualController implements Controller {
                 mesh.cullFaceProperty().bind(
                         Bindings.when(
                                         cullBack.selectedProperty())
-                                .then(CullFace.BACK)
-                                .otherwise(CullFace.NONE)
+                                .then(CullFace.NONE)
+                                .otherwise(CullFace.BACK)
                 );
             }
         } else if (e.getSource().equals(wireframe)) {
@@ -343,6 +361,11 @@ public class VisualController implements Controller {
                 );
             }
         }
+    }
+
+    @FXML
+    private void changeColor(){
+        //TODO implement color changer for tracking device
     }
 
 

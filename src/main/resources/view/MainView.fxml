@@ -56,11 +56,6 @@
                   <fx:include fx:id="video" source="VideoView.fxml" />
                </content>
             </Tab>
-<!--            <Tab closable="false" text="View">-->
-<!--               <content>-->
-<!--                  <fx:include fx:id="ViewData" source="View.fxml" />-->
-<!--               </content>-->
-<!--            </Tab>-->
          </tabs>
       </TabPane>
    </center>
