@@ -9,12 +9,12 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -39,20 +39,19 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static javafx.scene.input.KeyCode.W;
+
 public class VisualController implements Controller {
 
     private static final double MODEL_SCALE_FACTOR = 10;
     private static final double MODEL_X_OFFSET = 0; // standard
     private static final double MODEL_Y_OFFSET = 0; // standard
     private static final int VIEWPORT_SIZE = 800;
-    private static final int VIEWPORT_CENTER = VIEWPORT_SIZE/2;
+    private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
     private double mouseOldX, mouseOldY = 0;
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
-
-    private static final Color lightColor = Color.rgb(244, 255, 250);
-    private static final Color jewelColor = Color.rgb(0, 190, 222);
 
     @FXML
     Group meshGroup;
@@ -67,8 +66,6 @@ public class VisualController implements Controller {
     @FXML
     Button freeze;
     @FXML
-    CheckBox rotate;
-    @FXML
     CheckBox cullBack;
     @FXML
     CheckBox wireframe;
@@ -76,9 +73,16 @@ public class VisualController implements Controller {
     HBox posBox;
     @FXML
     HBox rotBox;
+    @FXML
+    ColorPicker colorPicker;
+    @FXML
+    Slider trackerSlider;
 
     private PointLight pointLight;
     private MeshView[] meshView;
+
+    private MeshView[] trackingDevices;
+
     private final TrackingService trackingService = TrackingService.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
@@ -88,22 +92,31 @@ public class VisualController implements Controller {
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
     private final BooleanProperty meshViewEmpty = new SimpleBooleanProperty(true);
 
-    private PhongMaterial phong = new PhongMaterial(Color.RED);
+    private PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
 
-
-
-    //    private ConeMesh cone = new ConeMesh();
-    private Sphere cone = new Sphere(0.33);
+    private Sphere sphere = new Sphere(2);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
-        initCamera();
         toolDisplayList = new ArrayList<>();
-        cone.setMaterial(phong);
-//        loadCsvFile.disableProperty().bind(visualizationRunning);
         start.disableProperty().bind(meshViewEmpty);
+    }
 
+    /**
+     * Set a color for the tracker in the visualisation view
+     */
+    @FXML
+    public void setTrackerColor() {
+        sphere.setMaterial(new PhongMaterial(colorPicker.getValue()));
+    }
+
+    /**
+     * Set a size for the tracker in the visualisation view
+     */
+    @FXML
+    public void setTrackerSize() {
+        sphere.setRadius(trackerSlider.getValue());
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -162,7 +175,7 @@ public class VisualController implements Controller {
         statusLabel.setText("");
         trackingService.getTimeline().getKeyFrames().add(
                 new KeyFrame(Duration.millis(100),
-                        event2 -> updateThrombectomyDiagrams())
+                        event2 -> updateTrackingDevice())
         );
     }
 
@@ -171,9 +184,9 @@ public class VisualController implements Controller {
      * available and creates data series for each tool. Visualization
      * uses last 5 measurements for blending.
      */
-    private void updateThrombectomyDiagrams() {
+    private void updateTrackingDevice() {
 
-        if(trackingService.getTrackingDataSource() == null){
+        if (trackingService.getTrackingDataSource() == null) {
             return;
         }
         // loads the next set of tracking data
@@ -196,13 +209,13 @@ public class VisualController implements Controller {
                 }
                 double x = measurements.get(measurements.size() - i).getPoint().getX();
                 // invert Y axis for correct display!
-                double y = measurements.get(measurements.size() - i).getPoint().getY() *-1;
+                double y = measurements.get(measurements.size() - i).getPoint().getY() * -1;
                 // invert tracking data, so fits the experiment's setup
-                double z = measurements.get(measurements.size() - i).getPoint().getZ() *-1;
+                double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
 
-                cone.setTranslateX(x);
-                cone.setTranslateY(y);
-                cone.setTranslateZ(z);
+                sphere.setTranslateX(x);
+                sphere.setTranslateY(y);
+                sphere.setTranslateZ(z);
 
 //                if (i == 1) {
 //                    position.get(tool.getName()).setText(": ["
@@ -242,6 +255,7 @@ public class VisualController implements Controller {
 
         root.setRotationAxis(Rotate.Y_AXIS);
         root.setRotate(0);
+
         rotateX.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
         rotateX.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
         rotateX.setPivotZ(VIEWPORT_CENTER);
@@ -254,13 +268,12 @@ public class VisualController implements Controller {
         rotateZ.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
         rotateZ.setPivotZ(VIEWPORT_CENTER);
 
-        cone.setScaleX(MODEL_SCALE_FACTOR);
-        cone.setScaleY(MODEL_SCALE_FACTOR);
-        cone.setScaleZ(MODEL_SCALE_FACTOR);
-
         root.getChildren().addAll(meshViews);
-        root.getChildren().addAll(cone);
+        root.getChildren().addAll(sphere);
 
+        root.setTranslateX(VIEWPORT_CENTER + MODEL_X_OFFSET);
+        root.setTranslateY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
+        root.setTranslateZ(VIEWPORT_CENTER);
         root.setScaleX(MODEL_SCALE_FACTOR);
         root.setScaleY(MODEL_SCALE_FACTOR);
         root.setScaleZ(MODEL_SCALE_FACTOR);
@@ -269,18 +282,14 @@ public class VisualController implements Controller {
     }
 
     private PerspectiveCamera initCamera() {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
+//        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
         perspectiveCamera.setTranslateX(0);
         perspectiveCamera.setTranslateY(0);
         perspectiveCamera.setTranslateZ(0);
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(1000.0);
 
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, -10000));
-        System.out.println("Near Clip: " + perspectiveCamera.getNearClip());
-        System.out.println("Far Clip:  " + perspectiveCamera.getFarClip());
-        System.out.println("FOV:       " + perspectiveCamera.getFieldOfView());
-
+        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, -1000));
         return perspectiveCamera;
     }
 
@@ -288,7 +297,8 @@ public class VisualController implements Controller {
         SubScene scene3d = new SubScene(meshGroup, 850, 800, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) this.meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) this.meshGroup.getParent()).heightProperty());
-        PerspectiveCamera perspectiveCamera = initCamera();
+//        PerspectiveCamera perspectiveCamera = initCamera();
+        initCamera();
 
         scene3d.setFill(Color.DARKGREY);
         scene3d.setCamera(perspectiveCamera);
@@ -301,23 +311,39 @@ public class VisualController implements Controller {
     private void showFigure() {
         // Add MeshView to Group
         Group root = buildScene();
-//        initCamera();
+//        // Create Camera
+//        PerspectiveCamera perspectiveCamera = initCamera();
         // Create subScene
         SubScene subScene = createScene3D(root);
+
+//        subScene.requestFocus();
+
+        subScene.requestFocus();
+//        // Add Camera to Scene
+//        subScene.setCamera(perspectiveCamera);
         // Add subScene to meshGroup
         this.meshGroup.getChildren().add(subScene);
         // size will not impact the size of parent and resizing will also work when reducing the AnchorPane object's size
         subScene.setManaged(false);
 
+        handleKeyboard(subScene);
+        handleMouse(subScene, root);
+    }
 
-        // this will allow the user to zoom in and out
+    /**
+     * Add Mouse functionalities to SubScene
+     * allow user to zoom in and out
+     * allow user to drag
+     * @param subScene
+     * @param root
+     */
+    private void handleMouse(SubScene subScene, Group root) {
         subScene.setOnScroll(event -> {
-            double zoomFactor = 1.01;
+            double zoomFactor = 1.05;
             double deltaY = event.getDeltaY();
             if (deltaY < 0) {
                 zoomFactor = 2.0 - zoomFactor;
             }
-//                 System.out.println(zoomFactor);
             root.setScaleX(root.getScaleX() * zoomFactor);
             root.setScaleY(root.getScaleY() * zoomFactor);
             root.setScaleZ(root.getScaleZ() * zoomFactor);
@@ -334,6 +360,35 @@ public class VisualController implements Controller {
             mouseOldX = event.getSceneX();
             mouseOldY = event.getSceneY();
 
+        });
+    }
+
+    //TODO: request focus for subScene - input not working
+    /**
+     * Add ArrowKey functionalities to SubScene
+     * allow user to navigate camera via KeyPress
+     * @param subScene
+     */
+    private void handleKeyboard(SubScene subScene) {
+        subScene.setOnKeyPressed(keyEvent -> {
+            switch (keyEvent.getCode()) {
+                case W:
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                    keyEvent.consume();
+                    break;
+                case S:
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
+                    keyEvent.consume();
+                    break;
+                case A:
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
+                    keyEvent.consume();
+                    break;
+                case D:
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
+                    keyEvent.consume();
+                    break;
+            }
         });
     }
 
@@ -362,12 +417,6 @@ public class VisualController implements Controller {
             }
         }
     }
-
-    @FXML
-    private void changeColor(){
-        //TODO implement color changer for tracking device
-    }
-
 
     private RotateTransition rotate3dGroup(Group group) {
         RotateTransition rotate = new RotateTransition(Duration.seconds(10), group);
