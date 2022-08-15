@@ -16,7 +16,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.opencv.video.Video;
 
 public class MainController implements Controller {
 

@@ -1,6 +1,5 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
 import inputOutput.AbstractTrackingDataSource;
 
 import java.util.List;
