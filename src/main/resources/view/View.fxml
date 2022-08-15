@@ -7,6 +7,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -15,67 +16,69 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualController">
     <center>
-            <AnchorPane>
-                <children>
-                    <Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                </children>
-            </AnchorPane>
+        <AnchorPane>
+            <children>
+                <Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            </children>
+        </AnchorPane>
     </center>
-   <right>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <SubScene height="200.0" layoutY="14.0" width="200.0">
-              <root>
-                <Region />
-              </root>
-            </SubScene>
-            <Accordion layoutX="-1.0" layoutY="287.0">
-              <panes>
-                <TitledPane animated="false" text="Scene">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <Button fx:id="loadStlFile" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#showFigure" text="Load STL File" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </TitledPane>
-                <TitledPane animated="false" text="Visualisation">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <Button fx:id="loadCsvFile" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Load CSV File" AnchorPane.topAnchor="5.0" />
-                              <Button fx:id="loadOpenIgtLink" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" text="Load OpenIGTLink" AnchorPane.topAnchor="45.0" />
-                              <Button fx:id="start" layoutX="14.0" layoutY="78.0" mnemonicParsing="false" onAction="#showTrackingData" text="Start" AnchorPane.topAnchor="85.0" />
-                              <Button fx:id="freeze" layoutX="14.0" layoutY="141.0" mnemonicParsing="false" text="Freeze" AnchorPane.topAnchor="125.0" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </TitledPane>
-                <TitledPane animated="false" text="Controls">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <CheckBox fx:id="cullBack" layoutX="14.0" layoutY="32.0" mnemonicParsing="false" onAction="#changeView" text="Cull Back" />
-                              <CheckBox fx:id="wireframe" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#changeView" text="Wireframe" />
-                              <ColorPicker layoutX="19.0" layoutY="86.0" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </TitledPane>
-              </panes>
-            </Accordion>
-            <HBox fx:id="rotBox" layoutY="700.0" prefHeight="50.0" prefWidth="200.0">
-               <children>
-                  <Label text="Rotation" />
-               </children>
-            </HBox>
-            <HBox fx:id="posBox" layoutY="650.0" prefHeight="50.0" prefWidth="200.0">
-               <children>
-                  <Label text="Position" />
-               </children>
-            </HBox>
-         </children>
-      </AnchorPane>
-   </right>
+    <right>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <SubScene height="200.0" layoutY="14.0" width="200.0">
+                    <root>
+                        <Region />
+                    </root>
+                </SubScene>
+                <Accordion layoutX="-1.0" layoutY="287.0">
+                    <panes>
+                        <TitledPane animated="false" text="Scene">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <Button fx:id="loadStlFile" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#showFigure" text="Load STL File" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Visualisation">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <Button fx:id="loadCsvFile" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Load CSV File" AnchorPane.topAnchor="5.0" />
+                                        <Button fx:id="loadOpenIgtLink" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" text="Load OpenIGTLink" AnchorPane.topAnchor="45.0" />
+                                        <Button fx:id="start" layoutX="14.0" layoutY="78.0" mnemonicParsing="false" onAction="#showTrackingData" text="Start" AnchorPane.topAnchor="85.0" />
+                                        <Button fx:id="freeze" layoutX="14.0" layoutY="141.0" mnemonicParsing="false" text="Freeze" AnchorPane.topAnchor="125.0" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Controls">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <CheckBox fx:id="cullBack" layoutX="14.0" layoutY="32.0" mnemonicParsing="false" onAction="#changeView" text="Cull Back" />
+                                        <CheckBox fx:id="wireframe" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#changeView" text="Wireframe" />
+                                        <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="141.0" onAction="#setTrackerColor" />
+<!--                                        <TextField prefWidth="50" text="${trackerSlider.value}"/>-->
+                                        <Slider fx:id="trackerSlider" blockIncrement="5.0" layoutX="9.0" layoutY="104.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" onMouseDragged="#setTrackerSize" value="1.0" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </TitledPane>
+                    </panes>
+                </Accordion>
+                <HBox fx:id="rotBox" layoutY="700.0" prefHeight="50.0" prefWidth="200.0">
+                    <children>
+                        <Label text="Rotation" />
+                    </children>
+                </HBox>
+                <HBox fx:id="posBox" layoutY="650.0" prefHeight="50.0" prefWidth="200.0">
+                    <children>
+                        <Label text="Position" />
+                    </children>
+                </HBox>
+            </children>
+        </AnchorPane>
+    </right>
 </BorderPane>
