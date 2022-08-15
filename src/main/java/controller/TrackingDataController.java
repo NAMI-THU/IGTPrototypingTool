@@ -70,7 +70,7 @@ public class TrackingDataController implements Controller {
         freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
-    public void setStatusLabel(Label statusLabel) {
+    public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 
@@ -93,6 +93,7 @@ public class TrackingDataController implements Controller {
                 newSource = new CSVFileReader(file.getAbsolutePath());
                 newSource.setRepeatMode(true);
                 trackingService.changeTrackingSource(newSource);
+                sourceConnected.setValue(true);
                 logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);

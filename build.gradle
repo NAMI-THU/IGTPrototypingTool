@@ -12,13 +12,13 @@ plugins {
     id 'application'
 
 	// Apply JavaFX plugin, necessary for GUI
-    id 'org.openjfx.javafxplugin' version '0.0.12'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
     
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
 
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '5.0.6'
+    id 'com.github.spotbugs' version '5.0.9'
 }
 
 javafx {
@@ -46,9 +46,9 @@ dependencies {
     implementation 'org.apache.commons:commons-csv:1.9.0'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.0'
 }
 
 // JUnit 5 support

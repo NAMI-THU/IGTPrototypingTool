@@ -17,21 +17,20 @@ public class TrackingDataProcessor {
      * expected distance is subtracted from the distance of the points.
      *
      * @param expectedDistance          - value of type double
-     * @param firstAverangeMeasurement  - value of type AverageMeasurement
-     * @param secondAverangeMeasurement - value of type AverageMeasurement
+     * @param firstAverageMeasurement  - value of type AverageMeasurement
+     * @param secondAverageMeasurement - value of type AverageMeasurement
      * @return accurate - the distance
      */
-    public double getAccuracy(double expectedDistance,
-            AverageMeasurement firstAverangeMeasurement,
-            AverageMeasurement secondAverangeMeasurement) {
+    public static double getAccuracy(double expectedDistance,
+            AverageMeasurement firstAverageMeasurement,
+            AverageMeasurement secondAverageMeasurement) {
 
-        /**
+        /*
          * calculates the distance between the points of
-         * firstAverangeMeasurement and secondAverangeMeasurement
+         * firstAverageMeasurement and secondAverageMeasurement
          */
-        double accurate = getDistance(firstAverangeMeasurement.getPoint(),
-                secondAverangeMeasurement.getPoint()) - expectedDistance;
-        return accurate;
+        return getDistance(firstAverageMeasurement.getPoint(),
+                secondAverageMeasurement.getPoint()) - expectedDistance;
     }
 
     /**
@@ -47,13 +46,12 @@ public class TrackingDataProcessor {
      * @return result - of type quaternion
      */
 
-    public Quaternion getAccuracyRotation(Quaternion expectedRotation,
+    public static Quaternion getAccuracyRotation(Quaternion expectedRotation,
                                           Measurement firstMeasurement,
                                           Measurement secondMeasurement) {
-        Quaternion result = secondMeasurement.getRotation()
+        return secondMeasurement.getRotation()
                 .subtract(firstMeasurement.getRotation())
                 .subtract(expectedRotation);
-        return result;
     }
 
     /**
@@ -66,7 +64,7 @@ public class TrackingDataProcessor {
      * @param values - a list with values
      * @return boxPlot - of type boxPlot with results
      */
-    public BoxPlot getBoxPlot(List<Double> values) {
+    public static BoxPlot getBoxPlot(List<Double> values) {
 
         BoxPlot boxPlot = new BoxPlot();
 
@@ -90,7 +88,7 @@ public class TrackingDataProcessor {
     }
 
     /* toDoubleArray converts a list into an array */
-    double[] toDoubleArray(List<Double> list) {
+    private static double[] toDoubleArray(List<Double> list) {
         double[] ret = new double[list.size()];
         int i = 0;
         for (Double e : list) {
@@ -108,8 +106,7 @@ public class TrackingDataProcessor {
      * @return distance - of type double
      */
 
-    private double getDistance(Point3D firstPoint, Point3D secondPoint) {
-        double distance = firstPoint.distance(secondPoint);
-        return distance;
+    private static double getDistance(Point3D firstPoint, Point3D secondPoint) {
+        return firstPoint.distance(secondPoint);
     }
 }
