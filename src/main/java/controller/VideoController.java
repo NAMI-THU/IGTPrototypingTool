@@ -84,9 +84,12 @@ public class VideoController implements Controller {
         }
     }
 
-    private void connectToSourceAsync(int connectionId){
+    private void connectToSourceAsync(VideoSource connectionId){
+        connectToSourceAsync(connectionId, 0);
+    }
+    private void connectToSourceAsync(VideoSource connectionId, int deviceId){
         new Thread(() -> {
-            var success = dataManager.openConnection(connectionId);
+            var success = dataManager.openConnection(connectionId, deviceId);
             Platform.runLater(() -> {
                 connectionIndicator.setVisible(false);
                 if(success) {
