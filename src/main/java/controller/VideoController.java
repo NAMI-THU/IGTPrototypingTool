@@ -3,18 +3,16 @@ package controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import algorithm.ImageDataManager;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -22,6 +20,7 @@ import javafx.util.Duration;
 
 public class VideoController implements Controller {
 
+    @FXML ProgressIndicator connectionIndicator;
     @FXML Button connectButton;
     @FXML Button startButton;
     @FXML Button stopButton;
@@ -37,6 +36,9 @@ public class VideoController implements Controller {
     ImageDataManager dataManager = new ImageDataManager();
     Timeline timeline = new Timeline();
 
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private Label statusLabel;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -45,9 +47,15 @@ public class VideoController implements Controller {
     }
 
     @Override
+    public void injectStatusLabel(Label statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
+    @Override
     public void close() {
         if(this.dataManager.getDataProcessor().isConnected()) {
-            this.dataManager.closeConnection();
+            // Stop the video stream and also the timeline
+            stopVideo();
         }
         unregisterController();
     }
@@ -58,21 +66,39 @@ public class VideoController implements Controller {
      */
     @FXML
     public void connectToSource() {
+        connectionIndicator.setVisible(true);
         switch(sourceChoiceBox.getValue()) {
         case "Video Source":
-            this.dataManager.openConnection(VideoSource.LIVESTREAM, 0);
+            connectToSourceAsync(VideoSource.LIVESTREAM, 0);
             break;
         case "OpenIGTLink":
-            this.dataManager.openConnection(VideoSource.OPENIGTLINK);
+            connectToSourceAsync(VideoSource.OPENIGTLINK);
             break;
         case "Video File":
             File file = this.loadFile();
             if(file != null) {
                 this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
-                this.dataManager.openConnection(VideoSource.FILE);
+                connectToSourceAsync(VideoSource.FILE);
             }
             break;
         }
+    }
+
+    private void connectToSourceAsync(int connectionId){
+        new Thread(() -> {
+            var success = dataManager.openConnection(connectionId);
+            Platform.runLater(() -> {
+                connectionIndicator.setVisible(false);
+                if(success) {
+                    startButton.setDisable(false);
+                    startButton.requestFocus();
+                }else{
+                    statusLabel.setText("Unable to establish connection.");
+                    logger.warning("Unable to esatblish connection for connection-id "+connectionId+", openConnection returned false.");
+                    new Alert(Alert.AlertType.ERROR, "Unable to establish a connection!").show();
+                }
+            });
+        }).start();
     }
 
     /**
@@ -88,6 +114,9 @@ public class VideoController implements Controller {
                          event -> this.update())
             );
             timeline.play();
+            stopButton.setDisable(false);
+            startButton.setDisable(true);
+            connectButton.setDisable(true);
         }
     }
 
@@ -95,11 +124,14 @@ public class VideoController implements Controller {
     public void stopVideo() {
         dataManager.closeConnection();
         timeline.stop();
+        // Need to reconnect first
+        connectButton.setDisable(false);
+        stopButton.setDisable(true);
     }
 
     /**
      * Change ImageView size. If preserveRatio is not explicitly set to true,
-     * height and width can be changed independently from each other.
+     * height and width can be changed independently of each other.
      */
     @FXML
     public void setIvSize() {
@@ -115,9 +147,8 @@ public class VideoController implements Controller {
         FileChooser fc = new FileChooser();
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Video files","*.avi","*.mp4", "*.mkv", "*.mov", "*.3GP", "*.mpg");
         fc.setSelectedExtensionFilter(filter);
-        File file = fc.showOpenDialog(new Stage());
 
-        return file;
+        return fc.showOpenDialog(new Stage());
     }
 
     /**
@@ -125,11 +156,21 @@ public class VideoController implements Controller {
      * and display values in text fields that are used to scale the image.
      */
     private void setInitialImageSize() {
-        Image i = dataManager.readImg();
-        iv.setFitHeight(i.getHeight());
-        iv.setFitWidth(i.getWidth());
-        ivHeight.setText(Double.toString(i.getHeight()));
-        ivWidth.setText(Double.toString(i.getWidth()));
+        var image = dataManager.readImg();
+        var height = image.getHeight();
+        var width = image.getWidth();
+        iv.setFitHeight(height);
+        iv.setFitWidth(width);
+        ivHeight.setText(Double.toString(height));
+        ivWidth.setText(Double.toString(width));
+
+        topSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height));
+        bottomSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height));
+        rightSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width));
+        leftSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width));
+
+        // We don't need to remove the old listeners since the valueProperty will be a new one than before (because of the new ValueFactory)
+        setCropListener();
     }
 
     /**
@@ -138,8 +179,8 @@ public class VideoController implements Controller {
      */
     private void setCropListener() {
         this.topSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setTopCrop(newValue));
-        this.bottomSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setBottomCrop(newValue));
+        this.bottomSpinner.valueProperty().addListener((observable ,oldValue, newValue) -> this.dataManager.getDataProcessor().setBottomCrop(newValue));
         this.rightSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setRightCrop(newValue));
-        this.leftSpinner.valueProperty().addListener((o ,oldValue, newValue) -> this.dataManager.getDataProcessor().setLeftCrop(newValue));
+        this.leftSpinner.valueProperty().addListener((observable ,oldValue, newValue) -> this.dataManager.getDataProcessor().setLeftCrop(newValue));
     }
 }

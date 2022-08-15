@@ -20,7 +20,9 @@ import javafx.stage.Stage;
 public class MainController implements Controller {
 
     @FXML TabPane tabPane;
+    // These two controller will be automatically injected since we annotated the "trackingData" and "video" element in the fxml
     @FXML TrackingDataController trackingDataController;
+    @FXML VideoController videoController;
     @FXML Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
@@ -32,7 +34,8 @@ public class MainController implements Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
-        trackingDataController.setStatusLabel(status);
+        trackingDataController.injectStatusLabel(status);
+        videoController.injectStatusLabel(status);
     }
 
     @FXML
@@ -42,7 +45,7 @@ public class MainController implements Controller {
             Tab t = new Tab("Measurement View", this.loader.load());
             // set up connections between measurement and other parts of application
             this.measurementController = this.loader.getController();
-            this.measurementController.setStatusLabel(this.status);
+            this.measurementController.injectStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
@@ -61,7 +64,7 @@ public class MainController implements Controller {
             Tab t = new Tab("Thrombectomy View", this.loader.load());
 
             this.thrombectomyController = this.loader.getController();
-            this.thrombectomyController.setStatusLabel(this.status);
+            this.thrombectomyController.injectStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);

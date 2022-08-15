@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 
-<BorderPane prefHeight="870.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <top>
       <MenuBar>
          <menus>
@@ -52,7 +52,7 @@
             </Tab>
             <Tab closable="false" text="Video Input">
                <content>
-                  <fx:include source="VideoView.fxml" />
+                  <fx:include fx:id="video" source="VideoView.fxml" />
                </content>
             </Tab>
          </tabs>

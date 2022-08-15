@@ -1,6 +1,5 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
 import inputOutput.AbstractTrackingDataSource;
 
 import java.util.List;
@@ -12,18 +11,15 @@ import java.util.List;
  */
 
 public class DataService {
-    private final TrackingDataProcessor dataProcessor;
     private TrackingDataManager dataManager;
 
     public DataService() {
         dataManager = new TrackingDataManager();
-        dataProcessor = new TrackingDataProcessor();
     }
 
     public DataService(AbstractTrackingDataSource source) {
         dataManager = new TrackingDataManager();
         dataManager.setSource(source);
-        dataProcessor = new TrackingDataProcessor();
     }
 
     public void setTrackingDataSource(AbstractTrackingDataSource source) {
@@ -101,43 +97,5 @@ public class DataService {
         /* calls method getNextData */
         dataManager.getNextData(countToGetNext);
         return dataManager.getToolMeasures();
-    }
-
-    /**
-     * This methods calculates the correctness of the position. The expected
-     * distance can be entered via the surface. On the surface the desired
-     * measurements can be selected. In class DataProcessor the method get Accuracy
-     * is called.
-     *
-     * @param expectedDistance         - of type double
-     * @param firstAverangeMeasurement - of type AverageMeasurement
-     * @return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement,
-     *secondAverangeMeasurement) -
-     */
-
-    public double getAccuracy(double expectedDistance,
-                              AverageMeasurement firstAverangeMeasurement,
-                              AverageMeasurement secondAverangeMeasurement) {
-        /* method getAccuracy from class DataProcessor */
-        return dataProcessor.getAccuracy(expectedDistance, firstAverangeMeasurement,
-                              secondAverangeMeasurement);
-    }
-
-    /**
-     * On the surface getAccuraryRotation can be selected. A method of DataProcessor
-     * is called and a quaternion is returned.
-     *
-     * @param expectedRotation  - of type Quaternion
-     * @param firstMeasurement  - of type Measurement
-     * @param secondMeasurement - of type Measurement
-     * @return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement,
-     *secondMeasurement) -
-     */
-
-    public Quaternion getAccuracyRotation(Quaternion expectedRotation,
-                                          Measurement firstMeasurement,
-                                          Measurement secondMeasurement) {
-        return dataProcessor.getAccuracyRotation(expectedRotation, firstMeasurement,
-                             secondMeasurement);
     }
 }
