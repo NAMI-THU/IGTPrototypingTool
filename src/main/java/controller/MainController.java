@@ -86,7 +86,7 @@ public class MainController implements Controller {
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.visualController.close());
         } catch(IOException e) {
-            logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
+            logger.log(Level.SEVERE, "Error loading Visualization View", e);
         }
     }
 
