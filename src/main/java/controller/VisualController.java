@@ -16,7 +16,6 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -27,7 +26,6 @@ import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import shapes.simple.ConeMesh;
 import userinterface.TrackingDataDisplay;
 
 import java.io.File;
@@ -46,7 +44,7 @@ public class VisualController implements Controller {
     private static final double MODEL_SCALE_FACTOR = 10;
     private static final double MODEL_X_OFFSET = 0; // standard
     private static final double MODEL_Y_OFFSET = 0; // standard
-    private static final int VIEWPORT_SIZE = 800;
+    private static final int VIEWPORT_SIZE = 700;
     private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
     private double mouseOldX, mouseOldY = 0;
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
@@ -70,9 +68,9 @@ public class VisualController implements Controller {
     @FXML
     CheckBox wireframe;
     @FXML
-    HBox posBox;
+    VBox posBox;
     @FXML
-    HBox rotBox;
+    VBox rotBox;
     @FXML
     ColorPicker colorPicker;
     @FXML
@@ -80,8 +78,7 @@ public class VisualController implements Controller {
 
     private PointLight pointLight;
     private MeshView[] meshView;
-
-    private MeshView[] trackingDevices;
+    private Sphere[] trackingDevices;
 
     private final TrackingService trackingService = TrackingService.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
@@ -94,7 +91,9 @@ public class VisualController implements Controller {
 
     private PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
 
-    private Sphere sphere = new Sphere(2);
+    public SubScene subSceneCopy;
+
+//    private Sphere sphere = new Sphere(2);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -108,7 +107,10 @@ public class VisualController implements Controller {
      */
     @FXML
     public void setTrackerColor() {
-        sphere.setMaterial(new PhongMaterial(colorPicker.getValue()));
+        for (Sphere sphere : trackingDevices
+        ) {
+            sphere.setMaterial(new PhongMaterial(colorPicker.getValue()));
+        }
     }
 
     /**
@@ -116,7 +118,9 @@ public class VisualController implements Controller {
      */
     @FXML
     public void setTrackerSize() {
-        sphere.setRadius(trackerSlider.getValue());
+        for (Sphere sphere : trackingDevices
+        )
+            sphere.setRadius(trackerSlider.getValue());
     }
 
     public void setStatusLabel(Label statusLabel) {
@@ -179,6 +183,26 @@ public class VisualController implements Controller {
         );
     }
 
+    private void loadTrackingDevices() {
+        if (trackingService.getTrackingDataSource() == null) {
+            statusLabel.setText("No Tracking Data Source");
+            return;
+        }
+        statusLabel.setText("");
+
+        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+
+        if (tools != null) {
+            trackingDevices = new Sphere[tools.size()];
+            int x = 0;
+
+            for (ToolMeasure tool : tools) {
+                trackingDevices[x] = new Sphere();
+                x++;
+            }
+        }
+    }
+
     /**
      * Visualize tracking data from source. Checks if there are tools
      * available and creates data series for each tool. Visualization
@@ -194,6 +218,7 @@ public class VisualController implements Controller {
 
         List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
         if (tools.isEmpty()) return;
+        int j = 0;
 
         for (ToolMeasure tool : tools) {
 
@@ -213,9 +238,9 @@ public class VisualController implements Controller {
                 // invert tracking data, so fits the experiment's setup
                 double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
 
-                sphere.setTranslateX(x);
-                sphere.setTranslateY(y);
-                sphere.setTranslateZ(z);
+                trackingDevices[j].setTranslateX(x);
+                trackingDevices[j].setTranslateY(y);
+                trackingDevices[j].setTranslateZ(z);
 
 //                if (i == 1) {
 //                    position.get(tool.getName()).setText(": ["
@@ -226,6 +251,7 @@ public class VisualController implements Controller {
 
                 //TODO: add rotation
             }
+            j++;
         }
     }
 
@@ -234,6 +260,10 @@ public class VisualController implements Controller {
         Group root = new Group();
 
         MeshView[] meshViews = loadMeshViews();
+        loadTrackingDevices();
+
+        //TODO: loadTrackingDevices
+
         for (MeshView view : meshViews) {
             // centre every mesh
 //            view.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
@@ -249,9 +279,6 @@ public class VisualController implements Controller {
 //            meshViews[i].getTransforms().setAll(new Rotate(38, Rotate.Z_AXIS), new Rotate(20, Rotate.X_AXIS));
 //            view.getTransforms().add(transform);
         }
-
-//        Color ambientColor = Color.rgb(80, 80, 80, 0);
-//        AmbientLight ambient = new AmbientLight(ambientColor);
 
         root.setRotationAxis(Rotate.Y_AXIS);
         root.setRotate(0);
@@ -269,8 +296,9 @@ public class VisualController implements Controller {
         rotateZ.setPivotZ(VIEWPORT_CENTER);
 
         root.getChildren().addAll(meshViews);
-        root.getChildren().addAll(sphere);
+        root.getChildren().addAll(trackingDevices);
 
+        // centre the node
         root.setTranslateX(VIEWPORT_CENTER + MODEL_X_OFFSET);
         root.setTranslateY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
         root.setTranslateZ(VIEWPORT_CENTER);
@@ -293,8 +321,8 @@ public class VisualController implements Controller {
         return perspectiveCamera;
     }
 
-    private SubScene createScene3D(Group meshGroup) {
-        SubScene scene3d = new SubScene(meshGroup, 850, 800, true, SceneAntialiasing.BALANCED);
+    private SubScene createScene3D(Group root) {
+        SubScene scene3d = new SubScene(root, 0, 0, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) this.meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) this.meshGroup.getParent()).heightProperty());
 //        PerspectiveCamera perspectiveCamera = initCamera();
@@ -316,8 +344,6 @@ public class VisualController implements Controller {
         // Create subScene
         SubScene subScene = createScene3D(root);
 
-//        subScene.requestFocus();
-
         subScene.requestFocus();
 //        // Add Camera to Scene
 //        subScene.setCamera(perspectiveCamera);
@@ -326,7 +352,7 @@ public class VisualController implements Controller {
         // size will not impact the size of parent and resizing will also work when reducing the AnchorPane object's size
         subScene.setManaged(false);
 
-        handleKeyboard(subScene);
+//        handleKeyboard(subScene);
         handleMouse(subScene, root);
     }
 
@@ -364,33 +390,36 @@ public class VisualController implements Controller {
     }
 
     //TODO: request focus for subScene - input not working
+
+
     /**
-     * Add ArrowKey functionalities to SubScene
-     * allow user to navigate camera via KeyPress
-     * @param subScene
+     * Add ArrowKey functionalities which allow user to navigate camera via KeyPress W,A,S,D
+     * @param keyEvent
      */
-    private void handleKeyboard(SubScene subScene) {
-        subScene.setOnKeyPressed(keyEvent -> {
-            switch (keyEvent.getCode()) {
-                case W:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
-                    keyEvent.consume();
-                    break;
-                case S:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
-                    keyEvent.consume();
-                    break;
-                case A:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
-                    keyEvent.consume();
-                    break;
-                case D:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
-                    keyEvent.consume();
-                    break;
+    @FXML
+    public void handleKeyboard(KeyEvent keyEvent) {
+
+        switch (keyEvent.getCode()) {
+            case W -> {
+                perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                keyEvent.consume();
             }
-        });
+            case A -> {
+                perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
+                keyEvent.consume();
+            }
+            case S -> {
+                perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
+                keyEvent.consume();
+            }
+            case D -> {
+                perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
+                keyEvent.consume();
+            }
+        }
     }
+
+    //TODO: ability to pause visualization (same as freeze in TrackingDataController)
 
     /**
      * Set DrawMode to Line or CullFace to none for every MeshView in the scene
@@ -416,17 +445,6 @@ public class VisualController implements Controller {
                 );
             }
         }
-    }
-
-    private RotateTransition rotate3dGroup(Group group) {
-        RotateTransition rotate = new RotateTransition(Duration.seconds(10), group);
-        rotate.setAxis(Rotate.X_AXIS);
-        rotate.setFromAngle(0);
-        rotate.setToAngle(360);
-        rotate.setInterpolator(Interpolator.LINEAR);
-        rotate.setCycleCount(RotateTransition.INDEFINITE);
-
-        return rotate;
     }
 
     @Override
