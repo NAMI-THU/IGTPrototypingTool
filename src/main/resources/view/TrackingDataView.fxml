@@ -11,11 +11,12 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
    	<VBox maxHeight="Infinity" maxWidth="Infinity">
    		<VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
 			<VBox.margin>
@@ -47,25 +48,24 @@
    						<NumberAxis autoRanging="false" label="Z" lowerBound="-500.0" side="LEFT" tickUnit="100.0" upperBound="500.0" />
    					</yAxis>
    				</ScatterChart>
-   				<GridPane alignment="CENTER" gridLinesVisible="true">
+   				<GridPane alignment="CENTER">
    					<columnConstraints>
-   						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   						<ColumnConstraints hgrow="SOMETIMES" />
+                     <ColumnConstraints hgrow="SOMETIMES" />
    					</columnConstraints>
    					<rowConstraints>
-   						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
-   						<RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
+   						<RowConstraints minHeight="10.0" percentHeight="77.0" vgrow="SOMETIMES" />
+   						<RowConstraints minHeight="10.0" percentHeight="23.0" vgrow="SOMETIMES" />
    					</rowConstraints>
    					<children>
-   						<VBox fx:id="posBox" alignment="TOP_CENTER">
+   						<VBox fx:id="posBox" alignment="TOP_CENTER" GridPane.rowIndex="1">
    							<Label text="Position" />
    						</VBox>
-   						<VBox fx:id="rotBox" alignment="TOP_CENTER" GridPane.rowIndex="1">
+   						<VBox fx:id="rotBox" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
    							<Label text="Rotation" />
    						</VBox>
+                     <Pane GridPane.columnSpan="2" />
    					</children>
-   					<padding>
-   						<Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-   					</padding>
    				</GridPane>
             </children>
          </TilePane>
