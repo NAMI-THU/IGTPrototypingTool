@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,7 +16,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane onKeyPressed="#handleKeyboard" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualController">
+<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualController">
    <content>
       <VBox maxHeight="Infinity" maxWidth="Infinity">
          <padding>
@@ -84,7 +85,7 @@
                                 <AnchorPane GridPane.rowIndex="2">
                                     <children>
                                         <Button fx:id="start" mnemonicParsing="false" onAction="#showTrackingData" text="Start" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="0.0" />
-                                        <Button fx:id="freeze" mnemonicParsing="false" text="Freeze" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="0.0" />
+                                        <ToggleButton fx:id="pauseTglBtn" mnemonicParsing="false" onAction="#pauseVisualization" text="Pause" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="0.0" />
                                     </children>
                                 </AnchorPane>
                                   <ColorPicker fx:id="colorPicker" onAction="#setTrackerColor" GridPane.columnIndex="1" GridPane.rowIndex="3" />

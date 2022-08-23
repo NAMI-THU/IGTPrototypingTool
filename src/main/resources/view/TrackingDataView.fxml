@@ -8,13 +8,14 @@
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Group?>
 
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
    	<VBox maxHeight="Infinity" maxWidth="Infinity">
@@ -64,7 +65,11 @@
    						<VBox fx:id="rotBox" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
    							<Label text="Rotation" />
    						</VBox>
-                     <Pane GridPane.columnSpan="2" />
+						<AnchorPane GridPane.columnSpan="2">
+							<children>
+								<Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+							</children>
+						</AnchorPane>
    					</children>
    				</GridPane>
             </children>
@@ -89,7 +94,12 @@
 				 </graphic>
 			  </ToggleButton>
 				</HBox>
-				<Button fx:id="loadCSVBtn" alignment="CENTER" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" GridPane.columnIndex="1" />
+               <AnchorPane GridPane.columnIndex="1">
+                  <children>
+      				<Button fx:id="loadCSVBtn" alignment="CENTER" layoutX="63.0" layoutY="2.0" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" />
+                     <Button fx:id="loadSTLBtn" alignment="CENTER" layoutX="136.0" layoutY="2.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
+                  </children>
+               </AnchorPane>
 				<Button fx:id="visualizeTrackingBtn" alignment="CENTER" mnemonicParsing="false" onAction="#visualizeTracking" text="Start Tracking and Visualization" GridPane.rowIndex="1" />
 				<ToggleButton fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </children>
