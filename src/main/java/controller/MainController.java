@@ -83,7 +83,7 @@ public class MainController implements Controller {
             Tab t = new Tab("Visualization View", this.loader.load());
 
             this.visualController = this.loader.getController();
-            this.visualController.setStatusLabel(this.status);
+            this.visualController.injectStatusLabel(this.status);
 
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
