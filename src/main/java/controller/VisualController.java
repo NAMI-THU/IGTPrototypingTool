@@ -26,8 +26,6 @@ public class VisualController implements Controller {
     @FXML
     Button start;
     @FXML
-    ToggleButton pauseTglButton;
-    @FXML
     CheckBox cullBack;
     @FXML
     CheckBox wireframe;

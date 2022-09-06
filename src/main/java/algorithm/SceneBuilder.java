@@ -27,7 +27,6 @@ import java.util.logging.Logger;
  * This class is used to manage the 3D-Visualization.
  */
 public class SceneBuilder {
-//    private static SceneBuilder sceneBuilder;
 
     Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -64,26 +63,12 @@ public class SceneBuilder {
     }
 
     /**
-     * Register an observer. Observers are triggered when the references to any attribute are changed.
-     *
-     * @param observer The observer that shall be triggered
-     */
-    public void registerObserver(SceneBuilderObserver observer) {
-        observers.add(observer);
-        // Inform them about the initial status
-        observer.onViewChanged(scrollPane != null, meshGroup != null);
-    }
-
-    /**
      * Sets the reference to the ScrollPane.
      *
      * @param scrollPane new scrollPane
      */
-    public void changePane(ScrollPane scrollPane) {
+    public void setPane(ScrollPane scrollPane) {
         this.scrollPane = scrollPane;
-
-        // Trigger all observers
-        observers.forEach(observer -> observer.onViewChanged(true, false));
     }
 
     /**
@@ -91,11 +76,8 @@ public class SceneBuilder {
      *
      * @param meshGroup new meshGroup
      */
-    public void changeMeshGroup(Group meshGroup) {
+    public void setMeshGroup(Group meshGroup) {
         this.meshGroup = meshGroup;
-
-        // Trigger all observers
-        observers.forEach(observer -> observer.onViewChanged(false, true));
     }
 
     /**

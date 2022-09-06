@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import algorithm.SceneBuilder;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -115,14 +114,14 @@ public class MainController implements Controller {
     private void onChangeView() {
         if (trackingDataTab.isSelected()) {
             System.out.println("data");
-            sceneBuilder.changePane(trackingDataController.scrollPane);
-            sceneBuilder.changeMeshGroup(trackingDataController.meshGroup);
+            sceneBuilder.setPane(trackingDataController.scrollPane);
+            sceneBuilder.setMeshGroup(trackingDataController.meshGroup);
             sceneBuilder.showFigureTest();
         }
         else if (visualizationTab.isSelected()) {
             System.out.println("vis");
-            sceneBuilder.changePane(visualController.scrollPane);
-            sceneBuilder.changeMeshGroup(visualController.meshGroup);
+            sceneBuilder.setPane(visualController.scrollPane);
+            sceneBuilder.setMeshGroup(visualController.meshGroup);
             sceneBuilder.showFigureTest();
         }
     }
