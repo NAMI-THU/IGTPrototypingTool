@@ -11,10 +11,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import algorithm.DataService;
-import algorithm.Measurement;
-import algorithm.ToolMeasure;
-import algorithm.TrackingService;
+import algorithm.*;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import javafx.animation.Animation;
@@ -24,12 +21,12 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
+import javafx.scene.SubScene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -47,13 +44,18 @@ public class TrackingDataController implements Controller {
     @FXML ProgressIndicator connectionIndicator;
     @FXML ToggleButton freezeTglBtn;
     @FXML Button loadCSVBtn;
+    @FXML Button loadSTLBtn;
     @FXML Button visualizeTrackingBtn;
+    @FXML Group meshGroup;
+    @FXML ScrollPane scrollPane;
 
     private final TrackingService trackingService = TrackingService.getInstance();
+//    private final SceneBuilder sceneBuilder = SceneBuilder.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
+    SceneBuilder sceneBuilder;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
@@ -72,6 +74,10 @@ public class TrackingDataController implements Controller {
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
+    }
+
+    public void injectSceneBuilder(SceneBuilder sceneBuilder) {
+        this.sceneBuilder = sceneBuilder;
     }
 
     /**
@@ -100,6 +106,11 @@ public class TrackingDataController implements Controller {
                 statusLabel.setText("Error loading CSV file");
             }
         }
+    }
+
+    @FXML
+    private void loadSTLFile() {
+        sceneBuilder.showFigure(meshGroup, scrollPane);
     }
 
     /**
@@ -164,10 +175,15 @@ public class TrackingDataController implements Controller {
 
             timeline = new Timeline();
             timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.getKeyFrames().add(
+            timeline.getKeyFrames().addAll(
                     new KeyFrame(Duration.millis(100),
-                            event2 -> updateDiagrams())
+                            event2 -> updateDiagrams()),
+                    new KeyFrame(Duration.millis(1),
+                            event -> sceneBuilder.startVisualization())
             );
+
+            //TODO: test and maybe find alternative visualisation e.g. parallel
+
             timeline.play();
             TrackingService.getInstance().changeTimeline(timeline);
 
@@ -235,8 +251,8 @@ public class TrackingDataController implements Controller {
      *      * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
-        if (toolDisplayList.size() > 0) {
-            for (TrackingDataDisplay d : toolDisplayList) {
+        if (this.toolDisplayList.size() > 0) {
+            for (TrackingDataDisplay d : this.toolDisplayList) {
                 if (d.getToolName().equals(toolName)) return d;
             }
         }
@@ -245,7 +261,7 @@ public class TrackingDataController implements Controller {
         s1.getData().addAll(newDisplay.getDataSeries1());
         s2.getData().addAll(newDisplay.getDataSeries2());
         s3.getData().addAll(newDisplay.getDataSeries3());
-        toolDisplayList.add(newDisplay);
+        this.toolDisplayList.add(newDisplay);
 
         position.put(toolName, new Label(toolName + ": [-]"));
         posBox.getChildren().add(position.get(toolName));

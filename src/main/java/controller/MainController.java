@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import algorithm.SceneBuilder;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,23 +20,40 @@ import javafx.stage.Stage;
 
 public class MainController implements Controller {
 
-    @FXML TabPane tabPane;
-    // These two controller will be automatically injected since we annotated the "trackingData" and "video" element in the fxml
-    @FXML TrackingDataController trackingDataController;
-    @FXML VideoController videoController;
-    @FXML Label status;
+    @FXML
+    TabPane tabPane;
+    @FXML
+    Tab trackingDataTab;
+    @FXML
+    Tab visualizationTab;
+    // These three controller will be automatically injected since we annotated the "trackingData", "video" and "visual" element in the fxml
+    @FXML
+    TrackingDataController trackingDataController;
+    @FXML
+    VideoController videoController;
+    @FXML
+    VisualController visualController;
+    @FXML
+    Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
-    private VisualController visualController;
     private SettingsController settingsController;
+//    SceneBuilder sceneBuilder = SceneBuilder.getInstance();
+    SceneBuilder sceneBuilder = new SceneBuilder();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
+//        injectSceneBuilder(sceneBuilder);
         trackingDataController.injectStatusLabel(status);
+        trackingDataController.injectSceneBuilder(sceneBuilder);
         videoController.injectStatusLabel(status);
+        visualController.injectStatusLabel(status);
+        visualController.injectTrackingDataController(trackingDataController);
+        visualController.injectSceneBuilder(sceneBuilder);
+        sceneBuilder.injectStatusLabel(status);
     }
 
     @FXML
@@ -50,7 +68,7 @@ public class MainController implements Controller {
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.measurementController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Measurement View", e);
         }
     }
@@ -69,27 +87,8 @@ public class MainController implements Controller {
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
-        }
-    }
-
-    @FXML
-    private void openVisualizationView() {
-        if (this.visualController != null) return;
-
-        try {
-            setupFXMLLoader("View");
-            Tab t = new Tab("Visualization View", this.loader.load());
-
-            this.visualController = this.loader.getController();
-            this.visualController.injectStatusLabel(this.status);
-
-            this.tabPane.getTabs().add(t);
-            this.tabPane.getSelectionModel().select(t);
-            t.setOnCloseRequest(e -> this.visualController.close());
-        } catch(IOException e) {
-            logger.log(Level.SEVERE, "Error loading Visualization View", e);
         }
     }
 
@@ -107,8 +106,24 @@ public class MainController implements Controller {
 
             this.settingsController = this.loader.getController();
             newWindow.setOnCloseRequest(e -> this.settingsController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Settings View", e);
+        }
+    }
+
+    @FXML
+    private void onChangeView() {
+        if (trackingDataTab.isSelected()) {
+            System.out.println("data");
+            sceneBuilder.changePane(trackingDataController.scrollPane);
+            sceneBuilder.changeMeshGroup(trackingDataController.meshGroup);
+            sceneBuilder.showFigureTest();
+        }
+        else if (visualizationTab.isSelected()) {
+            System.out.println("vis");
+            sceneBuilder.changePane(visualController.scrollPane);
+            sceneBuilder.changeMeshGroup(visualController.meshGroup);
+            sceneBuilder.showFigureTest();
         }
     }
 
