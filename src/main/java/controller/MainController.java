@@ -37,6 +37,7 @@ public class MainController implements Controller {
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
+    private VisualController visualController;
     private SettingsController settingsController;
 //    SceneBuilder sceneBuilder = SceneBuilder.getInstance();
     SceneBuilder sceneBuilder = new SceneBuilder();
@@ -88,6 +89,25 @@ public class MainController implements Controller {
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
+        }
+    }
+
+    @FXML
+    private void openVisualizationView() {
+        if (this.visualController != null) return;
+
+        try {
+            setupFXMLLoader("View");
+            Tab t = new Tab("Visualization View", this.loader.load());
+
+            this.visualController = this.loader.getController();
+            this.visualController.setStatusLabel(this.status);
+
+            this.tabPane.getTabs().add(t);
+            this.tabPane.getSelectionModel().select(t);
+            t.setOnCloseRequest(e -> this.visualController.close());
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Error loading Visualization View", e);
         }
     }
 
