@@ -103,7 +103,11 @@ public class TransformationMatrix {
         if(imagePoints == null){return new MatOfPoint3f();}
         var array = new Point3[imagePoints.length];
         for(int i = 0;i<imagePoints.length;i++){
-            array[i] = new Point3(imagePoints[i][0], imagePoints[i][1], imagePoints[i][2]);
+            if(imagePoints[i].length < 3) {
+                array[i] = new Point3(imagePoints[i][0], imagePoints[i][1], 0);
+            }else {
+                array[i] = new Point3(imagePoints[i][0], imagePoints[i][1], imagePoints[i][2]);
+            }
         }
         return new MatOfPoint3f(array);
     }

@@ -529,6 +529,7 @@ public class AutoTrackController implements Controller {
 
         var pos_star = new Mat(3,1,CvType.CV_64F);
         Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        //Core.perspectiveTransform();  // Maybe try this?
         double[] out = new double[3];
         out[0] = pos_star.get(0,0)[0];
         out[1] = pos_star.get(1,0)[0];
