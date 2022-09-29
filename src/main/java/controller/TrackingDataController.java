@@ -22,35 +22,45 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.SubScene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
+import userinterface.SceneBuilder;
 import userinterface.TrackingDataDisplay;
 import javafx.stage.Stage;
 
 public class TrackingDataController implements Controller {
 
-    @FXML ScatterChart<Number, Number> s1;
-    @FXML ScatterChart<Number, Number> s2;
-    @FXML ScatterChart<Number, Number> s3;
-    @FXML VBox posBox;
-    @FXML VBox rotBox;
-    @FXML ProgressIndicator connectionIndicator;
-    @FXML ToggleButton freezeTglBtn;
-    @FXML Button loadCSVBtn;
-    @FXML Button loadSTLBtn;
-    @FXML Button visualizeTrackingBtn;
-    @FXML Group meshGroup;
-    @FXML ScrollPane scrollPane;
+    @FXML
+    ScatterChart<Number, Number> s1;
+    @FXML
+    ScatterChart<Number, Number> s2;
+    @FXML
+    ScatterChart<Number, Number> s3;
+    @FXML
+    VBox posBox;
+    @FXML
+    VBox rotBox;
+    @FXML
+    ProgressIndicator connectionIndicator;
+    @FXML
+    ToggleButton freezeTglBtn;
+    @FXML
+    Button loadCSVBtn;
+    @FXML
+    Button loadSTLBtn;
+    @FXML
+    Button visualizeTrackingBtn;
+    @FXML
+    Group meshGroup;
+    @FXML
+    ScrollPane scrollPane;
 
     private final TrackingService trackingService = TrackingService.getInstance();
-//    private final SceneBuilder sceneBuilder = SceneBuilder.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
@@ -84,7 +94,7 @@ public class TrackingDataController implements Controller {
      * load CSV file with tracking data created by MITK workbench
      */
     @FXML
-    private void loadCSVFile() {
+    public void loadCSVFile() {
         CSVFileReader newSource = null;
         FileChooser fp = new FileChooser();
         fp.setTitle("Load Data");
@@ -92,7 +102,7 @@ public class TrackingDataController implements Controller {
 
         File file = fp.showOpenDialog(new Stage());
         if (file != null) {
-            if(trackingService.getTrackingDataSource() != null){
+            if (trackingService.getTrackingDataSource() != null) {
                 disconnectSource();
             }
             try {
@@ -110,15 +120,15 @@ public class TrackingDataController implements Controller {
 
     @FXML
     private void loadSTLFile() {
-        sceneBuilder.showFigure(meshGroup, scrollPane);
+        sceneBuilder.showNewFigure(meshGroup, scrollPane);
     }
 
     /**
      * Connect via OpenIGTLink.
      */
     @FXML
-    private void onConnectButtonClicked() {
-        if(trackingService.getTrackingDataSource() != null) { // bit hacky
+    public void onConnectButtonClicked() {
+        if (trackingService.getTrackingDataSource() != null) { // bit hacky
             disconnectSource();
         }
         connectionIndicator.setVisible(true);
@@ -136,10 +146,10 @@ public class TrackingDataController implements Controller {
     /**
      * This method disconnects the current source, closes the connection and resets the timeline.
      */
-    private void disconnectSource(){
+    private void disconnectSource() {
         var timeline = trackingService.getTimeline();
-        if(timeline != null) {
-            if(timeline.getStatus() == Animation.Status.PAUSED){
+        if (timeline != null) {
+            if (timeline.getStatus() == Animation.Status.PAUSED) {
                 statusLabel.setText("");    // To remove the label
                 freezeTglBtn.setSelected(false);
             }
@@ -149,12 +159,12 @@ public class TrackingDataController implements Controller {
         visualizationRunning.setValue(false);
 
         var source = trackingService.getTrackingDataSource();
-        if(source != null) {
+        if (source != null) {
             source.closeConnection();
             trackingService.changeTrackingSource(null);
         }
 
-        if(trackingService.getDataService() != null){
+        if (trackingService.getDataService() != null) {
             trackingService.changeDataService(null);
         }
 
@@ -177,12 +187,7 @@ public class TrackingDataController implements Controller {
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().addAll(
                     new KeyFrame(Duration.millis(100),
-                            event2 -> updateDiagrams()),
-                    new KeyFrame(Duration.millis(1),
-                            event -> sceneBuilder.startVisualization())
-            );
-
-            //TODO: test and maybe find alternative visualisation e.g. parallel
+                            event2 -> updateDiagrams()));
 
             timeline.play();
             TrackingService.getInstance().changeTimeline(timeline);
@@ -196,7 +201,7 @@ public class TrackingDataController implements Controller {
     }
 
     public void updateDiagrams() {
-        if(trackingService.getTrackingDataSource() == null){
+        if (trackingService.getTrackingDataSource() == null) {
             return;
         }
         // loads the next set of tracking data
@@ -233,7 +238,7 @@ public class TrackingDataController implements Controller {
                             + df.format(x) + ";"
                             + df.format(y) + ";"
                             + df.format(z) + "]");
-                    rotation.get(tool.getName()).setText(tool.getName()+": ["
+                    rotation.get(tool.getName()).setText(tool.getName() + ": ["
                             + df.format(qY) + ";"
                             + df.format(qZ) + ";"
                             + df.format(qR) + "]");
@@ -244,11 +249,12 @@ public class TrackingDataController implements Controller {
                 display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
+        sceneBuilder.startVisualization();
     }
 
     /**
      * This method creates a new series to store tracking data
-     *      * and position and rotation labels for one tool.
+     * * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
         if (this.toolDisplayList.size() > 0) {
@@ -275,15 +281,16 @@ public class TrackingDataController implements Controller {
         var timeline = trackingService.getTimeline();
         if (timeline != null) {
             switch (timeline.getStatus()) {
-            case RUNNING:
-                timeline.pause();
-                statusLabel.setText("Visualization paused");
-                break;
-            case PAUSED:
-                timeline.play();
-                statusLabel.setText("");
-                break;
-            default: break;
+                case RUNNING:
+                    timeline.pause();
+                    statusLabel.setText("Visualization paused");
+                    break;
+                case PAUSED:
+                    timeline.play();
+                    statusLabel.setText("");
+                    break;
+                default:
+                    break;
             }
         }
     }
