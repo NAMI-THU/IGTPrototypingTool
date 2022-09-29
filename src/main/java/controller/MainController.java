@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import algorithm.SceneBuilder;
+import userinterface.SceneBuilder;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,13 +31,12 @@ public class MainController implements Controller {
     @FXML
     VideoController videoController;
     @FXML
-    VisualController visualController;
+    VisualizationController visualController;
     @FXML
     Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
-    private VisualController visualController;
     private SettingsController settingsController;
 //    SceneBuilder sceneBuilder = SceneBuilder.getInstance();
     SceneBuilder sceneBuilder = new SceneBuilder();
@@ -93,25 +92,6 @@ public class MainController implements Controller {
     }
 
     @FXML
-    private void openVisualizationView() {
-        if (this.visualController != null) return;
-
-        try {
-            setupFXMLLoader("View");
-            Tab t = new Tab("Visualization View", this.loader.load());
-
-            this.visualController = this.loader.getController();
-            this.visualController.setStatusLabel(this.status);
-
-            this.tabPane.getTabs().add(t);
-            this.tabPane.getSelectionModel().select(t);
-            t.setOnCloseRequest(e -> this.visualController.close());
-        } catch(IOException e) {
-            logger.log(Level.SEVERE, "Error loading Visualization View", e);
-        }
-    }
-
-    @FXML
     private void openSettings() {
         try {
             setupFXMLLoader("SettingsView");
@@ -136,13 +116,13 @@ public class MainController implements Controller {
             System.out.println("data");
             sceneBuilder.setPane(trackingDataController.scrollPane);
             sceneBuilder.setMeshGroup(trackingDataController.meshGroup);
-            sceneBuilder.showFigureTest();
+            sceneBuilder.showFigure();
         }
         else if (visualizationTab.isSelected()) {
             System.out.println("vis");
             sceneBuilder.setPane(visualController.scrollPane);
             sceneBuilder.setMeshGroup(visualController.meshGroup);
-            sceneBuilder.showFigureTest();
+            sceneBuilder.showFigure();
         }
     }
 

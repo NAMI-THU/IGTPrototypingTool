@@ -57,7 +57,7 @@
                 </Tab>
                 <Tab closable="false" fx:id="visualizationTab" text="Visualization" onSelectionChanged="#onChangeView">
                     <content>
-                        <fx:include fx:id="visual" source="View.fxml"/>
+                        <fx:include fx:id="visual" source="VisualizationView.fxml"/>
                     </content>
                 </Tab>
             </tabs>
