@@ -97,12 +97,7 @@
 				 </graphic>
 			  </ToggleButton>
 				</HBox>
-               <AnchorPane GridPane.columnIndex="1">
-                  <children>
-      				<Button fx:id="loadCSVBtn" alignment="CENTER" layoutX="63.0" layoutY="2.0" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" />
-                     <Button fx:id="loadSTLBtn" alignment="CENTER" layoutX="136.0" layoutY="2.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
-                  </children>
-               </AnchorPane>
+				<Button fx:id="loadCSVBtn" alignment="CENTER" mnemonicParsing="false" onAction="#loadCSVFile" text="Load CSV" GridPane.columnIndex="1" />
 				<Button fx:id="visualizeTrackingBtn" alignment="CENTER" mnemonicParsing="false" onAction="#visualizeTracking" text="Start Tracking and Visualization" GridPane.rowIndex="1" />
 				<ToggleButton fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </children>
