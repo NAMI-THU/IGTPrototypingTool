@@ -7,10 +7,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 
-/**
- * @author Birdasaur
- * @adapted Dub's CapsuleMesh example
- */
 public class ConeMesh extends MeshView {
     /*
         Field vars
@@ -58,14 +54,11 @@ public class ConeMesh extends MeshView {
         }
         mesh.getPoints().addAll(0, height, 0); //Point N: Center of the Cone Base
 
-        //@TODO Birdasaur for now we'll just make an empty texCoordinate group
-        //@DUB HELP ME DUBi Wan Kanobi, you are my only hope!
-        //I'm not good at determining Texture Coordinates
         mesh.getTexCoords().addAll(0, 0);
         //Add the faces "winding" the points generally counter clock wise
         //Must loop through each face, not including first and last points
         for (int i = 1; i <= divisions; i++) {
-            mesh.getFaces().addAll( //use dummy texCoords, @TODO Upgrade face code to be real
+            mesh.getFaces().addAll( //use dummy texCoords,
                     0, 0, i + 1, 0, i, 0,           // Vertical Faces "wind" counter clockwise
                     divisions + 2, 0, i, 0, i + 1, 0   // Base Faces "wind" clockwise
             );
@@ -106,8 +99,9 @@ public class ConeMesh extends MeshView {
         return height.get();
     }
 
+    //invert for correct display
     public final void setHeight(double value) {
-        height.set(value);
+        height.set(value*-1);
     }
 
     public DoubleProperty heightProperty() {
