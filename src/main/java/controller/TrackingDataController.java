@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
-import userinterface.SceneBuilder;
+import algorithm.VisualizationManager;
 import userinterface.TrackingDataDisplay;
 import javafx.stage.Stage;
 
@@ -52,8 +52,6 @@ public class TrackingDataController implements Controller {
     @FXML
     Button loadCSVBtn;
     @FXML
-    Button loadSTLBtn;
-    @FXML
     Button visualizeTrackingBtn;
     @FXML
     Group meshGroup;
@@ -65,7 +63,7 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
-    SceneBuilder sceneBuilder;
+    VisualizationManager visualizationManager;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
@@ -78,16 +76,14 @@ public class TrackingDataController implements Controller {
         rotation = new HashMap<>();
 
         loadCSVBtn.disableProperty().bind(visualizationRunning);
-//        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
-//        freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 
-    public void injectSceneBuilder(SceneBuilder sceneBuilder) {
-        this.sceneBuilder = sceneBuilder;
+    public void injectSceneBuilder(VisualizationManager visualizationManager) {
+        this.visualizationManager = visualizationManager;
     }
 
     /**
@@ -116,11 +112,6 @@ public class TrackingDataController implements Controller {
                 statusLabel.setText("Error loading CSV file");
             }
         }
-    }
-
-    @FXML
-    private void loadSTLFile() {
-        sceneBuilder.showNewFigure(meshGroup, scrollPane);
     }
 
     /**
@@ -249,7 +240,7 @@ public class TrackingDataController implements Controller {
                 display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
-        sceneBuilder.startVisualization();
+        visualizationManager.startVisualization();
     }
 
     /**
