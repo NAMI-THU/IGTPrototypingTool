@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import userinterface.SceneBuilder;
+import algorithm.VisualizationManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,28 +31,26 @@ public class MainController implements Controller {
     @FXML
     VideoController videoController;
     @FXML
-    VisualizationController visualController;
+    VisualizationController visualizationController;
     @FXML
     Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
-//    SceneBuilder sceneBuilder = SceneBuilder.getInstance();
-    SceneBuilder sceneBuilder = new SceneBuilder();
+    VisualizationManager visualizationManager = new VisualizationManager();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
-//        injectSceneBuilder(sceneBuilder);
         trackingDataController.injectStatusLabel(status);
-        trackingDataController.injectSceneBuilder(sceneBuilder);
+        trackingDataController.injectSceneBuilder(visualizationManager);
         videoController.injectStatusLabel(status);
-        visualController.injectStatusLabel(status);
-        visualController.injectTrackingDataController(trackingDataController);
-        visualController.injectSceneBuilder(sceneBuilder);
-        sceneBuilder.injectStatusLabel(status);
+        visualizationController.injectStatusLabel(status);
+        visualizationController.injectTrackingDataController(trackingDataController);
+        visualizationController.injectSceneBuilder(visualizationManager);
+        visualizationManager.injectStatusLabel(status);
     }
 
     @FXML
@@ -110,19 +108,22 @@ public class MainController implements Controller {
         }
     }
 
+    /**
+     * Changes the scrollPane and meshGroup of the visualizationManager to the one of the selected Tab
+     */
     @FXML
     private void onChangeView() {
         if (trackingDataTab.isSelected()) {
-            System.out.println("data");
-            sceneBuilder.setPane(trackingDataController.scrollPane);
-            sceneBuilder.setMeshGroup(trackingDataController.meshGroup);
-            sceneBuilder.showFigure();
+            visualizationManager.setPane(trackingDataController.scrollPane);
+            visualizationManager.setMeshGroup(trackingDataController.meshGroup);
+//            visualizationManager.setViewportSize(800);
+            visualizationManager.showFigure();
         }
         else if (visualizationTab.isSelected()) {
-            System.out.println("vis");
-            sceneBuilder.setPane(visualController.scrollPane);
-            sceneBuilder.setMeshGroup(visualController.meshGroup);
-            sceneBuilder.showFigure();
+            visualizationManager.setPane(visualizationController.scrollPane);
+            visualizationManager.setMeshGroup(visualizationController.meshGroup);
+//            visualizationManager.setViewportSize(350);
+            visualizationManager.showFigure();
         }
     }
 
