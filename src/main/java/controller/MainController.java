@@ -38,7 +38,7 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
-    VisualizationManager visualizationManager = new VisualizationManager();
+    private final VisualizationManager visualizationManager = new VisualizationManager();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
