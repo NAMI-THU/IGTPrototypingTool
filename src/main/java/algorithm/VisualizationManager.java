@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class VisualizationManager {
 
-    Label statusLabel;
+    private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     TrackingService trackingService = TrackingService.getInstance();
 
