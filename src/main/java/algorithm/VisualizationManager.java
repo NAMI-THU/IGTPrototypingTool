@@ -29,7 +29,7 @@ public class VisualizationManager {
 
     private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    TrackingService trackingService = TrackingService.getInstance();
+    private final TrackingService trackingService = TrackingService.getInstance();
 
     private ConeMesh[] trackingCones;
     private MeshView[] stlFiles;
