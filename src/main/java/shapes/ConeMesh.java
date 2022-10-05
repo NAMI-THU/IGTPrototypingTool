@@ -101,7 +101,7 @@ public class ConeMesh extends MeshView {
 
     //invert for correct display
     public final void setHeight(double value) {
-        height.set(value*-1);
+        height.set(value);
     }
 
     public DoubleProperty heightProperty() {
