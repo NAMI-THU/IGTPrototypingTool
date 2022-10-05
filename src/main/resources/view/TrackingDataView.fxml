@@ -17,8 +17,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">
-   	<VBox maxHeight="Infinity" maxWidth="Infinity">
+<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TrackingDataController">   	<VBox maxHeight="Infinity" maxWidth="Infinity">
    		<VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
 			<VBox.margin>
 				<Insets left="50.0" right="50.0" />
