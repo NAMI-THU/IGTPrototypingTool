@@ -64,6 +64,7 @@ public class TrackingDataController implements Controller {
     HashMap<String, Label> rotation;
     Label statusLabel;
     VisualizationManager visualizationManager;
+    VisualizationController visualizationController;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
@@ -76,14 +77,19 @@ public class TrackingDataController implements Controller {
         rotation = new HashMap<>();
 
         loadCSVBtn.disableProperty().bind(visualizationRunning);
+        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
     }
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 
-    public void injectSceneBuilder(VisualizationManager visualizationManager) {
+    public void injectVisualizationManager(VisualizationManager visualizationManager) {
         this.visualizationManager = visualizationManager;
+    }
+
+    public void injectVisualizationController(VisualizationController visualizationController) {
+        this.visualizationController = visualizationController;
     }
 
     /**
@@ -106,6 +112,7 @@ public class TrackingDataController implements Controller {
                 newSource.setRepeatMode(true);
                 trackingService.changeTrackingSource(newSource);
                 sourceConnected.setValue(true);
+                visualizationController.setSourceConnected(true);
                 logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);
@@ -130,6 +137,7 @@ public class TrackingDataController implements Controller {
                 trackingService.changeTrackingSource(newSource);
                 connectionIndicator.setVisible(false);
                 sourceConnected.setValue(true);
+                visualizationController.setSourceConnected(true);
             });
         }).start();
     }
@@ -148,6 +156,7 @@ public class TrackingDataController implements Controller {
             trackingService.changeTimeline(null);
         }
         visualizationRunning.setValue(false);
+        visualizationController.setVisualizationRunning(false);
 
         var source = trackingService.getTrackingDataSource();
         if (source != null) {
@@ -160,6 +169,7 @@ public class TrackingDataController implements Controller {
         }
 
         sourceConnected.setValue(false);
+        visualizationController.setSourceConnected(false);
     }
 
     /**
@@ -185,6 +195,7 @@ public class TrackingDataController implements Controller {
 
             updateDiagrams();
             visualizationRunning.setValue(true);
+            visualizationController.setVisualizationRunning(true);
         }
         if (timeline != null) {
             timeline.play();
@@ -240,7 +251,7 @@ public class TrackingDataController implements Controller {
                 display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
-        visualizationManager.startVisualization();
+        visualizationManager.visualizeTracking();
     }
 
     /**
