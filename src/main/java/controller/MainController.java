@@ -38,18 +38,19 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
-    VisualizationManager visualizationManager = new VisualizationManager();
+    private final VisualizationManager visualizationManager = new VisualizationManager();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         trackingDataController.injectStatusLabel(status);
-        trackingDataController.injectSceneBuilder(visualizationManager);
+        trackingDataController.injectVisualizationManager(visualizationManager);
+        trackingDataController.injectVisualizationController(visualizationController);
         videoController.injectStatusLabel(status);
         visualizationController.injectStatusLabel(status);
         visualizationController.injectTrackingDataController(trackingDataController);
-        visualizationController.injectSceneBuilder(visualizationManager);
+        visualizationController.injectVisualizationManager(visualizationManager);
         visualizationManager.injectStatusLabel(status);
     }
 
