@@ -24,6 +24,8 @@ public class VisualizationController implements Controller {
     @FXML
     Button start;
     @FXML
+    ToggleButton pause;
+    @FXML
     ToggleButton cullBack;
     @FXML
     ToggleButton wireframe;
@@ -41,13 +43,14 @@ public class VisualizationController implements Controller {
 
     private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-
+    private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
+        start.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -59,8 +62,16 @@ public class VisualizationController implements Controller {
         this.trackingDataController = trackingDataController;
     }
 
-    public void injectSceneBuilder(VisualizationManager visualizationManager) {
+    public void injectVisualizationManager(VisualizationManager visualizationManager) {
         this.visualizationManager = visualizationManager;
+    }
+
+    public void setVisualizationRunning(Boolean value) {
+        this.visualizationRunning.set(value);
+    }
+
+    public void setSourceConnected(Boolean value) {
+        this.sourceConnected.set(value);
     }
 
     @FXML
@@ -84,7 +95,7 @@ public class VisualizationController implements Controller {
      * Set a color for the tracker in the visualisation view
      */
     @FXML
-    public void setTrackerColor() {
+    private void setTrackerColor() {
         if (visualizationManager.getTrackingCones() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
@@ -101,7 +112,7 @@ public class VisualizationController implements Controller {
      * Set a size for the tracker in the visualisation view
      */
     @FXML
-    public void setTrackerSize() {
+    private void setTrackerSize() {
         if (visualizationManager.getTrackingCones() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
@@ -109,9 +120,10 @@ public class VisualizationController implements Controller {
         statusLabel.setText("");
 
         ConeMesh[] trackingCones = visualizationManager.getTrackingCones();
-        for (ConeMesh trackingCone : trackingCones
-        )
+        for (ConeMesh trackingCone : trackingCones) {
             trackingCone.setHeight(trackerSlider.getValue());
+            trackingCone.setRadius(trackerSlider.getValue()*0.4);
+        }
     }
 
     /**
