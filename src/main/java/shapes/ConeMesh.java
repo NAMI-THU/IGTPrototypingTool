@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
+import javafx.scene.transform.Rotate;
 
 public class ConeMesh extends MeshView {
     /*
@@ -14,6 +15,10 @@ public class ConeMesh extends MeshView {
     private static final int DEFAULT_DIVISIONS = 36;
     private static final double DEFAULT_RADIUS = 4.0D;
     private static final double DEFAULT_HEIGHT = 30.0D;
+
+    public Rotate rx = new Rotate(0, Rotate.X_AXIS);
+    public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
+    public Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
     /*
     Constructors
@@ -31,6 +36,7 @@ public class ConeMesh extends MeshView {
         setRadius(radius);
         setHeight(height);
         setMesh(createCone(getDivisions(), (float) getRadius(), (float) getHeight()));
+        getTransforms().addAll(rz, ry, rx);
     }
 
     /*
@@ -99,7 +105,6 @@ public class ConeMesh extends MeshView {
         return height.get();
     }
 
-    //invert for correct display
     public final void setHeight(double value) {
         height.set(value);
     }
