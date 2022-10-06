@@ -3,6 +3,7 @@ package algorithm;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import com.jme3.math.Quaternion;
 import inputOutput.Tool;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -11,11 +12,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shapes.ConeMesh;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +31,9 @@ import java.util.logging.Logger;
  */
 public class VisualizationManager {
 
-    Label statusLabel;
+    private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    TrackingService trackingService = TrackingService.getInstance();
+    private final TrackingService trackingService = TrackingService.getInstance();
 
     private ConeMesh[] trackingCones;
     private MeshView[] stlFiles;
@@ -102,7 +106,7 @@ public class VisualizationManager {
             trackingCones = new ConeMesh[tools.size()];
 
             for (int i = 0; i < trackingCones.length; i++) {
-                trackingCones[i] = new ConeMesh(12, 4, 8);
+                trackingCones[i] = new ConeMesh(36, 4, 10);
             }
         }
     }
@@ -119,15 +123,12 @@ public class VisualizationManager {
 
         if (fileList != null) {
             stlFiles = new MeshView[fileList.size()];
-            int x = 0;
 
-            for (File file : fileList) {
+            for (int i = 0; i < fileList.size(); i++) {
                 try {
-                    importer.read(file);
+                    importer.read(fileList.get(i));
                     Mesh mesh = importer.getImport();
-                    stlFiles[x] = new MeshView(mesh);
-
-                    x++;
+                    stlFiles[i] = new MeshView(mesh);
 
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Error reading STL file");
@@ -137,9 +138,10 @@ public class VisualizationManager {
     }
 
     /**
-     * Start the visualization of tracking data that is read from CSV or IGT connection
+     * Visualizes the tracking tools by updating their position and rotation according to
+     * the tracking data read from CSV or IGT connection
      */
-    public void startVisualization() {
+    public void visualizeTracking() {
         if (trackingService.getTrackingDataSource() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
@@ -159,19 +161,17 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
 
-        int j = 0;
-
-        for (ToolMeasure tool : tools) {
-            List<Measurement> measurements = tool.getMeasurement();
+        for (int i = 0; i < tools.size(); i++) {
+            List<Measurement> measurements = tools.get(i).getMeasurement();
             float[] eulerAngles = new float[3];
 
-            Quaternion rotationMovement = tool.getMeasurement().get(measurements.size() - 1).getRotation();
+            Quaternion rotationMovement = tools.get(i).getMeasurement().get(measurements.size() - 1).getRotation();
             rotationMovement.toAngles(eulerAngles);
 
-            double x = tool.getMeasurement().get(measurements.size() - 1).getPoint().getX();
+            double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
             // invert Y & Z axis for correct display!
-            double y = tool.getMeasurement().get(measurements.size() - 1).getPoint().getY() * -1;
-            double z = tool.getMeasurement().get(measurements.size() - 1).getPoint().getZ() * -1;
+            double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY() * -1;
+            double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ() * -1;
             // convert Quaternion to Euler
             float yaw = eulerAngles[0];
             float roll = eulerAngles[1];
@@ -183,7 +183,7 @@ public class VisualizationManager {
 
             boolean showRotations = false;
             if (showRotations) {
-                System.out.println(tool.getName());
+                System.out.println(tools.get(i).getName());
                 System.out.println("yaw:!" + yaw);
                 System.out.println("angle!" + yawAngle);
                 System.out.println("roll:!" + roll);
@@ -194,18 +194,66 @@ public class VisualizationManager {
             }
 
             // apply translation and rotation to each tracker
-            trackingCones[j].getTransforms().setAll(
-                    new Translate(x, y, z),
-                    new Rotate(Math.toDegrees(yaw), Rotate.Y_AXIS),
-                    new Rotate(Math.toDegrees(pitch), Rotate.X_AXIS),
-                    new Rotate(Math.toDegrees(roll), Rotate.Z_AXIS)
-            );
+//            trackingCones[i].getTransforms().setAll(
+//                    new Translate(x, y, z),
+//                    new Rotate(yawAngle, Rotate.Z_AXIS),
+//                    new Rotate(pitchAngle, Rotate.X_AXIS),
+//                    new Rotate(rollAngle, Rotate.Y_AXIS)
+//            );
+
+//            Alternative1
+//            trackingCones[i].setTranslateX(x);
+//            trackingCones[i].setTranslateY(y);
+//            trackingCones[i].setTranslateZ(z);
+//            matrixRotateNode(trackingCones[i], yaw, roll, pitch);
+
+//            Alternative2
+            trackingCones[i].setTranslateX(x);
+            trackingCones[i].setTranslateY(y);
+            trackingCones[i].setTranslateZ(z);
+//            addRotate(trackingCones[i], trackingCones[i].ry, rollAngle);
+//            addRotate(trackingCones[i], trackingCones[i].rx, pitchAngle);
+//            addRotate(trackingCones[i], trackingCones[i].rz, yawAngle);
 
             checkBounds();
-            if (j < tools.size()) {
-                j++;
-            }
         }
+    }
+
+    private void matrixRotateNode(Node n, double alf, double bet, double gam) {
+        double A11 = Math.cos(alf) * Math.cos(gam);
+        double A12 = Math.cos(bet) * Math.sin(alf) + Math.cos(alf) * Math.sin(bet) * Math.sin(gam);
+        double A13 = Math.sin(alf) * Math.sin(bet) - Math.cos(alf) * Math.cos(bet) * Math.sin(gam);
+        double A21 = -Math.cos(gam) * Math.sin(alf);
+        double A22 = Math.cos(alf) * Math.cos(bet) - Math.sin(alf) * Math.sin(bet) * Math.sin(gam);
+        double A23 = Math.cos(alf) * Math.sin(bet) + Math.cos(bet) * Math.sin(alf) * Math.sin(gam);
+        double A31 = Math.sin(gam);
+        double A32 = -Math.cos(gam) * Math.sin(bet);
+        double A33 = Math.cos(bet) * Math.cos(gam);
+
+        double d = Math.acos((A11 + A22 + A33 - 1d) / 2d);
+        if (d != 0d) {
+            double den = 2d * Math.sin(d);
+            Point3D p = new Point3D((A32 - A23) / den, (A13 - A31) / den, (A21 - A12) / den);
+            n.setRotationAxis(p);
+            n.setRotate(Math.toDegrees(d));
+        }
+        //where alf is roll, bet is pitch and gam is yaw.
+    }
+
+    private void addRotate(Node node, Rotate rotate, double angle) {
+        Affine affine = node.getTransforms().isEmpty() ? new Affine() : new Affine(node.getTransforms().get(0));
+        double A11 = affine.getMxx(), A12 = affine.getMxy(), A13 = affine.getMxz();
+        double A21 = affine.getMyx(), A22 = affine.getMyy(), A23 = affine.getMyz();
+        double A31 = affine.getMzx(), A32 = affine.getMzy(), A33 = affine.getMzz();
+
+        Rotate newRotateX = new Rotate(angle, new Point3D(A11, A21, A31));
+        Rotate newRotateY = new Rotate(angle, new Point3D(A12, A22, A32));
+        Rotate newRotateZ = new Rotate(angle, new Point3D(A13, A23, A33));
+
+        affine.prepend(rotate.getAxis() == Rotate.X_AXIS ? newRotateX :
+                rotate.getAxis() == Rotate.Y_AXIS ? newRotateY : newRotateZ);
+
+        node.getTransforms().setAll(affine);
     }
 
     /**
@@ -214,21 +262,11 @@ public class VisualizationManager {
      * Color green implies no collision was detected
      */
     private void checkBounds() {
-        boolean collisionDetected = false;
         for (ConeMesh trackingCone : trackingCones) {
-            trackingCone.setMaterial(new PhongMaterial(Color.GREEN));
-
             for (MeshView stlFile : stlFiles
             ) {
-
                 if (trackingCone.getBoundsInParent().intersects(stlFile.getBoundsInParent())) {
-                    collisionDetected = true;
-                }
-
-                if (collisionDetected) {
                     trackingCone.setMaterial(new PhongMaterial(Color.RED));
-                } else {
-                    trackingCone.setMaterial(new PhongMaterial(Color.GREEN));
                 }
             }
         }
@@ -372,22 +410,26 @@ public class VisualizationManager {
 
         scrollPane.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case S, DOWN -> {
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
-                    event.consume();
-                }
-                case W, UP -> {
+                case S:
+                case DOWN:
                     perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
                     event.consume();
-                }
-                case D, RIGHT -> {
+                    break;
+                case W:
+                case UP:
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                    event.consume();
+                    break;
+                case D:
+                case RIGHT:
                     perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
                     event.consume();
-                }
-                case A, LEFT -> {
+                    break;
+                case A:
+                case LEFT:
                     perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
                     event.consume();
-                }
+                    break;
             }
         });
     }
