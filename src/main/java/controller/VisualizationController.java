@@ -9,11 +9,10 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
-import shapes.ConeMesh;
+import shapes.TrackingCone;
 
 import java.net.URL;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class VisualizationController implements Controller {
 
@@ -42,7 +41,6 @@ public class VisualizationController implements Controller {
     TrackingService trackingService = TrackingService.getInstance();
 
     private Label statusLabel;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
@@ -96,15 +94,17 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void setTrackerColor() {
-        if (visualizationManager.getTrackingCones() == null) {
-            statusLabel.setText("No Tracking Data Source");
-            return;
-        }
-        statusLabel.setText("");
+        if (visualizationManager.visualizeCone().get()) {
+            if (visualizationManager.getTrackingCones() == null) {
+                statusLabel.setText("No Tracking Data Source");
+                return;
+            }
+            statusLabel.setText("");
 
-        ConeMesh[] trackingCones = visualizationManager.getTrackingCones();
-        for (ConeMesh trackingCone : trackingCones) {
-            trackingCone.setMaterial(new PhongMaterial(colorPicker.getValue()));
+            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
+            for (TrackingCone trackingCone : trackingCones) {
+                trackingCone.setMaterial(new PhongMaterial(colorPicker.getValue()));
+            }
         }
     }
 
@@ -113,16 +113,18 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void setTrackerSize() {
-        if (visualizationManager.getTrackingCones() == null) {
-            statusLabel.setText("No Tracking Data Source");
-            return;
-        }
-        statusLabel.setText("");
+        if (visualizationManager.visualizeCone().get()) {
+            if (visualizationManager.getTrackingCones() == null) {
+                statusLabel.setText("No Tracking Data Source");
+                return;
+            }
+            statusLabel.setText("");
 
-        ConeMesh[] trackingCones = visualizationManager.getTrackingCones();
-        for (ConeMesh trackingCone : trackingCones) {
-            trackingCone.setHeight(trackerSlider.getValue());
-            trackingCone.setRadius(trackerSlider.getValue()*0.4);
+            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
+            for (TrackingCone trackingCone : trackingCones) {
+                trackingCone.setHeight(trackerSlider.getValue());
+                trackingCone.setRadius(trackerSlider.getValue() * 0.4);
+            }
         }
     }
 
