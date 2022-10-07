@@ -8,7 +8,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 
-public class ConeMesh extends MeshView {
+public class TrackingCone extends MeshView {
     /*
         Field vars
     */
@@ -16,27 +16,27 @@ public class ConeMesh extends MeshView {
     private static final double DEFAULT_RADIUS = 4.0D;
     private static final double DEFAULT_HEIGHT = 30.0D;
 
-    public Rotate rx = new Rotate(0, Rotate.X_AXIS);
+    public Rotate rx = new Rotate(-90, Rotate.X_AXIS);
     public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
     public Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
     /*
     Constructors
      */
-    public ConeMesh() {
+    public TrackingCone() {
         this(DEFAULT_DIVISIONS, DEFAULT_RADIUS, DEFAULT_HEIGHT);
     }
 
-    public ConeMesh(double radius, double height) {
+    public TrackingCone(double radius, double height) {
         this(DEFAULT_DIVISIONS, radius, height);
     }
 
-    public ConeMesh(int divisions, double radius, double height) {
+    public TrackingCone(int divisions, double radius, double height) {
         setDivisions(divisions);
         setRadius(radius);
         setHeight(height);
         setMesh(createCone(getDivisions(), (float) getRadius(), (float) getHeight()));
-        getTransforms().addAll(rz, ry, rx);
+        getTransforms().setAll(rz, ry, rx);
     }
 
     /*
