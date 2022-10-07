@@ -3,6 +3,8 @@ package algorithm;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import com.jme3.math.Quaternion;
 import inputOutput.Tool;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.Label;
@@ -12,13 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import shapes.ConeMesh;
+import shapes.TrackingCone;
+import shapes.TrackingSphere;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class VisualizationManager {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
 
-    private ConeMesh[] trackingCones;
+    private TrackingCone[] trackingCones;
+    private TrackingSphere[] trackingSpheres;
     private MeshView[] stlFiles;
 
     private ScrollPane scrollPane;
@@ -50,6 +52,7 @@ public class VisualizationManager {
     private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+    private final BooleanProperty visualizeCone = new SimpleBooleanProperty(false);
 
 
     public void injectStatusLabel(Label statusLabel) {
@@ -60,7 +63,7 @@ public class VisualizationManager {
         return stlFiles;
     }
 
-    public ConeMesh[] getTrackingCones() {
+    public TrackingCone[] getTrackingCones() {
         return trackingCones;
     }
 
@@ -82,16 +85,14 @@ public class VisualizationManager {
         this.meshGroup = meshGroup;
     }
 
-//    public void setViewportSize(double VIEWPORT_SIZE) {
-//        this.VIEWPORT_SIZE = VIEWPORT_SIZE;
-//        this.VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
-//    }
-
+    public BooleanProperty visualizeCone() {
+        return visualizeCone;
+    }
 
     /**
-     * Creates a Tracking Cone for each device
+     * Creates a Tracker Shape for each device
      */
-    private void createTrackingCone() {
+    private void createTrackerShape() {
         if (trackingService.getTrackingDataSource() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
@@ -102,13 +103,21 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         ArrayList<Tool> tools = trackingService.getTrackingDataSource().getLastToolList();
 
-        if (tools != null) {
-            trackingCones = new ConeMesh[tools.size()];
+        if (tools != null && visualizeCone.get()) {
+            trackingCones = new TrackingCone[tools.size()];
 
             for (int i = 0; i < trackingCones.length; i++) {
-                trackingCones[i] = new ConeMesh(36, 4, 10);
+                trackingCones[i] = new TrackingCone(36, 4, 10);
+            }
+        } else if (tools != null && !visualizeCone.get()) {
+            trackingSpheres = new TrackingSphere[tools.size()];
+
+            for (int i = 0; i < trackingSpheres.length; i++) {
+                trackingSpheres[i] = new TrackingSphere(8, 5, Color.RED);
             }
         }
+
+
     }
 
     /**
@@ -129,6 +138,10 @@ public class VisualizationManager {
                     importer.read(fileList.get(i));
                     Mesh mesh = importer.getImport();
                     stlFiles[i] = new MeshView(mesh);
+                    stlFiles[i].getTransforms().addAll(
+                            //Rotate the Model by 180 degrees for correct display
+                            new Rotate(180, Rotate.X_AXIS)
+                    );
 
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Error reading STL file");
@@ -169,9 +182,8 @@ public class VisualizationManager {
             rotationMovement.toAngles(eulerAngles);
 
             double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
-            // invert Y & Z axis for correct display!
-            double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY() * -1;
-            double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ() * -1;
+            double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY();
+            double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ();
             // convert Quaternion to Euler
             float yaw = eulerAngles[0];
             float roll = eulerAngles[1];
@@ -185,40 +197,38 @@ public class VisualizationManager {
             if (showRotations) {
                 System.out.println(tools.get(i).getName());
                 System.out.println("yaw:!" + yaw);
-                System.out.println("angle!" + yawAngle);
+                System.out.println("yawAngle!" + yawAngle);
                 System.out.println("roll:!" + roll);
-                System.out.println("angle!" + rollAngle);
+                System.out.println("rollAngle!" + rollAngle);
                 System.out.println("pitch:!" + pitch);
-                System.out.println("angle!" + pitchAngle);
+                System.out.println("pitchAngle!" + pitchAngle);
                 System.out.print("\n");
             }
 
-            // apply translation and rotation to each tracker
-//            trackingCones[i].getTransforms().setAll(
-//                    new Translate(x, y, z),
-//                    new Rotate(yawAngle, Rotate.Z_AXIS),
-//                    new Rotate(pitchAngle, Rotate.X_AXIS),
-//                    new Rotate(rollAngle, Rotate.Y_AXIS)
-//            );
+            if (trackingCones != null && visualizeCone.get()) {
+                trackingCones[i].setTranslateX(x);
+                trackingCones[i].setTranslateY(y);
+                trackingCones[i].setTranslateZ(z);
+                matrixRotateNode(trackingCones[i], pitch, -yaw, roll);
+            } else if (trackingSpheres != null && !visualizeCone.get()) {
+                trackingSpheres[i].setTranslateX(x);
+                trackingSpheres[i].setTranslateY(y);
+                trackingSpheres[i].setTranslateZ(z);
+                matrixRotateNode(trackingSpheres[i], pitch, -yaw, roll);
+            }
 
-//            Alternative1
-//            trackingCones[i].setTranslateX(x);
-//            trackingCones[i].setTranslateY(y);
-//            trackingCones[i].setTranslateZ(z);
-//            matrixRotateNode(trackingCones[i], yaw, roll, pitch);
-
-//            Alternative2
-            trackingCones[i].setTranslateX(x);
-            trackingCones[i].setTranslateY(y);
-            trackingCones[i].setTranslateZ(z);
-//            addRotate(trackingCones[i], trackingCones[i].ry, rollAngle);
-//            addRotate(trackingCones[i], trackingCones[i].rx, pitchAngle);
-//            addRotate(trackingCones[i], trackingCones[i].rz, yawAngle);
 
             checkBounds();
         }
     }
 
+    /**
+     * Rotate the Node by providing three rotations (Yaw, Pitch, Roll)
+     * @param n Node to rotate
+     * @param alf rotate X
+     * @param bet rotate Y
+     * @param gam rotate Z
+     */
     private void matrixRotateNode(Node n, double alf, double bet, double gam) {
         double A11 = Math.cos(alf) * Math.cos(gam);
         double A12 = Math.cos(bet) * Math.sin(alf) + Math.cos(alf) * Math.sin(bet) * Math.sin(gam);
@@ -237,23 +247,6 @@ public class VisualizationManager {
             n.setRotationAxis(p);
             n.setRotate(Math.toDegrees(d));
         }
-        //where alf is roll, bet is pitch and gam is yaw.
-    }
-
-    private void addRotate(Node node, Rotate rotate, double angle) {
-        Affine affine = node.getTransforms().isEmpty() ? new Affine() : new Affine(node.getTransforms().get(0));
-        double A11 = affine.getMxx(), A12 = affine.getMxy(), A13 = affine.getMxz();
-        double A21 = affine.getMyx(), A22 = affine.getMyy(), A23 = affine.getMyz();
-        double A31 = affine.getMzx(), A32 = affine.getMzy(), A33 = affine.getMzz();
-
-        Rotate newRotateX = new Rotate(angle, new Point3D(A11, A21, A31));
-        Rotate newRotateY = new Rotate(angle, new Point3D(A12, A22, A32));
-        Rotate newRotateZ = new Rotate(angle, new Point3D(A13, A23, A33));
-
-        affine.prepend(rotate.getAxis() == Rotate.X_AXIS ? newRotateX :
-                rotate.getAxis() == Rotate.Y_AXIS ? newRotateY : newRotateZ);
-
-        node.getTransforms().setAll(affine);
     }
 
     /**
@@ -262,11 +255,13 @@ public class VisualizationManager {
      * Color green implies no collision was detected
      */
     private void checkBounds() {
-        for (ConeMesh trackingCone : trackingCones) {
-            for (MeshView stlFile : stlFiles
-            ) {
-                if (trackingCone.getBoundsInParent().intersects(stlFile.getBoundsInParent())) {
-                    trackingCone.setMaterial(new PhongMaterial(Color.RED));
+        if (visualizeCone.get()) {
+            for (TrackingCone trackingCone : trackingCones) {
+                for (MeshView stlFile : stlFiles
+                ) {
+                    if (trackingCone.getBoundsInParent().intersects(stlFile.getBoundsInParent())) {
+                        trackingCone.setMaterial(new PhongMaterial(Color.RED));
+                    }
                 }
             }
         }
@@ -301,8 +296,16 @@ public class VisualizationManager {
     private Group buildScene() {
         Group root = new Group();
 
-        if (trackingCones == null) {
-            createTrackingCone();
+        root.getChildren().addAll(stlFiles);
+
+        if (trackingCones == null && trackingSpheres == null) {
+            createTrackerShape();
+        }
+
+        if (trackingCones != null && visualizeCone.get()) {
+            root.getChildren().addAll(trackingCones);
+        } else if (trackingSpheres != null && !visualizeCone.get()) {
+            root.getChildren().addAll(trackingSpheres);
         }
 
         rotateX.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
@@ -316,11 +319,6 @@ public class VisualizationManager {
         rotateZ.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
         rotateZ.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
         rotateZ.setPivotZ(VIEWPORT_CENTER);
-
-        root.getChildren().addAll(stlFiles);
-        if (trackingCones != null) {
-            root.getChildren().addAll(trackingCones);
-        }
 
         // centre the node
         root.setTranslateX(VIEWPORT_CENTER + MODEL_X_OFFSET);
@@ -412,12 +410,12 @@ public class VisualizationManager {
             switch (event.getCode()) {
                 case S:
                 case DOWN:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
                     event.consume();
                     break;
                 case W:
                 case UP:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
                     event.consume();
                     break;
                 case D:
