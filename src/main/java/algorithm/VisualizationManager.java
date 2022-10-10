@@ -52,7 +52,7 @@ public class VisualizationManager {
     private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
-    private final BooleanProperty visualizeCone = new SimpleBooleanProperty(false);
+    private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
 
 
     public void injectStatusLabel(Label statusLabel) {
@@ -142,7 +142,7 @@ public class VisualizationManager {
                             //Rotate the Model by 180 degrees for correct display
                             new Rotate(180, Rotate.X_AXIS)
                     );
-
+                    logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Error reading STL file");
                 }
@@ -224,7 +224,8 @@ public class VisualizationManager {
 
     /**
      * Rotate the Node by providing three rotations (Yaw, Pitch, Roll)
-     * @param n Node to rotate
+     *
+     * @param n   Node to rotate
      * @param alf rotate X
      * @param bet rotate Y
      * @param gam rotate Z
