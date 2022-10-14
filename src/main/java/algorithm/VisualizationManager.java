@@ -174,61 +174,62 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
 
-        for (int i = 0; i < tools.size(); i++) {
-            List<Measurement> measurements = tools.get(i).getMeasurement();
-            float[] eulerAngles = new float[3];
+            for (int i = 0; i < tools.size(); i++) {
+                List<Measurement> measurements = tools.get(i).getMeasurement();
+                float[] eulerAngles = new float[3];
 
-            Quaternion rotationMovement = tools.get(i).getMeasurement().get(measurements.size() - 1).getRotation();
-            rotationMovement.toAngles(eulerAngles);
+                Quaternion rotationMovement = tools.get(i).getMeasurement().get(measurements.size() - 1).getRotation();
+                rotationMovement.toAngles(eulerAngles);
 
-            double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
-            double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY();
-            double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ();
-            // convert Quaternion to Euler
-            float yaw = eulerAngles[0];
-            float roll = eulerAngles[1];
-            float pitch = eulerAngles[2];
-            // convert Euler to angles
-            double yawAngle = Math.toDegrees(yaw);
-            double rollAngle = Math.toDegrees(roll);
-            double pitchAngle = Math.toDegrees(pitch);
+                double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
+                double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY();
+                double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ();
+                // convert Quaternion to Euler
+                float yaw = eulerAngles[0];
+                float roll = eulerAngles[1];
+                float pitch = eulerAngles[2];
+                // convert Euler to angles
+                double yawAngle = Math.toDegrees(yaw);
+                double rollAngle = Math.toDegrees(roll);
+                double pitchAngle = Math.toDegrees(pitch);
 
-            boolean showRotations = false;
-            if (showRotations) {
-                System.out.println(tools.get(i).getName());
-                System.out.println("yaw:!" + yaw);
-                System.out.println("yawAngle!" + yawAngle);
-                System.out.println("roll:!" + roll);
-                System.out.println("rollAngle!" + rollAngle);
-                System.out.println("pitch:!" + pitch);
-                System.out.println("pitchAngle!" + pitchAngle);
-                System.out.print("\n");
-            }
+                boolean showRotations = false;
+                if (showRotations) {
+                    System.out.println(tools.get(i).getName());
+                    System.out.println("yaw:!" + yaw);
+                    System.out.println("yawAngle!" + yawAngle);
+                    System.out.println("roll:!" + roll);
+                    System.out.println("rollAngle!" + rollAngle);
+                    System.out.println("pitch:!" + pitch);
+                    System.out.println("pitchAngle!" + pitchAngle);
+                    System.out.print("\n");
+                }
 
             if (trackingCones != null && visualizeCone.get()) {
                 trackingCones[i].setTranslateX(x);
                 trackingCones[i].setTranslateY(y);
                 trackingCones[i].setTranslateZ(z);
-                matrixRotateNode(trackingCones[i], pitch, -yaw, roll);
+                matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
             } else if (trackingSpheres != null && !visualizeCone.get()) {
                 trackingSpheres[i].setTranslateX(x);
                 trackingSpheres[i].setTranslateY(y);
                 trackingSpheres[i].setTranslateZ(z);
-                matrixRotateNode(trackingSpheres[i], pitch, -yaw, roll);
+                matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
             }
 
 
-            checkBounds();
-        }
+                checkBounds();
+            }
     }
 
     /**
-     * Rotate the Node by providing three rotations (Yaw, Pitch, Roll)
+     * Rotate the Node by providing three rotations (Yaw, Roll, Pitch)
+     * author José Pereda
      *
      * @param n   Node to rotate
-     * @param alf rotate X
-     * @param bet rotate Y
-     * @param gam rotate Z
+     * @param alf Euler Angle alf
+     * @param bet Euler Angle bet
+     * @param gam Euler Angle gam
      */
     private void matrixRotateNode(Node n, double alf, double bet, double gam) {
         double A11 = Math.cos(alf) * Math.cos(gam);
