@@ -42,6 +42,15 @@ public class TrackingCone extends MeshView {
     /*
     Methods
      */
+
+    /**
+     * Creates a cone with the given values
+     * author Birdasaur
+     * @param divisions Divisions of the Cone
+     * @param radius Radius of the Cone
+     * @param height Height of the Cone
+     * @return cone as mesh
+     */
     private TriangleMesh createCone(int divisions, float radius, float height) {
         TriangleMesh mesh = new TriangleMesh();
         //Start with the top of the cone, later we will build our faces from these
