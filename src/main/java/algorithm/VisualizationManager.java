@@ -224,7 +224,7 @@ public class VisualizationManager {
 
     /**
      * Rotate the Node by providing three rotations (Yaw, Roll, Pitch)
-     * author José Pereda
+     * author Jose Pereda
      *
      * @param n   Node to rotate
      * @param alf Euler Angle alf
