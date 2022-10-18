@@ -11,10 +11,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import algorithm.DataService;
-import algorithm.Measurement;
-import algorithm.ToolMeasure;
-import algorithm.TrackingService;
+import algorithm.*;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import javafx.animation.Animation;
@@ -24,36 +21,50 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
+import algorithm.VisualizationManager;
 import userinterface.TrackingDataDisplay;
 import javafx.stage.Stage;
 
 public class TrackingDataController implements Controller {
 
-    @FXML ScatterChart<Number, Number> s1;
-    @FXML ScatterChart<Number, Number> s2;
-    @FXML ScatterChart<Number, Number> s3;
-    @FXML VBox posBox;
-    @FXML VBox rotBox;
-    @FXML ProgressIndicator connectionIndicator;
-    @FXML ToggleButton freezeTglBtn;
-    @FXML Button loadCSVBtn;
-    @FXML Button visualizeTrackingBtn;
+    @FXML
+    ScatterChart<Number, Number> s1;
+    @FXML
+    ScatterChart<Number, Number> s2;
+    @FXML
+    ScatterChart<Number, Number> s3;
+    @FXML
+    VBox posBox;
+    @FXML
+    VBox rotBox;
+    @FXML
+    ProgressIndicator connectionIndicator;
+    @FXML
+    ToggleButton freezeTglBtn;
+    @FXML
+    Button loadCSVBtn;
+    @FXML
+    Button visualizeTrackingBtn;
+    @FXML
+    Group meshGroup;
+    @FXML
+    ScrollPane scrollPane;
 
     private final TrackingService trackingService = TrackingService.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
     HashMap<String, Label> position;
     HashMap<String, Label> rotation;
     Label statusLabel;
+    VisualizationManager visualizationManager;
+    VisualizationController visualizationController;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
@@ -67,18 +78,25 @@ public class TrackingDataController implements Controller {
 
         loadCSVBtn.disableProperty().bind(visualizationRunning);
         visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
-        freezeTglBtn.disableProperty().bind(visualizationRunning.not().or(sourceConnected.not()));
     }
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 
+    public void injectVisualizationManager(VisualizationManager visualizationManager) {
+        this.visualizationManager = visualizationManager;
+    }
+
+    public void injectVisualizationController(VisualizationController visualizationController) {
+        this.visualizationController = visualizationController;
+    }
+
     /**
      * load CSV file with tracking data created by MITK workbench
      */
     @FXML
-    private void loadCSVFile() {
+    public void loadCSVFile() {
         CSVFileReader newSource = null;
         FileChooser fp = new FileChooser();
         fp.setTitle("Load Data");
@@ -86,7 +104,7 @@ public class TrackingDataController implements Controller {
 
         File file = fp.showOpenDialog(new Stage());
         if (file != null) {
-            if(trackingService.getTrackingDataSource() != null){
+            if (trackingService.getTrackingDataSource() != null) {
                 disconnectSource();
             }
             try {
@@ -94,6 +112,7 @@ public class TrackingDataController implements Controller {
                 newSource.setRepeatMode(true);
                 trackingService.changeTrackingSource(newSource);
                 sourceConnected.setValue(true);
+                visualizationController.setSourceConnected(true);
                 logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);
@@ -106,8 +125,8 @@ public class TrackingDataController implements Controller {
      * Connect via OpenIGTLink.
      */
     @FXML
-    private void onConnectButtonClicked() {
-        if(trackingService.getTrackingDataSource() != null) { // bit hacky
+    public void onConnectButtonClicked() {
+        if (trackingService.getTrackingDataSource() != null) { // bit hacky
             disconnectSource();
         }
         connectionIndicator.setVisible(true);
@@ -118,6 +137,7 @@ public class TrackingDataController implements Controller {
                 trackingService.changeTrackingSource(newSource);
                 connectionIndicator.setVisible(false);
                 sourceConnected.setValue(true);
+                visualizationController.setSourceConnected(true);
             });
         }).start();
     }
@@ -125,10 +145,10 @@ public class TrackingDataController implements Controller {
     /**
      * This method disconnects the current source, closes the connection and resets the timeline.
      */
-    private void disconnectSource(){
+    private void disconnectSource() {
         var timeline = trackingService.getTimeline();
-        if(timeline != null) {
-            if(timeline.getStatus() == Animation.Status.PAUSED){
+        if (timeline != null) {
+            if (timeline.getStatus() == Animation.Status.PAUSED) {
                 statusLabel.setText("");    // To remove the label
                 freezeTglBtn.setSelected(false);
             }
@@ -136,18 +156,20 @@ public class TrackingDataController implements Controller {
             trackingService.changeTimeline(null);
         }
         visualizationRunning.setValue(false);
+        visualizationController.setVisualizationRunning(false);
 
         var source = trackingService.getTrackingDataSource();
-        if(source != null) {
+        if (source != null) {
             source.closeConnection();
             trackingService.changeTrackingSource(null);
         }
 
-        if(trackingService.getDataService() != null){
+        if (trackingService.getDataService() != null) {
             trackingService.changeDataService(null);
         }
 
         sourceConnected.setValue(false);
+        visualizationController.setSourceConnected(false);
     }
 
     /**
@@ -164,15 +186,16 @@ public class TrackingDataController implements Controller {
 
             timeline = new Timeline();
             timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.getKeyFrames().add(
+            timeline.getKeyFrames().addAll(
                     new KeyFrame(Duration.millis(100),
-                            event2 -> updateDiagrams())
-            );
+                            event2 -> updateDiagrams()));
+
             timeline.play();
             TrackingService.getInstance().changeTimeline(timeline);
 
             updateDiagrams();
             visualizationRunning.setValue(true);
+            visualizationController.setVisualizationRunning(true);
         }
         if (timeline != null) {
             timeline.play();
@@ -180,7 +203,7 @@ public class TrackingDataController implements Controller {
     }
 
     public void updateDiagrams() {
-        if(trackingService.getTrackingDataSource() == null){
+        if (trackingService.getTrackingDataSource() == null) {
             return;
         }
         // loads the next set of tracking data
@@ -217,7 +240,7 @@ public class TrackingDataController implements Controller {
                             + df.format(x) + ";"
                             + df.format(y) + ";"
                             + df.format(z) + "]");
-                    rotation.get(tool.getName()).setText(tool.getName()+": ["
+                    rotation.get(tool.getName()).setText(tool.getName() + ": ["
                             + df.format(qY) + ";"
                             + df.format(qZ) + ";"
                             + df.format(qR) + "]");
@@ -228,15 +251,16 @@ public class TrackingDataController implements Controller {
                 display.addDataToSeries3(new XYChart.Data<>(z, y));
             }
         }
+        visualizationManager.visualizeTracking();
     }
 
     /**
      * This method creates a new series to store tracking data
-     * and position and rotation labels for one tool.
+     * * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
-        if (toolDisplayList.size() > 0) {
-            for (TrackingDataDisplay d : toolDisplayList) {
+        if (this.toolDisplayList.size() > 0) {
+            for (TrackingDataDisplay d : this.toolDisplayList) {
                 if (d.getToolName().equals(toolName)) return d;
             }
         }
@@ -245,7 +269,7 @@ public class TrackingDataController implements Controller {
         s1.getData().addAll(newDisplay.getDataSeries1());
         s2.getData().addAll(newDisplay.getDataSeries2());
         s3.getData().addAll(newDisplay.getDataSeries3());
-        toolDisplayList.add(newDisplay);
+        this.toolDisplayList.add(newDisplay);
 
         position.put(toolName, new Label(toolName + ": [-]"));
         posBox.getChildren().add(position.get(toolName));
@@ -259,15 +283,16 @@ public class TrackingDataController implements Controller {
         var timeline = trackingService.getTimeline();
         if (timeline != null) {
             switch (timeline.getStatus()) {
-            case RUNNING:
-                timeline.pause();
-                statusLabel.setText("Visualization paused");
-                break;
-            case PAUSED:
-                timeline.play();
-                statusLabel.setText("");
-                break;
-            default: break;
+                case RUNNING:
+                    timeline.pause();
+                    statusLabel.setText("Visualization paused");
+                    break;
+                case PAUSED:
+                    timeline.play();
+                    statusLabel.setText("");
+                    break;
+                default:
+                    break;
             }
         }
     }

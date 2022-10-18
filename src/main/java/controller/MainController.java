@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import algorithm.VisualizationManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,22 +19,39 @@ import javafx.stage.Stage;
 
 public class MainController implements Controller {
 
-    @FXML TabPane tabPane;
-    // These two controller will be automatically injected since we annotated the "trackingData" and "video" element in the fxml
-    @FXML TrackingDataController trackingDataController;
-    @FXML VideoController videoController;
-    @FXML Label status;
+    @FXML
+    TabPane tabPane;
+    @FXML
+    Tab trackingDataTab;
+    @FXML
+    Tab visualizationTab;
+    // These three controller will be automatically injected since we annotated the "trackingData", "video" and "visual" element in the fxml
+    @FXML
+    TrackingDataController trackingDataController;
+    @FXML
+    VideoController videoController;
+    @FXML
+    VisualizationController visualizationController;
+    @FXML
+    Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private SettingsController settingsController;
+    private final VisualizationManager visualizationManager = new VisualizationManager();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         trackingDataController.injectStatusLabel(status);
+        trackingDataController.injectVisualizationManager(visualizationManager);
+        trackingDataController.injectVisualizationController(visualizationController);
         videoController.injectStatusLabel(status);
+        visualizationController.injectStatusLabel(status);
+        visualizationController.injectTrackingDataController(trackingDataController);
+        visualizationController.injectVisualizationManager(visualizationManager);
+        visualizationManager.injectStatusLabel(status);
     }
 
     @FXML
@@ -49,7 +66,7 @@ public class MainController implements Controller {
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.measurementController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Measurement View", e);
         }
     }
@@ -68,7 +85,7 @@ public class MainController implements Controller {
             this.tabPane.getTabs().add(t);
             this.tabPane.getSelectionModel().select(t);
             t.setOnCloseRequest(e -> this.thrombectomyController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Thrombectomy View", e);
         }
     }
@@ -87,8 +104,27 @@ public class MainController implements Controller {
 
             this.settingsController = this.loader.getController();
             newWindow.setOnCloseRequest(e -> this.settingsController.close());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error loading Settings View", e);
+        }
+    }
+
+    /**
+     * Changes the scrollPane and meshGroup of the visualizationManager to the one of the selected Tab
+     */
+    @FXML
+    private void onChangeView() {
+        if (trackingDataTab.isSelected()) {
+            visualizationManager.setPane(trackingDataController.scrollPane);
+            visualizationManager.setMeshGroup(trackingDataController.meshGroup);
+//            visualizationManager.setViewportSize(800);
+            visualizationManager.showFigure();
+        }
+        else if (visualizationTab.isSelected()) {
+            visualizationManager.setPane(visualizationController.scrollPane);
+            visualizationManager.setMeshGroup(visualizationController.meshGroup);
+//            visualizationManager.setViewportSize(350);
+            visualizationManager.showFigure();
         }
     }
 
