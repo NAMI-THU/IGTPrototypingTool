@@ -18,7 +18,7 @@ plugins {
     id 'checkstyle'
 
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '5.0.9'
+    id 'com.github.spotbugs' version '5.0.14'
 }
 
 javafx {
@@ -37,19 +37,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.openpnp:opencv:4.5.5-1'
+    implementation 'org.openpnp:opencv:4.7.0-0'
     implementation 'org.hamcrest:hamcrest-core:2.2'
     implementation 'com.massisframework.jme3:jme3-core:3.1.0-beta2'
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'gov.nist.math:jama:1.0.3'
     implementation 'com.neuronrobotics:java-bowler:3.28.0'
-    implementation 'org.apache.commons:commons-csv:1.9.0'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.apache.commons:commons-csv:1.10.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.2'
 }
 
 // JUnit 5 support
