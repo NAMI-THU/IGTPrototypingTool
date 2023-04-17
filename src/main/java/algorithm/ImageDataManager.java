@@ -2,7 +2,9 @@ package algorithm;
 
 import java.awt.image.BufferedImage;
 
+import inputOutput.VideoSource;
 import javafx.scene.image.Image;
+import org.opencv.core.Mat;
 
 /**
  * builds an interface to other teams, includes distance measurement and
@@ -16,8 +18,11 @@ public class ImageDataManager {
 
     ImageDataProcessor dataProcessor = new ImageDataProcessor();
 
-    public boolean openConnection (int x){
-        return dataProcessor.openConnection(x);
+    public boolean openConnection(VideoSource source){
+        return dataProcessor.openConnection(source);
+    }
+    public boolean openConnection(VideoSource source, int deviceId){
+        return dataProcessor.openConnection(source, deviceId);
     }
 
     public boolean closeConnection(){
@@ -31,6 +36,8 @@ public class ImageDataManager {
     public Image readImg() {
         return dataProcessor.readImg();
     }
+
+    public Mat readMat(){return dataProcessor.readMat();}
 
     public ImageDataProcessor getDataProcessor() {
         return this.dataProcessor;

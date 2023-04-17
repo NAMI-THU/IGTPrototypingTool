@@ -2,18 +2,16 @@ package algorithm;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import inputOutput.*;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 
-import inputOutput.AbstractImageSource;
-import inputOutput.FilestreamSource;
-import inputOutput.LivestreamSource;
-import inputOutput.OIGTImageSource;
 import javafx.scene.image.Image;
 
 /**
@@ -58,14 +56,21 @@ public class ImageDataProcessor {
         return imgSrc != null ? imgSrc.isConnected : false;
     }
 
+    public static BufferedImage Mat2BufferedImage(Mat matrix){
+        return (BufferedImage) HighGui.toBufferedImage(matrix);
+    }
+    public static Image Mat2Image(Mat matrix, String extension){
+        MatOfByte buffer = new MatOfByte();
+        Imgcodecs.imencode(extension, matrix, buffer);
+        return new Image(new ByteArrayInputStream(buffer.toArray()));
+    }
     /**
      * Old method to read image data. Uses Java.awt.BufferedImage
      * @return
      */
     BufferedImage readBufImg() {
         Mat mat = imgSrc.getNextMat();
-        BufferedImage bufImg = (BufferedImage) HighGui.toBufferedImage(mat);
-        return bufImg;
+        return Mat2BufferedImage(mat);
     }
 
     /**
@@ -75,10 +80,11 @@ public class ImageDataProcessor {
      */
     public Image readImg() {
         Mat cropMat = this.cropMat(imgSrc.getNextMat());
-        MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".png", cropMat, buffer);
-        Image img = new Image(new ByteArrayInputStream(buffer.toArray()));
-        return img;
+        return Mat2Image(cropMat,".png");
+    }
+
+    public Mat readMat(){
+        return imgSrc.getNextMat();
     }
 
     /**
@@ -95,24 +101,25 @@ public class ImageDataProcessor {
         return oldMat.submat(rowStart, rowEnd, colStart, colEnd);
     }
 
+    public boolean openConnection(VideoSource source){
+        return openConnection(source, 0);
+    }
     /**
-     * Sets the type of image source depending on parameter x and prepares the connection.
-     * 0: LivestreamSource
-     * 1: OpenIGTLinkSource
-     * 2: FilestreamSource
-     * @param x int
+     * Sets the type of image source depending on parameters source and deviceId and prepares the connection.
+     * @param source Input device
+     * @param deviceId ID of the device (default: 0)
      */
-    public boolean openConnection(int x){
-        switch (x) {
-        case 0:
-            imgSrc = new LivestreamSource(x);
-            break;
-        case 1:
-            imgSrc = new OIGTImageSource();
-            break;
-        case 2:
-            imgSrc = new FilestreamSource(filePath);
-            break;
+    public boolean openConnection(VideoSource source, int deviceId){
+        switch (source) {
+            case LIVESTREAM:
+                imgSrc = new LivestreamSource(deviceId);
+                break;
+            case OPENIGTLINK:
+                imgSrc = new OIGTImageSource();
+                break;
+            case FILE:
+                imgSrc = new FilestreamSource(filePath);
+                break;
         }
 
        if(imgSrc != null) {
@@ -124,7 +131,10 @@ public class ImageDataProcessor {
     }
 
     public boolean closeConnection(){
-        return imgSrc.closeConnection();
+        if(imgSrc != null) {
+            return imgSrc.closeConnection();
+        }
+        return true;
     }
 
 }

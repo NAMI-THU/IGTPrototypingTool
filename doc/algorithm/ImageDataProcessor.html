@@ -99,7 +99,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -114,19 +114,30 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConnected()" class="member-name-link">isConnected</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/image/BufferedImage.html" title="class or interface in java.awt.image" class="external-link">BufferedImage</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#Mat2BufferedImage(org.opencv.core.Mat)" class="member-name-link">Mat2BufferedImage</a><wbr>(org.opencv.core.Mat&nbsp;matrix)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static javafx.scene.image.Image</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#Mat2Image(org.opencv.core.Mat,java.lang.String)" class="member-name-link">Mat2Image</a><wbr>(org.opencv.core.Mat&nbsp;matrix,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;extension)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(int)" class="member-name-link">openConnection</a><wbr>(int&nbsp;x)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the type of image source depending on parameter x and prepares the connection.
- 0: LivestreamSource
- 1: OpenIGTLinkSource
- 2: FilestreamSource</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>javafx.scene.image.Image</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readImg()" class="member-name-link">readImg</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(inputOutput.VideoSource)" class="member-name-link">openConnection</a><wbr>(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#openConnection(inputOutput.VideoSource,int)" class="member-name-link">openConnection</a><wbr>(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source,
+ int&nbsp;deviceId)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the type of image source depending on parameters source and deviceId and prepares the connection.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>javafx.scene.image.Image</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readImg()" class="member-name-link">readImg</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reads an image from video source and crops it.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.opencv.core.Mat</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readMat()" class="member-name-link">readMat</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBottomCrop(int)" class="member-name-link">setBottomCrop</a><wbr>(int&nbsp;bottomCrop)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -216,6 +227,19 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="Mat2BufferedImage(org.opencv.core.Mat)">
+<h3>Mat2BufferedImage</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/image/BufferedImage.html" title="class or interface in java.awt.image" class="external-link">BufferedImage</a></span>&nbsp;<span class="element-name">Mat2BufferedImage</span><wbr><span class="parameters">(org.opencv.core.Mat&nbsp;matrix)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="Mat2Image(org.opencv.core.Mat,java.lang.String)">
+<h3>Mat2Image</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">javafx.scene.image.Image</span>&nbsp;<span class="element-name">Mat2Image</span><wbr><span class="parameters">(org.opencv.core.Mat&nbsp;matrix,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;extension)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="readImg()">
 <h3>readImg</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">javafx.scene.image.Image</span>&nbsp;<span class="element-name">readImg</span>()</div>
@@ -228,16 +252,27 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="openConnection(int)">
+<section class="detail" id="readMat()">
+<h3>readMat</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.opencv.core.Mat</span>&nbsp;<span class="element-name">readMat</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="openConnection(inputOutput.VideoSource)">
 <h3>openConnection</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(int&nbsp;x)</span></div>
-<div class="block">Sets the type of image source depending on parameter x and prepares the connection.
- 0: LivestreamSource
- 1: OpenIGTLinkSource
- 2: FilestreamSource</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="openConnection(inputOutput.VideoSource,int)">
+<h3>openConnection</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">openConnection</span><wbr><span class="parameters">(<a href="../inputOutput/VideoSource.html" title="enum class in inputOutput">VideoSource</a>&nbsp;source,
+ int&nbsp;deviceId)</span></div>
+<div class="block">Sets the type of image source depending on parameters source and deviceId and prepares the connection.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>x</code> - int</dd>
+<dd><code>source</code> - Input device</dd>
+<dd><code>deviceId</code> - ID of the device (default: 0)</dd>
 </dl>
 </section>
 </li>

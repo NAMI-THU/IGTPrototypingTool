@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import algorithm.ImageDataManager;
+import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -67,25 +68,28 @@ public class VideoController implements Controller {
     public void connectToSource() {
         connectionIndicator.setVisible(true);
         switch(sourceChoiceBox.getValue()) {
-            case "Video Source":
-                connectToSourceAsync(0);
-                break;
-            case "OpenIGTLink":
-                connectToSourceAsync(1);
-                break;
-            case "Video File":
-                File file = this.loadFile();
-                if(file != null) {
-                    this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
-                    connectToSourceAsync(2);
-                }
-                break;
+        case "Video Source":
+            connectToSourceAsync(VideoSource.LIVESTREAM, 0);
+            break;
+        case "OpenIGTLink":
+            connectToSourceAsync(VideoSource.OPENIGTLINK);
+            break;
+        case "Video File":
+            File file = this.loadFile();
+            if(file != null) {
+                this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
+                connectToSourceAsync(VideoSource.FILE);
+            }
+            break;
         }
     }
 
-    private void connectToSourceAsync(int connectionId){
+    private void connectToSourceAsync(VideoSource connectionId){
+        connectToSourceAsync(connectionId, 0);
+    }
+    private void connectToSourceAsync(VideoSource connectionId, int deviceId){
         new Thread(() -> {
-            var success = dataManager.openConnection(connectionId);
+            var success = dataManager.openConnection(connectionId, deviceId);
             Platform.runLater(() -> {
                 connectionIndicator.setVisible(false);
                 if(success) {

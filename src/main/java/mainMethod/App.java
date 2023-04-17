@@ -28,8 +28,8 @@ public class App extends Application {
         loader.setLocation(getClass().getResource(path));
         Parent root = loader.load();
         primaryStage.setTitle("IGT Prototyping Tool");
-        primaryStage.setMinHeight(300);
-        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(800);
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);
