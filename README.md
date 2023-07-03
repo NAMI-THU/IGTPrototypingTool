@@ -3,14 +3,14 @@
 A tool that provides basic functionalities for IGT.
 Tracker can be connected using OpenIGTLink, and the reported information can be used for conveniently implementing some functionality.
 
-This tool started as a student project and is currently actively maintained by various students of [THU](https://www.thu.de).
+This tool started as a student project and is currently actively maintained by various students of [Ulm University of Applied Sciences](https://www.thu.de).
 
-Currently, at least **Java 11** is required, but all LTS versions upwards (Java 15, Java 17) are supported.
+Currently, at least **Java 11** is required, but all LTS versions upwards (Java 15, Java 17) and also Java 20 are supported.
 
 # Building
-[![Build Status](https://app.travis-ci.com/Alfred-Franz/IGTPrototypingTool.svg?branch=master)](https://app.travis-ci.com/Alfred-Franz/IGTPrototypingTool)
+[![Build Status](https://app.travis-ci.com/NAMI-THU/IGTPrototypingTool.svg?branch=master)](https://app.travis-ci.com/NAMI-THU/IGTPrototypingTool)
 \
-For building, you can import this project as a Gradle project into your IDE, or you
+For building, you can import this project as a *Gradle project* into your IDE, or you
 can run in a terminal:
 ```bash
 # For windows
@@ -29,7 +29,5 @@ This project uses Checkstyle to enforce some basic style checks:
 * End files with a new line
 * Don't leave trailing spaces at the end of a line
 
-To ensure compatibility with older Java versions, please set the language level of this project to Java 11.
-
-_**When cloning this repository, make sure to contribute your changes to this one and not the parent repository.**_
+_*To ensure compatibility with older Java versions, please set the language level of this project to the lowest supported language version, currently Java 11.*_
 
