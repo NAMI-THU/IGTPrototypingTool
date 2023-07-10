@@ -8,7 +8,8 @@ This tool started as a student project and is currently actively maintained by v
 Currently, at least **Java 11** is required, but all LTS versions upwards (Java 15, Java 17) and also Java 20 are supported.
 
 # Building
-[![Build Status](https://app.travis-ci.com/NAMI-THU/IGTPrototypingTool.svg?branch=master)](https://app.travis-ci.com/NAMI-THU/IGTPrototypingTool)
+![Build Status](https://github.com/NAMI-THU/IGTPrototypingTool/actions/workflows/gradle-build.yml/badge.svg?branch=master)
+
 \
 For building, you can import this project as a *Gradle project* into your IDE, or you
 can run in a terminal:
