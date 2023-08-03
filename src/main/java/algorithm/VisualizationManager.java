@@ -32,28 +32,27 @@ import java.util.logging.Logger;
  */
 public class VisualizationManager {
 
-    private Label statusLabel;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final TrackingService trackingService = TrackingService.getInstance();
-
-    private TrackingCone[] trackingCones;
-    private TrackingSphere[] trackingSpheres;
-    private MeshView[] stlFiles;
-
-    private ScrollPane scrollPane;
-    private Group meshGroup;
-
     private static final double MODEL_SCALE_FACTOR = 10;
     private static final double MODEL_X_OFFSET = 0; // standard
     private static final double MODEL_Y_OFFSET = 0; // standard
     private static final int VIEWPORT_SIZE = 800;
     private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
-    private double mouseOldX, mouseOldY = 0;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final TrackingService trackingService = TrackingService.getInstance();
     private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
+    private Label statusLabel;
+    private TrackingCone[] trackingCones;
+    private TrackingSphere[] trackingSpheres;
+    private MeshView[] stlFiles;
+    private ScrollPane scrollPane;
+    private Group meshGroup;
+    private double mouseOldX, mouseOldY = 0;
 
+    // For orientation
+    TrackingSphere s = new TrackingSphere(2, 5, Color.RED);
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
@@ -93,6 +92,7 @@ public class VisualizationManager {
      * Creates a Tracker Shape for each device
      */
     private void createTrackerShape() {
+        // Hier werden NUR die Shapes erstellt
         if (trackingService.getTrackingDataSource() == null) {
             statusLabel.setText("No Tracking Data Source");
             return;
@@ -103,21 +103,19 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         ArrayList<Tool> tools = trackingService.getTrackingDataSource().getLastToolList();
 
-        if (tools != null && visualizeCone.get()) {
+        if (tools != null) {
             trackingCones = new TrackingCone[tools.size()];
 
             for (int i = 0; i < trackingCones.length; i++) {
                 trackingCones[i] = new TrackingCone(36, 4, 10);
             }
-        } else if (tools != null && !visualizeCone.get()) {
-            trackingSpheres = new TrackingSphere[tools.size()];
 
+            trackingSpheres = new TrackingSphere[tools.size()];
+            Color[] col = {Color.BLUE, Color.RED};
             for (int i = 0; i < trackingSpheres.length; i++) {
-                trackingSpheres[i] = new TrackingSphere(8, 5, Color.RED);
+                trackingSpheres[i] = new TrackingSphere(2, 5, col[i], col[i]);
             }
         }
-
-
     }
 
     /**
@@ -159,10 +157,7 @@ public class VisualizationManager {
             statusLabel.setText("No Tracking Data Source");
             return;
         }
-        if (stlFiles == null) {
-            statusLabel.setText("Load STL Model for Visualization");
-            return;
-        }
+
         // timeline has not been started in trackingData view
         if (trackingService.getTimeline() == null) {
             statusLabel.setText("Start Tracking in Tracking Data View first");
@@ -174,52 +169,53 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
 
-            for (int i = 0; i < tools.size(); i++) {
-                List<Measurement> measurements = tools.get(i).getMeasurement();
-                float[] eulerAngles = new float[3];
+        for (int i = 0; i < tools.size(); i++) {
+            List<Measurement> measurements = tools.get(i).getMeasurement();
+            float[] eulerAngles = new float[3];
 
-                Quaternion rotationMovement = tools.get(i).getMeasurement().get(measurements.size() - 1).getRotation();
-                rotationMovement.toAngles(eulerAngles);
+            Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
+            rotationMovement.toAngles(eulerAngles);
 
-                double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
-                double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY();
-                double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ();
-                // convert Quaternion to Euler
-                float yaw = eulerAngles[0];
-                float roll = eulerAngles[1];
-                float pitch = eulerAngles[2];
-                // convert Euler to angles
-                double yawAngle = Math.toDegrees(yaw);
-                double rollAngle = Math.toDegrees(roll);
-                double pitchAngle = Math.toDegrees(pitch);
+            double x = measurements.get(measurements.size() - 1).getPoint().getX();
+            double y = measurements.get(measurements.size() - 1).getPoint().getY();
+            double z = measurements.get(measurements.size() - 1).getPoint().getZ();
+            // convert Quaternion to Euler
+            float yaw = eulerAngles[0];
+            float roll = eulerAngles[1];
+            float pitch = eulerAngles[2];
+            // convert Euler to angles
+            double yawAngle = Math.toDegrees(yaw);
+            double rollAngle = Math.toDegrees(roll);
+            double pitchAngle = Math.toDegrees(pitch);
 
-                boolean showRotations = false;
-                if (showRotations) {
-                    System.out.println(tools.get(i).getName());
-                    System.out.println("yaw:!" + yaw);
-                    System.out.println("yawAngle!" + yawAngle);
-                    System.out.println("roll:!" + roll);
-                    System.out.println("rollAngle!" + rollAngle);
-                    System.out.println("pitch:!" + pitch);
-                    System.out.println("pitchAngle!" + pitchAngle);
-                    System.out.print("\n");
-                }
+            boolean showRotations = false;
+            if (showRotations) {
+                System.out.println(tools.get(i).getName());
+                System.out.println("yaw:!" + yaw);
+                System.out.println("yawAngle!" + yawAngle);
+                System.out.println("roll:!" + roll);
+                System.out.println("rollAngle!" + rollAngle);
+                System.out.println("pitch:!" + pitch);
+                System.out.println("pitchAngle!" + pitchAngle);
+                System.out.print("\n");
+            }
 
-            if (trackingCones != null && visualizeCone.get()) {
+            if (trackingCones != null && trackingSpheres != null) {
                 trackingCones[i].setTranslateX(x);
                 trackingCones[i].setTranslateY(y);
                 trackingCones[i].setTranslateZ(z);
                 matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
-            } else if (trackingSpheres != null && !visualizeCone.get()) {
+
                 trackingSpheres[i].setTranslateX(x);
                 trackingSpheres[i].setTranslateY(y);
                 trackingSpheres[i].setTranslateZ(z);
                 matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
             }
 
-
+            if (stlFiles != null) {
                 checkBounds();
             }
+        }
     }
 
     /**
@@ -273,7 +269,7 @@ public class VisualizationManager {
      * Adds the Nodes and Controls to the Scene
      */
     public void showFigure() {
-        if (trackingService.getTrackingDataSource() == null || stlFiles == null) {
+        if (trackingService.getTrackingDataSource() == null) {
             return;
         }
         statusLabel.setText("");
@@ -298,15 +294,18 @@ public class VisualizationManager {
     private Group buildScene() {
         Group root = new Group();
 
-        root.getChildren().addAll(stlFiles);
+        // If no stlFiles are loaded
+        if(stlFiles != null) {
+            root.getChildren().addAll(stlFiles);
+        }
 
         if (trackingCones == null && trackingSpheres == null) {
             createTrackerShape();
         }
 
-        if (trackingCones != null && visualizeCone.get()) {
+        // If you want to have the tracking cone and the sphere
+        if (trackingCones != null && trackingSpheres != null) {
             root.getChildren().addAll(trackingCones);
-        } else if (trackingSpheres != null && !visualizeCone.get()) {
             root.getChildren().addAll(trackingSpheres);
         }
 

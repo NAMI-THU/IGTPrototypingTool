@@ -196,6 +196,7 @@ public class TrackingDataController implements Controller {
             updateDiagrams();
             visualizationRunning.setValue(true);
             visualizationController.setVisualizationRunning(true);
+            visualizationManager.showFigure();
         }
         if (timeline != null) {
             timeline.play();
@@ -241,6 +242,7 @@ public class TrackingDataController implements Controller {
                             + df.format(y) + ";"
                             + df.format(z) + "]");
                     rotation.get(tool.getName()).setText(tool.getName() + ": ["
+                            + df.format(qX) + ";"
                             + df.format(qY) + ";"
                             + df.format(qZ) + ";"
                             + df.format(qR) + "]");

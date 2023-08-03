@@ -16,7 +16,7 @@ public class TrackingCone extends MeshView {
     private static final double DEFAULT_RADIUS = 4.0D;
     private static final double DEFAULT_HEIGHT = 30.0D;
 
-    public Rotate rx = new Rotate(-90, Rotate.X_AXIS);
+    public Rotate rx = new Rotate(0, Rotate.X_AXIS);
     public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
     public Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
@@ -59,7 +59,7 @@ public class TrackingCone extends MeshView {
         double segment_angle = 2.0 * Math.PI / divisions;
         float x, z;
         double angle;
-        double halfCount = (Math.PI / 2 - Math.PI / (divisions / 2));
+        double halfCount = (Math.PI / 2 - Math.PI / (divisions / 2.0));
         // Reverse loop for speed!! der
         for (int i = divisions + 1; --i >= 0; ) {
             angle = segment_angle * i;
