@@ -2,6 +2,10 @@ package mainMethod;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +16,7 @@ import util.ControllerCollector;
 import util.CustomLogger;
 
 public class App extends Application {
-
+    static Logger logger = Logger.getLogger(Application.class.getName());
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -22,6 +26,10 @@ public class App extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            logger.log(Level.SEVERE, "Uncaught exception in thread " + thread.getName(), throwable);
+        });
 
         String path = "/view/MainView.fxml";
         FXMLLoader loader = new FXMLLoader();

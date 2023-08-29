@@ -2,13 +2,16 @@ package sample;
 
 import Jama.Matrix;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.network.GenericIGTLinkClient;
 import org.medcare.igtl.network.IOpenIgtPacketListener;
 import org.medcare.igtl.util.Status;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ClientSample implements IOpenIgtPacketListener {
+    static Logger logger = Logger.getLogger(ClientSample.class.getName());
     /**
      * @param args
      */
@@ -18,10 +21,7 @@ public class ClientSample implements IOpenIgtPacketListener {
         ClientSample.parseXMLStringMessage(msg);
         GenericIGTLinkClient client;
         try {
-            Log.enableDebugPrint(true);
-            Log.enableSystemPrint(true);
-
-            Log.debug("Starting client");
+            logger.log(Level.FINE, "Connecting to server");
             client = new GenericIGTLinkClient("127.0.0.1", 18944);
             client.addIOpenIgtOnPacket(new ClientSample());
 
@@ -29,7 +29,7 @@ public class ClientSample implements IOpenIgtPacketListener {
                 Thread.sleep(1000);
             }
             client.stopClient();
-            Log.debug("Client disconnected");
+            logger.log(Level.FINE, "Client disconnected");
             System.exit(0);
 
         } catch (Exception e) {
@@ -48,19 +48,19 @@ public class ClientSample implements IOpenIgtPacketListener {
         //Log.debug("Received Transform: "+t);
         if (name.equals("RegistrationTransform") || name.equals("CALIBRATION")) {
             System.err.println("Received Registration Transform");
-            Log.debug("Setting fiducial registration matrix: " + t);
+            logger.log(Level.FINE, "Setting fiducial registration matrix: " + t);
             return;
         } else if (name.equals("TARGET")) {
             System.err.println("Received RAS Transform: TARGET");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
 
         } else if (name.equals("myTransform")) {
             System.err.println("Received Transformation Matrix: myTransform");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
 
         } else {
             System.err.println("Received unidentified transform matrix");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
         }
     }
 
@@ -113,9 +113,9 @@ public class ClientSample implements IOpenIgtPacketListener {
     @Override
     public void onRxNDArray(String name, float[] data) {
         // TODO Auto-generated method stub
-        Log.debug("Name" + name);
+        logger.log(Level.FINE, "Received RxNDArray: " + name);
         for (int i = 0; i < data.length; i++) {
-            Log.debug("Data[" + i + "]=" + data[i]);
+            logger.log(Level.FINE, "Data[" + i + "]=" + (double) data[i]);
         }
     }
 }

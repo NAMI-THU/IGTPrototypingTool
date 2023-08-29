@@ -16,11 +16,12 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.CrcException;
 import org.medcare.igtl.util.ErrorManager;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * One MessageQueueManager is created by each ServerThread to add MessageHandler
@@ -31,6 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class MessageQueueManager extends Thread {
+    static Logger logger = Logger.getLogger(MessageQueueManager.class.getName());
     private static String VERSION = "0.1a";
 
     private long sleep;
@@ -74,7 +76,7 @@ public class MessageQueueManager extends Thread {
                             e.printStackTrace();
                             errorManager.error("PB messageHandler ", e, ErrorManager.MESSAGE_EXCEPTION);
                         } finally {
-                            Log.debug("MessageQueueManager messageHandler.performRequest OK");
+                            logger.log(Level.FINE, "MessageQueueManager messageHandler.performRequest OK");
                         }
 
                     } else {
