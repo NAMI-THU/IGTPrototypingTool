@@ -1,10 +1,11 @@
 package inputOutput;
 
 import javafx.geometry.Point3D;
+import com.jme3.math.Quaternion;
 
 /**
  * This class is used as an object to temporary save the values of a tool,
- * which are separated in CSVFileReader.  These tool objects will be cached in
+ * which are separated in CSVFileReader. These tool objects will be cached in
  * an ArrayList which is used later for various calculation.
  *
  * @author Jonas Lang (comments)
@@ -47,7 +48,6 @@ public class Tool {
         this.rotationZ = rotation_z;
         this.rotationR = rotation_r;
         this.name = name;
-
     }
 
     /**

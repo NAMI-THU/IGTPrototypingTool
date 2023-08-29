@@ -69,7 +69,7 @@ public class TrackingSphere extends Group {
         int thickness = 1;
         Box z = new Box(thickness, thickness, len);
         z.setMaterial(new PhongMaterial(axisColor));
-        
+
         // Only show z-axis
         getChildren().addAll(sphere, z);
 

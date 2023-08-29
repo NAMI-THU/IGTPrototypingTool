@@ -258,7 +258,7 @@ public class TrackingDataController implements Controller {
 
     /**
      * This method creates a new series to store tracking data
-     * * and position and rotation labels for one tool.
+     * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
         if (this.toolDisplayList.size() > 0) {

@@ -31,12 +31,12 @@ import java.util.logging.Logger;
  * This class is used to manage the 3D-Visualization.
  */
 public class VisualizationManager {
-
     private static final double MODEL_SCALE_FACTOR = 10;
     private static final double MODEL_X_OFFSET = 0; // standard
     private static final double MODEL_Y_OFFSET = 0; // standard
     private static final int VIEWPORT_SIZE = 800;
     private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
+    public static final int CAM_MOVEMENT = 25;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
     private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
@@ -283,7 +283,7 @@ public class VisualizationManager {
         subScene.setManaged(false);
 
         handleKeyboard(scrollPane, subScene.getCamera());
-        handleMouse(subScene, root);
+        handleMouse(subScene, root, subScene.getCamera());
     }
 
     /**
@@ -308,27 +308,6 @@ public class VisualizationManager {
             root.getChildren().addAll(trackingCones);
             root.getChildren().addAll(trackingSpheres);
         }
-
-        rotateX.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateX.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateX.setPivotZ(VIEWPORT_CENTER);
-
-        rotateY.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateY.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateY.setPivotZ(VIEWPORT_CENTER);
-
-        rotateZ.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateZ.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateZ.setPivotZ(VIEWPORT_CENTER);
-
-        // centre the node
-        root.setTranslateX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        root.setTranslateY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        root.setTranslateZ(VIEWPORT_CENTER);
-        root.setScaleX(MODEL_SCALE_FACTOR);
-        root.setScaleY(MODEL_SCALE_FACTOR);
-        root.setScaleZ(MODEL_SCALE_FACTOR);
-
         return root;
     }
 
@@ -345,8 +324,9 @@ public class VisualizationManager {
         PerspectiveCamera perspectiveCamera = initCamera();
 
         scene3d.setFill(Color.DARKGREY);
+
         scene3d.setCamera(perspectiveCamera);
-        scene3d.setPickOnBounds(true);
+        scene3d.setPickOnBounds(false);
         return scene3d;
     }
 
@@ -356,14 +336,15 @@ public class VisualizationManager {
      * @return PerspectiveCamera
      */
     private PerspectiveCamera initCamera() {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
+        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(true);
         perspectiveCamera.setTranslateX(0);
         perspectiveCamera.setTranslateY(0);
-        perspectiveCamera.setTranslateZ(0);
+        perspectiveCamera.setTranslateZ(-500);
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(1000.0);
 
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, -1000));
+        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
+        //perspectiveCamera.getTransforms().addAll(new Translate(), new Translate(), new Translate(0, 0, -1000));
         return perspectiveCamera;
     }
 
@@ -373,17 +354,10 @@ public class VisualizationManager {
      * @param subScene Scene for MouseEvent
      * @param root     Group containing the nodes to be controlled
      */
-    private void handleMouse(SubScene subScene, Group root) {
+    private void handleMouse(SubScene subScene, Group root, Camera perspectiveCamera) {
         subScene.setOnScroll(event -> {
-            double zoomFactor = 1.05;
             double deltaY = event.getDeltaY();
-            if (deltaY < 0) {
-                zoomFactor = 2.0 - zoomFactor;
-            }
-            root.setScaleX(root.getScaleX() * zoomFactor);
-            root.setScaleY(root.getScaleY() * zoomFactor);
-            root.setScaleZ(root.getScaleZ() * zoomFactor);
-            event.consume();
+            perspectiveCamera.setTranslateZ(perspectiveCamera.getTranslateZ() + deltaY);
         });
         subScene.setOnMousePressed(event -> {
             mouseOldX = event.getSceneX();
@@ -395,7 +369,6 @@ public class VisualizationManager {
             rotateY.setAngle(rotateY.getAngle() + (event.getSceneX() - mouseOldX));
             mouseOldX = event.getSceneX();
             mouseOldY = event.getSceneY();
-
         });
     }
 
@@ -411,22 +384,22 @@ public class VisualizationManager {
             switch (event.getCode()) {
                 case S:
                 case DOWN:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + CAM_MOVEMENT);
                     event.consume();
                     break;
                 case W:
                 case UP:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - CAM_MOVEMENT);
                     event.consume();
                     break;
                 case D:
                 case RIGHT:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + CAM_MOVEMENT);
                     event.consume();
                     break;
                 case A:
                 case LEFT:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - CAM_MOVEMENT);
                     event.consume();
                     break;
             }
