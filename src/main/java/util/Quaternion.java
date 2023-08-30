@@ -332,6 +332,59 @@ public class Quaternion {
     }
 
     /**
+     * Converts to an equivalent rotation matrix. The current instance is
+     * unaffected.
+     *
+     * <p>Note: the result is created from a normalized version..
+     *
+     * @return {@code result}, configured as a 3x3 rotation matrix
+     */
+    public Matrix3D toRotationMatrix() {
+        Matrix3D result = new Matrix3D();
+
+        double norm = norm();
+        double s = (norm == 1f) ? 2f : (norm > 0f) ? 2f / norm : 0;
+
+        // compute xs/ys/zs first to save 6 multiplications, since xs/ys/zs
+        // will be used 2-4 times each.
+        double xs = x1 * s;
+        double ys = x2 * s;
+        double zs = x3 * s;
+        double xx = x1 * xs;
+        double xy = x1 * ys;
+        double xz = x1 * zs;
+        double xw = x0 * xs;
+        double yy = x2 * ys;
+        double yz = x2 * zs;
+        double yw = x0 * ys;
+        double zz = x3 * zs;
+        double zw = x0 * zs;
+
+        // using s=2/norm (instead of 1/norm) saves 9 multiplications by 2 here
+        result.set(0,0,1 - (yy + zz));
+        result.set(0,1,xy - zw);
+        result.set(0,2,xz + yw);
+        result.set(1,0,xy + zw);
+        result.set(1,1,1 - (xx + zz));
+        result.set(1,2,yz - xw);
+        result.set(2,0,xz - yw);
+        result.set(2,1,yz + xw);
+        result.set(2,2,1 - (xx + yy));
+
+        return result;
+    }
+
+    /**
+     * Returns the norm, defined as the dot product of the quaternion with
+     * itself. The current instance is unaffected.
+     *
+     * @return the sum of the squared components (not negative)
+     */
+    public double norm() {
+        return x0 * x0 + x1 * x1 + x2 * x2 + x3 * x3;
+    }
+
+    /**
      * Helper function to print the values of the quaternion
      */
     public void print() {

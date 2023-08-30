@@ -137,6 +137,18 @@ public class Matrix3D {
         return matrix[0][0] + matrix[1][1] + matrix[2][2];
     }
 
+
+    public Vector3D mult(Vector3D vec) {
+        Vector3D result = new Vector3D();
+        for (int i = 0; i < 3; i++) {
+            double sum = 0;
+            for (int j = 0; j < 3; j++) {
+                sum += matrix[i][j] * vec.vector[j];
+            }
+            result.set(i, sum);
+        }
+        return result;
+    }
     /**
      * Helper function to print the 3x3 matrix to the console
      */
