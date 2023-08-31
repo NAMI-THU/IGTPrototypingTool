@@ -1,5 +1,7 @@
 package util;
 
+import org.opencv.core.Mat;
+
 public class Vector3D {
 
     /**
@@ -50,6 +52,30 @@ public class Vector3D {
         return vector[i];
     }
 
+    /**
+     * Gets the magnitude of the vector
+     *
+     * @return the magnitude of the vector
+     */
+    public double getMag() {
+        double sum = 0;
+        for (int i = 0; i < vector.length; i++) {
+            sum += vector[i] * vector[i];
+        }
+        return Math.sqrt(sum);
+    }
+
+    /**
+     * Sets the magnitude of the vector
+     *
+     * @param new_mag the desired magnitude
+     */
+    public void setMag(double new_mag) {
+        double mag = getMag();
+        for (int i = 0; i < vector.length; i++) {
+            vector[i] = vector[i] * new_mag / mag;
+        }
+    }
     /**
      * Helper function to show the vector on the console
      */

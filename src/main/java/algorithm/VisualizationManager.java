@@ -399,35 +399,47 @@ public class VisualizationManager {
                 case DOWN:
                     Matrix3D rotXDown = new Matrix3D(new double[] {1,0,0,0,0,1,0,-1,0});
                     Vector3D down = rotXDown.mult(cam_dir);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + CAM_MOVEMENT * down.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + CAM_MOVEMENT * down.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + CAM_MOVEMENT * down.get(2));
+                    down.setMag(CAM_MOVEMENT);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + down.get(0));
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + down.get(1));
+                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + down.get(2));
                     event.consume();
                     break;
                 case W:
                 case UP:
                     Matrix3D rotXUp = new Matrix3D(new double[] {1,0,0,0,0,-1,0,1,0});
                     Vector3D up = rotXUp.mult(cam_dir);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + CAM_MOVEMENT * up.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + CAM_MOVEMENT * up.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + CAM_MOVEMENT * up.get(2));
+                    up.setMag(CAM_MOVEMENT);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + up.get(0));
+                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + up.get(1));
+                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + up.get(2));
                     event.consume();
                     break;
                 case D:
                 case RIGHT:
-                    Matrix3D rotYRight = new Matrix3D(new double[] {0,0,1,0,1,0,-1,0,0});
+                    Matrix3D rotYRight;
+                    if (rotateX.getAngle() > -90.0 && rotateX.getAngle() < 90.0) {
+                        rotYRight = new Matrix3D(new double[] {0,0,1,0,1,0,-1,0,0});
+                    } else {
+                        rotYRight = new Matrix3D(new double[] {0,1,0,-1,0,0,0,0,1});
+                    }
                     Vector3D right = rotYRight.mult(cam_dir);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + CAM_MOVEMENT * right.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + CAM_MOVEMENT * right.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + CAM_MOVEMENT * right.get(2));
+                    right.setMag(CAM_MOVEMENT);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + right.get(0));
+                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + right.get(2));
                     break;
                 case A:
                 case LEFT:
-                    Matrix3D rotYLeft = new Matrix3D(new double[] {0,0,-1,0,1,0,1,0,0});
+                    Matrix3D rotYLeft;
+                    if (rotateX.getAngle() > -90.0 && rotateX.getAngle() < 90.0) {
+                        rotYLeft = new Matrix3D(new double[] {0,0,-1,0,1,0,1,0,0});
+                    } else {
+                        rotYLeft = new Matrix3D(new double[] {0,-1,0,1,0,0,0,0,1});
+                    }
                     Vector3D left = rotYLeft.mult(cam_dir);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + CAM_MOVEMENT * left.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + CAM_MOVEMENT * left.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + CAM_MOVEMENT * left.get(2));
+                    left.setMag(CAM_MOVEMENT);
+                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + left.get(0));
+                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + left.get(2));
                     event.consume();
                     break;
             }
