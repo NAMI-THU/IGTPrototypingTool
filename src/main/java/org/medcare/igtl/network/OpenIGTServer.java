@@ -141,7 +141,7 @@ public abstract class OpenIGTServer {
                         logger.log(Level.FINE, "Before waiting for another client, waiting for current client to get disconnected");
                         while (getServerThread().getAlive() != false) {
                             //wait here until client gets disconnected
-                            ThreadUtil.wait(500);
+                            try { Thread.sleep(500); } catch (InterruptedException e) { throw new RuntimeException(e); }
                         }
                         logger.log(Level.FINE, "IGTLink Client disconnected.");
                         //currentStatus = ServerStatus.DISCONNECTED;
