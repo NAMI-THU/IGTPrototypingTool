@@ -12,13 +12,13 @@ plugins {
     id 'application'
 
 	// Apply JavaFX plugin, necessary for GUI
-    id 'org.openjfx.javafxplugin' version '0.0.14'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
     
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
 
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '5.0.14'
+    id 'com.github.spotbugs' version '5.1.3'
 }
 
 javafx {
@@ -50,9 +50,9 @@ dependencies {
     implementation 'us.ihmc:jimStlMeshImporterJFX:0.7'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.10.0'
 }
 
 // JUnit 5 support
@@ -75,7 +75,7 @@ application {
 checkstyle {
     // change path to use other checkstyle configuration
     configFile = rootProject.file('config/checkstyle/minimalcheck.xml')
-    toolVersion = '10.0'
+    toolVersion = '10.12.3'
 }
 
 tasks.withType(Checkstyle) {
