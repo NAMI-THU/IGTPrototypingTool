@@ -12,7 +12,7 @@ plugins {
     id 'application'
 
 	// Apply JavaFX plugin, necessary for GUI
-    id 'org.openjfx.javafxplugin' version '0.0.14'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
     
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
