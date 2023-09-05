@@ -17,6 +17,8 @@ import java.util.*;
 public class VisualizationController implements Controller {
 
     @FXML
+    Button resetView;
+    @FXML
     Group meshGroup;
     @FXML
     Button loadStlFile;
@@ -182,6 +184,14 @@ public class VisualizationController implements Controller {
                 mesh.setDrawMode(DrawMode.FILL);
             }
         }
+    }
+
+    /**
+     * Resets the camera view back to the starting point
+     */
+    @FXML
+    private void resetView() {
+        visualizationManager.showFigure();
     }
 
     @Override

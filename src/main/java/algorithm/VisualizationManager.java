@@ -346,6 +346,9 @@ public class VisualizationManager {
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(2000.0);
 
+        rotateX.setAngle(0);
+        rotateY.setAngle(0);
+
         perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
         return perspectiveCamera;
     }
