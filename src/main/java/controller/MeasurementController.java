@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithm.*;
-import com.jme3.math.Quaternion;
 
 import inputOutput.CSVFileReader;
 import inputOutput.Tool;
@@ -20,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import util.FormatManager;
 import javafx.stage.FileChooser.ExtensionFilter;
+import util.Quaternion;
 
 public class MeasurementController implements Controller {
     private int measurementCounter = 0;

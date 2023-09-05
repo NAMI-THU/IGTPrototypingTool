@@ -1,8 +1,8 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import com.jme3.math.Quaternion;
-
+//import com.jme3.math.Quaternion;
+import util.Quaternion;
 import inputOutput.Tool;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -175,18 +175,17 @@ public class VisualizationManager {
 
         for (int i = 0; i < tools.size(); i++) {
             List<Measurement> measurements = tools.get(i).getMeasurement();
-            float[] eulerAngles = new float[3];
 
             Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
-            rotationMovement.toAngles(eulerAngles);
+            double[] eulerAngles = rotationMovement.toRadiansAngles(null);
 
             double x = measurements.get(measurements.size() - 1).getPoint().getX();
             double y = measurements.get(measurements.size() - 1).getPoint().getY();
             double z = measurements.get(measurements.size() - 1).getPoint().getZ();
             // convert Quaternion to Euler
-            float yaw = eulerAngles[0];
-            float roll = eulerAngles[1];
-            float pitch = eulerAngles[2];
+            double yaw = eulerAngles[0];
+            double roll = eulerAngles[1];
+            double pitch = eulerAngles[2];
             // convert Euler to angles
             double yawAngle = Math.toDegrees(yaw);
             double rollAngle = Math.toDegrees(roll);

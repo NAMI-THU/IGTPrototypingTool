@@ -232,10 +232,10 @@ public class TrackingDataController implements Controller {
                 // display position and rotation of tool
                 if (i == 1) {
                     DecimalFormat df = new DecimalFormat("0.00");
-                    double qX = li.get(li.size() - i).getRotation().getX();
-                    double qY = li.get(li.size() - i).getRotation().getY();
-                    double qZ = li.get(li.size() - i).getRotation().getZ();
-                    double qR = li.get(li.size() - i).getRotation().getW();
+                    double qX = li.get(li.size() - i).getRotation().getX1();
+                    double qY = li.get(li.size() - i).getRotation().getX2();
+                    double qZ = li.get(li.size() - i).getRotation().getX3();
+                    double qR = li.get(li.size() - i).getRotation().getX0();
 
                     position.get(tool.getName()).setText(tool.getName() + ": ["
                             + df.format(x) + ";"

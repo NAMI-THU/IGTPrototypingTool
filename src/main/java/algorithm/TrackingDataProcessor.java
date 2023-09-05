@@ -1,8 +1,9 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
+//import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import util.Quaternion;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +48,8 @@ public class TrackingDataProcessor {
      */
 
     public static Quaternion getAccuracyRotation(Quaternion expectedRotation,
-                                          Measurement firstMeasurement,
-                                          Measurement secondMeasurement) {
+                                                 Measurement firstMeasurement,
+                                                 Measurement secondMeasurement) {
         return secondMeasurement.getRotation()
                 .subtract(firstMeasurement.getRotation())
                 .subtract(expectedRotation);

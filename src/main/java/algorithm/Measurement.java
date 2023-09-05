@@ -1,9 +1,10 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
-import com.jme3.math.Quaternion;
+//import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
+import util.Quaternion;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -22,7 +23,7 @@ public class Measurement {
     @Expose
     private double x,y,z;
     @Expose
-    private float rot_x, rot_y, rot_z, rot_r;
+    private double rot_x, rot_y, rot_z, rot_r;
 
     public Measurement(Tool tool) {
         x = tool.getCoordinate().getX();
@@ -35,7 +36,7 @@ public class Measurement {
         rot_r = (float) tool.getRotationR();
 
         this.setPoint(new Point3D(x,y,z));
-        this.setRotation(new Quaternion().set(rot_x, rot_y, rot_z, rot_r));
+        this.setRotation(new Quaternion().set(rot_r, rot_x, rot_y, rot_z));
         this.setTimestamp(tool.getTimestamp());
         this.setToolname(tool.getName());
 
@@ -52,10 +53,10 @@ public class Measurement {
 
     public void setRotation(Quaternion rotation) {
         this.rotation = rotation;
-        rot_x = rotation.getX();
-        rot_y = rotation.getY();
-        rot_z = rotation.getZ();
-        rot_r = rotation.getW();
+        rot_x = rotation.getX1();
+        rot_y = rotation.getX2();
+        rot_z = rotation.getX3();
+        rot_r = rotation.getX0();
     }
 
     public Point3D getPoint() {

@@ -1,8 +1,8 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
-import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
+import util.Quaternion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,16 +168,16 @@ public class ToolMeasure {
 
             Quaternion errorRotationOfIterate = rotationMovement.subtract(avgRotation);
 
-            double errorX = errorRotationOfIterate.getX();
+            double errorX = errorRotationOfIterate.getX1();
             rotationErrorX.add(errorX);
 
-            double errorY = errorRotationOfIterate.getY();
+            double errorY = errorRotationOfIterate.getX2();
             rotationErrorY.add(errorY);
 
-            double errorZ = errorRotationOfIterate.getZ();
+            double errorZ = errorRotationOfIterate.getX3();
             rotationErrorZ.add(errorZ);
 
-            double errorW = errorRotationOfIterate.getW();
+            double errorW = errorRotationOfIterate.getX0();
             rotationErrorW.add(errorW);
 
         }

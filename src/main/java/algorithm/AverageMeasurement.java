@@ -1,6 +1,7 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
+
+import util.Quaternion;
 
 import java.util.ArrayList;
 import java.util.List;

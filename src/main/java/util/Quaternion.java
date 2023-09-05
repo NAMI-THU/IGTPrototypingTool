@@ -385,6 +385,73 @@ public class Quaternion {
     }
 
     /**
+     * Subtracts the argument and returns difference as a new instance. The
+     * current instance is unaffected.
+     *
+     * @param q the quaternion to subtract (not null, unaffected)
+     * @return a new Quaternion
+     */
+    public Quaternion subtract(Quaternion q) {
+        return new Quaternion(x0- q.x0, x1 - q.x1, x2 - q.x2, x3 - q.x3);
+    }
+
+    /**
+     * Interpolates between the specified quaternions and stores the result in
+     * the current instance.
+     *
+     * @param q1 the desired value when interp=0 (not null, unaffected)
+     * @param q2 the desired value when interp=1 (not null, may be modified)
+     * @param t the fractional change amount
+     * @return the (modified) current instance (for chaining)
+     */
+    public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+        // Create a local quaternion to store the interpolated quaternion
+        if (q1.x1 == q2.x1 && q1.x2 == q2.x2 && q1.x3 == q2.x3 && q1.x0 == q2.x0) {
+            this.set(q1);
+            return this;
+        }
+
+        double result = (q1.x1 * q2.x1) + (q1.x2 * q2.x2) + (q1.x3 * q2.x3) + (q1.x0 * q2.x0);
+
+        if (result < 0.0f) {
+            // Negate the second quaternion and the result of the dot product
+            q2.x1 = -q2.x1;
+            q2.x2 = -q2.x2;
+            q2.x3 = -q2.x3;
+            q2.x0 = -q2.x0;
+            result = -result;
+        }
+
+        // Set the first and second scale for the interpolation
+        double scale0 = 1 - t;
+        double scale1 = t;
+
+        // Check if the angle between the 2 quaternions was big enough to
+        // warrant such calculations
+        if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions,
+            // and then store the sin() of that angle
+            double theta = Math.acos(result);
+            double invSinTheta = 1f / Math.sin(theta);
+
+            // Calculate the scale for q1 and q2, according to the angle and
+            // its sine
+            scale0 = Math.sin((1 - t) * theta) * invSinTheta;
+            scale1 = Math.sin((t * theta)) * invSinTheta;
+        }
+
+        // Calculate the x, y, z and w values for the quaternion by using a
+        // special
+        // form of linear interpolation for quaternions.
+        this.x1 = (scale0 * q1.x1) + (scale1 * q2.x1);
+        this.x2 = (scale0 * q1.x2) + (scale1 * q2.x2);
+        this.x3 = (scale0 * q1.x3) + (scale1 * q2.x3);
+        this.x0 = (scale0 * q1.x0) + (scale1 * q2.x0);
+
+        // Return the interpolated quaternion
+        return this;
+    }
+
+    /**
      * Helper function to print the values of the quaternion
      */
     public void print() {
@@ -395,26 +462,6 @@ public class Quaternion {
     }
 
     public static void main(String[] args) {
-        Quaternion q = new Quaternion();
-        //q.print();
 
-        /*
-        Quaternion sec = q.fromDegreeAngles(90,0,0);
-        sec.print();
-
-        double[] angles = {0,90,0};
-        Quaternion third = new Quaternion(angles);
-        third.print();
-
-        double[] angles2 = third.toDegreesAngles(null);
-        for (double v : angles2) {
-            System.out.println(v);
-        }
-         */
-        double[] arr = {0.0, 1.0, 1.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0};
-        Matrix3D rotMat = new Matrix3D(arr);
-        System.out.println("-------------------");
-        Quaternion fourth = q.fromRotationMatrix(rotMat);
-        fourth.print();
     }
 }
