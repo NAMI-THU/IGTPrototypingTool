@@ -36,7 +36,7 @@ public class TrackingCone extends MeshView {
         setRadius(radius);
         setHeight(height);
         setMesh(createCone(getDivisions(), (float) getRadius(), (float) getHeight()));
-        getTransforms().setAll(rz, ry, rx);
+        getTransforms().addAll(rz, ry, rx);
     }
 
     /*
@@ -54,7 +54,7 @@ public class TrackingCone extends MeshView {
     private TriangleMesh createCone(int divisions, float radius, float height) {
         TriangleMesh mesh = new TriangleMesh();
         //Start with the top of the cone, later we will build our faces from these
-        mesh.getPoints().addAll(0, 0, 0); //Point 0: Top of the Cone
+        mesh.getPoints().addAll(0, -height / 2, 0); //Point 0: Top of the Cone
         //Generate the segments of the bottom circle (Cone Base)
         double segment_angle = 2.0 * Math.PI / divisions;
         float x, z;
@@ -65,9 +65,9 @@ public class TrackingCone extends MeshView {
             angle = segment_angle * i;
             x = (float) (radius * Math.cos(angle - halfCount));
             z = (float) (radius * Math.sin(angle - halfCount));
-            mesh.getPoints().addAll(x, height, z);
+            mesh.getPoints().addAll(x, height / 2, z);
         }
-        mesh.getPoints().addAll(0, height, 0); //Point N: Center of the Cone Base
+        mesh.getPoints().addAll(0, height / 2, 0); //Point N: Center of the Cone Base
 
         mesh.getTexCoords().addAll(0, 0);
         //Add the faces "winding" the points generally counter clock wise
