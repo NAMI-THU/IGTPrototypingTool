@@ -348,6 +348,7 @@ public class VisualizationManager {
 
         rotateX.setAngle(0);
         rotateY.setAngle(0);
+        cam_dir = new Vector3D(0,0,1);
 
         perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
         return perspectiveCamera;
