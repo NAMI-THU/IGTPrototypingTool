@@ -16,7 +16,6 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.OpenIGTMessage;
 import org.medcare.igtl.util.ErrorManager;
 import org.medcare.igtl.util.Header;
@@ -28,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -41,6 +42,7 @@ import java.util.Arrays;
  */
 
 public abstract class OpenIGTClient extends Thread {
+    static Logger logger = Logger.getLogger(OpenIGTClient.class.getName());
     public ErrorManager errorManager;
     private SocketFactory socketFactory;
     private java.net.Socket socket = null;
@@ -77,7 +79,7 @@ public abstract class OpenIGTClient extends Thread {
         try {
             this.socket = socketFactory.createSocket(host, port);
         } catch (Exception e) {
-            Log.debug("exception happened");
+            logger.log(Level.SEVERE, "OpenIGTClient Exception while creating socket", e);
             e.printStackTrace();
             return;
         }
@@ -88,7 +90,7 @@ public abstract class OpenIGTClient extends Thread {
         this.outstr = socket.getOutputStream();
         this.instr = socket.getInputStream();
         this.start();
-        Log.debug("Client connected and ready");
+        logger.log(Level.FINE, "OpenIGTClient Client connected and ready");
     }
 
     /***************************************************************************
@@ -97,14 +99,14 @@ public abstract class OpenIGTClient extends Thread {
      *
      **************************************************************************/
     public void run() {
-        Log.debug("Starting client Thread");
+        logger.log(Level.FINE, "OpenIGTClient Starting client Thread");
         try {
             int ret_read = 0;
             byte[] headerBuff = new byte[Header.LENGTH];
             // Log.debug("JE LIS");
             do {
                 ret_read = instr.read(headerBuff);
-                Log.debug("Size of Header ::" + ret_read + "\n");
+                logger.log(Level.FINE, "OpenIGTClient Size of Header: " + ret_read);
 
                 if (ret_read > 0) {
                     // System.out.print(new String(buff, 0, ret_read));
@@ -113,11 +115,11 @@ public abstract class OpenIGTClient extends Thread {
                     int size = (int) header.getBody_size();
                     byte[] bodyBuf = new byte[size];
 
-                    Log.debug("Size of Packet ::" + size);
+                    logger.log(Level.FINE, "Size of Packet ::" + size);
                     int currentPos = 0;
                     while (true) {
                         ret_read = instr.read(bodyBuf, currentPos, size);
-                        Log.debug("Ret Read " + ret_read);
+                        logger.log(Level.FINE, "OpenIGTClient Size of Body: " + ret_read);
                         size = size - ret_read;
                         currentPos = currentPos + ret_read;
                         if (size == 0)
@@ -129,7 +131,7 @@ public abstract class OpenIGTClient extends Thread {
                     }
                 }
             } while (isConnected() && ret_read >= 0);
-            Log.debug("Client thread exited! Connected state=" + isConnected() + " ret_read = " + ret_read);
+            logger.log(Level.FINE, "OpenIGTClient Client thread exited! Connected state=" + isConnected() + " ret_read = " + ret_read);
         } catch (UnknownHostException e) {
             errorManager.error("OpenIGTClient Don't know about host" + host, e, ErrorManager.OPENIGTCLIENT_UNKNOWNHOST_EXCEPTION);
         } catch (IOException e) {
@@ -168,7 +170,7 @@ public abstract class OpenIGTClient extends Thread {
     public void sendMessage(Header header, byte[] body) throws Exception {
         sendBytes(header.getBytes());
         sendBytes(body);
-        Log.debug("Client Sending Message: Header="
+        logger.log(Level.FINE, "Client Sending Message: Header="
                 + header.toString()
                 + " Body=" + Arrays.toString(body));
     }

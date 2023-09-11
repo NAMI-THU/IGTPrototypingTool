@@ -16,7 +16,6 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.OpenIGTMessage;
 import org.medcare.igtl.network.OpenIGTServer.ServerStatus;
 import org.medcare.igtl.util.ErrorManager;
@@ -26,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import org.medcare.igtl.util.BytesArray;
 
@@ -38,6 +39,7 @@ import java.util.Arrays;
  * @author Andre Charles Legendre
  */
 public class ServerThread extends Thread {
+    static Logger logger = Logger.getLogger(ServerThread.class.getName());
     private java.net.Socket socket = null;
     private OpenIGTServer openIGTServer;
     private OutputStream outstr;
@@ -105,7 +107,7 @@ public class ServerThread extends Thread {
             outstr.close();
             instr.close();
             socket.close();
-            Log.debug("IGTLink client got disconnected, will set alive=false to inform SocketServer");
+            logger.log(Level.FINE, "IGTLink client got disconnected, will set alive=false to inform SocketServer");
         } catch (IOException e) {
             e.printStackTrace();
             errorManager.error("ServerThread IOException", e, ErrorManager.SERVERTHREAD_IO_EXCEPTION);
@@ -122,7 +124,7 @@ public class ServerThread extends Thread {
     public void sendMessage(Header header, byte[] body) throws Exception {
         sendBytes(header.getBytes());
         sendBytes(body);
-        Log.debug("Sending Message: Header=" + header.toString()
+        logger.log(Level.FINE, "Sending Message: Header=" + header.toString()
                 + " Body=" + Arrays.toString(body));
     }
 

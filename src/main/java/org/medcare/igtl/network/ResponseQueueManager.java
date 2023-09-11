@@ -16,11 +16,12 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.CrcException;
 import org.medcare.igtl.util.ErrorManager;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Each OpenIGTClient create its own ResponseQueueManager to queue response they
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class ResponseQueueManager extends Thread {
+    static Logger logger = Logger.getLogger(ResponseQueueManager.class.getName());
     private static String VERSION = "0.1a";
 
     private long sleep;
@@ -72,7 +74,7 @@ public class ResponseQueueManager extends Thread {
                         } catch (Exception e) {
                             errorManager.error("PB responseHandler ", e, ErrorManager.RESPONSE_EXCEPTION);
                         } finally {
-                            Log.debug("ResponseQueueManager ResponseHandler.performResponse OK");
+                            logger.log(Level.FINE, "ResponseQueueManager ResponseHandler.performResponse OK");
                         }
                     } else {
                         errorManager.error("ResponseQueueManager responseHandler null", new Exception("performResponse error"), ErrorManager.RESPONSE_ERROR);
