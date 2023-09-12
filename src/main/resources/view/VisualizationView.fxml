@@ -4,99 +4,153 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualizationController">    <content>
-        <VBox maxHeight="Infinity" maxWidth="Infinity">
+<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="772.0" prefWidth="1075.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualizationController">
+    <content>
+        <VBox maxHeight="Infinity" maxWidth="Infinity" prefHeight="772.0" prefWidth="1075.0">
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
             <children>
-                <VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
-                    <VBox.margin>
-                        <Insets left="50.0" right="50.0" />
-                    </VBox.margin>
-                    <children>
-                        <TilePane alignment="CENTER" hgap="20.0" prefColumns="1" prefRows="1" prefTileHeight="710.0" prefTileWidth="720.0" vgap="10.0" VBox.vgrow="ALWAYS">
+                <SplitPane dividerPositions="0.15, 0.3" prefHeight="753.0" prefWidth="978.0">
+                    <items>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
                             <children>
-                                <VBox>
-                                    <children>
-                                        <AnchorPane minHeight="600.0" minWidth="800.0">
-                                            <children>
-                                                <Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                            </children>
-                                        </AnchorPane>
-                              <ToolBar pickOnBounds="false">
-                                <items>
-                                    <ButtonBar prefWidth="200.0">
-                                       <buttons>
-                                          <Label text="Tracker Size:" />
-                                                    <Slider fx:id="trackerSlider" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="0" onMouseDragged="#setTrackerSize" value="10.0" />
-                                       </buttons>
-                                    </ButtonBar>
-                                    <ButtonBar prefWidth="200.0">
-                                       <buttons>
-                                          <Label text="Tracker Color:" />
-                                                    <ColorPicker fx:id="colorPicker" onAction="#setTrackerColor">
-                                             <value>
-                                                <Color red="1.0" />
-                                             </value>
-                                          </ColorPicker>
-                                       </buttons>
-                                    </ButtonBar>
-                                    <ButtonBar prefWidth="375.0">
-                                       <buttons>
-                                          <Label text="3D-Model:" />
-                                          <ToggleButton fx:id="cullBack" mnemonicParsing="false" onAction="#toggleCullFace" text="Cull Back" />
-                                          <ToggleButton fx:id="wireframe" mnemonicParsing="false" onAction="#toggleWireframe" text="Wireframe" />
-                                       </buttons>
-                                    </ButtonBar>
-                                </items>
-                              </ToolBar>
-                                    </children>
-                                </VBox>
+                                <TreeView fx:id="stlTreeView" layoutX="-1.0" layoutY="-1.0" onContextMenuRequested="#selectItem" onMouseClicked="#selectItem" prefHeight="752.0" prefWidth="166.0" />
                             </children>
-                        </TilePane>
-                        <GridPane hgap="10.0" vgap="10.0">
-                            <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints maxHeight="45.0" minHeight="9.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
-                            <children>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-                           <children>
-                               <Button fx:id="resetView" layoutX="99.0" layoutY="1.0" mnemonicParsing="false" onAction="#resetView" text="Reset View" />
-                               <Button fx:id="loadStlFile" layoutX="181.0" layoutY="1.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
-                           </children>
                         </AnchorPane>
-                                <AnchorPane>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <VBox fx:id="trackerVBox" disable="true" prefHeight="748.0" prefWidth="143.0" visible="false">
+                           <children>
+                              <Label fx:id="trackerLabel" alignment="CENTER" prefHeight="39.0" prefWidth="144.0" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <VBox fillWidth="false" prefHeight="42.0" prefWidth="748.0" spacing="10.0">
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="17.0" prefWidth="146.0" text="Tracker Size:" textAlignment="CENTER" />
+                                    <Slider fx:id="trackerSlider" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="0" onMouseDragged="#setTrackerSize" value="10.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="63.0" prefWidth="143.0" spacing="10.0">
+                                 <children>
+                                    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="143.0" text="Tracker Color:" wrapText="true" />
+                                    <ColorPicker fx:id="trackerColorPicker" onAction="#setTrackerColor" prefHeight="25.0" prefWidth="80.0">
+                                       <value>
+                                          <Color red="1.0" />
+                                       </value>
+                                    </ColorPicker>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="CENTER" prefHeight="22.0" prefWidth="143.0">
+                                 <children>
+                                    <CheckBox fx:id="trackingVisibleCB" mnemonicParsing="false" onAction="#setTrackerVisibility" selected="true" text="Visible" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="stlVBox" disable="true" layoutY="1.0" prefHeight="748.0" prefWidth="143.0" visible="false">
+                           <children>
+                              <Label fx:id="stlLabel" alignment="CENTER" prefHeight="68.0" prefWidth="143.0" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <VBox alignment="CENTER" prefHeight="63.0" prefWidth="143.0" spacing="10.0">
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="17.0" prefWidth="143.0" text="STL Color:" />
+                                    <ColorPicker fx:id="stlColorPicker" onAction="#setSTLColor" prefHeight="25.0" prefWidth="80.0">
+                                       <value>
+                                          <Color red="0.9490196108818054" green="0.9490196108818054" blue="0.9490196108818054" />
+                                       </value>
+                                    </ColorPicker>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="CENTER" prefHeight="22.0" prefWidth="143.0">
+                                 <children>
+                                    <CheckBox fx:id="stlVisibleCB" mnemonicParsing="false" onAction="#setSTLVisibility" selected="true" text="Visible" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children></AnchorPane>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                            <children>
+                                <TilePane alignment="CENTER" hgap="20.0" prefColumns="1" prefHeight="749.0" prefRows="1" prefTileHeight="710.0" prefTileWidth="720.0" prefWidth="720.0" vgap="10.0">
                                     <children>
-                                        <Button fx:id="start" layoutX="128.0" layoutY="2.0" mnemonicParsing="false" onAction="#startTracking" text="Start" AnchorPane.leftAnchor="128.0" AnchorPane.topAnchor="2.0" />
-                                        <ToggleButton fx:id="pause" layoutX="173.0" layoutY="2.0" mnemonicParsing="false" onAction="#pauseVisualization" text="Pause" AnchorPane.leftAnchor="173.0" AnchorPane.topAnchor="2.0" />
+                                        <VBox prefWidth="724.0">
+                                            <children>
+                                                <AnchorPane minHeight="600.0" minWidth="724.0" prefHeight="600.0" prefWidth="724.0">
+                                                    <children>
+                                                        <Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                    </children>
+                                                </AnchorPane>
+                                                <ToolBar pickOnBounds="false" prefHeight="35.0" prefWidth="658.0">
+                                                    <items>
+                                                        <ButtonBar prefHeight="25.0" prefWidth="720.0">
+                                                            <buttons>
+                                                                <Label text="3D-Model:" />
+                                                                <ToggleButton fx:id="cullBack" mnemonicParsing="false" onAction="#toggleCullFace" text="Cull Back" />
+                                                                <ToggleButton fx:id="wireframe" mnemonicParsing="false" onAction="#toggleWireframe" text="Wireframe" />
+                                                            </buttons>
+                                                        </ButtonBar>
+                                                    </items>
+                                                </ToolBar>
+                                                <AnchorPane prefHeight="75.0" prefWidth="724.0">
+                                                    <children>
+                                                        <GridPane hgap="10.0" layoutX="24.0" layoutY="29.0" prefHeight="28.0" prefWidth="715.0" vgap="10.0">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints maxHeight="45.0" minHeight="9.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+                                                                    <children>
+                                                                        <Button fx:id="resetView" layoutX="99.0" layoutY="1.0" mnemonicParsing="false" onAction="#resetView" text="Reset View" />
+                                                                        <Button fx:id="loadStlFile" layoutX="181.0" layoutY="1.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
+                                                                    </children>
+                                                                </AnchorPane>
+                                                                <AnchorPane>
+                                                                    <children>
+                                                                        <Button fx:id="start" layoutX="128.0" layoutY="2.0" mnemonicParsing="false" onAction="#startTracking" text="Start" AnchorPane.leftAnchor="128.0" AnchorPane.topAnchor="2.0" />
+                                                                        <ToggleButton fx:id="pause" layoutX="173.0" layoutY="2.0" mnemonicParsing="false" onAction="#pauseVisualization" text="Pause" AnchorPane.leftAnchor="173.0" AnchorPane.topAnchor="2.0" />
+                                                                    </children>
+                                                                </AnchorPane>
+                                                            </children>
+                                                        </GridPane>
+                                                    </children>
+                                                </AnchorPane>
+                                            </children>
+                                        </VBox>
                                     </children>
-                                </AnchorPane>
+                                </TilePane>
                             </children>
-                            <VBox.margin>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                            </VBox.margin>
-                        </GridPane>
-                    </children>
-                </VBox>
+                        </AnchorPane>
+                    </items>
+                </SplitPane>
             </children>
         </VBox>
     </content>

@@ -1,7 +1,13 @@
 package algorithm;
 
+import com.google.gson.JsonObject;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 //import com.jme3.math.Quaternion;
+import javafx.scene.control.TreeItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import util.Quaternion;
 import inputOutput.Tool;
 import javafx.beans.property.BooleanProperty;
@@ -24,8 +30,9 @@ import shapes.TrackingSphere;
 import util.Matrix3D;
 import util.Vector3D;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,6 +76,9 @@ public class VisualizationManager {
     public TrackingCone[] getTrackingCones() {
         return trackingCones;
     }
+    public TrackingSphere[] getTrackingSpheres() {
+        return trackingSpheres;
+    }
 
     /**
      * Sets the reference to the ScrollPane.
@@ -109,7 +119,6 @@ public class VisualizationManager {
 
         if (tools != null) {
             trackingCones = new TrackingCone[tools.size()];
-
             for (int i = 0; i < trackingCones.length; i++) {
                 trackingCones[i] = new TrackingCone(36, 4, 10);
             }
@@ -123,14 +132,26 @@ public class VisualizationManager {
     }
 
     /**
-     * loads an STL File for Visualization
+     * Loads one or multiple stl files for the visualisation
+     *
+     * @return a string array of the loaded stl file names
      */
-    public void loadStlModel() {
+
+    public List<File> loadStlModel() {
         StlMeshImporter importer = new StlMeshImporter();
+
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
+
+        /*
+        List<File> fileList = new LinkedList<>();
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Bone (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Kidney (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Liver (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Lung (smoothed).stl"));
+         */
 
         if (fileList != null) {
             stlFiles = new MeshView[fileList.size()];
@@ -150,6 +171,63 @@ public class VisualizationManager {
                 }
             }
         }
+        return fileList;
+    }
+
+    public String[] loadLastSTLModels() {
+        JSONParser jsonParser = new JSONParser();
+        StlMeshImporter importer = new StlMeshImporter();
+        String[] stlNames;
+        try {
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/stlFiles.json"));
+            stlFiles = new MeshView[jsonSTLModels.size()];
+            stlNames = new String[jsonSTLModels.size()];
+            for (int i = 0; i < jsonSTLModels.size(); i++) {
+                JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
+                try {
+                    File file = new File(String.valueOf(jsonSTLModel.get("Path")));
+                    importer.read(file);
+                    Mesh mesh = importer.getImport();
+                    stlFiles[i] = new MeshView(mesh);
+                    stlFiles[i].getTransforms().addAll(
+                            //Rotate the Model by 180 degrees for correct display
+                            new Rotate(180, Rotate.X_AXIS)
+                    );
+                    boolean visible = Boolean.parseBoolean(jsonSTLModel.get("Visible").toString());
+                    stlFiles[i].setVisible(visible);
+                    stlNames[i] = (String) jsonSTLModel.get("Name");
+                    // Convert the hex string to a rgba color
+                    String hex = (String) jsonSTLModel.get("Color");
+                    hex = hex.substring(2);
+                    Color color = new Color(
+                            Integer.valueOf(hex.substring(0, 2), 16) / 255.0,
+                            Integer.valueOf(hex.substring(2, 4), 16)/ 255.0,
+                            Integer.valueOf(hex.substring(4, 6), 16)/ 255.0,
+                            Integer.valueOf(hex.substring(6, 8), 16)/ 255.0);
+
+                    stlFiles[i].setMaterial(new PhongMaterial((color)));
+                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Error reading STL file");
+                }
+            }
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return stlNames;
+    }
+
+    private String[] getSTLNames(List<File> fileList) {
+        String[] names = new String[fileList.size()];
+        for (int i = 0; i < fileList.size(); i++) {
+            String name = fileList.get(i).toString();
+            int index = name.lastIndexOf("\\");
+            name = name.substring(index+1, name.length() - 4);
+            name = "STL " + name;
+            names[i] = name;
+        }
+        return names;
     }
 
     /**
@@ -204,15 +282,23 @@ public class VisualizationManager {
             }
 
             if (trackingCones != null && trackingSpheres != null) {
-                trackingCones[i].setTranslateX(x);
-                trackingCones[i].setTranslateY(y);
-                trackingCones[i].setTranslateZ(z);
-                matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
+                JSONParser jsonParser = new JSONParser();
+                try {
+                    JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/transformationMatrix.json"));
+                    JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
+                    trackingCones[i].setTranslateX(x + (Double) offset.get(0));
+                    trackingCones[i].setTranslateY(y + (Double) offset.get(1));
+                    trackingCones[i].setTranslateZ(z + (Double) offset.get(2));
+                    matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
 
-                trackingSpheres[i].setTranslateX(x);
-                trackingSpheres[i].setTranslateY(y);
-                trackingSpheres[i].setTranslateZ(z);
-                matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
+                    trackingSpheres[i].setTranslateX(x + (Double) offset.get(0));
+                    trackingSpheres[i].setTranslateY(y + (Double) offset.get(1));
+                    trackingSpheres[i].setTranslateZ(z + (Double) offset.get(2));
+                    matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
 
             if (stlFiles != null) {
@@ -340,9 +426,17 @@ public class VisualizationManager {
      */
     private PerspectiveCamera initCamera() {
         PerspectiveCamera perspectiveCamera = new PerspectiveCamera(true);
-        perspectiveCamera.setTranslateX(0);
-        perspectiveCamera.setTranslateY(0);
-        perspectiveCamera.setTranslateZ(-500);
+
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/transformationMatrix.json"));
+            JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
+            perspectiveCamera.setTranslateX((Double) offset.get(0));
+            perspectiveCamera.setTranslateY((Double) offset.get(1));
+            perspectiveCamera.setTranslateZ((Double) offset.get(2) - 500);
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(2000.0);
 
