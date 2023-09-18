@@ -16,10 +16,11 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.ErrorManager;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * RequestQueueManager create its own OpenIGTClient connected to one
@@ -29,6 +30,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andre Charles Legendre
  */
 public class RequestQueueManager extends Thread {
+    static Logger logger = Logger.getLogger(RequestQueueManager.class.getName());
     private static String VERSION = "0.1a";
 
     private long sleep;
@@ -71,7 +73,7 @@ public class RequestQueueManager extends Thread {
                         } catch (Exception e) {
                             errorManager.error("RequestQueueManager openIGTClient.sendBytes ", e, ErrorManager.REQUEST_EXCEPTION);
                         } finally {
-                            Log.debug("RequestQueueManager SendBytes OK");
+                            logger.log(Level.FINE, "RequestQueueManager SendBytes OK");
                         }
                     } else {
                         errorManager.error("PB openIGTClient openIGTRequest null", new Exception("sendBytes error"), ErrorManager.REQUEST_ERROR);

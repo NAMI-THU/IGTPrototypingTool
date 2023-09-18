@@ -11,9 +11,12 @@ import org.medcare.igtl.util.Status;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacketListener {
+    static Logger logger = Logger.getLogger(GenericIGTLinkClient.class.getName());
     ArrayList<IOpenIgtPacketListener> listeners = new ArrayList<IOpenIgtPacketListener>();
     Sender s = new Sender();
 
@@ -25,7 +28,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
                 System.err.println(message);
             }
         });
-        Log.debug("GenericIGTLinkClient started");
+        logger.log(Level.FINE, "Starting GenericIGTLinkClient");
         s.start();
 
     }
@@ -158,7 +161,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
         interrupt();
         while (isConnected()) ;
 
-        Log.debug("Stopped IGTLink client");
+        logger.log(Level.FINE, "Stopped GenericIGTLinkClient");
     }
 
 
@@ -251,7 +254,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
                 //take out a message from Queue and send it
                 try {
                     if (messageQueue.size() > 0) {
-                        Log.debug("Number of messages in Queue = " + messageQueue.size());
+                        logger.log(Level.FINE, "Number of messages in Queue = " + messageQueue.size());
                     }
                     OpenIGTMessage msg = messageQueue.poll();
                     if (msg != null) {
@@ -263,14 +266,13 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
                 } catch (Exception e) {
                     if (!messageQueue.isEmpty()) {
                         messageQueue.clear(); //clear message queue if ws not able to send as that is a connection problem
-                        Log.debug("Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
+                        logger.log(Level.FINE, "Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
                     }
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-            Log.debug("Stopped IGTLink client Sender");
-
+            logger.log(Level.FINE, "Stopped IGTLink client Sender");
         }
     }
 }

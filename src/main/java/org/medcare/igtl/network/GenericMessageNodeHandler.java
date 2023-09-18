@@ -2,12 +2,14 @@ package org.medcare.igtl.network;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.*;
 import org.medcare.igtl.util.Header;
 
-public class GenericMessageNodeHandler {
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+public class GenericMessageNodeHandler {
+    static Logger logger = Logger.getLogger(GenericMessageNodeHandler.class.getName());
     public OpenIGTMessage openIGTMessage;
 
     public OpenIGTMessage perform(String messageType, Header head, byte[] body, IOpenIgtPacketListener node) throws Exception {
@@ -16,7 +18,7 @@ public class GenericMessageNodeHandler {
         //TODO - GSF: Need to add complete set of new IGTLInk commands for BRP robot
         //http://wiki.ncigt.org/index.php/P41:Prostate:BRP:MRI_New_BRP_OpenIGTLink_Protocol_2012_Mar
         //Should support both TRANSFORM and QTRANSFORM packets
-        Log.debug("Perform messageType : " + messageType);
+        logger.log(java.util.logging.Level.FINE, "perform messageType : " + messageType);
         if (messageType.equals("TRANSFORM")) {
             openIGTMessage = new TransformMessage(head, body);
             TransformMessage transform = (TransformMessage) openIGTMessage;
@@ -33,7 +35,7 @@ public class GenericMessageNodeHandler {
             // Position vector and rotation matrix from the received transform
             node.getTxTransform(openIGTMessage.getDeviceName());
         } else if (messageType.equals("POSITION") || messageType.equals("MOVE_TO")) {
-            Log.debug("perform POSITION");
+            logger.log(java.util.logging.Level.FINE, "perform POSITION");
             openIGTMessage = new PositionMessage(head, body);
             PositionMessage transform = (PositionMessage) openIGTMessage;
             transform.Unpack();
@@ -50,7 +52,7 @@ public class GenericMessageNodeHandler {
             node.onRxImage(openIGTMessage.getDeviceName(), imgMesg);
 
         } else if (messageType.equals("ARRAY")) {
-            Log.error("This method is not complete");
+            logger.log(Level.SEVERE, "This method is not complete");
             DataArrayMessage datMesg = new DataArrayMessage(head, body);
             openIGTMessage = datMesg;
             node.onRxDataArray(openIGTMessage.getDeviceName(), datMesg.getDataMatrix());// this is a non functional stub
@@ -82,7 +84,7 @@ public class GenericMessageNodeHandler {
             node.onRxNDArray(openIGTMessage.getDeviceName(), ndArrayMsg.get1DFloatData());// this is a non functional stub
         } else {
 
-            Log.debug("Message Type : " + messageType + " not implemented");
+            logger.log(Level.WARNING, "Message Type : " + messageType + " not implemented");
             return null;
         }
         return openIGTMessage;

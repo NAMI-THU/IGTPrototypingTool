@@ -16,11 +16,12 @@
 
 package org.medcare.igtl.messages;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ** This class create an Image object from bytes received or help to generate
@@ -29,6 +30,7 @@ import java.util.Arrays;
  * @author Andre Charles Legendre
  */
 public class ImageMessage extends OpenIGTMessage {
+    static Logger logger = Logger.getLogger(ImageMessage.class.getName());
 
     public static final int TYPE_INT8 = 2;
     public static final int TYPE_UINT8 = 3;
@@ -595,7 +597,7 @@ public class ImageMessage extends OpenIGTMessage {
     public void setMatrix(double[][] matrix) {
         this.matrix = matrix;
 
-        Log.debug(Arrays.toString(matrix));
+        logger.log(Level.FINE, "Matrix: " + Arrays.toString(matrix));
         norm_i = new double[3];
         norm_j = new double[3];
         norm_k = new double[3];
