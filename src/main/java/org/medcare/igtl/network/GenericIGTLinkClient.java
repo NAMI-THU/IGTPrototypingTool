@@ -1,12 +1,11 @@
 package org.medcare.igtl.network;
 
-import Jama.Matrix;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.messages.*;
 import org.medcare.igtl.util.ErrorManager;
 import org.medcare.igtl.util.Header;
 import org.medcare.igtl.util.Status;
+import util.Matrix3D;
+import util.TransformNR;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -112,7 +111,7 @@ public class GenericIGTLinkClient extends OpenIGTClient implements IOpenIgtPacke
      * @param name A string of what type of data to get
      * @param data An array of data
      */
-    public void onRxDataArray(String name, Matrix data) {
+    public void onRxDataArray(String name, Matrix3D data) {
         for (IOpenIgtPacketListener l : listeners) {
             l.onRxDataArray(name, data);
         }

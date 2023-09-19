@@ -1,9 +1,9 @@
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import org.medcare.igtl.messages.*;
 import org.medcare.igtl.util.Header;
+import util.Quaternion;
+import util.TransformNR;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +41,7 @@ public class GenericMessageNodeHandler {
             transform.Unpack();
             // Position vector and rotation matrix from the received transform
             double[] position = transform.getPosition();
-            RotationNR rotation = transform.getQuaternion();
+            Quaternion rotation = transform.getQuaternion();
             TransformNR t = new TransformNR(position, rotation);
             //TODO Nirav- This seems wrong, it should be calling getTxTransform() changing it
             node.onRxTransform(openIGTMessage.getDeviceName(), t);

@@ -1,7 +1,5 @@
 package sample;
 
-import Jama.Matrix;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.messages.TransformMessage;
 import org.medcare.igtl.network.GenericIGTLinkServer;
@@ -9,6 +7,8 @@ import org.medcare.igtl.network.IOpenIgtPacketListener;
 import org.medcare.igtl.util.Status;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
+import util.Matrix3D;
+import util.TransformNR;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -165,7 +165,7 @@ public class ServerSample implements IOpenIgtPacketListener {
     }
 
     @Override
-    public void onRxDataArray(String name, Matrix data) {
+    public void onRxDataArray(String name, Matrix3D data) {
         // TODO Auto-generated method stub
 
     }

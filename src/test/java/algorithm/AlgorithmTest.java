@@ -1,12 +1,12 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import util.Quaternion;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;

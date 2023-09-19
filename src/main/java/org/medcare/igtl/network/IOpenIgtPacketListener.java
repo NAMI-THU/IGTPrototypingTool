@@ -1,9 +1,9 @@
 package org.medcare.igtl.network;
 
-import Jama.Matrix;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.util.Status;
+import util.Matrix3D;
+import util.TransformNR;
 
 public interface IOpenIgtPacketListener {
     /**
@@ -56,7 +56,7 @@ public interface IOpenIgtPacketListener {
      * @param name A string of what type of data to get
      * @param data An array of data
      */
-    void onRxDataArray(String name, Matrix data);
+    void onRxDataArray(String name, Matrix3D data);
 
     /**
      * THis is a request for an array of data

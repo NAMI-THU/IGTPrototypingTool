@@ -1,7 +1,6 @@
 package inputOutput;
 
 import javafx.geometry.Point3D;
-import com.jme3.math.Quaternion;
 
 /**
  * This class is used as an object to temporary save the values of a tool,
