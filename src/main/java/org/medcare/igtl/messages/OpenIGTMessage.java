@@ -16,9 +16,11 @@
 
 package org.medcare.igtl.messages;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import org.medcare.igtl.util.CrcException;
 
@@ -31,6 +33,7 @@ import org.medcare.igtl.util.Header;
  **/
 
 public abstract class OpenIGTMessage {
+    static Logger logger = Logger.getLogger(OpenIGTMessage.class.getName());
     // ------------------------------------------------------------------------
     public String deviceName;
     private byte[] body;
@@ -77,7 +80,7 @@ public abstract class OpenIGTMessage {
         if (getBody().length > 0
             //&& !isBodyUnpacked
         ) {
-            Log.debug("Unpacking message...");
+            logger.log(Level.FINE, "Unpacking message...");
             //if (header.getCrc() == bytesArray.crc64(body, body.length, 0L)) {
             isBodyUnpacked = unpackBody();
             return isBodyUnpacked;

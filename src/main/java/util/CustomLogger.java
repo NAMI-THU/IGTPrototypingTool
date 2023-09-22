@@ -1,11 +1,7 @@
 package util;
 
 import java.io.IOException;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 public class CustomLogger {
     private static FileHandler txtFile;
@@ -18,10 +14,13 @@ public class CustomLogger {
      */
     public static void setup() throws IOException {
         Logger log = Logger.getLogger("");
-        txtFile = new FileHandler("logging.log", true);
+        txtFile = new FileHandler("logging.log",true);
         formatter = new SimpleFormatter();
         txtFile.setFormatter(formatter);
+
         log.addHandler(txtFile);
+        log.addHandler(new ConsoleHandler());
+        log.setLevel(Level.FINE);
     }
 
     /**

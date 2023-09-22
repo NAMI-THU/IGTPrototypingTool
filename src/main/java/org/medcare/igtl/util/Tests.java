@@ -16,9 +16,10 @@
 
 package org.medcare.igtl.util;
 
-import com.neuronrobotics.sdk.common.Log;
 
 import java.math.BigInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ** Utility to test util library/BytesArray crc64 and timestamp utilities and
@@ -28,7 +29,7 @@ import java.math.BigInteger;
  **/
 
 public class Tests {
-
+    static Logger logger = Logger.getLogger(Tests.class.getName());
     // ------------------------------------------------------------------------
 
     /**
@@ -47,19 +48,19 @@ public class Tests {
                 .println("Display the crc array calculated from Coefficient corresponding to ECMA-182 polynome");
         BytesArray tool = new BytesArray();
         double nombre = 15678.345 / 10000.0;
-        Log.debug("Tests: double [15678.345/10000] " + nombre);
+        logger.log(Level.FINE, "Tests: double [15678.345/10000] " + nombre);
         long entier = (long) nombre;
         long reste = (long) ((nombre - entier) * 1000);
         System.out
                 .println("Tests: extract seconds and fraction from double [15678.345/10000] "
                         + nombre + " seconds " + entier + " fraction " + reste);
 
-        Log.debug("Tests: encodeLong [1,224,false]");
+        logger.log(Level.FINE, "Tests: encodeLong [1,224,false]");
         byte[] bytes = tool.encodeLong(1, 224, false);
-        Log.debug("Tests: length [" + bytes.length + "]");
-        Log.debug("Tests: decodeLong ["
+        logger.log(Level.FINE, "Tests: length [" + bytes.length + "]");
+        logger.log(Level.FINE, "Tests: decodeLong ["
                 + tool.decodeLong(bytes, 0, false) + "]");
-        Log.debug("Tests: encodeLong [1,224,true]");
+        logger.log(Level.FINE, "Tests: encodeLong [1,224,true]");
         bytes = tool.encodeLong(1, 224, true);
         bytes = new byte[]{(byte) 0x80};
         System.out
@@ -89,14 +90,14 @@ public class Tests {
                         .toUpperCase());
 
         long res = tool.decodeLong(bytes, 0, true);
-        Log.debug("Long res  : \t" + res);
-        Log.debug("encodeTimeStamp now  : ");
+        logger.log(Level.FINE, "Long res  : \t" + res);
+        logger.log(Level.FINE, "encodeTimeStamp now:");
 
         bytes = tool.encodeTimeStamp(System.currentTimeMillis());
         bi = new BigInteger(bytes);
-        Log.debug("Tests: toString [" + bi.toString() + "]");
-        Log.debug("Tests: longValue [" + bi.shortValue() + "]");
-        Log.debug("Tests: bi.toString(2) [" + bi.toString(2) + "]");
+        logger.log(Level.FINE, "Tests: toString [" + bi.toString() + "]");
+        logger.log(Level.FINE, "Tests: longValue [" + bi.shortValue() + "]");
+        logger.log(Level.FINE, "Tests: bi.toString(2) [" + bi.toString(2) + "]");
     }
 }
 

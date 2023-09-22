@@ -1,7 +1,6 @@
 package inputOutput;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 
 import Jama.Matrix;
 
@@ -45,10 +44,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
      */
     public OpenIGTLinkConnection() {
         try {
-            Log.enableDebugPrint(false);
-            Log.enableSystemPrint(false);
-
-            Log.debug("Starting client");
+            logger.log(Level.INFO, "Starting OIGTL client");
             this.client = new GenericIGTLinkClient(this.ip, this.port);
 
             this.client.addIOpenIgtOnPacket(this);
@@ -70,10 +66,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
         this.setPort(port);
 
         try {
-            Log.enableDebugPrint(false);
-            Log.enableSystemPrint(false);
-
-            Log.debug("Starting client");
+            logger.log(Level.INFO, "Starting OIGTL client");
             this.client = new GenericIGTLinkClient(this.ip, this.port);
 
             client.addIOpenIgtOnPacket(this);
@@ -166,7 +159,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
     // from networkconnection
     @Override
     public void onRxTransform(String name, TransformNR t) {
-        Log.debug("Received Transform: " + t);
+        logger.log(Level.FINE, "Received Transform: " + t);
 
         if (this.exit && this.stop) {
 
@@ -195,19 +188,19 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
 
         if (name.equals("RegistrationTransform") || name.equals("CALIBRATION")) {
             // System.err.println("Received Registration Transform");
-            Log.debug("Setting fiducial registration matrix: " + t);
+            logger.log(Level.FINE, "Setting fiducial registration matrix: " + t);
             return;
         } else if (name.equals("TARGET")) {
             // System.err.println("Received RAS Transform: TARGET");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
 
         } else if (name.equals("myTransform")) {
             // System.err.println("Received Transformation Matrix: myTransform");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
 
         } else {
             // System.err.println("Received unidentified transform matrix");
-            Log.debug("Setting task space pose: " + t);
+            logger.log(Level.FINE, "Setting task space pose: " + t);
         }
     }
 

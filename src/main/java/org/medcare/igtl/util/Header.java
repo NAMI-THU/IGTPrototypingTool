@@ -16,7 +16,8 @@
 
 package org.medcare.igtl.util;
 
-import com.neuronrobotics.sdk.common.Log;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ** For reading/writing OpenIGTLink headers
@@ -25,6 +26,7 @@ import com.neuronrobotics.sdk.common.Log;
  **/
 
 public class Header {
+    static Logger logger = Logger.getLogger(Header.class.getName());
     public static int LENGTH = 58;
     int base = 1000000000; /* 10^9 */
     long version; // unsigned int 16bits
@@ -138,7 +140,7 @@ public class Header {
         bytesArray = new BytesArray();
         bytesArray.putBytes(bytes);
         populate();
-        Log.debug("New header: " + this);
+        logger.log(Level.FINE, "New header: " + this);
     }
 
     private void populate() {

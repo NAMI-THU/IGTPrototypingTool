@@ -10,9 +10,12 @@ import org.medcare.igtl.util.Header;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GenericIGTLinkServer extends OpenIGTServer implements IOpenIgtPacketListener {
 
+    static Logger logger = Logger.getLogger(GenericIGTLinkServer.class.getName());
     public Sender s = new Sender();
     ArrayList<IOpenIgtPacketListener> listeners = new ArrayList<IOpenIgtPacketListener>();
 
@@ -236,7 +239,7 @@ public class GenericIGTLinkServer extends OpenIGTServer implements IOpenIgtPacke
                 while (getServerThread() == null || getServerThread().isAlive() == false) {
                     if (!messageQueue.isEmpty()) {
                         messageQueue.clear(); //keep cleaning the message Queue till Clinet connects
-                        Log.debug("Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
+                        logger.log(Level.FINE, "Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
                     }
                     try {
                         Thread.sleep(200);
@@ -255,7 +258,7 @@ public class GenericIGTLinkServer extends OpenIGTServer implements IOpenIgtPacke
                     //take out a message from Queue and send it
                     try {
                         if (messageQueue.size() > 0) {
-                            Log.debug("Number of messages in Queue = " + messageQueue.size());
+                            logger.log(Level.FINE, "Number of messages in Queue = " + messageQueue.size());
                         }
                         OpenIGTMessage msg = messageQueue.poll();
                         if (msg != null) {
@@ -267,7 +270,7 @@ public class GenericIGTLinkServer extends OpenIGTServer implements IOpenIgtPacke
                     } catch (Exception e) {
                         if (!messageQueue.isEmpty()) {
                             messageQueue.clear(); //clear message queue if ws not able to send as that is a connection problem
-                            Log.debug("Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
+                            logger.log(Level.FINE, "Clearing Message Sender Queue ; Number of messages in Queue = " + messageQueue.size());
                         }
                         // TODO Auto-generated catch block
                         e.printStackTrace();

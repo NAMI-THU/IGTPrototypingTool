@@ -16,9 +16,11 @@
 
 package org.medcare.igtl.messages;
 
-import com.neuronrobotics.sdk.common.Log;
 import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import com.neuronrobotics.sdk.common.ByteList;
 
@@ -29,6 +31,7 @@ import org.medcare.igtl.util.Header;
  * @author Andre Charles Legendre
  */
 public class TransformMessage extends OpenIGTMessage {
+    static Logger logger = Logger.getLogger(TransformMessage.class.getName());
 
     public static int IGTL_TRANSFORM_SIZE = 48;
 
@@ -97,7 +100,8 @@ public class TransformMessage extends OpenIGTMessage {
     public boolean unpackBody() throws Exception {
         //Log.debug("Unpacking Transform Body..");
         transformData = new byte[IGTL_TRANSFORM_SIZE];
-        Log.debug("Body size: " + getBody().length + " date size: " + transformData.length);
+
+        logger.log(Level.FINE,"Body size: " + getBody().length + " date size: " + transformData.length);
         System.arraycopy(getBody(), 0, transformData, 0, IGTL_TRANSFORM_SIZE);
         setTransformData(transformData);
 
@@ -425,7 +429,6 @@ public class TransformMessage extends OpenIGTMessage {
             for (int j = 0; j < matrixArray[0].length; j++) {
                 System.out.print(matrixArray[i][j] + " ");
             }
-            Log.debug("\n");
         }
     }
 }
