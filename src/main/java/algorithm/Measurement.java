@@ -1,14 +1,9 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
-//import com.jme3.math.Quaternion;
 import inputOutput.Tool;
 import javafx.geometry.Point3D;
 import util.Quaternion;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Map;
 
 public class Measurement {
 

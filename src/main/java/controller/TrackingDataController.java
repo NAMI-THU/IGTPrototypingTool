@@ -98,12 +98,15 @@ public class TrackingDataController implements Controller {
     @FXML
     public void loadCSVFile() {
         CSVFileReader newSource = null;
+
+        /*
         FileChooser fp = new FileChooser();
         fp.setTitle("Load Data");
         fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
         File file = fp.showOpenDialog(new Stage());
+         */
 
-        //File file = new File("C:\\Users\\haupt\\3D Objects\\sensor.csv");
+        File file = new File("C:\\Users\\haupt\\3D Objects\\sensor.csv");
         if (file != null) {
             if (trackingService.getTrackingDataSource() != null) {
                 disconnectSource();
