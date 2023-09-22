@@ -453,6 +453,11 @@ public class VisualizationController implements Controller {
         }
     }
 
+    @FXML
+    private void focus() {
+        meshGroup.requestFocus();
+    }
+
     /**
      * Resets the camera view back to the starting point
      */

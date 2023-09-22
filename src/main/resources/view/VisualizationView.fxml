@@ -102,7 +102,7 @@
                                             <children>
                                                 <AnchorPane minHeight="600.0" minWidth="724.0" prefHeight="600.0" prefWidth="724.0">
                                                     <children>
-                                                        <Group fx:id="meshGroup" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                        <Group fx:id="meshGroup" onMouseClicked="#focus" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                     </children>
                                                 </AnchorPane>
                                                 <ToolBar pickOnBounds="false" prefHeight="35.0" prefWidth="658.0">
