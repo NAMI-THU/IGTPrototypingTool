@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeView?>
@@ -41,11 +42,7 @@
                      <children>
                         <VBox fx:id="trackerVBox" disable="true" prefHeight="748.0" prefWidth="143.0" visible="false">
                            <children>
-                              <Label fx:id="trackerLabel" alignment="CENTER" prefHeight="39.0" prefWidth="144.0" textAlignment="CENTER" wrapText="true">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
+                              <TextField fx:id="trackerTextField" onAction="#changeTrackerName" prefHeight="37.0" prefWidth="143.0" />
                               <VBox fillWidth="false" prefHeight="42.0" prefWidth="748.0" spacing="10.0">
                                  <children>
                                     <Label alignment="CENTER" prefHeight="17.0" prefWidth="146.0" text="Tracker Size:" textAlignment="CENTER" />

@@ -55,7 +55,7 @@ public class VisualizationController implements Controller {
     @FXML
     VBox stlVBox;
     @FXML
-    Label trackerLabel;
+    TextField trackerTextField;
     @FXML
     Label stlLabel;
     @FXML
@@ -75,6 +75,8 @@ public class VisualizationController implements Controller {
     private final TreeItem<String> root = new TreeItem<>("Root");
 
     private String[] stlNames;
+
+    private String[] trackerNames;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -144,7 +146,7 @@ public class VisualizationController implements Controller {
                 stlBranch.getChildren().add(stlFile);
             }
             try {
-                FileWriter file = new FileWriter("src/main/resources/stlFiles.json");
+                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
                 file.write(jsonSTLModels.toJSONString());
                 file.close();
             } catch (IOException e) {
@@ -162,8 +164,10 @@ public class VisualizationController implements Controller {
         TreeItem<String> trackerBranch = new TreeItem<>("Tracker");
         root.getChildren().add(trackerBranch);
         if (tools != null) {
-            for (ToolMeasure tool: tools) {
-                String name = tool.getName();
+            trackerNames = new String[tools.size()];
+            for (int i = 0; i < tools.size(); i++) {
+                String name = tools.get(i).getName();
+                trackerNames[i] = name;
                 TreeItem<String> stlFile = new TreeItem<>(name);
                 trackerBranch.getChildren().add(stlFile);
             }
@@ -215,7 +219,7 @@ public class VisualizationController implements Controller {
         stlVBox.setVisible(false);
         stlVBox.setDisable(true);
 
-        trackerLabel.setText(name);
+        trackerTextField.setText(name);
     }
 
     /**
@@ -313,6 +317,14 @@ public class VisualizationController implements Controller {
     }
 
     @FXML
+    private void changeTrackerName() {
+
+    }
+
+    /**
+     * Sets the color of the stl model
+     */
+    @FXML
     private void setSTLColor()  {
         int pos = getSelectedSTL();
         if (pos != -1) {
@@ -323,6 +335,9 @@ public class VisualizationController implements Controller {
         }
     }
 
+    /**
+     * Sets the visibility of the stl model
+     */
     @FXML
     private void setSTLVisibility() {
         int pos = getSelectedSTL();
@@ -334,10 +349,17 @@ public class VisualizationController implements Controller {
         }
     }
 
+    /**
+     * Method to change the attributes if a stl file and save them to a json file
+     *
+     * @param index the number of the current stl file
+     * @param attribute the attribute to change
+     * @param value the new value of the attribute
+     */
     private void changeAttributeOfSTL(int index, String attribute, String value) {
         JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/stlFiles.json"));
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
             JSONObject updatedModels = new JSONObject();
 
             for (int i = 0; i < jsonSTLModels.size(); i++) {
@@ -348,7 +370,7 @@ public class VisualizationController implements Controller {
                 updatedModels.put("STL " + i, jsonSTLModel);
             }
             try {
-                FileWriter file = new FileWriter("src/main/resources/stlFiles.json");
+                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
                 file.write(jsonSTLModels.toJSONString());
                 file.close();
             } catch (IOException e) {
@@ -359,10 +381,16 @@ public class VisualizationController implements Controller {
         }
     }
 
+    /**
+     * Helper Method to get the json of a stl file for a given index
+     *
+     * @param index the index of the stl file
+     * @return The desired json object
+     */
     private JSONObject getSelectedJSON(int index) {
         JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/stlFiles.json"));
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
             return  (JSONObject) jsonSTLModels.get("STL " + index);
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
@@ -453,6 +481,9 @@ public class VisualizationController implements Controller {
         }
     }
 
+    /**
+     * Sets the focus on the mesh group
+     */
     @FXML
     private void focus() {
         meshGroup.requestFocus();

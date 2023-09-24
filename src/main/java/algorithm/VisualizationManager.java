@@ -181,7 +181,7 @@ public class VisualizationManager {
         StlMeshImporter importer = new StlMeshImporter();
         String[] stlNames;
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/stlFiles.json"));
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
             stlFiles = new MeshView[jsonSTLModels.size()];
             stlNames = new String[jsonSTLModels.size()];
             for (int i = 0; i < jsonSTLModels.size(); i++) {
@@ -286,7 +286,7 @@ public class VisualizationManager {
             if (trackingCones != null && trackingSpheres != null) {
                 JSONParser jsonParser = new JSONParser();
                 try {
-                    JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/transformationMatrix.json"));
+                    JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
                     JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
                     trackingCones[i].setTranslateX(x + (Double) offset.get(0));
                     trackingCones[i].setTranslateY(y + (Double) offset.get(1));
@@ -431,7 +431,7 @@ public class VisualizationManager {
         cameraContainer = new CameraContainer(true, rotateX, rotateY);
         JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/transformationMatrix.json"));
+            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
             JSONArray jsonArr = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
             double[] offset = new double[jsonArr.size()];
             for (int i = 0; i < jsonArr.size(); i++) {
