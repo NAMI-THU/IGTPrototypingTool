@@ -1,7 +1,14 @@
 package algorithm;
 
+import com.google.gson.JsonObject;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 //import com.jme3.math.Quaternion;
+import javafx.scene.control.TreeItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import shapes.CameraContainer;
 import util.Quaternion;
 import inputOutput.Tool;
 import javafx.beans.property.BooleanProperty;
@@ -24,8 +31,9 @@ import shapes.TrackingSphere;
 import util.Matrix3D;
 import util.Vector3D;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +49,7 @@ public class VisualizationManager {
     private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
     public static final int CAM_MOVEMENT = 25;
     public Vector3D cam_dir = new Vector3D(0,0,1);
+    private CameraContainer cameraContainer;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
     private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
@@ -68,6 +77,9 @@ public class VisualizationManager {
 
     public TrackingCone[] getTrackingCones() {
         return trackingCones;
+    }
+    public TrackingSphere[] getTrackingSpheres() {
+        return trackingSpheres;
     }
 
     /**
@@ -109,7 +121,6 @@ public class VisualizationManager {
 
         if (tools != null) {
             trackingCones = new TrackingCone[tools.size()];
-
             for (int i = 0; i < trackingCones.length; i++) {
                 trackingCones[i] = new TrackingCone(36, 4, 10);
             }
@@ -123,14 +134,26 @@ public class VisualizationManager {
     }
 
     /**
-     * loads an STL File for Visualization
+     * Loads one or multiple stl files for the visualisation
+     *
+     * @return a string array of the loaded stl file names
      */
-    public void loadStlModel() {
+
+    public List<File> loadStlModel() {
         StlMeshImporter importer = new StlMeshImporter();
+
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
+
+        /*
+        List<File> fileList = new LinkedList<>();
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Bone (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Kidney (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Liver (smoothed).stl"));
+        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Lung (smoothed).stl"));
+         */
 
         if (fileList != null) {
             stlFiles = new MeshView[fileList.size()];
@@ -150,6 +173,63 @@ public class VisualizationManager {
                 }
             }
         }
+        return fileList;
+    }
+
+    public String[] loadLastSTLModels() {
+        JSONParser jsonParser = new JSONParser();
+        StlMeshImporter importer = new StlMeshImporter();
+        String[] stlNames;
+        try {
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
+            stlFiles = new MeshView[jsonSTLModels.size()];
+            stlNames = new String[jsonSTLModels.size()];
+            for (int i = 0; i < jsonSTLModels.size(); i++) {
+                JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
+                try {
+                    File file = new File(String.valueOf(jsonSTLModel.get("Path")));
+                    importer.read(file);
+                    Mesh mesh = importer.getImport();
+                    stlFiles[i] = new MeshView(mesh);
+                    stlFiles[i].getTransforms().addAll(
+                            //Rotate the Model by 180 degrees for correct display
+                            new Rotate(180, Rotate.X_AXIS)
+                    );
+                    boolean visible = Boolean.parseBoolean(jsonSTLModel.get("Visible").toString());
+                    stlFiles[i].setVisible(visible);
+                    stlNames[i] = (String) jsonSTLModel.get("Name");
+                    // Convert the hex string to a rgba color
+                    String hex = (String) jsonSTLModel.get("Color");
+                    hex = hex.substring(2);
+                    Color color = new Color(
+                            Integer.valueOf(hex.substring(0, 2), 16) / 255.0,
+                            Integer.valueOf(hex.substring(2, 4), 16)/ 255.0,
+                            Integer.valueOf(hex.substring(4, 6), 16)/ 255.0,
+                            Integer.valueOf(hex.substring(6, 8), 16)/ 255.0);
+
+                    stlFiles[i].setMaterial(new PhongMaterial((color)));
+                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Error reading STL file");
+                }
+            }
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return stlNames;
+    }
+
+    private String[] getSTLNames(List<File> fileList) {
+        String[] names = new String[fileList.size()];
+        for (int i = 0; i < fileList.size(); i++) {
+            String name = fileList.get(i).toString();
+            int index = name.lastIndexOf("\\");
+            name = name.substring(index+1, name.length() - 4);
+            name = "STL " + name;
+            names[i] = name;
+        }
+        return names;
     }
 
     /**
@@ -204,15 +284,23 @@ public class VisualizationManager {
             }
 
             if (trackingCones != null && trackingSpheres != null) {
-                trackingCones[i].setTranslateX(x);
-                trackingCones[i].setTranslateY(y);
-                trackingCones[i].setTranslateZ(z);
-                matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
+                JSONParser jsonParser = new JSONParser();
+                try {
+                    JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
+                    JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
+                    trackingCones[i].setTranslateX(x + (Double) offset.get(0));
+                    trackingCones[i].setTranslateY(y + (Double) offset.get(1));
+                    trackingCones[i].setTranslateZ(z + (Double) offset.get(2));
+                    matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
 
-                trackingSpheres[i].setTranslateX(x);
-                trackingSpheres[i].setTranslateY(y);
-                trackingSpheres[i].setTranslateZ(z);
-                matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
+                    trackingSpheres[i].setTranslateX(x + (Double) offset.get(0));
+                    trackingSpheres[i].setTranslateY(y + (Double) offset.get(1));
+                    trackingSpheres[i].setTranslateZ(z + (Double) offset.get(2));
+                    matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
 
             if (stlFiles != null) {
@@ -285,8 +373,8 @@ public class VisualizationManager {
         // size will not impact the size of parent and resizing will also work when reducing the AnchorPane object's size
         subScene.setManaged(false);
 
-        handleKeyboard(scrollPane, subScene.getCamera());
-        handleMouse(subScene, subScene.getCamera());
+        handleKeyboard(scrollPane, cameraContainer);
+        handleMouse(subScene, cameraContainer);
     }
 
     /**
@@ -324,7 +412,8 @@ public class VisualizationManager {
         SubScene scene3d = new SubScene(root, VIEWPORT_SIZE, VIEWPORT_SIZE, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) meshGroup.getParent()).heightProperty());
-        PerspectiveCamera perspectiveCamera = initCamera();
+        initCamera();
+        PerspectiveCamera perspectiveCamera = cameraContainer.getPerspectiveCamera();
 
         scene3d.setFill(Color.DARKGREY);
 
@@ -338,35 +427,42 @@ public class VisualizationManager {
      *
      * @return PerspectiveCamera
      */
-    private PerspectiveCamera initCamera() {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(true);
-        perspectiveCamera.setTranslateX(0);
-        perspectiveCamera.setTranslateY(0);
-        perspectiveCamera.setTranslateZ(-500);
-        perspectiveCamera.setNearClip(0.1);
-        perspectiveCamera.setFarClip(2000.0);
+    private CameraContainer initCamera() {
+        cameraContainer = new CameraContainer(true, rotateX, rotateY);
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
+            JSONArray jsonArr = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
+            double[] offset = new double[jsonArr.size()];
+            for (int i = 0; i < jsonArr.size(); i++) {
+                offset[i] = (double) jsonArr.get(i);
+            }
+            Vector3D newPos = new Vector3D(offset);
+            cameraContainer.setPos(newPos);
+            cameraContainer.move(new Vector3D(0,0,-500));
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         rotateX.setAngle(0);
         rotateY.setAngle(0);
         cam_dir = new Vector3D(0,0,1);
 
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
-        return perspectiveCamera;
+        return cameraContainer;
     }
 
     /**
      * Adds Mouse Controls to the Scene
      *
      * @param subScene Scene for MouseEvent
-     * @param perspectiveCamera Camera
+     * @param cameraContainer Camera
      */
-    private void handleMouse(SubScene subScene, Camera perspectiveCamera) {
+    private void handleMouse(SubScene subScene, CameraContainer cameraContainer) {
         subScene.setOnScroll(event -> {
             double deltaY = event.getDeltaY();
-
-            perspectiveCamera.setTranslateX(perspectiveCamera.getTranslateX() + deltaY * cam_dir.get(0));
-            perspectiveCamera.setTranslateY(perspectiveCamera.getTranslateY() + deltaY * cam_dir.get(1));
-            perspectiveCamera.setTranslateZ(perspectiveCamera.getTranslateZ() + deltaY * cam_dir.get(2));
+            Vector3D movement = new Vector3D(cam_dir.get(0), cam_dir.get(1), cam_dir.get(2));
+            movement.mult(deltaY);
+            cameraContainer.move(movement);
         });
         subScene.setOnMousePressed(event -> {
             mouseOldX = event.getSceneX();
@@ -382,6 +478,8 @@ public class VisualizationManager {
 
         subScene.setOnMouseReleased(event -> {
             double[] angles = {rotateX.getAngle(), rotateY.getAngle(), 0};
+            System.out.println("RotateX: " + rotateX.getAngle() + " RotateY: " + rotateY.getAngle());
+            System.out.println("Camera: " + cameraContainer.getPerspectiveCamera().getRotate());
             util.Quaternion q = new util.Quaternion(angles);
             Matrix3D rotMat = q.toRotationMatrix();
             cam_dir = rotMat.mult(new Vector3D(0,0,1));
@@ -392,20 +490,23 @@ public class VisualizationManager {
      * Adds Keyboard Controls to the Scene
      *
      * @param scrollPane        Pane for KeyEvent
-     * @param perspectiveCamera Camera to be controlled
+     * @param cameraContainer Camera to be controlled
      */
-    private void handleKeyboard(ScrollPane scrollPane, Camera perspectiveCamera) {
+    private void handleKeyboard(ScrollPane scrollPane, CameraContainer cameraContainer) {
 
         scrollPane.setOnKeyPressed(event -> {
+            double[] angles = {rotateX.getAngle(), rotateY.getAngle(), 0};
+            util.Quaternion q = new util.Quaternion(angles);
+            Matrix3D rotMat = q.toRotationMatrix();
             switch (event.getCode()) {
                 case S:
                 case DOWN:
                     Matrix3D rotXDown = new Matrix3D(new double[] {1,0,0,0,0,1,0,-1,0});
                     Vector3D down = rotXDown.mult(cam_dir);
                     down.setMag(CAM_MOVEMENT);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + down.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + down.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + down.get(2));
+                    System.out.println("Down");
+                    down.print();
+                    cameraContainer.move(down);
                     event.consume();
                     break;
                 case W:
@@ -413,37 +514,35 @@ public class VisualizationManager {
                     Matrix3D rotXUp = new Matrix3D(new double[] {1,0,0,0,0,-1,0,1,0});
                     Vector3D up = rotXUp.mult(cam_dir);
                     up.setMag(CAM_MOVEMENT);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + up.get(0));
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + up.get(1));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + up.get(2));
+                    System.out.println("Up");
+                    up.print();
+                    cameraContainer.move(up);
                     event.consume();
                     break;
                 case D:
                 case RIGHT:
-                    Matrix3D rotYRight;
-                    if (rotateX.getAngle() > -90.0 && rotateX.getAngle() < 90.0) {
-                        rotYRight = new Matrix3D(new double[] {0,0,1,0,1,0,-1,0,0});
-                    } else {
-                        rotYRight = new Matrix3D(new double[] {0,1,0,-1,0,0,0,0,1});
-                    }
-                    Vector3D right = rotYRight.mult(cam_dir);
+                    Matrix3D rotYRight = new Matrix3D(new double[] {0,0,1,0,1,0,-1,0,0});
+                    Vector3D right = rotYRight.mult(new Vector3D(0,0,1));
+                    right = rotMat.mult(right);
                     right.setMag(CAM_MOVEMENT);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + right.get(0));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + right.get(2));
+                    System.out.println("Right");
+                    right.print();
+                    cameraContainer.move(right);
                     break;
                 case A:
                 case LEFT:
-                    Matrix3D rotYLeft;
-                    if (rotateX.getAngle() > -90.0 && rotateX.getAngle() < 90.0) {
-                        rotYLeft = new Matrix3D(new double[] {0,0,-1,0,1,0,1,0,0});
-                    } else {
-                        rotYLeft = new Matrix3D(new double[] {0,-1,0,1,0,0,0,0,1});
-                    }
-                    Vector3D left = rotYLeft.mult(cam_dir);
+                    Matrix3D rotYLeft = new Matrix3D(new double[] {0,0,-1,0,1,0,1,0,0});
+                    Vector3D left = rotYLeft.mult(new Vector3D(0,0,1));
+                    left = rotMat.mult(left);
                     left.setMag(CAM_MOVEMENT);
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + left.get(0));
-                    perspectiveCamera.translateZProperty().set(perspectiveCamera.getTranslateZ() + left.get(2));
+                    System.out.println("Left");
+                    left.print();
+                    cameraContainer.move(left);
                     event.consume();
+                    break;
+                case G:
+                    System.out.println("CAM DIR:");
+                    cam_dir.print();
                     break;
             }
         });

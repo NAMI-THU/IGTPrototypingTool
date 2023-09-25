@@ -1,18 +1,30 @@
 package controller;
 
+import algorithm.ToolMeasure;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import shapes.TrackingCone;
+import shapes.TrackingSphere;
 
+import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VisualizationController implements Controller {
 
@@ -31,26 +43,47 @@ public class VisualizationController implements Controller {
     @FXML
     ToggleButton wireframe;
     @FXML
-    ColorPicker colorPicker;
+    ColorPicker trackerColorPicker;
     @FXML
     Slider trackerSlider;
     @FXML
     ScrollPane scrollPane;
-
+    @FXML
+    TreeView<String> stlTreeView;
+    @FXML
+    VBox trackerVBox;
+    @FXML
+    VBox stlVBox;
+    @FXML
+    TextField trackerTextField;
+    @FXML
+    Label stlLabel;
+    @FXML
+    ColorPicker stlColorPicker;
+    @FXML
+    CheckBox stlVisibleCB;
+    @FXML
+    CheckBox trackingVisibleCB;
     TrackingDataController trackingDataController;
     VisualizationManager visualizationManager;
-
     TrackingService trackingService = TrackingService.getInstance();
 
     private Label statusLabel;
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
+    private final TreeItem<String> root = new TreeItem<>("Root");
 
+    private String[] stlNames;
+
+    private String[] trackerNames;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
         start.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
+
+        stlTreeView.setShowRoot(false);
+        stlTreeView.setRoot(root);
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -82,8 +115,139 @@ public class VisualizationController implements Controller {
         }
         visualizationManager.setPane(this.scrollPane);
         visualizationManager.setMeshGroup(this.meshGroup);
-        visualizationManager.loadStlModel();
+        List<File> fileNames = visualizationManager.loadStlModel();
         visualizationManager.showFigure();
+
+        TreeItem<String> stlBranch = new TreeItem<>("Files");
+        if (root.getChildren().size() > 1) {
+            root.getChildren().remove(1, root.getChildren().size());
+        }
+
+        root.getChildren().add(stlBranch);
+
+        JSONObject jsonSTLModels = new JSONObject();
+
+        if (fileNames != null) {
+            stlNames = new String[fileNames.size()];
+            for (int i = 0; i < fileNames.size(); i++) {
+                String path = fileNames.get(i).toString();
+                int index = path.lastIndexOf("\\");
+                String name = path.substring(index+1, path.length() - 4);
+                name = "STL " + name;
+                stlNames[i] = name;
+
+                JSONObject jsonSTLModel = new JSONObject();
+                jsonSTLModel.put("Name", name);
+                jsonSTLModel.put("Path", path);
+                jsonSTLModel.put("Color", "0xccccccff");
+                jsonSTLModel.put("Visible", "true");
+                jsonSTLModels.put("STL " + i, jsonSTLModel);
+                TreeItem<String> stlFile = new TreeItem<>(name);
+                stlBranch.getChildren().add(stlFile);
+            }
+            try {
+                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
+                file.write(jsonSTLModels.toJSONString());
+                file.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Adds the Tracker to the Tree View
+     *
+     * @param tools the tools to get their names
+     */
+    public void addTrackerToTreeView(List<ToolMeasure> tools) {
+        TreeItem<String> trackerBranch = new TreeItem<>("Tracker");
+        root.getChildren().add(trackerBranch);
+        if (tools != null) {
+            trackerNames = new String[tools.size()];
+            for (int i = 0; i < tools.size(); i++) {
+                String name = tools.get(i).getName();
+                trackerNames[i] = name;
+                TreeItem<String> stlFile = new TreeItem<>(name);
+                trackerBranch.getChildren().add(stlFile);
+            }
+        }
+    }
+
+    public void addSTLToTreeView(String[] stlFileNames) {
+        stlNames = stlFileNames;
+        TreeItem<String> stlBranch = new TreeItem<>("Files");
+        root.getChildren().add(stlBranch);
+        for (String name : stlNames) {
+            TreeItem<String> stlFile = new TreeItem<>(name);
+            stlBranch.getChildren().add(stlFile);
+        }
+    }
+
+    /**
+     * Method to choose the tracker / stl files to modify it (change the color, size, visibility)
+     */
+    @FXML
+    private void selectItem() {
+        TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            String name = item.getValue();
+            Pattern pattern = Pattern.compile("Tool\\d");
+            Matcher matcher = pattern.matcher(name);
+            boolean matchFound = matcher.find();
+            if(matchFound) {
+                activateTrackerVBox(name);
+            }
+            pattern = Pattern.compile("^STL");
+            matcher = pattern.matcher(name);
+            matchFound = matcher.find();
+            if(matchFound) {
+                activateSTLVBox(name);
+            }
+        }
+    }
+
+    /**
+     * Method to show the box for customization of a given tracker
+     *
+     * @param name the name of the tracker
+     */
+    private void activateTrackerVBox(String name) {
+        trackerVBox.setVisible(true);
+        trackerVBox.setDisable(false);
+
+        stlVBox.setVisible(false);
+        stlVBox.setDisable(true);
+
+        trackerTextField.setText(name);
+    }
+
+    /**
+     * Method to show the box for customization of a given stl file
+     *
+     * @param name the name of the stl file
+     */
+    private void activateSTLVBox(String name) {
+        trackerVBox.setVisible(false);
+        trackerVBox.setDisable(true);
+
+        stlVBox.setVisible(true);
+        stlVBox.setDisable(false);
+
+        stlLabel.setText(name);
+        int pos = getSelectedSTL();
+        if (pos != -1) {
+            JSONObject jsonSTLModel = getSelectedJSON(pos);
+            String hex = (String) jsonSTLModel.get("Color");
+            hex = hex.substring(2);
+            Color color = new Color(
+                    Integer.valueOf(hex.substring(0, 2), 16) / 255.0,
+                    Integer.valueOf(hex.substring(2, 4), 16)/ 255.0,
+                    Integer.valueOf(hex.substring(4, 6), 16)/ 255.0,
+                    Integer.valueOf(hex.substring(6, 8), 16)/ 255.0);
+            stlColorPicker.setValue(color);
+            stlVisibleCB.setSelected(Boolean.parseBoolean(jsonSTLModel.get("Visible").toString()));
+        }
     }
 
     @FXML
@@ -92,7 +256,7 @@ public class VisualizationController implements Controller {
     }
 
     /**
-     * Set a color for the tracker in the visualisation view
+     * Set a color for the selected tracker in the visualisation view
      */
     @FXML
     private void setTrackerColor() {
@@ -103,15 +267,14 @@ public class VisualizationController implements Controller {
             }
             statusLabel.setText("");
 
+            int index = getSelectedTracker();
             TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
-            for (TrackingCone trackingCone : trackingCones) {
-                trackingCone.setMaterial(new PhongMaterial(colorPicker.getValue()));
-            }
+            trackingCones[index].setMaterial(new PhongMaterial(trackerColorPicker.getValue()));
         }
     }
 
     /**
-     * Set a size for the tracker in the visualisation view
+     * Set a size for the selected tracker in the visualisation view
      */
     @FXML
     private void setTrackerSize() {
@@ -122,12 +285,144 @@ public class VisualizationController implements Controller {
             }
             statusLabel.setText("");
 
+            int index = getSelectedTracker();
+
             TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
-            for (TrackingCone trackingCone : trackingCones) {
-                trackingCone.setHeight(trackerSlider.getValue());
-                trackingCone.setRadius(trackerSlider.getValue() * 0.4);
+            trackingCones[index].setHeight(trackerSlider.getValue());
+            trackingCones[index].setRadius(trackerSlider.getValue() * 0.4);
+        }
+    }
+
+    /**
+     * Sets the tracker visibility
+     */
+    @FXML
+    private void setTrackerVisibility() {
+        if (visualizationManager.visualizeCone().get()) {
+            if (visualizationManager.getTrackingCones() == null) {
+                statusLabel.setText("No Tracking Data Source");
+                return;
+            }
+            statusLabel.setText("");
+
+            int index = getSelectedTracker();
+
+            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
+            TrackingSphere[] trackingSpheres = visualizationManager.getTrackingSpheres();
+
+            boolean visible = trackingCones[index].isVisible();
+            trackingCones[index].setVisible(!visible);
+            trackingSpheres[index].setVisible(!visible);
+        }
+    }
+
+    @FXML
+    private void changeTrackerName() {
+
+    }
+
+    /**
+     * Sets the color of the stl model
+     */
+    @FXML
+    private void setSTLColor()  {
+        int pos = getSelectedSTL();
+        if (pos != -1) {
+            MeshView[] stlFiles = visualizationManager.getMeshView();
+            System.out.println(stlColorPicker.getValue());
+            stlFiles[pos].setMaterial(new PhongMaterial(stlColorPicker.getValue()));
+            changeAttributeOfSTL(pos, "Color", String.valueOf(stlColorPicker.getValue()));
+        }
+    }
+
+    /**
+     * Sets the visibility of the stl model
+     */
+    @FXML
+    private void setSTLVisibility() {
+        int pos = getSelectedSTL();
+        if (pos != -1) {
+            MeshView[] stlFiles = visualizationManager.getMeshView();
+            boolean visible = stlFiles[pos].isVisible();
+            stlFiles[pos].setVisible(!visible);
+            changeAttributeOfSTL(pos, "Visible", String.valueOf(!visible));
+        }
+    }
+
+    /**
+     * Method to change the attributes if a stl file and save them to a json file
+     *
+     * @param index the number of the current stl file
+     * @param attribute the attribute to change
+     * @param value the new value of the attribute
+     */
+    private void changeAttributeOfSTL(int index, String attribute, String value) {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
+            JSONObject updatedModels = new JSONObject();
+
+            for (int i = 0; i < jsonSTLModels.size(); i++) {
+                JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
+                if (i == index) {
+                    jsonSTLModel.put(attribute, value);
+                }
+                updatedModels.put("STL " + i, jsonSTLModel);
+            }
+            try {
+                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
+                file.write(jsonSTLModels.toJSONString());
+                file.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Helper Method to get the json of a stl file for a given index
+     *
+     * @param index the index of the stl file
+     * @return The desired json object
+     */
+    private JSONObject getSelectedJSON(int index) {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
+            return  (JSONObject) jsonSTLModels.get("STL " + index);
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Helper method to get the index of the selected tracker
+     *
+     * @return the index of the selected tracker
+     */
+    private int getSelectedTracker() {
+        TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
+        String name = item.getValue();
+        return Character.getNumericValue(name.charAt(name.length()-1));
+    }
+
+    /**
+     * Helper method to get the index of the selected stl file
+     *
+     * @return the index of the selected stl file
+     */
+    private int getSelectedSTL() {
+        TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
+        String name = item.getValue();
+        int pos = -1;
+        for (int i = 0; i < stlNames.length; i++) {
+            if (stlNames[i].equals(name)) {
+                pos = i;
             }
         }
+        return pos;
     }
 
     /**
@@ -184,6 +479,14 @@ public class VisualizationController implements Controller {
                 mesh.setDrawMode(DrawMode.FILL);
             }
         }
+    }
+
+    /**
+     * Sets the focus on the mesh group
+     */
+    @FXML
+    private void focus() {
+        meshGroup.requestFocus();
     }
 
     /**

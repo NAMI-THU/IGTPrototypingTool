@@ -31,6 +31,20 @@ public class Vector3D {
     }
 
     /**
+     * Create a vector where the components are set to the parameters
+     * @param x the desired x component of the vector
+     * @param y the desired y component of the vector
+     * @param z the desired z component of the vector
+     */
+    public Vector3D(double[] arr) {
+        if (arr.length == 3) {
+            vector[0] = arr[0];
+            vector[1] = arr[1];
+            vector[2] = arr[2];
+        }
+    }
+
+    /**
      * Method to set the vectors components
      *
      * @param i the position of the component
@@ -74,6 +88,28 @@ public class Vector3D {
         double mag = getMag();
         for (int i = 0; i < vector.length; i++) {
             vector[i] = vector[i] * new_mag / mag;
+        }
+    }
+
+    /**
+     * Adds a vector to the current vector
+     *
+     * @param other the other vector to be added to this one
+     */
+    public void add(Vector3D other) {
+        for (int i = 0; i < this.vector.length; i++) {
+            this.vector[i] += other.vector[i];
+        }
+    }
+
+    /**
+     * Scalar multiply a vector with a number
+     *
+     * @param scalar the scalar
+     */
+    public void mult(double scalar) {
+        for (int i = 0; i < vector.length; i++) {
+            vector[i] *= scalar;
         }
     }
     /**

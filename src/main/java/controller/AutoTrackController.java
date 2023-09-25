@@ -3,7 +3,6 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.javafx.collections.ObservableListWrapper;
 import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
@@ -24,7 +23,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.opencv.core.*;
-import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 import userinterface.PlottableImage;
 
@@ -36,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -438,7 +435,7 @@ public class AutoTrackController implements Controller {
         fileChooser.setTitle("Set save location for matrix json");
         var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
         fileChooser.setInitialDirectory(new File(lastLocation));
-        fileChooser.setInitialFileName("transformationMatrix.json");
+        fileChooser.setInitialFileName("json/transformationMatrix.json");
         var saveFile = fileChooser.showSaveDialog(null);
         if(saveFile != null){
             try {
