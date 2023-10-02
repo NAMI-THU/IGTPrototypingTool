@@ -3,8 +3,6 @@ package controller;
 import algorithm.ToolMeasure;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -17,6 +15,7 @@ import javafx.scene.shape.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import shapes.STLModel;
 import shapes.TrackingCone;
 import shapes.TrackingSphere;
 
@@ -74,7 +73,7 @@ public class VisualizationController implements Controller {
 
     private final TreeItem<String> root = new TreeItem<>("Root");
 
-    private String[] stlNames;
+    //private String[] stlNames;
 
     private String[] trackerNames;
     @Override
@@ -128,13 +127,11 @@ public class VisualizationController implements Controller {
         JSONObject jsonSTLModels = new JSONObject();
 
         if (fileNames != null) {
-            stlNames = new String[fileNames.size()];
             for (int i = 0; i < fileNames.size(); i++) {
                 String path = fileNames.get(i).toString();
                 int index = path.lastIndexOf("\\");
                 String name = path.substring(index+1, path.length() - 4);
                 name = "STL " + name;
-                stlNames[i] = name;
 
                 JSONObject jsonSTLModel = new JSONObject();
                 jsonSTLModel.put("Name", name);
@@ -174,12 +171,12 @@ public class VisualizationController implements Controller {
         }
     }
 
-    public void addSTLToTreeView(String[] stlFileNames) {
-        stlNames = stlFileNames;
+    public void addSTLToTreeView() {
+        STLModel[] stlModels = visualizationManager.getSTLModels();
         TreeItem<String> stlBranch = new TreeItem<>("Files");
         root.getChildren().add(stlBranch);
-        for (String name : stlNames) {
-            TreeItem<String> stlFile = new TreeItem<>(name);
+        for (STLModel model : stlModels) {
+            TreeItem<String> stlFile = new TreeItem<>(model.getName());
             stlBranch.getChildren().add(stlFile);
         }
     }
@@ -328,9 +325,8 @@ public class VisualizationController implements Controller {
     private void setSTLColor()  {
         int pos = getSelectedSTL();
         if (pos != -1) {
-            MeshView[] stlFiles = visualizationManager.getMeshView();
-            System.out.println(stlColorPicker.getValue());
-            stlFiles[pos].setMaterial(new PhongMaterial(stlColorPicker.getValue()));
+            STLModel[] stlModels = visualizationManager.getSTLModels();
+            stlModels[pos].setColor(new PhongMaterial(stlColorPicker.getValue()));
             changeAttributeOfSTL(pos, "Color", String.valueOf(stlColorPicker.getValue()));
         }
     }
@@ -342,9 +338,9 @@ public class VisualizationController implements Controller {
     private void setSTLVisibility() {
         int pos = getSelectedSTL();
         if (pos != -1) {
-            MeshView[] stlFiles = visualizationManager.getMeshView();
-            boolean visible = stlFiles[pos].isVisible();
-            stlFiles[pos].setVisible(!visible);
+            STLModel[] stlModels = visualizationManager.getSTLModels();
+            boolean visible = stlModels[pos].isVisible();
+            stlModels[pos].setVisible(!visible);
             changeAttributeOfSTL(pos, "Visible", String.valueOf(!visible));
         }
     }
@@ -415,10 +411,11 @@ public class VisualizationController implements Controller {
      */
     private int getSelectedSTL() {
         TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
+        STLModel[] stlModels = visualizationManager.getSTLModels();
         String name = item.getValue();
         int pos = -1;
-        for (int i = 0; i < stlNames.length; i++) {
-            if (stlNames[i].equals(name)) {
+        for (int i = 0; i < stlModels.length; i++) {
+            if (stlModels[i].getName().equals(name)) {
                 pos = i;
             }
         }
@@ -438,21 +435,21 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void toggleCullFace() {
-        if (visualizationManager.getMeshView() == null) {
+        if (visualizationManager.getSTLModels() == null) {
             statusLabel.setText("No 3D-Model selected");
             return;
         }
         statusLabel.setText("");
 
-        MeshView[] meshView = visualizationManager.getMeshView();
+        STLModel[] stlModels = visualizationManager.getSTLModels();
 
         if (cullBack.isSelected()) {
-            for (MeshView mesh : meshView) {
-                mesh.setCullFace(CullFace.NONE);
+            for (STLModel model: stlModels) {
+                model.getMeshView().setCullFace(CullFace.NONE);
             }
         } else {
-            for (MeshView mesh : meshView) {
-                mesh.setCullFace(CullFace.BACK);
+            for (STLModel model: stlModels) {
+                model.getMeshView().setCullFace(CullFace.BACK);
             }
         }
     }
@@ -462,21 +459,21 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void toggleWireframe() {
-        if (visualizationManager.getMeshView() == null) {
+        if (visualizationManager.getSTLModels() == null) {
             statusLabel.setText("No 3D-Model selected");
             return;
         }
         statusLabel.setText("");
 
-        MeshView[] meshView = visualizationManager.getMeshView();
+        STLModel[] stlModels = visualizationManager.getSTLModels();
 
         if (wireframe.isSelected()) {
-            for (MeshView mesh : meshView) {
-                mesh.setDrawMode(DrawMode.LINE);
+            for (STLModel model: stlModels) {
+                model.getMeshView().setDrawMode(DrawMode.LINE);
             }
         } else {
-            for (MeshView mesh : meshView) {
-                mesh.setDrawMode(DrawMode.FILL);
+            for (STLModel model: stlModels) {
+                model.getMeshView().setDrawMode(DrawMode.FILL);
             }
         }
     }

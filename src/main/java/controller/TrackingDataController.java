@@ -106,7 +106,8 @@ public class TrackingDataController implements Controller {
         File file = fp.showOpenDialog(new Stage());
          */
 
-        File file = new File("C:\\Users\\haupt\\3D Objects\\sensor.csv");
+        File file = new File("src/main/resources/sensor.csv");
+
         if (file != null) {
             if (trackingService.getTrackingDataSource() != null) {
                 disconnectSource();
@@ -201,8 +202,8 @@ public class TrackingDataController implements Controller {
             visualizationRunning.setValue(true);
             visualizationController.setVisualizationRunning(true);
             visualizationController.addTrackerToTreeView(trackingService.getDataService().loadNextData(1));
-            String[] stlNames = visualizationManager.loadLastSTLModels();
-            visualizationController.addSTLToTreeView(stlNames);
+            visualizationManager.loadLastSTLModels();
+            visualizationController.addSTLToTreeView();
             visualizationManager.showFigure();
         }
         if (timeline != null) {
