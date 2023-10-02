@@ -4,7 +4,7 @@ public class Matrix3D {
     /**
      * A new 3x3 Array as the representation of the matrix
      */
-    protected double[][] matrix = new double[3][3];
+    private double[][] matrix = new double[3][3];
 
 
     /**
@@ -30,6 +30,13 @@ public class Matrix3D {
         }
     }
 
+    public Matrix3D(double[][] matrix) {
+        if (matrix.length != 3 || matrix[0].length != 3) {
+            throw new IllegalArgumentException("Matrix must be 3x3");
+        }
+        this.matrix = matrix;
+    }
+
     /**
      * Instantiates a copy of the matrix argument. If the argument is null, an
      * identity matrix is produced.
@@ -38,6 +45,10 @@ public class Matrix3D {
      */
     public Matrix3D(Matrix3D mat) {
         set(mat);
+    }
+
+    public double[][] asArray() {
+        return matrix;
     }
 
     /**
@@ -152,19 +163,14 @@ public class Matrix3D {
     /**
      * Helper function to print the 3x3 matrix to the console
      */
-    public void print() {
+    public String toString() {
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                System.out.print(this.matrix[i][j] + "\t");
+                result.append(this.matrix[i][j]).append("\t");
             }
-            System.out.println();
+            result.append("\n");
         }
-    }
-
-    public static void main(String[] args) {
-        double[] arr = {1.0, 4.5, 6.7, 3.4, 5.8, 6.7, 3.4, 4.5, 2.4};
-        Matrix3D mat = new Matrix3D(arr);
-        mat.print();
-        System.out.println(mat.get(1,3));
+        return result.toString();
     }
 }

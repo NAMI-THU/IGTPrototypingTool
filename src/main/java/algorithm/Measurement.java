@@ -48,10 +48,10 @@ public class Measurement {
 
     public void setRotation(Quaternion rotation) {
         this.rotation = rotation;
-        rot_x = rotation.getX1();
-        rot_y = rotation.getX2();
-        rot_z = rotation.getX3();
-        rot_r = rotation.getX0();
+        rot_x = rotation.getX();
+        rot_y = rotation.getY();
+        rot_z = rotation.getZ();
+        rot_r = rotation.getW();
     }
 
     public Point3D getPoint() {

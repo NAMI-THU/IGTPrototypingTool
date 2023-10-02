@@ -168,16 +168,16 @@ public class ToolMeasure {
 
             Quaternion errorRotationOfIterate = rotationMovement.subtract(avgRotation);
 
-            double errorX = errorRotationOfIterate.getX1();
+            double errorX = errorRotationOfIterate.getX();
             rotationErrorX.add(errorX);
 
-            double errorY = errorRotationOfIterate.getX2();
+            double errorY = errorRotationOfIterate.getY();
             rotationErrorY.add(errorY);
 
-            double errorZ = errorRotationOfIterate.getX3();
+            double errorZ = errorRotationOfIterate.getZ();
             rotationErrorZ.add(errorZ);
 
-            double errorW = errorRotationOfIterate.getX0();
+            double errorW = errorRotationOfIterate.getW();
             rotationErrorW.add(errorW);
 
         }

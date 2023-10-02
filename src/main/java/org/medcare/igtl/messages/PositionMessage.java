@@ -130,10 +130,10 @@ public class PositionMessage extends OpenIGTMessage {
 //                bytesArray.putDouble(0, 4);
 //                bytesArray.putDouble(0, 4);
 //                bytesArray.putDouble(1, 4);
-        bytesArray.putDouble(quaternion.getX0(), 4);
-        bytesArray.putDouble(quaternion.getX1(), 4);
-        bytesArray.putDouble(quaternion.getX2(), 4);
-        bytesArray.putDouble(quaternion.getX3(), 4);
+        bytesArray.putDouble(quaternion.getW(), 4);
+        bytesArray.putDouble(quaternion.getX(), 4);
+        bytesArray.putDouble(quaternion.getY(), 4);
+        bytesArray.putDouble(quaternion.getZ(), 4);
 
         position_data = bytesArray.getBytes();
         packBody();

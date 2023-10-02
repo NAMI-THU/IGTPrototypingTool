@@ -4,19 +4,19 @@ public class Quaternion {
     /**
      * The real component (x0).
      */
-    protected double x0;
+    protected double w;
     /**
      * The 1st imaginary component (x1).
      */
-    protected double x1;
+    protected double x;
     /**
      * The 2nd imaginary component (x2).
      */
-    protected double x2;
+    protected double y;
     /**
      * The 3rd imaginary component (x3).
      */
-    protected double x3;
+    protected double z;
 
 
     /**
@@ -24,25 +24,25 @@ public class Quaternion {
      * {@code x0}, which is set to 1.
      */
     public Quaternion() {
-        x0 = 1;
-        x1 = 0;
-        x2 = 0;
-        x3 = 0;
+        w = 1;
+        x = 0;
+        y = 0;
+        z = 0;
     }
 
     /**
      * Creates a quaternion with the specified components.
      *
-     * @param x0 the x0 component
-     * @param x1 the x1 component
-     * @param x2 the x2 component
-     * @param x3 the x3 component
+     * @param w the x0 component
+     * @param x the x1 component
+     * @param y the x2 component
+     * @param z the x3 component
      */
-    public Quaternion(double x0, double x1, double x2, double x3) {
-        this.x0 = x0;
-        this.x1 = x1;
-        this.x2 = x2;
-        this.x3 = x3;
+    public Quaternion(double w, double x, double y, double z) {
+        this.w = w;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     /**
@@ -58,40 +58,44 @@ public class Quaternion {
         fromDegreeAngles(angles);
     }
 
+    public Quaternion(Matrix3D matrix) {
+        fromRotationMatrix(matrix);
+    }
+
     /**
      * Returns the x0 (real) component.
      *
-     * @return the value of the {@link #x0} component
+     * @return the value of the {@link #w} component
      */
-    public double getX0() {
-        return x0;
+    public double getW() {
+        return w;
     }
 
     /**
      * Returns the x1 component.
      *
-     * @return the value of the {@link #x1} component
+     * @return the value of the {@link #x} component
      */
-    public double getX1() {
-        return x1;
+    public double getX() {
+        return x;
     }
 
     /**
      * Returns the x2 component.
      *
-     * @return the value of the {@link #x2} component
+     * @return the value of the {@link #y} component
      */
-    public double getX2() {
-        return x2;
+    public double getY() {
+        return y;
     }
 
     /**
      * Returns the x3 component.
      *
-     * @return the value of the {@link #x3} component
+     * @return the value of the {@link #z} component
      */
-    public double getX3() {
-        return x3;
+    public double getZ() {
+        return z;
     }
 
     /**
@@ -104,10 +108,10 @@ public class Quaternion {
      * @return the (modified) current instance
      */
     public Quaternion set(double x0, double x1, double x2, double x3) {
-        this.x0 = x0;
-        this.x1 = x1;
-        this.x2 = x2;
-        this.x3 = x3;
+        this.w = x0;
+        this.x = x1;
+        this.y = x2;
+        this.z = x3;
         return this;
     }
 
@@ -118,18 +122,18 @@ public class Quaternion {
      * @return the (modified) current instance
      */
     public Quaternion set(Quaternion q) {
-        this.x0 = q.x0;
-        this.x1 = q.x1;
-        this.x2 = q.x2;
-        this.x3 = q.x3;
+        this.w = q.w;
+        this.x = q.x;
+        this.y = q.y;
+        this.z = q.z;
         return this;
     }
     /**
      * Sets all components to zero except {@code w}, which is set to 1.
      */
     public void makeIdentityQuaternion() {
-        this.x1 = this.x2 = this.x3 = 0;
-        this.x0 = 1;
+        this.x = this.y = this.z = 0;
+        this.w = 1;
     }
 
     /**
@@ -140,7 +144,7 @@ public class Quaternion {
      *     false
      */
     public boolean isIdentity() {
-        return this.x0 == 1 && this.x1 == 0 && this.x2 == 0 && this.x3 == 0;
+        return this.w == 1 && this.x == 0 && this.y == 0 && this.z == 0;
     }
 
     /**
@@ -202,10 +206,10 @@ public class Quaternion {
         double c1c2 = c1*c2;
         double s1s2 = s1*s2;
 
-        this.x0 = (c1c2 * c3 - s1s2 * s3);
-        this.x1 = (c1c2 * s3 + s1s2 * c3);
-        this.x2 = (s1 * c2 * c3 + c1 * s2 * s3);
-        this.x3 = (c1 * s2 * c3 - s1 * c2 * s3);
+        this.w = (c1c2 * c3 - s1s2 * s3);
+        this.x = (c1c2 * s3 + s1s2 * c3);
+        this.y = (s1 * c2 * c3 + c1 * s2 * s3);
+        this.z = (c1 * s2 * c3 - s1 * c2 * s3);
 
         //normalizeLocal();
         return this;
@@ -250,25 +254,25 @@ public class Quaternion {
             throw new IllegalArgumentException("Angles array must have three elements");
         }
 
-        double sqx0 = x0 * x0;
-        double sqx1 = x1 * x1;
-        double sqx2 = x2 * x2;
-        double sqx3 = x3 * x3;
+        double sqx0 = w * w;
+        double sqx1 = x * x;
+        double sqx2 = y * y;
+        double sqx3 = z * z;
         double unit = sqx1 + sqx2 + sqx3 + sqx0; // if normalized is one, otherwise
         // is correction factor
-        double test = x1 * x2 + x3 * x0;
+        double test = x * y + z * w;
         if (test > 0.499 * unit) { // singularity at north pole
-            angles[1] = 2 * Math.atan2(x1, x0);
+            angles[1] = 2 * Math.atan2(x, w);
             angles[2] = Math.PI / 2.0;
             angles[0] = 0;
         } else if (test < -0.499 * unit) { // singularity at south pole
-            angles[1] = -2 * Math.atan2(x1, x0);
+            angles[1] = -2 * Math.atan2(x, w);
             angles[2] = -Math.PI / 2.0;
             angles[0] = 0;
         } else {
-            angles[1] = Math.atan2(2 * x2 * x0 - 2 * x1 * x3, sqx1 - sqx2 - sqx3 + sqx0); // yaw or heading
+            angles[1] = Math.atan2(2 * y * w - 2 * x * z, sqx1 - sqx2 - sqx3 + sqx0); // yaw or heading
             angles[2] = Math.asin(2 * test / unit); // roll or bank
-            angles[0] = Math.atan2(2 * x1 * x0 - 2 * x2 * x3, -sqx1 + sqx2 - sqx3 + sqx0); // pitch or attitude
+            angles[0] = Math.atan2(2 * x * w - 2 * y * z, -sqx1 + sqx2 - sqx3 + sqx0); // pitch or attitude
         }
         return angles;
     }
@@ -300,32 +304,32 @@ public class Quaternion {
         // we protect the division by s by ensuring that s>=1
         if (t >= 0) { // |w| >= .5
             double s = Math.sqrt(t + 1); // |s|>=1 ...
-            x0 = 0.5f * s;
+            w = 0.5f * s;
             s = 0.5f / s;
-            x1 = (matrix.get(2,1) - matrix.get(1,2)) * s;
-            x2 = (matrix.get(0,2) - matrix.get(2,0)) * s;
-            x3 = (matrix.get(1,0) - matrix.get(0,1)) * s;
+            x = (matrix.get(2,1) - matrix.get(1,2)) * s;
+            y = (matrix.get(0,2) - matrix.get(2,0)) * s;
+            z = (matrix.get(1,0) - matrix.get(0,1)) * s;
         } else if ((matrix.get(0,0) > matrix.get(1,1)) && (matrix.get(0,0)> matrix.get(2,2))) {
             double s = Math.sqrt(1.0f + matrix.get(0,0) - matrix.get(1,1) - matrix.get(2,2)); // |s|>=1
-            x1 = s * 0.5f; // |x| >= .5
+            x = s * 0.5f; // |x| >= .5
             s = 0.5f / s;
-            x2 = (matrix.get(1,0) + matrix.get(0,1)) * s;
-            x3 = (matrix.get(0,2) + matrix.get(2,0)) * s;
-            x0 = (matrix.get(2,1) - matrix.get(1,2)) * s;
+            y = (matrix.get(1,0) + matrix.get(0,1)) * s;
+            z = (matrix.get(0,2) + matrix.get(2,0)) * s;
+            w = (matrix.get(2,1) - matrix.get(1,2)) * s;
         } else if (matrix.get(1,1) > matrix.get(2,2)) {
             double s = Math.sqrt(1.0f + matrix.get(1,1) - matrix.get(0,0) - matrix.get(2,2)); // |s|>=1
-            x2 = s * 0.5f; // |y| >= .5
+            y = s * 0.5f; // |y| >= .5
             s = 0.5f / s;
-            x1 = (matrix.get(1,0) + matrix.get(0,1)) * s;
-            x3 = (matrix.get(2,1) + matrix.get(1,2)) * s;
-            x0 = (matrix.get(0,2) - matrix.get(2,0)) * s;
+            x = (matrix.get(1,0) + matrix.get(0,1)) * s;
+            z = (matrix.get(2,1) + matrix.get(1,2)) * s;
+            w = (matrix.get(0,2) - matrix.get(2,0)) * s;
         } else {
             double s = Math.sqrt(1.0f + matrix.get(2,2) - matrix.get(0,0) - matrix.get(1,1)); // |s|>=1
-            x3 = s * 0.5f; // |z| >= .5
+            z = s * 0.5f; // |z| >= .5
             s = 0.5f / s;
-            x1 = (matrix.get(0,2) + matrix.get(2,0)) * s;
-            x2 = (matrix.get(2,1) + matrix.get(1,2)) * s;
-            x0 = (matrix.get(1,0) - matrix.get(0,1)) * s;
+            x = (matrix.get(0,2) + matrix.get(2,0)) * s;
+            y = (matrix.get(2,1) + matrix.get(1,2)) * s;
+            w = (matrix.get(1,0) - matrix.get(0,1)) * s;
         }
 
         return this;
@@ -347,18 +351,18 @@ public class Quaternion {
 
         // compute xs/ys/zs first to save 6 multiplications, since xs/ys/zs
         // will be used 2-4 times each.
-        double xs = x1 * s;
-        double ys = x2 * s;
-        double zs = x3 * s;
-        double xx = x1 * xs;
-        double xy = x1 * ys;
-        double xz = x1 * zs;
-        double xw = x0 * xs;
-        double yy = x2 * ys;
-        double yz = x2 * zs;
-        double yw = x0 * ys;
-        double zz = x3 * zs;
-        double zw = x0 * zs;
+        double xs = x * s;
+        double ys = y * s;
+        double zs = z * s;
+        double xx = x * xs;
+        double xy = x * ys;
+        double xz = x * zs;
+        double xw = w * xs;
+        double yy = y * ys;
+        double yz = y * zs;
+        double yw = w * ys;
+        double zz = z * zs;
+        double zw = w * zs;
 
         // using s=2/norm (instead of 1/norm) saves 9 multiplications by 2 here
         result.set(0,0,1 - (yy + zz));
@@ -381,7 +385,7 @@ public class Quaternion {
      * @return the sum of the squared components (not negative)
      */
     public double norm() {
-        return x0 * x0 + x1 * x1 + x2 * x2 + x3 * x3;
+        return w * w + x * x + y * y + z * z;
     }
 
     /**
@@ -392,7 +396,7 @@ public class Quaternion {
      * @return a new Quaternion
      */
     public Quaternion subtract(Quaternion q) {
-        return new Quaternion(x0- q.x0, x1 - q.x1, x2 - q.x2, x3 - q.x3);
+        return new Quaternion(w - q.w, x - q.x, y - q.y, z - q.z);
     }
 
     /**
@@ -406,19 +410,19 @@ public class Quaternion {
      */
     public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
         // Create a local quaternion to store the interpolated quaternion
-        if (q1.x1 == q2.x1 && q1.x2 == q2.x2 && q1.x3 == q2.x3 && q1.x0 == q2.x0) {
+        if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             this.set(q1);
             return this;
         }
 
-        double result = (q1.x1 * q2.x1) + (q1.x2 * q2.x2) + (q1.x3 * q2.x3) + (q1.x0 * q2.x0);
+        double result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 
         if (result < 0.0f) {
             // Negate the second quaternion and the result of the dot product
-            q2.x1 = -q2.x1;
-            q2.x2 = -q2.x2;
-            q2.x3 = -q2.x3;
-            q2.x0 = -q2.x0;
+            q2.x = -q2.x;
+            q2.y = -q2.y;
+            q2.z = -q2.z;
+            q2.w = -q2.w;
             result = -result;
         }
 
@@ -442,10 +446,10 @@ public class Quaternion {
         // Calculate the x, y, z and w values for the quaternion by using a
         // special
         // form of linear interpolation for quaternions.
-        this.x1 = (scale0 * q1.x1) + (scale1 * q2.x1);
-        this.x2 = (scale0 * q1.x2) + (scale1 * q2.x2);
-        this.x3 = (scale0 * q1.x3) + (scale1 * q2.x3);
-        this.x0 = (scale0 * q1.x0) + (scale1 * q2.x0);
+        this.x = (scale0 * q1.x) + (scale1 * q2.x);
+        this.y = (scale0 * q1.y) + (scale1 * q2.y);
+        this.z = (scale0 * q1.z) + (scale1 * q2.z);
+        this.w = (scale0 * q1.w) + (scale1 * q2.w);
 
         // Return the interpolated quaternion
         return this;
@@ -454,14 +458,7 @@ public class Quaternion {
     /**
      * Helper function to print the values of the quaternion
      */
-    public void print() {
-        System.out.println("X0: " + x0);
-        System.out.println("X1: " + x1);
-        System.out.println("X2: " + x2);
-        System.out.println("X3: " + x3);
-    }
-
-    public static void main(String[] args) {
-
+    public String toString() {
+        return "W: " + w + " X: " + x + " Y: " + y + " Z: " + z;
     }
 }

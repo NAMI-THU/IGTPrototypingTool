@@ -1,7 +1,5 @@
 package util;
 
-import org.opencv.core.Mat;
-
 public class Vector3D {
 
     /**
@@ -32,9 +30,6 @@ public class Vector3D {
 
     /**
      * Create a vector where the components are set to the parameters
-     * @param x the desired x component of the vector
-     * @param y the desired y component of the vector
-     * @param z the desired z component of the vector
      */
     public Vector3D(double[] arr) {
         if (arr.length == 3) {

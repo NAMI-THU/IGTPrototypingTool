@@ -62,10 +62,10 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         coordinate_y = t.getY();
         coordinate_z = t.getZ();
 
-        rotation_r = t.getRotation().getRotationMatrix2QuaturnionW();
-        rotation_x = t.getRotation().getRotationMatrix2QuaturnionX();
-        rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
-        rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
+        rotation_r = t.getRotation().getW();
+        rotation_x = t.getRotation().getX();
+        rotation_y = t.getRotation().getY();
+        rotation_z = t.getRotation().getZ();
 
         for (Tool cur_tool : toolList) {
             if (cur_tool.getName().equals(n)) {
