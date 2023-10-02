@@ -173,11 +173,13 @@ public class VisualizationController implements Controller {
 
     public void addSTLToTreeView() {
         STLModel[] stlModels = visualizationManager.getSTLModels();
-        TreeItem<String> stlBranch = new TreeItem<>("Files");
-        root.getChildren().add(stlBranch);
-        for (STLModel model : stlModels) {
-            TreeItem<String> stlFile = new TreeItem<>(model.getName());
-            stlBranch.getChildren().add(stlFile);
+        if (stlModels != null) {
+            TreeItem<String> stlBranch = new TreeItem<>("Files");
+            root.getChildren().add(stlBranch);
+            for (STLModel model : stlModels) {
+                TreeItem<String> stlFile = new TreeItem<>(model.getName());
+                stlBranch.getChildren().add(stlFile);
+            }
         }
     }
 

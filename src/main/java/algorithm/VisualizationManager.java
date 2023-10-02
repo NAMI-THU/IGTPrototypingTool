@@ -207,8 +207,8 @@ public class VisualizationManager {
                     stlModels[i].transformPosition(new Matrix3D(arr));
                     logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.log(Level.WARNING, "Error reading STL file");
+                    logger.log(Level.WARNING, "Last STL File could not be loaded");
+                    stlModels = null;
                 }
             }
         } catch (IOException | ParseException e) {
