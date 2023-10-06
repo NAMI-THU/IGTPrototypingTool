@@ -62,9 +62,9 @@ public class STLModel {
     }
 
     public void setPos(Vector3D newPos) {
-        meshView.setTranslateX(newPos.get(0));
-        meshView.setTranslateY(newPos.get(1));
-        meshView.setTranslateZ(newPos.get(2));
+        meshView.setTranslateX(newPos.getX());
+        meshView.setTranslateY(newPos.getY());
+        meshView.setTranslateZ(newPos.getZ());
     }
 
     public void setVisible(boolean val) {

@@ -31,10 +31,8 @@ public class Vector3D {
     }
 
     /**
-     * Create a vector where the components are set to the parameters
-     * @param x the desired x component of the vector
-     * @param y the desired y component of the vector
-     * @param z the desired z component of the vector
+     * Create a vector where the components are set to a 3-dimensional array
+     * @param arr the vector as a 3d array
      */
     public Vector3D(double[] arr) {
         if (arr.length == 3) {
@@ -55,16 +53,26 @@ public class Vector3D {
             vector[i] = num;
         }
     }
+    /**
+     * Return the x component of the vector
+     *
+     * @return the x component of the vector
+     */
+    public double getX() { return vector[0]; }
 
     /**
-     * Method to get the value at a given position
+     * Return the y component of the vector
      *
-     * @param i the position
-     * @return the value at position i
+     * @return the y component of the vector
      */
-    public double get(int i) {
-        return vector[i];
-    }
+    public double getY() { return vector[1]; }
+
+    /**
+     * Return the z component of the vector
+     *
+     * @return the z component of the vector
+     */
+    public double getZ() { return vector[2]; }
 
     /**
      * Gets the magnitude of the vector
@@ -103,7 +111,7 @@ public class Vector3D {
     }
 
     /**
-     * Scalar multiply a vector with a number
+     * Scalar multiply the current vector with a number
      *
      * @param scalar the scalar
      */
@@ -111,6 +119,20 @@ public class Vector3D {
         for (int i = 0; i < vector.length; i++) {
             vector[i] *= scalar;
         }
+    }
+
+    /**
+     * Get the distance from the current vector to another vector
+     *
+     * @param other the other vector
+     * @return the distance from the current to the other vector
+     */
+    public double distTo(Vector3D other) {
+        double sum = 0;
+        for (int i = 0; i < this.vector.length; i++) {
+            sum += this.vector[i] - other.vector[i];
+        }
+        return Math.sqrt(sum);
     }
     /**
      * Helper function to show the vector on the console

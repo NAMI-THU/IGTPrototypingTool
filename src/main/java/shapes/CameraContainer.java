@@ -30,9 +30,9 @@ public class CameraContainer {
     }
 
     public void update() {
-        perspectiveCamera.setTranslateX(pos.get(0));
-        perspectiveCamera.setTranslateY(pos.get(1));
-        perspectiveCamera.setTranslateZ(pos.get(2));
+        perspectiveCamera.setTranslateX(pos.getX());
+        perspectiveCamera.setTranslateY(pos.getY());
+        perspectiveCamera.setTranslateZ(pos.getZ());
     }
 
     public PerspectiveCamera getPerspectiveCamera() {

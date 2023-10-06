@@ -1,13 +1,13 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
-import inputOutput.Tool;
-import javafx.geometry.Point3D;
+import inputOutput.TempTool;
 import util.Quaternion;
+import util.Vector3D;
 
 public class Measurement {
 
-    private Point3D point;
+    private Vector3D pos;
     @Expose
     private double error;
     @Expose
@@ -20,20 +20,20 @@ public class Measurement {
     @Expose
     private double rot_x, rot_y, rot_z, rot_r;
 
-    public Measurement(Tool tool) {
-        x = tool.getCoordinate().getX();
-        y = tool.getCoordinate().getY();
-        z = tool.getCoordinate().getZ();
+    public Measurement(TempTool tempTool) {
+        x = tempTool.getCoordinate().getX();
+        y = tempTool.getCoordinate().getY();
+        z = tempTool.getCoordinate().getZ();
 
-        rot_x = (float) tool.getRotationX();
-        rot_y = (float) tool.getRotationY();
-        rot_z = (float) tool.getRotationZ();
-        rot_r = (float) tool.getRotationR();
+        rot_x = (float) tempTool.getRotationX();
+        rot_y = (float) tempTool.getRotationY();
+        rot_z = (float) tempTool.getRotationZ();
+        rot_r = (float) tempTool.getRotationR();
 
-        this.setPoint(new Point3D(x,y,z));
+        this.setPos(new Vector3D(x,y,z));
         this.setRotation(new Quaternion().set(rot_r, rot_x, rot_y, rot_z));
-        this.setTimestamp(tool.getTimestamp());
-        this.setToolname(tool.getName());
+        this.setTimestamp(tempTool.getTimestamp());
+        this.setToolname(tempTool.getName());
 
 
     }
@@ -54,15 +54,12 @@ public class Measurement {
         rot_r = rotation.getX0();
     }
 
-    public Point3D getPoint() {
-        return point;
+    public Vector3D getPos() {
+        return pos;
     }
 
-    public void setPoint(Point3D point) {
-        this.point = point;
-        x = point.getX();
-        y = point.getY();
-        z = point.getZ();
+    public void setPos(Vector3D pos) {
+        this.pos = pos;
     }
 
     public double getTimestamp() {

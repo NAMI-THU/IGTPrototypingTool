@@ -2,7 +2,6 @@ package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 //import com.jme3.math.Quaternion;
-import javafx.scene.transform.Transform;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,7 +9,7 @@ import org.json.simple.parser.ParseException;
 import shapes.CameraContainer;
 import shapes.STLModel;
 import util.Quaternion;
-import inputOutput.Tool;
+import inputOutput.TempTool;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point3D;
@@ -115,15 +114,15 @@ public class VisualizationManager {
 
         // update after CSV/IGT data has been loaded
         trackingService.getTrackingDataSource().update();
-        ArrayList<Tool> tools = trackingService.getTrackingDataSource().getLastToolList();
+        ArrayList<TempTool> tempTools = trackingService.getTrackingDataSource().getLastToolList();
 
-        if (tools != null) {
-            trackingCones = new TrackingCone[tools.size()];
+        if (tempTools != null) {
+            trackingCones = new TrackingCone[tempTools.size()];
             for (int i = 0; i < trackingCones.length; i++) {
                 trackingCones[i] = new TrackingCone(36, 4, 10);
             }
 
-            trackingSpheres = new TrackingSphere[tools.size()];
+            trackingSpheres = new TrackingSphere[tempTools.size()];
             Color[] col = {Color.BLUE, Color.RED};
             for (int i = 0; i < trackingSpheres.length; i++) {
                 trackingSpheres[i] = new TrackingSphere(2, 5, col[i], col[i]);
@@ -243,7 +242,7 @@ public class VisualizationManager {
 
         // loads the next set of tracking data
         trackingService.getTrackingDataSource().update();
-        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
         for (int i = 0; i < tools.size(); i++) {
             List<Measurement> measurements = tools.get(i).getMeasurement();
@@ -251,9 +250,9 @@ public class VisualizationManager {
             Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
             double[] eulerAngles = rotationMovement.toRadiansAngles(null);
 
-            double x = measurements.get(measurements.size() - 1).getPoint().getX();
-            double y = measurements.get(measurements.size() - 1).getPoint().getY();
-            double z = measurements.get(measurements.size() - 1).getPoint().getZ();
+            double x = measurements.get(measurements.size() - 1).getPos().getX();
+            double y = measurements.get(measurements.size() - 1).getPos().getY();
+            double z = measurements.get(measurements.size() - 1).getPos().getZ();
             // convert Quaternion to Euler
             double yaw = eulerAngles[0];
             double roll = eulerAngles[1];
@@ -453,7 +452,7 @@ public class VisualizationManager {
     private void handleMouse(SubScene subScene, CameraContainer cameraContainer) {
         subScene.setOnScroll(event -> {
             double deltaY = event.getDeltaY();
-            Vector3D movement = new Vector3D(cam_dir.get(0), cam_dir.get(1), cam_dir.get(2));
+            Vector3D movement = new Vector3D(cam_dir.getX(), cam_dir.getY(), cam_dir.getZ());
             movement.mult(deltaY);
             cameraContainer.move(movement);
         });

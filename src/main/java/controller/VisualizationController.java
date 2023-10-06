@@ -1,6 +1,6 @@
 package controller;
 
-import algorithm.ToolMeasure;
+import algorithm.Tool;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
 import javafx.beans.property.BooleanProperty;
@@ -157,7 +157,7 @@ public class VisualizationController implements Controller {
      *
      * @param tools the tools to get their names
      */
-    public void addTrackerToTreeView(List<ToolMeasure> tools) {
+    public void addTrackerToTreeView(List<Tool> tools) {
         TreeItem<String> trackerBranch = new TreeItem<>("Tracker");
         root.getChildren().add(trackerBranch);
         if (tools != null) {

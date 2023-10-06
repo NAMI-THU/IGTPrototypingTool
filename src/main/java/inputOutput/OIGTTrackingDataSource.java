@@ -28,12 +28,12 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
     public void connect(){
         if (myOpenIGTLinkConnection == null) {
             myOpenIGTLinkConnection = new OpenIGTLinkConnection();
-            toolList = new ArrayList<>();
+            tempToolList = new ArrayList<>();
         }
     }
 
     @Override
-    public ArrayList<Tool> update() {
+    public ArrayList<TempTool> update() {
         if(myOpenIGTLinkConnection == null){
             connect();
         }
@@ -43,7 +43,7 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
             for (OpenIGTLinkConnection.ToolData t : rawToolList)
                 this.setValues(t.name, t.t);
         }
-        return toolList;
+        return tempToolList;
     }
 
     /**
@@ -66,9 +66,9 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
         rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
 
-        for (Tool cur_tool : toolList) {
-            if (cur_tool.getName().equals(n)) {
-                cur_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
+        for (TempTool cur_Temp_tool : tempToolList) {
+            if (cur_Temp_tool.getName().equals(n)) {
+                cur_Temp_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
                         coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                         name);
                 return;
@@ -76,11 +76,11 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         }
 
 
-        Tool newTool = new Tool();
-        newTool.setData(timestamp, valid, coordinate_x, coordinate_y,
+        TempTool newTempTool = new TempTool();
+        newTempTool.setData(timestamp, valid, coordinate_x, coordinate_y,
                 coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                 name);
-        this.toolList.add(newTool);
+        this.tempToolList.add(newTempTool);
 
     }
 

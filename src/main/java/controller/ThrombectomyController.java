@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithm.Measurement;
-import algorithm.ToolMeasure;
+import algorithm.Tool;
 import algorithm.TrackingService;
 import javafx.animation.KeyFrame;
 import javafx.event.ActionEvent;
@@ -191,10 +191,10 @@ public class ThrombectomyController implements Controller {
      */
     private void updateThrombectomyDiagrams() {
 
-        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
         if (tools.isEmpty()) return;
 
-        for (ToolMeasure tool : tools) {
+        for (Tool tool : tools) {
 
             TrackingDataDisplay display = checkToolDisplayList(tool.getName());
             // clear old data
@@ -207,9 +207,9 @@ public class ThrombectomyController implements Controller {
                     break;
                 }
                 // invert tracking data, so display fits the experiment's setup
-                double x = measurements.get(measurements.size() - i).getPoint().getX();
-                double y = measurements.get(measurements.size() - i).getPoint().getY();
-                double z = measurements.get(measurements.size() - i).getPoint().getZ() * -1;
+                double x = measurements.get(measurements.size() - i).getPos().getX();
+                double y = measurements.get(measurements.size() - i).getPos().getY();
+                double z = measurements.get(measurements.size() - i).getPos().getZ() * -1;
 
                 display.addDataToSeries1(new XYChart.Data<>(x, y));
                 display.addDataToSeries2(new XYChart.Data<>(x, z));

@@ -254,13 +254,13 @@ public class AutoTrackController implements Controller {
         if(source == null || service == null){return;}
 
         source.update();
-        List<ToolMeasure> tools = service.loadNextData(1);
+        List<Tool> tools = service.loadNextData(1);
 
         if (tools.isEmpty()) return;
 
         lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
-            ToolMeasure tool = tools.get(i);
+            Tool tool = tools.get(i);
             if (dataSeries.size() <= i) {
                 var series = new XYChart.Series<Number, Number>();
                 series.setName(tool.getName());
@@ -272,7 +272,7 @@ public class AutoTrackController implements Controller {
 
             var series = dataSeries.get(i);
             var measurements = tool.getMeasurement();
-            var point = measurements.get(measurements.size() - 1).getPoint();
+            var point = measurements.get(measurements.size() - 1).getPos();
             var data = series.getData();
             var max_num_points = 4; // 1
 

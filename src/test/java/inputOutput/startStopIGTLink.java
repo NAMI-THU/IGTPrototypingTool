@@ -134,9 +134,9 @@ public class startStopIGTLink extends JFrame implements ActionListener {
                 ((OIGTTrackingDataSource) source).closeConnection();
             }
         } else {
-            ArrayList<Tool> tools = source.update();
+            ArrayList<TempTool> tempTools = source.update();
             System.out.print("Data: ");
-            for (Tool t : tools)
+            for (TempTool t : tempTools)
                 System.out.print("{" + t.getName() + ":"
                         + t.getCoordinate().getX() + ";"
                         + t.getCoordinate().getY() + ";"

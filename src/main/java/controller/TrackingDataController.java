@@ -26,12 +26,9 @@ import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import algorithm.VisualizationManager;
 import userinterface.TrackingDataDisplay;
-import javafx.stage.Stage;
 
 public class TrackingDataController implements Controller {
 
@@ -218,11 +215,11 @@ public class TrackingDataController implements Controller {
         // loads the next set of tracking data
         trackingService.getTrackingDataSource().update();
         // this returns tracking data from all tools at one point in time
-        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
         if (tools.isEmpty()) return;
 
-        for (ToolMeasure tool : tools) {
+        for (Tool tool : tools) {
 
             TrackingDataDisplay display = checkToolDisplayList(tool.getName());
             display.clearData();
@@ -233,9 +230,9 @@ public class TrackingDataController implements Controller {
                 if (li.size() - i < 0) {
                     break;
                 }
-                double x = li.get(li.size() - i).getPoint().getX();
-                double y = li.get(li.size() - i).getPoint().getY();
-                double z = li.get(li.size() - i).getPoint().getZ();
+                double x = li.get(li.size() - i).getPos().getX();
+                double y = li.get(li.size() - i).getPos().getY();
+                double z = li.get(li.size() - i).getPos().getZ();
 
                 // display position and rotation of tool
                 if (i == 1) {
