@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import util.Quaternion;
+import util.Vector3D;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;
@@ -33,8 +34,8 @@ public class AlgorithmTest {
 
         AverageMeasurement result = testTool.getAverageMeasurement();
 
-        Point3D expectedPoint = new Point3D(2, 2, 2);
-        Point3D avgPoint = result.getPoint();
+        Vector3D expectedPoint = new Vector3D(2, 2, 2);
+        Vector3D avgPoint = result.getPos();
 
         assertEquals(avgPoint.getX(), expectedPoint.getX());
         assertEquals(avgPoint.getY(), expectedPoint.getY());
@@ -158,15 +159,15 @@ public class AlgorithmTest {
         firstMeasurement = new Measurement();
         secondMeasurement = new Measurement();
 
-        Point3D p1 = new Point3D(1, 1, 1);
-        Point3D p2 = new Point3D(2, 2, 2);
+        Vector3D p1 = new Vector3D(1, 1, 1);
+        Vector3D p2 = new Vector3D(2, 2, 2);
         Quaternion quaternion1 = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
         Quaternion quaternion2 = new Quaternion(0.0f, (float) sin(PI / 4), 0, (float) sin(PI / 4));
         firstMeasurement.setRotation(quaternion1);
         secondMeasurement.setRotation(quaternion2);
 
-        firstAverangeMeasurement.setPoint(p1);
-        secondAverangeMeasurement.setPoint(p2);
+        firstAverangeMeasurement.setPos(p1);
+        secondAverangeMeasurement.setPos(p2);
     }
 
     private void setUpData() {
@@ -179,15 +180,15 @@ public class AlgorithmTest {
         Measurement measurement2 = new Measurement();
         Measurement measurement3 = new Measurement();
 
-        Point3D p1 = new Point3D(1, 1, 1);
-        Point3D p2 = new Point3D(2, 2, 2);
-        Point3D p3 = new Point3D(3, 3, 3);
+        Vector3D p1 = new Vector3D(1, 1, 1);
+        Vector3D p2 = new Vector3D(2, 2, 2);
+        Vector3D p3 = new Vector3D(3, 3, 3);
 
-        measurement1.setPoint(p1);
+        measurement1.setPos(p1);
         measurement1.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
-        measurement2.setPoint(p2);
+        measurement2.setPos(p2);
         measurement2.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
-        measurement3.setPoint(p3);
+        measurement3.setPos(p3);
         measurement3.setRotation(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
 
 
