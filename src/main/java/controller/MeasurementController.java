@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import algorithm.*;
 
 import inputOutput.CSVFileReader;
-import inputOutput.Tool;
+import inputOutput.TempTool;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
@@ -25,7 +25,7 @@ public class MeasurementController implements Controller {
     private int measurementCounter = 0;
     private Timer timer;
     private boolean timerOn = false;
-    private Map<String, ToolMeasure> storedMeasurements;
+    private Map<String, Tool> storedMeasurements;
     private Label statusLabel;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private CSVFileReader sourceFileReader;
@@ -59,8 +59,8 @@ public class MeasurementController implements Controller {
     private void updateToolList(){
         this.toolList.getItems().clear();
         List<String> list = new ArrayList<>();
-        for (Tool tool : trackingService.getTrackingDataSource().getLastToolList()) {
-            String name = tool.getName();
+        for (TempTool tempTool : trackingService.getTrackingDataSource().getLastToolList()) {
+            String name = tempTool.getName();
             list.add(name);
         }
         this.toolList.getItems().addAll(list);
@@ -96,7 +96,7 @@ public class MeasurementController implements Controller {
                 address.setText(f.getAbsolutePath());
                 sourceFileReader = new CSVFileReader(f.getAbsolutePath());
                 toolList.getItems().clear();
-                for (Tool t : sourceFileReader.update()) {
+                for (TempTool t : sourceFileReader.update()) {
                     toolList.getItems().add(t.getName());
                 }
                 loadToolMeasurementBtn.setDisable(false);
@@ -218,7 +218,7 @@ public class MeasurementController implements Controller {
         if(measurementList.getItems().size() > 0
                 && !measurementList.getSelectionModel().isEmpty()) {
 
-            ToolMeasure tool = (ToolMeasure) storedMeasurements.values()
+            Tool tool = (Tool) storedMeasurements.values()
                      .toArray()[measurementList.getSelectionModel().getSelectedIndex()];
             AverageMeasurement avgMes = tool.getAverageMeasurement();
 
@@ -256,8 +256,8 @@ public class MeasurementController implements Controller {
                             a.setContentText("The values you entered for the expected rotation are not valid.");
                             a.showAndWait();
                         }
-                        ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                        ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        Tool firstTool = (Tool) storedMeasurements.values().toArray()[0];
+                        Tool secondTool = (Tool) storedMeasurements.values().toArray()[1];
 
                         lCalcCR.setText(String.valueOf(TrackingDataProcessor.getAccuracyRotation(
                             expectedRotation,
@@ -267,8 +267,8 @@ public class MeasurementController implements Controller {
                     // Correctness Position
                     if (correctnessP.isSelected()) {
                         lCalcCP.setText("0,00");
-                        ToolMeasure firstTool = (ToolMeasure) storedMeasurements.values().toArray()[0];
-                        ToolMeasure secondTool = (ToolMeasure) storedMeasurements.values().toArray()[1];
+                        Tool firstTool = (Tool) storedMeasurements.values().toArray()[0];
+                        Tool secondTool = (Tool) storedMeasurements.values().toArray()[1];
                         lCalcCP.setText(String.valueOf(TrackingDataProcessor.getAccuracy(
                             Double.parseDouble(expDistance.getText()),
                             firstTool.getAverageMeasurement(),
@@ -304,7 +304,7 @@ public class MeasurementController implements Controller {
                 DataService loadDataService = new DataService();
                 loadDataService.setTrackingDataSource(sourceFileReader);
                 loadDataService.loadNextData(Integer.parseInt(numberToLoad.getText()), true);
-                ToolMeasure newMeasurement;
+                Tool newMeasurement;
 
                 newMeasurement = loadDataService.getToolByName(toolList
                         .getSelectionModel()

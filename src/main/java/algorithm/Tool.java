@@ -3,6 +3,7 @@ package algorithm;
 import com.google.gson.annotations.Expose;
 import javafx.geometry.Point3D;
 import util.Quaternion;
+import util.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +12,19 @@ import java.util.List;
  * The class ToolMeasure represents the name of a tool and
  * its respective measurements.
  */
-public class ToolMeasure {
+public class Tool {
 
     @Expose
     private String name;
     @Expose
     private final List<Measurement> measurements;
 
-    public ToolMeasure(String name) {
+    public Tool(String name) {
         this.name = name;
         this.measurements = new ArrayList<>();
     }
 
-    public ToolMeasure() {
+    public Tool() {
         this.measurements = new ArrayList<>();
     }
 
@@ -51,29 +52,15 @@ public class ToolMeasure {
      * @param avgPoint - average point of type Point3D
      * @return errors - of type list
      */
-    public List<Double> getErrors(Point3D avgPoint) {
+    public List<Double> getErrors(Vector3D avgPoint) {
         List<Double> errors = new ArrayList<>();
 
         for (int i = 0; i < measurements.size(); i++) {
-            Point3D point = measurements.get(i).getPoint();
-            double distance = getDistance(point, avgPoint);
+            Vector3D point = measurements.get(i).getPos();
+            double distance = point.distTo(avgPoint);
             errors.add(distance);
         }
         return errors;
-    }
-
-    /**
-     * This method calculates the distance of two points and uses the method
-     * distance from the class Point3D
-     *
-     * @param firstPoint  - of type Point3D
-     * @param secondPoint - of type Point3D
-     * @return distance - of type double
-     */
-
-    private double getDistance(Point3D firstPoint, Point3D secondPoint) {
-        double distance = firstPoint.distance(secondPoint);
-        return distance;
     }
 
     /**
@@ -90,12 +77,12 @@ public class ToolMeasure {
     public AverageMeasurement getAverageMeasurement() {
 
         int measureSize = measurements.size();
-        Point3D addPoint = new Point3D(0, 0, 0);
+        Vector3D addPoint = new Vector3D();
 
         for (int i = 0; i < measureSize; i++) {
             Measurement measurement = measurements.get(i);
-            Point3D point = measurement.getPoint();
-            addPoint = addPoint.add(point);
+            Vector3D point = measurement.getPos();
+            addPoint.add(point);
         }
 
         double averageX = addPoint.getX() / measureSize;
@@ -103,9 +90,9 @@ public class ToolMeasure {
         double averageZ = addPoint.getZ() / measureSize;
 
         AverageMeasurement averageMeasurement = new AverageMeasurement();
-        Point3D averagePoint = new Point3D(averageX, averageY, averageZ);
+        Vector3D averagePoint = new Vector3D(averageX, averageY, averageZ);
 
-        averageMeasurement.setPoint(averagePoint);
+        averageMeasurement.setPos(averagePoint);
         averageMeasurement.setRotation(getAverageRotation());
         averageMeasurement.setRotationJitter(this.getRotationJitter());
         averageMeasurement.setErrors(this.getErrors(averagePoint));

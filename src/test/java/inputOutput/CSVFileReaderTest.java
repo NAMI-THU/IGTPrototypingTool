@@ -23,13 +23,13 @@ public class CSVFileReaderTest {
                 .getPath();
         CSVFileReader file = new CSVFileReader(path);
         file.setRepeatMode(true);
-        List<Tool> record1stTime = file.update();
+        List<TempTool> record1stTime = file.update();
 
         file.update();
         file.update();
         file.update();
 
-        List<Tool> record2ndTime = file.update();
+        List<TempTool> record2ndTime = file.update();
         for (int i = 0; i < record1stTime.size(); ++i) {
             assertTrue(record1stTime.get(i).equals(record2ndTime.get(i)));
         }
@@ -42,7 +42,7 @@ public class CSVFileReaderTest {
                 .getResource("multiple-tools.csv")
                 .getPath();
         CSVFileReader reader = new CSVFileReader(path);
-        List<Tool> records = reader.update();
+        List<TempTool> records = reader.update();
 
         assertEquals(reader.getLastToolList(), records);
     }
@@ -81,7 +81,7 @@ public class CSVFileReaderTest {
     @Test
     public void testEmptyFile() throws IOException {
         CSVFileReader myReader = new CSVFileReader(new StringReader(""));
-        List<Tool> result = myReader.update();
+        List<TempTool> result = myReader.update();
         assertTrue(result.isEmpty());
     }
 
@@ -90,16 +90,16 @@ public class CSVFileReaderTest {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String path = loader.getResource("testdata.csv").getPath();
         CSVFileReader myReader = new CSVFileReader(path);
-        List<Tool> tools = myReader.update();
+        List<TempTool> tempTools = myReader.update();
 
         // Sample data loaded from the first measurement of the sample data
-        Tool actual = new Tool();
+        TempTool actual = new TempTool();
         actual.setData(2100502.0, 1.0, 77.987652886439, 12.3151565717349,
                 445.369278569562, -0.438100248347888, 0.80324400339826,
                 0.328079843044433, 0.23501246773358, "Tool0");
-        Tool tool = tools.get(0);
+        TempTool tempTool = tempTools.get(0);
 
-        assertTrue(tool.equals(actual));
+        assertTrue(tempTool.equals(actual));
     }
 
     @Test
@@ -110,23 +110,23 @@ public class CSVFileReaderTest {
                 .getPath();
         CSVFileReader myReader = new CSVFileReader(path);
 
-        Tool testTool1 = new Tool();
-        testTool1.setData(2100502, 1, 77.987652886439, 12.3151565717349,
+        TempTool testTempTool1 = new TempTool();
+        testTempTool1.setData(2100502, 1, 77.987652886439, 12.3151565717349,
                 445.369278569562, -0.438100248347888, 0.80324400339826,
                 0.328079843044433, 0.23501246773358, "Tool0");
 
-        Tool testTool2 = new Tool();
-        testTool2.setData(2100502, 1, 62.3730812318003, 5.13397572152332,
+        TempTool testTempTool2 = new TempTool();
+        testTempTool2.setData(2100502, 1, 62.3730812318003, 5.13397572152332,
                 436.379757362176, -0.469096638136285, 0.78435027049366,
                 0.319787545528856, 0.249957842426255, "Tool1");
 
         // read csv-file
-        List<Tool> testList = myReader.update();
+        List<TempTool> testList = myReader.update();
 
         // test tool1 correct import
-        assertTrue(testTool1.equals(testList.get(0)));
+        assertTrue(testTempTool1.equals(testList.get(0)));
 
         // test tool2 correct import
-        assertTrue(testTool2.equals(testList.get(1)));
+        assertTrue(testTempTool2.equals(testList.get(1)));
     }
 }

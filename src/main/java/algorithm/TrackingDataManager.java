@@ -1,6 +1,6 @@
 package algorithm;
 
-import inputOutput.Tool;
+import inputOutput.TempTool;
 import inputOutput.AbstractTrackingDataSource;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import java.util.logging.Logger;
  */
 public class TrackingDataManager {
 
-    List<ToolMeasure> toolMeasures = new ArrayList<>();
+    List<Tool> tools = new ArrayList<>();
     private AbstractTrackingDataSource source;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public List<ToolMeasure> getToolMeasures() {
-        return toolMeasures;
+    public List<Tool> getToolMeasures() {
+        return tools;
     }
 
     /**
@@ -27,7 +27,7 @@ public class TrackingDataManager {
      * the internal list of tools.
      */
     public void restartMeasurements() {
-        toolMeasures = new ArrayList<>();
+        tools = new ArrayList<>();
     }
 
     /**
@@ -38,30 +38,30 @@ public class TrackingDataManager {
      * @param countToGetNext ,
      * @return toolMeasures
      */
-    public List<ToolMeasure> getNextData(int countToGetNext) {
+    public List<Tool> getNextData(int countToGetNext) {
 
         if (source == null) {
             logger.log(Level.WARNING,"Tracking data source is not set. Aborting!");
-            return toolMeasures;
+            return tools;
         }
 
         for (double i = 1; i <= countToGetNext; i++) {
             /* from return value of update a new measurement will be created */
-            List<Tool> tools = source.getLastToolList();
+            List<TempTool> tempTools = source.getLastToolList();
 
-            if (tools.isEmpty()) {
+            if (tempTools.isEmpty()) {
                 logger.log(Level.WARNING,"Toollist is empty.");
                 break;
             }
 
-            for (Tool tool : tools) {
-                Measurement measurement = new Measurement(tool);
+            for (TempTool tempTool : tempTools) {
+                Measurement measurement = new Measurement(tempTool);
                 addMeasurementToTool(measurement);
             }
 
         }
 
-        return toolMeasures;
+        return tools;
     }
 
     public AbstractTrackingDataSource getSource() {
@@ -87,18 +87,18 @@ public class TrackingDataManager {
     private void addMeasurementToTool(Measurement measurement) {
 
         /* Check if tool exists */
-        for (ToolMeasure toolMeasure : toolMeasures) {
-            if (toolMeasure.getName().equals(measurement.getToolname())) {
+        for (Tool tool : tools) {
+            if (tool.getName().equals(measurement.getToolname())) {
 
                 /* added new measurements to the tool */
-                toolMeasure.addMeasurement(measurement);
+                tool.addMeasurement(measurement);
                 return;
             }
         }
 
         /* creation of a new tool */
-        ToolMeasure newTool = new ToolMeasure(measurement.getToolname());
+        Tool newTool = new Tool(measurement.getToolname());
         newTool.addMeasurement(measurement);
-        toolMeasures.add(newTool);
+        tools.add(newTool);
     }
 }

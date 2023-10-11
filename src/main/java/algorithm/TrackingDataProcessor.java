@@ -30,8 +30,7 @@ public class TrackingDataProcessor {
          * calculates the distance between the points of
          * firstAverageMeasurement and secondAverageMeasurement
          */
-        return getDistance(firstAverageMeasurement.getPoint(),
-                secondAverageMeasurement.getPoint()) - expectedDistance;
+        return firstAverageMeasurement.getPos().distTo(secondAverageMeasurement.getPos()) - expectedDistance;
     }
 
     /**

@@ -1,16 +1,15 @@
 package algorithm;
 
-import com.google.gson.JsonObject;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 //import com.jme3.math.Quaternion;
-import javafx.scene.control.TreeItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import shapes.CameraContainer;
+import shapes.STLModel;
 import util.Quaternion;
-import inputOutput.Tool;
+import inputOutput.TempTool;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point3D;
@@ -23,7 +22,6 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shapes.TrackingCone;
@@ -33,7 +31,6 @@ import util.Vector3D;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +56,7 @@ public class VisualizationManager {
     private Label statusLabel;
     private TrackingCone[] trackingCones;
     private TrackingSphere[] trackingSpheres;
-    private MeshView[] stlFiles;
+    private STLModel[] stlModels;
     private ScrollPane scrollPane;
     private Group meshGroup;
     private double mouseOldX, mouseOldY = 0;
@@ -71,8 +68,8 @@ public class VisualizationManager {
         this.statusLabel = statusLabel;
     }
 
-    public MeshView[] getMeshView() {
-        return stlFiles;
+    public STLModel[] getSTLModels() {
+        return stlModels;
     }
 
     public TrackingCone[] getTrackingCones() {
@@ -117,15 +114,15 @@ public class VisualizationManager {
 
         // update after CSV/IGT data has been loaded
         trackingService.getTrackingDataSource().update();
-        ArrayList<Tool> tools = trackingService.getTrackingDataSource().getLastToolList();
+        ArrayList<TempTool> tempTools = trackingService.getTrackingDataSource().getLastToolList();
 
-        if (tools != null) {
-            trackingCones = new TrackingCone[tools.size()];
+        if (tempTools != null) {
+            trackingCones = new TrackingCone[tempTools.size()];
             for (int i = 0; i < trackingCones.length; i++) {
                 trackingCones[i] = new TrackingCone(36, 4, 10);
             }
 
-            trackingSpheres = new TrackingSphere[tools.size()];
+            trackingSpheres = new TrackingSphere[tempTools.size()];
             Color[] col = {Color.BLUE, Color.RED};
             for (int i = 0; i < trackingSpheres.length; i++) {
                 trackingSpheres[i] = new TrackingSphere(2, 5, col[i], col[i]);
@@ -147,23 +144,15 @@ public class VisualizationManager {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
 
-        /*
-        List<File> fileList = new LinkedList<>();
-        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Bone (smoothed).stl"));
-        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Kidney (smoothed).stl"));
-        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Liver (smoothed).stl"));
-        fileList.add(new File("C:\\workspace\\Hiwi Job\\STL Files\\Niere\\Lung (smoothed).stl"));
-         */
-
         if (fileList != null) {
-            stlFiles = new MeshView[fileList.size()];
-
+            stlModels = new STLModel[fileList.size()];
             for (int i = 0; i < fileList.size(); i++) {
                 try {
                     importer.read(fileList.get(i));
                     Mesh mesh = importer.getImport();
-                    stlFiles[i] = new MeshView(mesh);
-                    stlFiles[i].getTransforms().addAll(
+                    String name = getSTLName(fileList.get(i));
+                    stlModels[i] = new STLModel(new MeshView(mesh), name, "ccccccff", true);
+                    stlModels[i].getMeshView().getTransforms().addAll(
                             //Rotate the Model by 180 degrees for correct display
                             new Rotate(180, Rotate.X_AXIS)
                     );
@@ -176,60 +165,62 @@ public class VisualizationManager {
         return fileList;
     }
 
-    public String[] loadLastSTLModels() {
+    public void loadLastSTLModels() {
         JSONParser jsonParser = new JSONParser();
         StlMeshImporter importer = new StlMeshImporter();
         String[] stlNames;
         try {
             JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
-            stlFiles = new MeshView[jsonSTLModels.size()];
-            stlNames = new String[jsonSTLModels.size()];
+            stlModels = new STLModel[jsonSTLModels.size()];
             for (int i = 0; i < jsonSTLModels.size(); i++) {
                 JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
                 try {
                     File file = new File(String.valueOf(jsonSTLModel.get("Path")));
                     importer.read(file);
                     Mesh mesh = importer.getImport();
-                    stlFiles[i] = new MeshView(mesh);
-                    stlFiles[i].getTransforms().addAll(
+
+                    boolean visible = Boolean.parseBoolean(jsonSTLModel.get("Visible").toString());
+                    String name = (String) jsonSTLModel.get("Name");
+                    String hex = (String) jsonSTLModel.get("Color");
+                    hex = hex.substring(2);
+
+                    stlModels[i] = new STLModel(new MeshView(mesh), name, hex, visible);
+                    stlModels[i].getMeshView().getTransforms().addAll(
                             //Rotate the Model by 180 degrees for correct display
                             new Rotate(180, Rotate.X_AXIS)
                     );
-                    boolean visible = Boolean.parseBoolean(jsonSTLModel.get("Visible").toString());
-                    stlFiles[i].setVisible(visible);
-                    stlNames[i] = (String) jsonSTLModel.get("Name");
-                    // Convert the hex string to a rgba color
-                    String hex = (String) jsonSTLModel.get("Color");
-                    hex = hex.substring(2);
-                    Color color = new Color(
-                            Integer.valueOf(hex.substring(0, 2), 16) / 255.0,
-                            Integer.valueOf(hex.substring(2, 4), 16)/ 255.0,
-                            Integer.valueOf(hex.substring(4, 6), 16)/ 255.0,
-                            Integer.valueOf(hex.substring(6, 8), 16)/ 255.0);
+                    double[] arr = new double[9];
+                    try {
+                        JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
+                        JSONArray transformationArray = (JSONArray) jsonTransformationMatrix.get("transformTracker");
 
-                    stlFiles[i].setMaterial(new PhongMaterial((color)));
+                        for (int j = 0; j < 3; j++) {
+                            for (int k = 0; k < 3; k++) {
+                                JSONArray row = (JSONArray) transformationArray.get(j);
+                                arr[k + j * 3] = (double) row.get(k);
+                            }
+                        }
+                    } catch (IOException | ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    stlModels[i].transformPosition(new Matrix3D(arr));
                     logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.log(Level.WARNING, "Error reading STL file");
+                    logger.log(Level.WARNING, "Last STL File could not be loaded");
+                    stlModels = null;
                 }
             }
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
-        return stlNames;
     }
 
-    private String[] getSTLNames(List<File> fileList) {
-        String[] names = new String[fileList.size()];
-        for (int i = 0; i < fileList.size(); i++) {
-            String name = fileList.get(i).toString();
-            int index = name.lastIndexOf("\\");
-            name = name.substring(index+1, name.length() - 4);
-            name = "STL " + name;
-            names[i] = name;
-        }
-        return names;
+    private String getSTLName(File file) {
+        String name = file.toString();
+        int index = name.lastIndexOf("\\");
+        name = name.substring(index+1, name.length() - 4);
+        name = "STL " + name;
+        return name;
     }
 
     /**
@@ -251,7 +242,7 @@ public class VisualizationManager {
 
         // loads the next set of tracking data
         trackingService.getTrackingDataSource().update();
-        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
         for (int i = 0; i < tools.size(); i++) {
             List<Measurement> measurements = tools.get(i).getMeasurement();
@@ -259,9 +250,9 @@ public class VisualizationManager {
             Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
             double[] eulerAngles = rotationMovement.toRadiansAngles(null);
 
-            double x = measurements.get(measurements.size() - 1).getPoint().getX();
-            double y = measurements.get(measurements.size() - 1).getPoint().getY();
-            double z = measurements.get(measurements.size() - 1).getPoint().getZ();
+            double x = measurements.get(measurements.size() - 1).getPos().getX();
+            double y = measurements.get(measurements.size() - 1).getPos().getY();
+            double z = measurements.get(measurements.size() - 1).getPos().getZ();
             // convert Quaternion to Euler
             double yaw = eulerAngles[0];
             double roll = eulerAngles[1];
@@ -288,14 +279,14 @@ public class VisualizationManager {
                 try {
                     JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
                     JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-                    trackingCones[i].setTranslateX(x + (Double) offset.get(0));
-                    trackingCones[i].setTranslateY(y + (Double) offset.get(1));
-                    trackingCones[i].setTranslateZ(z + (Double) offset.get(2));
+                    trackingCones[i].setTranslateX(x + (double) offset.get(0));
+                    trackingCones[i].setTranslateY(y + (double) offset.get(1));
+                    trackingCones[i].setTranslateZ(z + (double) offset.get(2));
                     matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
 
-                    trackingSpheres[i].setTranslateX(x + (Double) offset.get(0));
-                    trackingSpheres[i].setTranslateY(y + (Double) offset.get(1));
-                    trackingSpheres[i].setTranslateZ(z + (Double) offset.get(2));
+                    trackingSpheres[i].setTranslateX(x + (double) offset.get(0));
+                    trackingSpheres[i].setTranslateY(y + (double) offset.get(1));
+                    trackingSpheres[i].setTranslateZ(z + (double) offset.get(2));
                     matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
@@ -303,7 +294,7 @@ public class VisualizationManager {
 
             }
 
-            if (stlFiles != null) {
+            if (stlModels != null) {
                 checkBounds();
             }
         }
@@ -346,9 +337,8 @@ public class VisualizationManager {
     private void checkBounds() {
         if (visualizeCone.get()) {
             for (TrackingCone trackingCone : trackingCones) {
-                for (MeshView stlFile : stlFiles
-                ) {
-                    if (trackingCone.getBoundsInParent().intersects(stlFile.getBoundsInParent())) {
+                for (STLModel stlModel : stlModels) {
+                    if (trackingCone.getBoundsInParent().intersects(stlModel.getMeshView().getBoundsInParent())) {
                         trackingCone.setMaterial(new PhongMaterial(Color.RED));
                     }
                 }
@@ -386,8 +376,10 @@ public class VisualizationManager {
         Group root = new Group();
 
         // If no stlFiles are loaded
-        if(stlFiles != null) {
-            root.getChildren().addAll(stlFiles);
+        if(stlModels != null) {
+            for (STLModel model : stlModels) {
+                root.getChildren().add(model.getMeshView());
+            }
         }
 
         if (trackingCones == null && trackingSpheres == null) {
@@ -460,7 +452,7 @@ public class VisualizationManager {
     private void handleMouse(SubScene subScene, CameraContainer cameraContainer) {
         subScene.setOnScroll(event -> {
             double deltaY = event.getDeltaY();
-            Vector3D movement = new Vector3D(cam_dir.get(0), cam_dir.get(1), cam_dir.get(2));
+            Vector3D movement = new Vector3D(cam_dir.getX(), cam_dir.getY(), cam_dir.getZ());
             movement.mult(deltaY);
             cameraContainer.move(movement);
         });

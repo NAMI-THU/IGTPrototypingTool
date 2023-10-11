@@ -21,7 +21,7 @@ public class AlgorithmTest {
     Measurement secondMeasurement;
     private TrackingDataProcessor processor;
     private DataService dataService;
-    private ToolMeasure testTool;
+    private Tool testTool;
 
     @Test
     /**
@@ -137,7 +137,7 @@ public class AlgorithmTest {
         dataService = new DataService();
         setUpData();
 
-        ToolMeasure result = null;
+        Tool result = null;
 
         try {
             result = dataService.getToolByName("TestTool");
@@ -172,7 +172,7 @@ public class AlgorithmTest {
     private void setUpData() {
 
         processor = new TrackingDataProcessor();
-        testTool = new ToolMeasure("TestTool");
+        testTool = new Tool("TestTool");
         List<Measurement> measurements = new ArrayList<>();
 
         Measurement measurement1 = new Measurement();
