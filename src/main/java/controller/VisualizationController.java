@@ -12,15 +12,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 import shapes.STLModel;
 import shapes.TrackingCone;
 import shapes.TrackingSphere;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -144,7 +144,7 @@ public class VisualizationController implements Controller {
             }
             try {
                 FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-                file.write(jsonSTLModels.toJSONString());
+                file.write(jsonSTLModels.toString());
                 file.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -355,13 +355,13 @@ public class VisualizationController implements Controller {
      * @param value the new value of the attribute
      */
     private void changeAttributeOfSTL(int index, String attribute, String value) {
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
+            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
+            JSONObject jsonSTLModels = new JSONObject(jsonString);
             JSONObject updatedModels = new JSONObject();
 
-            for (int i = 0; i < jsonSTLModels.size(); i++) {
-                JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
+            for (int i = 0; i < jsonSTLModels.length(); i++) {
+                JSONObject jsonSTLModel = jsonSTLModels.getJSONObject("STL " + i);
                 if (i == index) {
                     jsonSTLModel.put(attribute, value);
                 }
@@ -369,12 +369,12 @@ public class VisualizationController implements Controller {
             }
             try {
                 FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-                file.write(jsonSTLModels.toJSONString());
+                file.write(jsonSTLModels.toString());
                 file.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -386,11 +386,11 @@ public class VisualizationController implements Controller {
      * @return The desired json object
      */
     private JSONObject getSelectedJSON(int index) {
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
-            return  (JSONObject) jsonSTLModels.get("STL " + index);
-        } catch (IOException | ParseException e) {
+            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
+            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            return jsonSTLModels.getJSONObject("STL " + index);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

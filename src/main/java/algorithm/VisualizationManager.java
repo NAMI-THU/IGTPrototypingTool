@@ -1,11 +1,8 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-//import com.jme3.math.Quaternion;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import shapes.CameraContainer;
 import shapes.STLModel;
 import util.Quaternion;
@@ -30,6 +27,7 @@ import util.Matrix3D;
 import util.Vector3D;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -166,22 +164,22 @@ public class VisualizationManager {
     }
 
     public void loadLastSTLModels() {
-        JSONParser jsonParser = new JSONParser();
         StlMeshImporter importer = new StlMeshImporter();
         String[] stlNames;
         try {
-            JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
-            stlModels = new STLModel[jsonSTLModels.size()];
-            for (int i = 0; i < jsonSTLModels.size(); i++) {
-                JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
+            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
+            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            stlModels = new STLModel[jsonSTLModels.length()];
+            for (int i = 0; i < jsonSTLModels.length(); i++) {
+                JSONObject jsonSTLModel = jsonSTLModels.getJSONObject("STL " + i);
                 try {
-                    File file = new File(String.valueOf(jsonSTLModel.get("Path")));
+                    File file = new File(jsonSTLModel.getString("Path"));
                     importer.read(file);
                     Mesh mesh = importer.getImport();
 
-                    boolean visible = Boolean.parseBoolean(jsonSTLModel.get("Visible").toString());
-                    String name = (String) jsonSTLModel.get("Name");
-                    String hex = (String) jsonSTLModel.get("Color");
+                    boolean visible = jsonSTLModel.getBoolean("Visible");
+                    String name = jsonSTLModel.getString("Name");
+                    String hex = jsonSTLModel.getString("Color");
                     hex = hex.substring(2);
 
                     stlModels[i] = new STLModel(new MeshView(mesh), name, hex, visible);
@@ -191,26 +189,27 @@ public class VisualizationManager {
                     );
                     double[] arr = new double[9];
                     try {
-                        JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
-                        JSONArray transformationArray = (JSONArray) jsonTransformationMatrix.get("transformTracker");
+                        var jsonMatrixString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
+                        JSONObject jsonTransformationMatrix = new JSONObject(jsonMatrixString);
+                        JSONArray transformationArray = jsonTransformationMatrix.getJSONArray("transformTracker");
 
                         for (int j = 0; j < 3; j++) {
                             for (int k = 0; k < 3; k++) {
-                                JSONArray row = (JSONArray) transformationArray.get(j);
-                                arr[k + j * 3] = (double) row.get(k);
+                                JSONArray row = transformationArray.getJSONArray(j);
+                                arr[k + j * 3] = row.getDouble(k);
                             }
                         }
-                    } catch (IOException | ParseException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                     stlModels[i].transformPosition(new Matrix3D(arr));
-                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
+                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.getString("Path"));
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Last STL File could not be loaded");
                     stlModels = null;
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -275,20 +274,20 @@ public class VisualizationManager {
             }
 
             if (trackingCones != null && trackingSpheres != null) {
-                JSONParser jsonParser = new JSONParser();
                 try {
-                    JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
-                    JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-                    trackingCones[i].setTranslateX(x + (double) offset.get(0));
-                    trackingCones[i].setTranslateY(y + (double) offset.get(1));
-                    trackingCones[i].setTranslateZ(z + (double) offset.get(2));
+                    var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
+                    JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
+                    JSONArray offset = jsonTransformationMatrix.getJSONArray("trackerOffset");
+                    trackingCones[i].setTranslateX(x + offset.getDouble(0));
+                    trackingCones[i].setTranslateY(y + offset.getDouble(1));
+                    trackingCones[i].setTranslateZ(z + offset.getDouble(2));
                     matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
 
-                    trackingSpheres[i].setTranslateX(x + (double) offset.get(0));
-                    trackingSpheres[i].setTranslateY(y + (double) offset.get(1));
-                    trackingSpheres[i].setTranslateZ(z + (double) offset.get(2));
+                    trackingSpheres[i].setTranslateX(x + offset.getDouble(0));
+                    trackingSpheres[i].setTranslateY(y + offset.getDouble(1));
+                    trackingSpheres[i].setTranslateZ(z + offset.getDouble(2));
                     matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
-                } catch (IOException | ParseException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
 
@@ -421,18 +420,18 @@ public class VisualizationManager {
      */
     private CameraContainer initCamera() {
         cameraContainer = new CameraContainer(true, rotateX, rotateY);
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
-            JSONArray jsonArr = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-            double[] offset = new double[jsonArr.size()];
-            for (int i = 0; i < jsonArr.size(); i++) {
-                offset[i] = (double) jsonArr.get(i);
+            var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
+            JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
+            JSONArray jsonArr = jsonTransformationMatrix.getJSONArray("trackerOffset");
+            double[] offset = new double[jsonArr.length()];
+            for (int i = 0; i < jsonArr.length(); i++) {
+                offset[i] = jsonArr.getDouble(i);
             }
             Vector3D newPos = new Vector3D(offset);
             cameraContainer.setPos(newPos);
             cameraContainer.move(new Vector3D(0,0,-500));
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
