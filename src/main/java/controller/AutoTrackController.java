@@ -50,6 +50,7 @@ public class AutoTrackController implements Controller {
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
+    private static final Preferences userPreferencesGlobal = Preferences.userRoot().node("IGT_Settings");
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML
@@ -110,6 +111,7 @@ public class AutoTrackController implements Controller {
         connectionProgressSpinner.setVisible(false);
         captureProgressSpinner.setVisible(false);
         sourceChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> changeVideoView());
+        sourceChoiceBox.setTooltip(new Tooltip("If you have multiple cameras connected, enable \"Search for more videos\" in the settings view to see all available devices"));
         captureRateComboBox.getItems().addAll("1000", "2000", "5000", "10000", "30000");
         captureRateComboBox.getSelectionModel().select(0);
 
@@ -165,7 +167,7 @@ public class AutoTrackController implements Controller {
     private void loadAvailableVideoDevicesAsync() {
         connectionProgressSpinner.setVisible(true);
         new Thread(() -> {
-            createDeviceIdMapping(true);
+            createDeviceIdMapping(userPreferencesGlobal.getBoolean("searchForMoreVideos", false));
             Platform.runLater(() -> {
                 sourceChoiceBox.getItems().addAll(deviceIdMapping.keySet());
                 if (!deviceIdMapping.isEmpty()) {
@@ -181,10 +183,10 @@ public class AutoTrackController implements Controller {
     /**
      * Tests out available video device ids. All devices that don't throw an error are added to the list.
      * This is bad style, but openCV does not offer to list available devices.
-     * @param fast Whether all available devices shall be enumerated. If set to true, there's a minimal performance gain.
+     * @param exhaustiveSearch Whether all available devices shall be enumerated. If set to false, there's a minimal performance gain.
      */
-    private void createDeviceIdMapping(boolean fast) {
-        if(fast){
+    private void createDeviceIdMapping(boolean exhaustiveSearch) {
+        if(!exhaustiveSearch){
             deviceIdMapping.put("Default Camera",0);
             return;
         }

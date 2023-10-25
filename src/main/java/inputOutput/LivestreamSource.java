@@ -90,8 +90,9 @@ public class LivestreamSource extends AbstractImageSource {
      * @return <code>isConnected = false</code>
      */
     public boolean closeConnection() {
-
-        vc.release();
+        if(vc != null) {
+            vc.release();
+        }
         HighGui.destroyAllWindows();
         exit = true;
         isConnected = false;
