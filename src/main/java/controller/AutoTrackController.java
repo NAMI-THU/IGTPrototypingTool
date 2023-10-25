@@ -272,7 +272,8 @@ public class AutoTrackController implements Controller {
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
                 dataSeries.add(series);
                 series.getData().remove(0);
-                videoImagePlot.initSensorCurve(series);
+                // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
+//                videoImagePlot.initSensorCurve(series);
             }
 
             var series = dataSeries.get(i);
