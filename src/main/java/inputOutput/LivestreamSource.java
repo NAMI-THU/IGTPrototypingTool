@@ -1,5 +1,8 @@
 package inputOutput;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,13 +26,20 @@ public class LivestreamSource extends AbstractImageSource {
     private int deviceID = 0;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private static Map<Integer, LivestreamSource> instances = new TreeMap<>();
+    public static LivestreamSource forDevice(int id) {
+        if (!instances.containsKey(id)) {
+            instances.put(id, new LivestreamSource(id));
+        }
+        return instances.get(id);
+    }
     /**
      * constructs a new LivestreamSource object with the transmitted
      * <code>id</code>.
      *
      * @param id  describes which device is used
      */
-    public LivestreamSource(int id) {
+    private LivestreamSource(int id) {
         OpenCV.loadLocally();
         frameMatrix = new Mat();
         deviceID = id;
@@ -42,9 +52,12 @@ public class LivestreamSource extends AbstractImageSource {
      * @return whether the connection was successful or not
      */
     public boolean openConnection() {
+        if (vc != null && vc.isOpened()) {
+            logger.log(Level.INFO,"VideoCapture already initialized, reusing it.");
+            return true;
+        }
 
         vc = new VideoCapture(deviceID);
-
         if (vc.isOpened()) {
             logger.log(Level.INFO,"found VideoSource " + vc.toString());
             isConnected = true;
