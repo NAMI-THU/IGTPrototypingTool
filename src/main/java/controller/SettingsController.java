@@ -17,6 +17,7 @@ public class SettingsController implements Controller {
 
     @FXML public CheckBox consoleOutput;
     @FXML public CheckBox searchForMoreVideos;
+    @FXML public CheckBox exchangeYZ;
 
     @FXML
     private void changeConsoleOutput() {
@@ -27,6 +28,11 @@ public class SettingsController implements Controller {
     @FXML
     private void onSearchForMoreVideosClicked() {
         userPreferences.putBoolean("searchForMoreVideos", searchForMoreVideos.isSelected());
+    }
+
+    @FXML
+    private void onExchangeYZClicked(){
+        userPreferences.putBoolean("exchangeYZ", exchangeYZ.isSelected());
     }
 
     @Override
@@ -44,6 +50,9 @@ public class SettingsController implements Controller {
         var tooltip = new Tooltip("When enabled, the autotrack view will try to find and enumerate all video devices that are connected to the computer. This is helpful if you have more than one camera. However, this will increase the time needed before the view is ready");
         tooltip.setWrapText(true);
         searchForMoreVideos.setTooltip(tooltip);
+
+        var exchangeYZPreference = userPreferences.getBoolean("exchangeYZ", false);
+        exchangeYZ.setSelected(exchangeYZPreference);
     }
 
     @FXML

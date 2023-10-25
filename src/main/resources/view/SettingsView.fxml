@@ -22,9 +22,12 @@
         </TitledPane>
 
         <TitledPane text="Autotrack">
-            <VBox>
+            <VBox spacing="20">
                 <CheckBox fx:id="searchForMoreVideos" mnemonicParsing="false" onAction="#onSearchForMoreVideosClicked"
                           text="Search for more video devices"/>
+
+                <CheckBox fx:id="exchangeYZ" mnemonicParsing="false" onAction="#onExchangeYZClicked"
+                          text="2d transform: replace y by z"/>
             </VBox>
         </TitledPane>
     </VBox>

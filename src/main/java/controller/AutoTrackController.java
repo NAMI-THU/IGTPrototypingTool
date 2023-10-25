@@ -520,7 +520,11 @@ public class AutoTrackController implements Controller {
         var matrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
         var vector = new Mat(3,1, CvType.CV_64F);
         vector.put(0,0,x);
-        vector.put(1,0,y);
+        if(userPreferencesGlobal.getBoolean("exchangeYZ", false)){
+            vector.put(1,0,z);
+        }else{
+            vector.put(1, 0, y);
+        }
         vector.put(2,0,1);
 
         var pos_star = new Mat(2,1,CvType.CV_64F);
@@ -547,7 +551,7 @@ public class AutoTrackController implements Controller {
         vector.put(2,0,z);
         vector.put(3,0,1);
 
-        var pos_star = new Mat(3,1,CvType.CV_64F);
+        var pos_star = new Mat();
         Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
         //Core.perspectiveTransform();  // Maybe try this?
         double[] out = new double[3];

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
@@ -27,6 +28,8 @@ public class LivestreamSource extends AbstractImageSource {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private static Map<Integer, LivestreamSource> instances = new TreeMap<>();
+
+    private static final Preferences userPreferencesGlobal = Preferences.userRoot().node("IGT_Settings");
     public static LivestreamSource forDevice(int id) {
         if (!instances.containsKey(id)) {
             instances.put(id, new LivestreamSource(id));
@@ -57,7 +60,11 @@ public class LivestreamSource extends AbstractImageSource {
             return true;
         }
 
-        vc = new VideoCapture(deviceID);
+        vc = new VideoCapture(deviceID, Videoio.CAP_DSHOW);
+        // This will set the resolution to the highest possible
+        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, 1920);
+        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, 1080);
+
         if (vc.isOpened()) {
             logger.log(Level.INFO,"found VideoSource " + vc.toString());
             isConnected = true;
