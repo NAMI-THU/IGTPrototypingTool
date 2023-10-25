@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class AutoTrackController implements Controller {
@@ -49,6 +50,7 @@ public class AutoTrackController implements Controller {
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
@@ -314,6 +316,7 @@ public class AutoTrackController implements Controller {
                 gson.toJson(trackingData, fw);
             }
         } catch (IOException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error saving captured data", e);
             e.printStackTrace();
         }
     }
@@ -325,8 +328,8 @@ public class AutoTrackController implements Controller {
     public void on_browseOutputDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Output Directory");
-        var lastLocation = userPreferences.get("outputDirectory",System.getProperty("user.home"));
-        directoryChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("outputDirectory",System.getProperty("user.home"));
+        directoryChooser.setInitialDirectory(lastLocationFile);
         var directory = directoryChooser.showDialog(null);
         if (directory != null) {
             outputPathField.setText(directory.getAbsolutePath());
@@ -345,6 +348,7 @@ public class AutoTrackController implements Controller {
             try {
                 Desktop.getDesktop().open(new File(directory));
             } catch (IOException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error opening output directory", e);
                 e.printStackTrace();
             }
         }
@@ -390,8 +394,8 @@ public class AutoTrackController implements Controller {
     public void on_importMatrix() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Matrix JSON");
-        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(lastLocationFile);
         var inputFile = fileChooser.showOpenDialog(null);
         if(inputFile == null){
             return;
@@ -404,6 +408,7 @@ public class AutoTrackController implements Controller {
             regMatrixStatusBox.setSelected(true);
             userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
             e.printStackTrace();
         }
     }
@@ -419,6 +424,7 @@ public class AutoTrackController implements Controller {
                 roiDirty = true;
                 regMatrixStatusBox.setSelected(true);
             }catch (FileNotFoundException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
                 e.printStackTrace();
             }
         }
@@ -436,8 +442,8 @@ public class AutoTrackController implements Controller {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Set save location for matrix json");
-        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(lastLocationFile);
         fileChooser.setInitialFileName("transformationMatrix.json");
         var saveFile = fileChooser.showSaveDialog(null);
         if(saveFile != null){
@@ -445,9 +451,20 @@ public class AutoTrackController implements Controller {
                 transformationMatrix.saveToJSON(saveFile);
                 userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
             } catch (IOException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error saving matrix", e);
                 e.printStackTrace();
             }
         }
+    }
+
+    private File getLastKnownFileLocation(String key, String defaultLocation){
+        var lastLocation = userPreferences.get(key,defaultLocation);
+        var lastLocationFile = new File(lastLocation);
+        if(!lastLocationFile.exists()){
+            logger.log(java.util.logging.Level.WARNING, "Last directory does not exist, default directory instead");
+            lastLocationFile = new File(defaultLocation);
+        }
+        return lastLocationFile;
     }
 
     /**
