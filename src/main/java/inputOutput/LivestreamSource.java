@@ -62,8 +62,8 @@ public class LivestreamSource extends AbstractImageSource {
 
         vc = new VideoCapture(deviceID, Videoio.CAP_DSHOW);
         // This will set the resolution to the highest possible
-        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, 1920);
-        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, 1080);
+        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, 1280);
+        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, 720);
 
         if (vc.isOpened()) {
             logger.log(Level.INFO,"found VideoSource " + vc.toString());
