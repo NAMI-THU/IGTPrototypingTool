@@ -285,7 +285,9 @@ public class AutoTrackController implements Controller {
             var max_num_points = 4; // 1
 
             var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
-            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2]));
+            var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
+            var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
+            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
             data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
             if(data.size() > max_num_points){
