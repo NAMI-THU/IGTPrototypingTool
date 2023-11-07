@@ -26,41 +26,30 @@ import java.util.List;
  * its respective measurements and the visualisation.
  */
 public class Tool {
-
     @Expose
     private String name;
     @Expose
-    private final List<Measurement> measurements;
-    private final NeedleProjection projection;
-    private final TrackingCone cone;
+    private List<Measurement> measurements;
+    private NeedleProjection projection;
+    private TrackingCone cone;
     private Vector3D pos;
+    private Matrix3D transformMatrix;
+    private Vector3D offsetVec;
 
     public Tool(String name) {
         this.name = name;
-        this.measurements = new ArrayList<>();
-        this.cone = new TrackingCone(36, 4, 10);
-        this.projection = new NeedleProjection();
-        this.projection.setVisible(false);
+        init();
     }
 
     public Tool() {
+        init();
+    }
+
+    public void init() {
         this.measurements = new ArrayList<>();
         this.cone = new TrackingCone(36, 4, 10);
         this.projection = new NeedleProjection();
         this.projection.setVisible(false);
-    }
-
-    public void show() {
-        Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
-        Matrix3D rotMat = rotationMovement.toRotationMatrix();
-
-        double x = measurements.get(measurements.size() - 1).getPos().getX();
-        double y = measurements.get(measurements.size() - 1).getPos().getY();
-        double z = measurements.get(measurements.size() - 1).getPos().getZ();
-
-        setPos(new Vector3D(x,y,z));
-        rotate(rotMat);
-
         JSONParser jsonParser = new JSONParser();
         try {
             JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
@@ -72,15 +61,27 @@ public class Tool {
                     arr[j + i * 3] = (double) row.get(j);
                 }
             }
-            Matrix3D transformMat = new Matrix3D(arr);
-            this.translate(transformMat);
-
+            transformMatrix = new Matrix3D(arr);
             JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-            Vector3D offsetVec = new Vector3D((double) offset.get(0), (double) offset.get(1), (double) offset.get(2));
-            movePos(offsetVec);
+            offsetVec = new Vector3D((double) offset.get(0), (double) offset.get(1), (double) offset.get(2));
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void show() {
+        Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
+        Matrix3D rotMat = rotationMovement.toRotationMatrix();
+
+        double x = measurements.get(measurements.size() - 1).getPos().getX();
+        double y = measurements.get(measurements.size() - 1).getPos().getY();
+        double z = measurements.get(measurements.size() - 1).getPos().getZ();
+
+        setPos(new Vector3D(x,y,z));
+        //rotate(rotMat);
+        translate(transformMatrix);
+        movePos(offsetVec);
+
     }
 
     private void translate(Matrix3D mat) {
