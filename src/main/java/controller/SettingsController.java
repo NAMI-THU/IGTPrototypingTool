@@ -4,11 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import util.CustomLogger;
 
@@ -17,7 +14,7 @@ public class SettingsController implements Controller {
 
     @FXML public CheckBox consoleOutput;
     @FXML public CheckBox searchForMoreVideos;
-    @FXML public CheckBox exchangeYZ;
+    @FXML public CheckBox verticalFG;
 
     @FXML
     private void changeConsoleOutput() {
@@ -31,8 +28,8 @@ public class SettingsController implements Controller {
     }
 
     @FXML
-    private void onExchangeYZClicked(){
-        userPreferences.putBoolean("exchangeYZ", exchangeYZ.isSelected());
+    private void onVerticalFGClicked(){
+        userPreferences.putBoolean("verticalFieldGenerator", verticalFG.isSelected());
     }
 
     @Override
@@ -52,7 +49,7 @@ public class SettingsController implements Controller {
         searchForMoreVideos.setTooltip(tooltip);
 
         var exchangeYZPreference = userPreferences.getBoolean("exchangeYZ", false);
-        exchangeYZ.setSelected(exchangeYZPreference);
+        verticalFG.setSelected(exchangeYZPreference);
     }
 
     @FXML

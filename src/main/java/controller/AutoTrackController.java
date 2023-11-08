@@ -289,7 +289,8 @@ public class AutoTrackController implements Controller {
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
-            data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
+            data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
+
             if(data.size() > max_num_points){
                 data.remove(0);
             }
@@ -442,7 +443,12 @@ public class AutoTrackController implements Controller {
         transformationMatrix.trackingPoints = new float[4][];
         for(int i = 0;i<clicked_image_points.size();i++){
             transformationMatrix.imagePoints[i] = new float[]{(float) clicked_image_points.get(i).x, (float) clicked_image_points.get(i).y, (float) clicked_image_points.get(i).z};
-            transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
+
+            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
+                transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).z, (float) clicked_tracker_points.get(i).y};
+            }else {
+                transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
+            }
         }
 
         FileChooser fileChooser = new FileChooser();
@@ -522,7 +528,7 @@ public class AutoTrackController implements Controller {
         var matrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
         var vector = new Mat(3,1, CvType.CV_64F);
         vector.put(0,0,x);
-        if(userPreferencesGlobal.getBoolean("exchangeYZ", false)){
+        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
             vector.put(1,0,z);
         }else{
             vector.put(1, 0, y);
@@ -579,7 +585,7 @@ public class AutoTrackController implements Controller {
             }
 
             clicked_image_points.add(new Point3(x, y, 0.0));
-            if(userPreferencesGlobal.getBoolean("exchangeYZ", false)) {
+            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).z_raw, trackingData.get(0).y_raw));
             }else {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
