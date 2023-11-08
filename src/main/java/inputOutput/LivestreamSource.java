@@ -1,18 +1,19 @@
 package inputOutput;
 
-import java.util.HashMap;
+import nu.pattern.OpenCV;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.highgui.HighGui;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
+
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import org.opencv.core.Mat;
-import org.opencv.highgui.HighGui;
-import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
-
-import nu.pattern.OpenCV;
+import static org.opencv.imgproc.Imgproc.resize;
 
 /**
  * provides the livestream footage from a webcam, ultrasound device or any other
@@ -22,7 +23,8 @@ import nu.pattern.OpenCV;
  *
  */
 public class LivestreamSource extends AbstractImageSource {
-
+    private final int desiredWidth = 640;
+    private final int desiredHeight = 480;
     private VideoCapture vc;
     private int deviceID = 0;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -60,10 +62,10 @@ public class LivestreamSource extends AbstractImageSource {
             return true;
         }
 
-        vc = new VideoCapture(deviceID, Videoio.CAP_DSHOW);
+        vc = new VideoCapture(deviceID);
         // This will set the resolution to the highest possible
-        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, 1280);
-        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, 720);
+        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, desiredHeight);
+        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, desiredWidth);
 
         if (vc.isOpened()) {
             logger.log(Level.INFO,"found VideoSource " + vc.toString());
@@ -88,6 +90,8 @@ public class LivestreamSource extends AbstractImageSource {
         if (frameMatrix.empty()) {
             logger.log(Level.WARNING,"!!! Nothing captured from webcam !!!");
         }
+
+        resize(frameMatrix, frameMatrix, new Size(desiredWidth,desiredHeight));
 
         return frameMatrix;
     }
