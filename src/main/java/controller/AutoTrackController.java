@@ -292,7 +292,6 @@ public class AutoTrackController implements Controller {
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
-            System.out.println("x: " + shifted_points[0] + " y: " + shifted_points[1] + " z: " + shifted_points[2]);
 
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 

@@ -48,7 +48,7 @@ public class SettingsController implements Controller {
         tooltip.setWrapText(true);
         searchForMoreVideos.setTooltip(tooltip);
 
-        var exchangeYZPreference = userPreferences.getBoolean("exchangeYZ", false);
+        var exchangeYZPreference = userPreferences.getBoolean("verticalFieldGenerator", false);
         verticalFG.setSelected(exchangeYZPreference);
     }
 
