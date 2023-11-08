@@ -534,12 +534,13 @@ public class AutoTrackController implements Controller {
             cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
         }
         var vector = new Mat(3,1, CvType.CV_64F);
-        vector.put(0,0,x);
+
         if(useVerticalFieldGenerator){
-            vector.put(1,0,z);
+            vector.put(0,0,z);
         }else{
-            vector.put(1, 0, y);
+            vector.put(0,0,x);
         }
+        vector.put(1,0,y);
         vector.put(2,0,1);
 
         var pos_star = new Mat(2,1,CvType.CV_64F);
@@ -593,7 +594,7 @@ public class AutoTrackController implements Controller {
 
             clicked_image_points.add(new Point3(x, y, 0.0));
             if(useVerticalFieldGenerator) {
-                clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).z_raw, trackingData.get(0).y_raw));
+                clicked_tracker_points.add(new Point3(trackingData.get(0).z_raw, trackingData.get(0).y_raw, trackingData.get(0).x_raw));
             }else {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
             }
