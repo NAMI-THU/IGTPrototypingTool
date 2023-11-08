@@ -579,7 +579,12 @@ public class AutoTrackController implements Controller {
             }
 
             clicked_image_points.add(new Point3(x, y, 0.0));
-            clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
+            if(userPreferencesGlobal.getBoolean("exchangeYZ", false)) {
+                clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).z_raw, trackingData.get(0).y_raw));
+            }else {
+                clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
+            }
+
         }
     }
 }
