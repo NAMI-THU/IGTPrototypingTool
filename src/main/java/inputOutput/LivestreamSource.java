@@ -23,8 +23,8 @@ import static org.opencv.imgproc.Imgproc.resize;
  *
  */
 public class LivestreamSource extends AbstractImageSource {
-    private final int desiredWidth = 640;
-    private final int desiredHeight = 480;
+    private int desiredWidth;
+    private int desiredHeight;
     private VideoCapture vc;
     private int deviceID = 0;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -48,6 +48,9 @@ public class LivestreamSource extends AbstractImageSource {
         OpenCV.loadLocally();
         frameMatrix = new Mat();
         deviceID = id;
+
+        desiredWidth = userPreferencesGlobal.getInt("videoWidth", 640);
+        desiredHeight = userPreferencesGlobal.getInt("videoHeight", 480);
     }
 
     /**

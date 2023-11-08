@@ -6,6 +6,7 @@ import java.util.prefs.Preferences;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import util.CustomLogger;
 
@@ -15,6 +16,9 @@ public class SettingsController implements Controller {
     @FXML public CheckBox consoleOutput;
     @FXML public CheckBox searchForMoreVideos;
     @FXML public CheckBox verticalFG;
+
+    @FXML public TextField videoWidth;
+    @FXML public TextField videoHeight;
 
     @FXML
     private void changeConsoleOutput() {
@@ -50,6 +54,25 @@ public class SettingsController implements Controller {
 
         var exchangeYZPreference = userPreferences.getBoolean("verticalFieldGenerator", false);
         verticalFG.setSelected(exchangeYZPreference);
+
+        var videoWidthPreference = userPreferences.getInt("videoWidth", 640);
+        videoWidth.setText(String.valueOf(videoWidthPreference));
+        var videoHeightPreference = userPreferences.getInt("videoHeight", 480);
+        videoHeight.setText(String.valueOf(videoHeightPreference));
+
+        videoWidth.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                videoWidth.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            userPreferences.putInt("videoWidth", Integer.parseInt(videoWidth.getText()));
+        });
+
+        videoHeight.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                videoHeight.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            userPreferences.putInt("videoHeight", Integer.parseInt(videoHeight.getText()));
+        });
     }
 
     @FXML

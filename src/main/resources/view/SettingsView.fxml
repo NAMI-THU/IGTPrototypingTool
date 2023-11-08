@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
 <HBox spacing="40.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SettingsController">
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
@@ -19,6 +21,19 @@
          <VBox.margin>
             <Insets />
          </VBox.margin>
+        </TitledPane>
+
+        <TitledPane text="Videoinput">
+            <VBox spacing="10" >
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Video width"/>
+                    <TextField fx:id="videoWidth" prefWidth="50.0"/>
+                </HBox>
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Video height"/>
+                    <TextField fx:id="videoHeight" prefWidth="50.0" />
+                </HBox>
+            </VBox>
         </TitledPane>
 
         <TitledPane text="Autotrack">
