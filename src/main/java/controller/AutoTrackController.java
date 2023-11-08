@@ -102,7 +102,6 @@ public class AutoTrackController implements Controller {
     private final ObservableList<Point3> clicked_image_points = FXCollections.observableArrayList();
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
     private Mat cachedTransformMatrix = null;
-    private boolean useVerticalFieldGenerator = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -126,8 +125,6 @@ public class AutoTrackController implements Controller {
 
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
-
-        useVerticalFieldGenerator = userPreferencesGlobal.getBoolean("verticalFieldGenerator", false);
 
         loadAvailableVideoDevicesAsync();
     }
@@ -535,7 +532,7 @@ public class AutoTrackController implements Controller {
         }
         var vector = new Mat(3,1, CvType.CV_64F);
 
-        if(useVerticalFieldGenerator){
+        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
             vector.put(0,0,z);
         }else{
             vector.put(0,0,x);
@@ -593,7 +590,7 @@ public class AutoTrackController implements Controller {
             }
 
             clicked_image_points.add(new Point3(x, y, 0.0));
-            if(useVerticalFieldGenerator) {
+            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).z_raw, trackingData.get(0).y_raw, trackingData.get(0).x_raw));
             }else {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
