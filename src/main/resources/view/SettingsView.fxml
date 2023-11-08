@@ -26,7 +26,7 @@
                 <CheckBox fx:id="searchForMoreVideos" mnemonicParsing="false" onAction="#onSearchForMoreVideosClicked"
                           text="Search for more video devices"/>
 
-                <CheckBox fx:id="Vertical Fieldgenerator" mnemonicParsing="false" onAction="#onVerticalFGClicked"
+                <CheckBox fx:id="verticalFG" mnemonicParsing="false" onAction="#onVerticalFGClicked"
                           text="2d transform: replace y by z"/>
             </VBox>
         </TitledPane>

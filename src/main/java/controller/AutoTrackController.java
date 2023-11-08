@@ -101,6 +101,8 @@ public class AutoTrackController implements Controller {
 
     private final ObservableList<Point3> clicked_image_points = FXCollections.observableArrayList();
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
+    private Mat cachedTransformMatrix = null;
+    private boolean useVerticalFieldGenerator = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -124,6 +126,8 @@ public class AutoTrackController implements Controller {
 
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
+
+        useVerticalFieldGenerator = userPreferencesGlobal.getBoolean("verticalFieldGenerator", false);
 
         loadAvailableVideoDevicesAsync();
     }
@@ -288,6 +292,7 @@ public class AutoTrackController implements Controller {
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
+            System.out.println("x: " + shifted_points[0] + " y: " + shifted_points[1] + " z: " + shifted_points[2]);
 
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 
@@ -412,6 +417,7 @@ public class AutoTrackController implements Controller {
             transformationMatrix = TransformationMatrix.loadFromJSON(path);
             roiDirty = true;
             regMatrixStatusBox.setSelected(true);
+            cachedTransformMatrix = null;
             userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
             logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
@@ -429,6 +435,7 @@ public class AutoTrackController implements Controller {
                 transformationMatrix = TransformationMatrix.loadFromJSON(lastMatrixPath);
                 roiDirty = true;
                 regMatrixStatusBox.setSelected(true);
+                cachedTransformMatrix = null;
             }catch (FileNotFoundException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
                 e.printStackTrace();
@@ -443,12 +450,7 @@ public class AutoTrackController implements Controller {
         transformationMatrix.trackingPoints = new float[4][];
         for(int i = 0;i<clicked_image_points.size();i++){
             transformationMatrix.imagePoints[i] = new float[]{(float) clicked_image_points.get(i).x, (float) clicked_image_points.get(i).y, (float) clicked_image_points.get(i).z};
-
-            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
-                transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).z, (float) clicked_tracker_points.get(i).y};
-            }else {
-                transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
-            }
+            transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
         }
 
         FileChooser fileChooser = new FileChooser();
@@ -460,6 +462,9 @@ public class AutoTrackController implements Controller {
         if(saveFile != null){
             try {
                 transformationMatrix.saveToJSON(saveFile);
+                this.transformationMatrix = transformationMatrix;
+                regMatrixStatusBox.setSelected(true);
+                cachedTransformMatrix = null;
                 userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
             } catch (IOException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Error saving matrix", e);
@@ -484,9 +489,9 @@ public class AutoTrackController implements Controller {
      * @return The transformed image
      */
     private Mat applyImageTransformations(Mat mat){
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
 
         /*
         var imagePoints = transformationMatrix.getImagePoints();
@@ -524,11 +529,14 @@ public class AutoTrackController implements Controller {
      * @param z Z-Coordinate of the point - Ignored in the 2d version
      * @return The transformed point as array of length 3 (xyz)
      */
-    private double[] applyTrackingTransformation2d(double x, double y, double z){
-        var matrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+    private double[] applyTrackingTransformation2d(double x, double y, double z) {
+        // TODO: Cache matrix
+        if (cachedTransformMatrix == null){
+            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+        }
         var vector = new Mat(3,1, CvType.CV_64F);
         vector.put(0,0,x);
-        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
+        if(useVerticalFieldGenerator){
             vector.put(1,0,z);
         }else{
             vector.put(1, 0, y);
@@ -536,11 +544,11 @@ public class AutoTrackController implements Controller {
         vector.put(2,0,1);
 
         var pos_star = new Mat(2,1,CvType.CV_64F);
-        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
         double[] out = new double[3];
         out[0] = pos_star.get(0,0)[0];
         out[1] = pos_star.get(1,0)[0];
-        out[2] = z;
+        out[2] = 0;
         return out;
     }
 
@@ -585,7 +593,7 @@ public class AutoTrackController implements Controller {
             }
 
             clicked_image_points.add(new Point3(x, y, 0.0));
-            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
+            if(useVerticalFieldGenerator) {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).z_raw, trackingData.get(0).y_raw));
             }else {
                 clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
