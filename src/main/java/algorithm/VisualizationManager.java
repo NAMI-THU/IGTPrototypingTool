@@ -1,7 +1,8 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import org.json.simple.JSONArray;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -19,8 +20,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import shapes.NeedleProjection;
-import util.Matrix3D;
+import util.SmartGroup;
 import util.Vector3D;
 
 import java.io.*;
@@ -38,22 +38,23 @@ public class VisualizationManager {
     private static final int VIEWPORT_SIZE = 800;
     private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
     public static final int CAM_MOVEMENT = 25;
-    public Vector3D cam_dir = new Vector3D(0,0,1);
     private CameraContainer cameraContainer;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
-    private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-    private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
+    private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
+    private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+    private double centerX, centerY, centerZ;
+    private double anchorX, anchorY;
+    private double anchorAngleX = 0;
+    private double anchorAngleY = 0;
+    private final DoubleProperty angleX = new SimpleDoubleProperty(0);
+    private final DoubleProperty angleY = new SimpleDoubleProperty(0);
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
     private Label statusLabel;
-
-    //private TrackingCone[] trackingCones;
-    //private TrackingSphere[] trackingSpheres;
     private STLModel[] stlModels;
     private ScrollPane scrollPane;
     private Group meshGroup;
-    private double mouseOldX, mouseOldY = 0;
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
@@ -199,7 +200,7 @@ public class VisualizationManager {
         }
         statusLabel.setText("");
         // Add MeshView to Group
-        Group root = buildScene();
+        SmartGroup root = buildScene();
         // Create subScene
         SubScene subScene = createScene3D(root);
         // Add subScene to meshGroup
@@ -208,7 +209,7 @@ public class VisualizationManager {
         subScene.setManaged(false);
 
         handleKeyboard(scrollPane, cameraContainer);
-        handleMouse(subScene, cameraContainer);
+        handleMouse(subScene, root);
     }
 
     /**
@@ -216,14 +217,20 @@ public class VisualizationManager {
      *
      * @return Group with Model and Tracker
      */
-    private Group buildScene() {
-        Group root = new Group();
+    private SmartGroup buildScene() {
+        SmartGroup root = new SmartGroup();
 
         // If no stlFiles are loaded
         if(stlModels != null) {
+            Group stlGroup = new Group();
             for (STLModel model : stlModels) {
-                root.getChildren().add(model.getMeshView());
+                stlGroup.getChildren().add(model.getMeshView());
             }
+            centerX = stlGroup.getBoundsInParent().getCenterX();
+            centerY = stlGroup.getBoundsInParent().getCenterY();
+            centerZ = stlGroup.getBoundsInParent().getCenterZ();
+
+            root.getChildren().add(stlGroup);
         }
         if (trackingService.getDataService() != null) {
             List<Tool> tools = trackingService.getDataService().loadNextData(1);
@@ -231,6 +238,11 @@ public class VisualizationManager {
                 tool.addVisualizationToRoot(root);
             }
         }
+
+        rotateX = new Rotate(0, centerX, centerY, centerZ, Rotate.X_AXIS);
+        rotateY = new Rotate(0, centerX, centerY, centerZ, Rotate.Y_AXIS);
+        root.getTransforms().addAll(rotateX, rotateY);
+
         return root;
     }
 
@@ -240,7 +252,7 @@ public class VisualizationManager {
      * @param root Group containing the nodes Model and Tracker
      * @return 3d SubScene
      */
-    private SubScene createScene3D(Group root) {
+    private SubScene createScene3D(SmartGroup root) {
         SubScene scene3d = new SubScene(root, VIEWPORT_SIZE, VIEWPORT_SIZE, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) meshGroup.getParent()).heightProperty());
@@ -259,62 +271,38 @@ public class VisualizationManager {
      *
      * @return PerspectiveCamera
      */
-    private CameraContainer initCamera() {
-        cameraContainer = new CameraContainer(true, rotateX, rotateY);
-        JSONParser jsonParser = new JSONParser();
-        try {
-            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
-            JSONArray jsonArr = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-            double[] offset = new double[jsonArr.size()];
-            for (int i = 0; i < jsonArr.size(); i++) {
-                offset[i] = (double) jsonArr.get(i);
-            }
-            Vector3D newPos = new Vector3D(offset);
-            cameraContainer.setPos(newPos);
-            cameraContainer.move(new Vector3D(0,0,-500));
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        rotateX.setAngle(0);
-        rotateY.setAngle(0);
-        cam_dir = new Vector3D(0,0,1);
-
-        return cameraContainer;
+    private void initCamera() {
+        cameraContainer = new CameraContainer(true);
+        Vector3D newPos = new Vector3D(centerX, centerY, centerZ);
+        cameraContainer.setPos(newPos);
+        cameraContainer.move(new Vector3D(0,0,-500));
     }
 
     /**
      * Adds Mouse Controls to the Scene
      *
      * @param subScene Scene for MouseEvent
-     * @param cameraContainer Camera
+     * @param root SmartGroup
      */
-    private void handleMouse(SubScene subScene, CameraContainer cameraContainer) {
+    private void handleMouse(SubScene subScene, SmartGroup root) {
         subScene.setOnScroll(event -> {
-            double deltaY = event.getDeltaY();
-            Vector3D movement = new Vector3D(cam_dir.getX(), cam_dir.getY(), cam_dir.getZ());
-            movement.mult(deltaY);
-            cameraContainer.move(movement);
+            double delta = event.getDeltaY();
+            root.setTranslateZ(root.getTranslateZ() - delta);
         });
+
+        rotateX.angleProperty().bind(angleX);
+        rotateY.angleProperty().bind(angleY);
+
         subScene.setOnMousePressed(event -> {
-            mouseOldX = event.getSceneX();
-            mouseOldY = event.getSceneY();
+            anchorX = event.getSceneX();
+            anchorY = event.getSceneY();
+            anchorAngleX = angleX.get();
+            anchorAngleY = angleY.get();
         });
 
         subScene.setOnMouseDragged(event -> {
-            rotateX.setAngle(rotateX.getAngle() - (event.getSceneY() - mouseOldY));
-            rotateY.setAngle(rotateY.getAngle() + (event.getSceneX() - mouseOldX));
-            mouseOldX = event.getSceneX();
-            mouseOldY = event.getSceneY();
-        });
-
-        subScene.setOnMouseReleased(event -> {
-            double[] angles = {rotateX.getAngle(), rotateY.getAngle(), 0};
-            System.out.println("RotateX: " + rotateX.getAngle() + " RotateY: " + rotateY.getAngle());
-            System.out.println("Camera: " + cameraContainer.getPerspectiveCamera().getRotate());
-            util.Quaternion q = new util.Quaternion(angles);
-            Matrix3D rotMat = q.toRotationMatrix();
-            cam_dir = rotMat.mult(new Vector3D(0,0,1));
+            angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+            angleY.set(anchorAngleY + (anchorX - event.getSceneX()));
         });
     }
 
@@ -327,57 +315,31 @@ public class VisualizationManager {
     private void handleKeyboard(ScrollPane scrollPane, CameraContainer cameraContainer) {
 
         scrollPane.setOnKeyPressed(event -> {
-            double[] angles = {rotateX.getAngle(), rotateY.getAngle(), 0};
-            util.Quaternion q = new util.Quaternion(angles);
-            Matrix3D rotMat = q.toRotationMatrix();
             switch (event.getCode()) {
-                case S:
-                case DOWN:
-                    Matrix3D rotXDown = new Matrix3D(new double[] {1,0,0,0,0,1,0,-1,0});
-                    Vector3D down = rotXDown.mult(cam_dir);
+                case S, DOWN -> {
+                    Vector3D down = new Vector3D(0, 1, 0);
                     down.setMag(CAM_MOVEMENT);
-                    System.out.println("Down");
-                    down.print();
                     cameraContainer.move(down);
                     event.consume();
-                    break;
-                case W:
-                case UP:
-                    Matrix3D rotXUp = new Matrix3D(new double[] {1,0,0,0,0,-1,0,1,0});
-                    Vector3D up = rotXUp.mult(cam_dir);
+                }
+                case W, UP -> {
+                    Vector3D up = new Vector3D(0, -1, 0);
                     up.setMag(CAM_MOVEMENT);
-                    System.out.println("Up");
-                    up.print();
                     cameraContainer.move(up);
                     event.consume();
-                    break;
-                case D:
-                case RIGHT:
-                    Matrix3D rotYRight = new Matrix3D(new double[] {0,0,1,0,1,0,-1,0,0});
-                    Vector3D right = rotYRight.mult(new Vector3D(0,0,1));
-                    right = rotMat.mult(right);
+                }
+                case D, RIGHT -> {
+                    Vector3D right = new Vector3D(1, 0, 0);
                     right.setMag(CAM_MOVEMENT);
-                    System.out.println("Right");
-                    right.print();
                     cameraContainer.move(right);
-                    break;
-                case A:
-                case LEFT:
-                    Matrix3D rotYLeft = new Matrix3D(new double[] {0,0,-1,0,1,0,1,0,0});
-                    Vector3D left = rotYLeft.mult(new Vector3D(0,0,1));
-                    left = rotMat.mult(left);
+                }
+                case A, LEFT -> {
+                    Vector3D left = new Vector3D(-1, 0, 0);
                     left.setMag(CAM_MOVEMENT);
-                    System.out.println("Left");
-                    left.print();
                     cameraContainer.move(left);
                     event.consume();
-                    break;
-                case G:
-                    System.out.println("CAM DIR:");
-                    cam_dir.print();
-                    break;
+                }
             }
         });
     }
-
 }

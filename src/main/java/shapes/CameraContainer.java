@@ -10,11 +10,10 @@ public class CameraContainer {
     private PerspectiveCamera perspectiveCamera;
     private Vector3D pos;
 
-    public CameraContainer(boolean fixedAtZero, Rotate rotateX, Rotate rotateY) {
+    public CameraContainer(boolean fixedAtZero) {
         perspectiveCamera = new PerspectiveCamera(fixedAtZero);
         perspectiveCamera.setNearClip(0.1);
         perspectiveCamera.setFarClip(2000.0);
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, 0));
 
         pos = new Vector3D();
     }
