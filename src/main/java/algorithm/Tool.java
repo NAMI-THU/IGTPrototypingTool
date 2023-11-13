@@ -35,6 +35,7 @@ public class Tool {
     private Vector3D pos;
     private Matrix3D transformMatrix;
     private Vector3D offsetVec;
+    private PhongMaterial color;
 
     public Tool(String name) {
         this.name = name;
@@ -50,6 +51,7 @@ public class Tool {
         this.cone = new TrackingCone(36, 4, 10);
         this.projection = new NeedleProjection();
         this.projection.setVisible(false);
+        this.setConeColor(new PhongMaterial(Color.GRAY));
         JSONParser jsonParser = new JSONParser();
         try {
             JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
@@ -138,13 +140,14 @@ public class Tool {
                 if (cone.getBoundsInParent().intersects(stlModel.getMeshView().getBoundsInParent())) {
                     cone.setMaterial(new PhongMaterial(Color.RED));
                 } else {
-                    cone.setMaterial(new PhongMaterial(Color.GRAY));
+                    cone.setMaterial(this.color);
                 }
             }
         }
     }
 
     public void setConeColor(PhongMaterial color) {
+        this.color = color;
         cone.setMaterial(color);
     }
 
@@ -183,6 +186,10 @@ public class Tool {
 
     public void addMeasurement(Measurement measurement) {
         measurements.add(measurement);
+    }
+
+    public Vector3D getOffsetVec() {
+        return offsetVec;
     }
 
     /**
