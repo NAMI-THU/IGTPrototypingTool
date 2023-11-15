@@ -5,10 +5,8 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import shapes.STLModel;
 import shapes.TrackingCone;
 import shapes.NeedleProjection;
@@ -16,8 +14,12 @@ import util.Matrix3D;
 import util.Quaternion;
 import util.Vector3D;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +52,9 @@ public class Tool {
         this.cone = new TrackingCone(36, 4, 10);
         this.projection = new NeedleProjection();
         this.projection.setVisible(false);
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject jsonTransformationMatrix = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/transformationMatrix.json"));
+            var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
+            JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
             double[] arr = new double[9];
             JSONArray transformationArray = (JSONArray) jsonTransformationMatrix.get("transformTracker");
             for (int i = 0; i < 3; i++) {
@@ -64,7 +66,7 @@ public class Tool {
             transformMatrix = new Matrix3D(arr);
             JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
             offsetVec = new Vector3D((double) offset.get(0), (double) offset.get(1), (double) offset.get(2));
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
