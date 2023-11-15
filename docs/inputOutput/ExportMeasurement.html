@@ -107,10 +107,16 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="#toolName" class="member-name-link">toolName</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#x_raw" class="member-name-link">x_raw</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#x_normalized" class="member-name-link">x_normalized</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
-<div class="col-second even-row-color"><code><a href="#x_shifted" class="member-name-link">x_shifted</a></code></div>
+<div class="col-second even-row-color"><code><a href="#x_raw" class="member-name-link">x_raw</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#x_shifted" class="member-name-link">x_shifted</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#y_normalized" class="member-name-link">y_normalized</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>double</code></div>
 <div class="col-second odd-row-color"><code><a href="#y_raw" class="member-name-link">y_raw</a></code></div>
@@ -135,13 +141,15 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,double,double,double,double,double,double)" class="member-name-link">ExportMeasurement</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;toolName,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,double,double,double,double,double,double,double,double)" class="member-name-link">ExportMeasurement</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;toolName,
  double&nbsp;x_raw,
  double&nbsp;y_raw,
  double&nbsp;z_raw,
  double&nbsp;x_shifted,
  double&nbsp;y_shifted,
- double&nbsp;z_shifted)</code></div>
+ double&nbsp;z_shifted,
+ double&nbsp;x_normalized,
+ double&nbsp;y_normalized)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -213,6 +221,20 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">z_raw</span></div>
 </section>
 </li>
+<li>
+<section class="detail" id="x_normalized">
+<h3>x_normalized</h3>
+<div class="member-signature"><span class="annotations">@Expose
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">x_normalized</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="y_normalized">
+<h3>y_normalized</h3>
+<div class="member-signature"><span class="annotations">@Expose
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">y_normalized</span></div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -222,7 +244,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,double,double,double,double,double,double)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,double,double,double,double,double,double,double,double)">
 <h3>ExportMeasurement</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ExportMeasurement</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;toolName,
  double&nbsp;x_raw,
@@ -230,7 +252,9 @@ loadScripts(document, 'script');</script>
  double&nbsp;z_raw,
  double&nbsp;x_shifted,
  double&nbsp;y_shifted,
- double&nbsp;z_shifted)</span></div>
+ double&nbsp;z_shifted,
+ double&nbsp;x_normalized,
+ double&nbsp;y_normalized)</span></div>
 </section>
 </li>
 </ul>
