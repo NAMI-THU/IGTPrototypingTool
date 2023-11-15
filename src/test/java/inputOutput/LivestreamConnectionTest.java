@@ -17,7 +17,7 @@ class LivestreamConnectionTest {
      */
     @Test
     void testObject() {
-        LivestreamSource livestream = new LivestreamSource(0);
+        LivestreamSource livestream = LivestreamSource.forDevice(0);
         assertNotNull(livestream);
     }
 
@@ -29,7 +29,7 @@ class LivestreamConnectionTest {
      */
     @Test
     void testOpenConnection() {
-        LivestreamSource livestream = new LivestreamSource(0);
+        LivestreamSource livestream = LivestreamSource.forDevice(0);
         assertTrue(livestream.openConnection());
     }
 
@@ -39,7 +39,7 @@ class LivestreamConnectionTest {
      */
     @Test
     void testCloseConnection() {
-        LivestreamSource livestream = new LivestreamSource(0);
+        LivestreamSource livestream = LivestreamSource.forDevice(0);
         livestream.openConnection();
         assertTrue(livestream.closeConnection());
     }

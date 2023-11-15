@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class AutoTrackController implements Controller {
@@ -49,6 +50,8 @@ public class AutoTrackController implements Controller {
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
+    private static final Preferences userPreferencesGlobal = Preferences.userRoot().node("IGT_Settings");
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
@@ -98,6 +101,7 @@ public class AutoTrackController implements Controller {
 
     private final ObservableList<Point3> clicked_image_points = FXCollections.observableArrayList();
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
+    private Mat cachedTransformMatrix = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -108,6 +112,7 @@ public class AutoTrackController implements Controller {
         connectionProgressSpinner.setVisible(false);
         captureProgressSpinner.setVisible(false);
         sourceChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> changeVideoView());
+        sourceChoiceBox.setTooltip(new Tooltip("If you have multiple cameras connected, enable \"Search for more videos\" in the settings view to see all available devices"));
         captureRateComboBox.getItems().addAll("1000", "2000", "5000", "10000", "30000");
         captureRateComboBox.getSelectionModel().select(0);
 
@@ -163,7 +168,7 @@ public class AutoTrackController implements Controller {
     private void loadAvailableVideoDevicesAsync() {
         connectionProgressSpinner.setVisible(true);
         new Thread(() -> {
-            createDeviceIdMapping(true);
+            createDeviceIdMapping(userPreferencesGlobal.getBoolean("searchForMoreVideos", false));
             Platform.runLater(() -> {
                 sourceChoiceBox.getItems().addAll(deviceIdMapping.keySet());
                 if (!deviceIdMapping.isEmpty()) {
@@ -179,10 +184,10 @@ public class AutoTrackController implements Controller {
     /**
      * Tests out available video device ids. All devices that don't throw an error are added to the list.
      * This is bad style, but openCV does not offer to list available devices.
-     * @param fast Whether all available devices shall be enumerated. If set to true, there's a minimal performance gain.
+     * @param exhaustiveSearch Whether all available devices shall be enumerated. If set to false, there's a minimal performance gain.
      */
-    private void createDeviceIdMapping(boolean fast) {
-        if(fast){
+    private void createDeviceIdMapping(boolean exhaustiveSearch) {
+        if(!exhaustiveSearch){
             deviceIdMapping.put("Default Camera",0);
             return;
         }
@@ -270,7 +275,8 @@ public class AutoTrackController implements Controller {
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
                 dataSeries.add(series);
                 series.getData().remove(0);
-                videoImagePlot.initSensorCurve(series);
+                // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
+//                videoImagePlot.initSensorCurve(series);
             }
 
             var series = dataSeries.get(i);
@@ -280,9 +286,12 @@ public class AutoTrackController implements Controller {
             var max_num_points = 4; // 1
 
             var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
-            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2]));
+            var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
+            var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
+            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
-            data.add(new XYChart.Data<>(shifted_points[0],shifted_points[1]));
+            data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
+
             if(data.size() > max_num_points){
                 data.remove(0);
             }
@@ -314,6 +323,7 @@ public class AutoTrackController implements Controller {
                 gson.toJson(trackingData, fw);
             }
         } catch (IOException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error saving captured data", e);
             e.printStackTrace();
         }
     }
@@ -325,8 +335,8 @@ public class AutoTrackController implements Controller {
     public void on_browseOutputDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Output Directory");
-        var lastLocation = userPreferences.get("outputDirectory",System.getProperty("user.home"));
-        directoryChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("outputDirectory",System.getProperty("user.home"));
+        directoryChooser.setInitialDirectory(lastLocationFile);
         var directory = directoryChooser.showDialog(null);
         if (directory != null) {
             outputPathField.setText(directory.getAbsolutePath());
@@ -345,6 +355,7 @@ public class AutoTrackController implements Controller {
             try {
                 Desktop.getDesktop().open(new File(directory));
             } catch (IOException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error opening output directory", e);
                 e.printStackTrace();
             }
         }
@@ -390,8 +401,8 @@ public class AutoTrackController implements Controller {
     public void on_importMatrix() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Matrix JSON");
-        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(lastLocationFile);
         var inputFile = fileChooser.showOpenDialog(null);
         if(inputFile == null){
             return;
@@ -402,8 +413,10 @@ public class AutoTrackController implements Controller {
             transformationMatrix = TransformationMatrix.loadFromJSON(path);
             roiDirty = true;
             regMatrixStatusBox.setSelected(true);
+            cachedTransformMatrix = null;
             userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
             e.printStackTrace();
         }
     }
@@ -418,7 +431,9 @@ public class AutoTrackController implements Controller {
                 transformationMatrix = TransformationMatrix.loadFromJSON(lastMatrixPath);
                 roiDirty = true;
                 regMatrixStatusBox.setSelected(true);
+                cachedTransformMatrix = null;
             }catch (FileNotFoundException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
                 e.printStackTrace();
             }
         }
@@ -436,18 +451,32 @@ public class AutoTrackController implements Controller {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Set save location for matrix json");
-        var lastLocation = userPreferences.get("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(new File(lastLocation));
+        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(lastLocationFile);
         fileChooser.setInitialFileName("transformationMatrix.json");
         var saveFile = fileChooser.showSaveDialog(null);
         if(saveFile != null){
             try {
                 transformationMatrix.saveToJSON(saveFile);
+                this.transformationMatrix = transformationMatrix;
+                regMatrixStatusBox.setSelected(true);
+                cachedTransformMatrix = null;
                 userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
             } catch (IOException e) {
+                logger.log(java.util.logging.Level.SEVERE, "Error saving matrix", e);
                 e.printStackTrace();
             }
         }
+    }
+
+    private File getLastKnownFileLocation(String key, String defaultLocation){
+        var lastLocation = userPreferences.get(key,defaultLocation);
+        var lastLocationFile = new File(lastLocation);
+        if(!lastLocationFile.exists()){
+            logger.log(java.util.logging.Level.WARNING, "Last directory does not exist, default directory instead");
+            lastLocationFile = new File(defaultLocation);
+        }
+        return lastLocationFile;
     }
 
     /**
@@ -456,9 +485,9 @@ public class AutoTrackController implements Controller {
      * @return The transformed image
      */
     private Mat applyImageTransformations(Mat mat){
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
-        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
+//        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
 
         /*
         var imagePoints = transformationMatrix.getImagePoints();
@@ -496,19 +525,27 @@ public class AutoTrackController implements Controller {
      * @param z Z-Coordinate of the point - Ignored in the 2d version
      * @return The transformed point as array of length 3 (xyz)
      */
-    private double[] applyTrackingTransformation2d(double x, double y, double z){
-        var matrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+    private double[] applyTrackingTransformation2d(double x, double y, double z) {
+        // TODO: Cache matrix
+        if (cachedTransformMatrix == null){
+            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+        }
         var vector = new Mat(3,1, CvType.CV_64F);
-        vector.put(0,0,x);
+
+        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
+            vector.put(0,0,z);
+        }else{
+            vector.put(0,0,x);
+        }
         vector.put(1,0,y);
         vector.put(2,0,1);
 
         var pos_star = new Mat(2,1,CvType.CV_64F);
-        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
+        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
         double[] out = new double[3];
         out[0] = pos_star.get(0,0)[0];
         out[1] = pos_star.get(1,0)[0];
-        out[2] = z;
+        out[2] = 0;
         return out;
     }
 
@@ -527,7 +564,7 @@ public class AutoTrackController implements Controller {
         vector.put(2,0,z);
         vector.put(3,0,1);
 
-        var pos_star = new Mat(3,1,CvType.CV_64F);
+        var pos_star = new Mat();
         Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
         //Core.perspectiveTransform();  // Maybe try this?
         double[] out = new double[3];
@@ -553,7 +590,12 @@ public class AutoTrackController implements Controller {
             }
 
             clicked_image_points.add(new Point3(x, y, 0.0));
-            clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
+            if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)) {
+                clicked_tracker_points.add(new Point3(trackingData.get(0).z_raw, trackingData.get(0).y_raw, trackingData.get(0).x_raw));
+            }else {
+                clicked_tracker_points.add(new Point3(trackingData.get(0).x_raw, trackingData.get(0).y_raw, trackingData.get(0).z_raw));
+            }
+
         }
     }
 }

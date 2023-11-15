@@ -1,14 +1,19 @@
 package inputOutput;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import nu.pattern.OpenCV;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
-import nu.pattern.OpenCV;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
+import static org.opencv.imgproc.Imgproc.resize;
 
 /**
  * provides the livestream footage from a webcam, ultrasound device or any other
@@ -18,21 +23,34 @@ import nu.pattern.OpenCV;
  *
  */
 public class LivestreamSource extends AbstractImageSource {
-
+    private int desiredWidth;
+    private int desiredHeight;
     private VideoCapture vc;
     private int deviceID = 0;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private static Map<Integer, LivestreamSource> instances = new TreeMap<>();
+
+    private static final Preferences userPreferencesGlobal = Preferences.userRoot().node("IGT_Settings");
+    public static LivestreamSource forDevice(int id) {
+        if (!instances.containsKey(id)) {
+            instances.put(id, new LivestreamSource(id));
+        }
+        return instances.get(id);
+    }
     /**
      * constructs a new LivestreamSource object with the transmitted
      * <code>id</code>.
      *
      * @param id  describes which device is used
      */
-    public LivestreamSource(int id) {
+    private LivestreamSource(int id) {
         OpenCV.loadLocally();
         frameMatrix = new Mat();
         deviceID = id;
+
+        desiredWidth = userPreferencesGlobal.getInt("videoWidth", 640);
+        desiredHeight = userPreferencesGlobal.getInt("videoHeight", 480);
     }
 
     /**
@@ -42,8 +60,15 @@ public class LivestreamSource extends AbstractImageSource {
      * @return whether the connection was successful or not
      */
     public boolean openConnection() {
+        if (vc != null && vc.isOpened()) {
+            logger.log(Level.INFO,"VideoCapture already initialized, reusing it.");
+            return true;
+        }
 
-        vc = new VideoCapture(deviceID);
+        vc = new VideoCapture(deviceID, Videoio.CAP_DSHOW);
+        // This will set the resolution to the highest possible
+        vc.set(Videoio.CAP_PROP_FRAME_HEIGHT, desiredHeight);
+        vc.set(Videoio.CAP_PROP_FRAME_WIDTH, desiredWidth);
 
         if (vc.isOpened()) {
             logger.log(Level.INFO,"found VideoSource " + vc.toString());
@@ -69,6 +94,8 @@ public class LivestreamSource extends AbstractImageSource {
             logger.log(Level.WARNING,"!!! Nothing captured from webcam !!!");
         }
 
+        resize(frameMatrix, frameMatrix, new Size(desiredWidth,desiredHeight));
+
         return frameMatrix;
     }
 
@@ -77,8 +104,9 @@ public class LivestreamSource extends AbstractImageSource {
      * @return <code>isConnected = false</code>
      */
     public boolean closeConnection() {
-
-        vc.release();
+        if(vc != null) {
+            vc.release();
+        }
         HighGui.destroyAllWindows();
         exit = true;
         isConnected = false;
