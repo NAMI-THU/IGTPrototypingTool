@@ -6,7 +6,6 @@ import util.Quaternion;
 import util.Vector3D;
 
 public class Measurement {
-
     private Vector3D pos;
     @Expose
     private double error;

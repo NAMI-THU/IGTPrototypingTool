@@ -26,6 +26,8 @@ import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import algorithm.VisualizationManager;
 import userinterface.TrackingDataDisplay;
@@ -99,11 +101,13 @@ public class TrackingDataController implements Controller {
         /*
         FileChooser fp = new FileChooser();
         fp.setTitle("Load Data");
-        fp.getExtensionFilters().addAll(new ExtensionFilter("Text Datei", "*.csv"));
+        fp.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Datei", "*.csv"));
         File file = fp.showOpenDialog(new Stage());
          */
 
-        File file = new File("src/main/resources/sensor.csv");
+
+
+        File file = new File("src/main/resources/sensorTest2.csv");
 
         if (file != null) {
             if (trackingService.getTrackingDataSource() != null) {

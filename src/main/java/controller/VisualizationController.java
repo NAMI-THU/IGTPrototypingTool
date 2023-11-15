@@ -14,8 +14,6 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import org.json.JSONObject;
 import shapes.STLModel;
-import shapes.TrackingCone;
-import shapes.TrackingSphere;
 
 import java.io.*;
 import java.net.URL;
@@ -63,6 +61,8 @@ public class VisualizationController implements Controller {
     CheckBox stlVisibleCB;
     @FXML
     CheckBox trackingVisibleCB;
+    @FXML
+    CheckBox needleProjectionCB;
     TrackingDataController trackingDataController;
     VisualizationManager visualizationManager;
     TrackingService trackingService = TrackingService.getInstance();
@@ -219,6 +219,13 @@ public class VisualizationController implements Controller {
         stlVBox.setDisable(true);
 
         trackerTextField.setText(name);
+
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
+
+        int index = getSelectedTracker();
+        trackingVisibleCB.setSelected(tools.get(index).coneIsVisible());
+        needleProjectionCB.setSelected(tools.get(index).projectionIsVisible());
+        needleProjectionCB.setDisable(!tools.get(index).coneIsVisible());
     }
 
     /**
@@ -260,15 +267,10 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerColor() {
         if (visualizationManager.visualizeCone().get()) {
-            if (visualizationManager.getTrackingCones() == null) {
-                statusLabel.setText("No Tracking Data Source");
-                return;
-            }
-            statusLabel.setText("");
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
             int index = getSelectedTracker();
-            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
-            trackingCones[index].setMaterial(new PhongMaterial(trackerColorPicker.getValue()));
+            tools.get(index).setConeColor(new PhongMaterial(trackerColorPicker.getValue()));
         }
     }
 
@@ -278,17 +280,10 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerSize() {
         if (visualizationManager.visualizeCone().get()) {
-            if (visualizationManager.getTrackingCones() == null) {
-                statusLabel.setText("No Tracking Data Source");
-                return;
-            }
-            statusLabel.setText("");
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
             int index = getSelectedTracker();
-
-            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
-            trackingCones[index].setHeight(trackerSlider.getValue());
-            trackingCones[index].setRadius(trackerSlider.getValue() * 0.4);
+            tools.get(index).setConeSize(trackerSlider.getValue());
         }
     }
 
@@ -298,20 +293,29 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerVisibility() {
         if (visualizationManager.visualizeCone().get()) {
-            if (visualizationManager.getTrackingCones() == null) {
-                statusLabel.setText("No Tracking Data Source");
-                return;
-            }
-            statusLabel.setText("");
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
             int index = getSelectedTracker();
+            boolean visible = tools.get(index).coneIsVisible();
+            if (visible) {
+                tools.get(index).setProjectionVisibility(false);
+                needleProjectionCB.setSelected(false);
+                needleProjectionCB.setDisable(true);
+            } else {
+                needleProjectionCB.setDisable(false);
+            }
+            tools.get(index).setConeVisibility(!visible);
+        }
+    }
 
-            TrackingCone[] trackingCones = visualizationManager.getTrackingCones();
-            TrackingSphere[] trackingSpheres = visualizationManager.getTrackingSpheres();
+    @FXML
+    private void setProjecitonVisibility() {
+        if (visualizationManager.visualizeCone().get()) {
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
-            boolean visible = trackingCones[index].isVisible();
-            trackingCones[index].setVisible(!visible);
-            trackingSpheres[index].setVisible(!visible);
+            int index = getSelectedTracker();
+            boolean visible = tools.get(index).projectionIsVisible();
+            tools.get(index).setProjectionVisibility(!visible);
         }
     }
 

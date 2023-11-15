@@ -40,7 +40,7 @@
                         </AnchorPane>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <VBox fx:id="trackerVBox" disable="true" prefHeight="748.0" prefWidth="143.0" visible="false">
+                        <VBox fx:id="trackerVBox" disable="true" prefHeight="748.0" prefWidth="143.0">
                            <children>
                               <TextField fx:id="trackerTextField" onAction="#changeTrackerName" prefHeight="37.0" prefWidth="143.0" />
                               <VBox fillWidth="false" prefHeight="42.0" prefWidth="748.0" spacing="10.0">
@@ -54,14 +54,19 @@
                                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="143.0" text="Tracker Color:" wrapText="true" />
                                     <ColorPicker fx:id="trackerColorPicker" onAction="#setTrackerColor" prefHeight="25.0" prefWidth="80.0">
                                        <value>
-                                          <Color red="1.0" />
+                                          <Color red="0.9490196108818054" green="0.9490196108818054" blue="0.9490196108818054" />
                                        </value>
                                     </ColorPicker>
                                  </children>
                               </VBox>
                               <HBox alignment="CENTER" prefHeight="22.0" prefWidth="143.0">
                                  <children>
-                                    <CheckBox fx:id="trackingVisibleCB" mnemonicParsing="false" onAction="#setTrackerVisibility" selected="true" text="Visible" />
+                                    <CheckBox fx:id="trackingVisibleCB" mnemonicParsing="false" onAction="#setTrackerVisibility" selected="true" text="Show Tracker" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="22.0" prefWidth="143.0">
+                                 <children>
+                                    <CheckBox fx:id="needleProjectionCB" mnemonicParsing="false" onAction="#setProjecitonVisibility" text="Needle Projection" />
                                  </children>
                               </HBox>
                            </children>

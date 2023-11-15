@@ -5,24 +5,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import shapes.CameraContainer;
 import shapes.STLModel;
-import util.Quaternion;
-import inputOutput.TempTool;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import shapes.TrackingCone;
-import shapes.TrackingSphere;
+import shapes.NeedleProjection;
 import util.Matrix3D;
 import util.Vector3D;
 
@@ -52,15 +47,13 @@ public class VisualizationManager {
     private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
     private Label statusLabel;
-    private TrackingCone[] trackingCones;
-    private TrackingSphere[] trackingSpheres;
+
+    //private TrackingCone[] trackingCones;
+    //private TrackingSphere[] trackingSpheres;
     private STLModel[] stlModels;
     private ScrollPane scrollPane;
     private Group meshGroup;
     private double mouseOldX, mouseOldY = 0;
-
-    // For orientation
-    TrackingSphere s = new TrackingSphere(2, 5, Color.RED);
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
@@ -68,13 +61,6 @@ public class VisualizationManager {
 
     public STLModel[] getSTLModels() {
         return stlModels;
-    }
-
-    public TrackingCone[] getTrackingCones() {
-        return trackingCones;
-    }
-    public TrackingSphere[] getTrackingSpheres() {
-        return trackingSpheres;
     }
 
     /**
@@ -97,35 +83,6 @@ public class VisualizationManager {
 
     public BooleanProperty visualizeCone() {
         return visualizeCone;
-    }
-
-    /**
-     * Creates a Tracker Shape for each device
-     */
-    private void createTrackerShape() {
-        // Hier werden NUR die Shapes erstellt
-        if (trackingService.getTrackingDataSource() == null) {
-            statusLabel.setText("No Tracking Data Source");
-            return;
-        }
-        statusLabel.setText("");
-
-        // update after CSV/IGT data has been loaded
-        trackingService.getTrackingDataSource().update();
-        ArrayList<TempTool> tempTools = trackingService.getTrackingDataSource().getLastToolList();
-
-        if (tempTools != null) {
-            trackingCones = new TrackingCone[tempTools.size()];
-            for (int i = 0; i < trackingCones.length; i++) {
-                trackingCones[i] = new TrackingCone(36, 4, 10);
-            }
-
-            trackingSpheres = new TrackingSphere[tempTools.size()];
-            Color[] col = {Color.BLUE, Color.RED};
-            for (int i = 0; i < trackingSpheres.length; i++) {
-                trackingSpheres[i] = new TrackingSphere(2, 5, col[i], col[i]);
-            }
-        }
     }
 
     /**
@@ -187,23 +144,7 @@ public class VisualizationManager {
                             //Rotate the Model by 180 degrees for correct display
                             new Rotate(180, Rotate.X_AXIS)
                     );
-                    double[] arr = new double[9];
-                    try {
-                        var jsonMatrixString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
-                        JSONObject jsonTransformationMatrix = new JSONObject(jsonMatrixString);
-                        JSONArray transformationArray = jsonTransformationMatrix.getJSONArray("transformTracker");
-
-                        for (int j = 0; j < 3; j++) {
-                            for (int k = 0; k < 3; k++) {
-                                JSONArray row = transformationArray.getJSONArray(j);
-                                arr[k + j * 3] = row.getDouble(k);
-                            }
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    stlModels[i].transformPosition(new Matrix3D(arr));
-                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.getString("Path"));
+                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Last STL File could not be loaded");
                     stlModels = null;
@@ -243,105 +184,9 @@ public class VisualizationManager {
         trackingService.getTrackingDataSource().update();
         List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
-        for (int i = 0; i < tools.size(); i++) {
-            List<Measurement> measurements = tools.get(i).getMeasurement();
-
-            Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
-            double[] eulerAngles = rotationMovement.toRadiansAngles(null);
-
-            double x = measurements.get(measurements.size() - 1).getPos().getX();
-            double y = measurements.get(measurements.size() - 1).getPos().getY();
-            double z = measurements.get(measurements.size() - 1).getPos().getZ();
-            // convert Quaternion to Euler
-            double yaw = eulerAngles[0];
-            double roll = eulerAngles[1];
-            double pitch = eulerAngles[2];
-            // convert Euler to angles
-            double yawAngle = Math.toDegrees(yaw);
-            double rollAngle = Math.toDegrees(roll);
-            double pitchAngle = Math.toDegrees(pitch);
-
-            boolean showRotations = false;
-            if (showRotations) {
-                System.out.println(tools.get(i).getName());
-                System.out.println("yaw:!" + yaw);
-                System.out.println("yawAngle!" + yawAngle);
-                System.out.println("roll:!" + roll);
-                System.out.println("rollAngle!" + rollAngle);
-                System.out.println("pitch:!" + pitch);
-                System.out.println("pitchAngle!" + pitchAngle);
-                System.out.print("\n");
-            }
-
-            if (trackingCones != null && trackingSpheres != null) {
-                try {
-                    var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
-                    JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
-                    JSONArray offset = jsonTransformationMatrix.getJSONArray("trackerOffset");
-                    trackingCones[i].setTranslateX(x + offset.getDouble(0));
-                    trackingCones[i].setTranslateY(y + offset.getDouble(1));
-                    trackingCones[i].setTranslateZ(z + offset.getDouble(2));
-                    matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
-
-                    trackingSpheres[i].setTranslateX(x + offset.getDouble(0));
-                    trackingSpheres[i].setTranslateY(y + offset.getDouble(1));
-                    trackingSpheres[i].setTranslateZ(z + offset.getDouble(2));
-                    matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-            if (stlModels != null) {
-                checkBounds();
-            }
-        }
-    }
-
-    /**
-     * Rotate the Node by providing three rotations (Yaw, Roll, Pitch)
-     * author Jose Pereda
-     *
-     * @param n   Node to rotate
-     * @param alf Euler Angle alf
-     * @param bet Euler Angle bet
-     * @param gam Euler Angle gam
-     */
-    private void matrixRotateNode(Node n, double alf, double bet, double gam) {
-        double A11 = Math.cos(alf) * Math.cos(gam);
-        double A12 = Math.cos(bet) * Math.sin(alf) + Math.cos(alf) * Math.sin(bet) * Math.sin(gam);
-        double A13 = Math.sin(alf) * Math.sin(bet) - Math.cos(alf) * Math.cos(bet) * Math.sin(gam);
-        double A21 = -Math.cos(gam) * Math.sin(alf);
-        double A22 = Math.cos(alf) * Math.cos(bet) - Math.sin(alf) * Math.sin(bet) * Math.sin(gam);
-        double A23 = Math.cos(alf) * Math.sin(bet) + Math.cos(bet) * Math.sin(alf) * Math.sin(gam);
-        double A31 = Math.sin(gam);
-        double A32 = -Math.cos(gam) * Math.sin(bet);
-        double A33 = Math.cos(bet) * Math.cos(gam);
-
-        double d = Math.acos((A11 + A22 + A33 - 1d) / 2d);
-        if (d != 0d) {
-            double den = 2d * Math.sin(d);
-            Point3D p = new Point3D((A32 - A23) / den, (A13 - A31) / den, (A21 - A12) / den);
-            n.setRotationAxis(p);
-            n.setRotate(Math.toDegrees(d));
-        }
-    }
-
-    /**
-     * Checks for collision and changes tracker color accordingly
-     * Color red implies a collision with the model was detected
-     * Color green implies no collision was detected
-     */
-    private void checkBounds() {
-        if (visualizeCone.get()) {
-            for (TrackingCone trackingCone : trackingCones) {
-                for (STLModel stlModel : stlModels) {
-                    if (trackingCone.getBoundsInParent().intersects(stlModel.getMeshView().getBoundsInParent())) {
-                        trackingCone.setMaterial(new PhongMaterial(Color.RED));
-                    }
-                }
-            }
+        for (Tool tool : tools) {
+            tool.show();
+            tool.checkBounds(stlModels);
         }
     }
 
@@ -380,15 +225,11 @@ public class VisualizationManager {
                 root.getChildren().add(model.getMeshView());
             }
         }
-
-        if (trackingCones == null && trackingSpheres == null) {
-            createTrackerShape();
-        }
-
-        // If you want to have the tracking cone and the sphere
-        if (trackingCones != null && trackingSpheres != null) {
-            root.getChildren().addAll(trackingCones);
-            root.getChildren().addAll(trackingSpheres);
+        if (trackingService.getDataService() != null) {
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            for (Tool tool : tools) {
+                tool.addVisualizationToRoot(root);
+            }
         }
         return root;
     }
