@@ -112,7 +112,7 @@ public class ImageDataProcessor {
     public boolean openConnection(VideoSource source, int deviceId){
         switch (source) {
             case LIVESTREAM:
-                imgSrc = new LivestreamSource(deviceId);
+                imgSrc = LivestreamSource.forDevice(deviceId);
                 break;
             case OPENIGTLINK:
                 imgSrc = new OIGTImageSource();

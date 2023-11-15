@@ -22,7 +22,7 @@ class LivestreamSourceTransmissionTest {
      */
     @BeforeEach
     void open() {
-        livestream = new LivestreamSource(0);
+        livestream = LivestreamSource.forDevice(0);
         livestream.openConnection();
     }
 

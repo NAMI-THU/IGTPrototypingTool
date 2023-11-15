@@ -167,10 +167,10 @@ public class VideoController implements Controller {
         ivHeight.setText(Double.toString(height));
         ivWidth.setText(Double.toString(width));
 
-        topSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height));
-        bottomSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height));
-        rightSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width));
-        leftSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width));
+        topSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height-1));
+        bottomSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) height-1));
+        rightSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width-1));
+        leftSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width-1));
 
         // We don't need to remove the old listeners since the valueProperty will be a new one than before (because of the new ValueFactory)
         setCropListener();

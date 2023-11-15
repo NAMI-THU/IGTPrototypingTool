@@ -2,11 +2,15 @@ package util;
 
 import java.io.IOException;
 import java.util.logging.*;
+import java.util.logging.*;
+import java.util.prefs.Preferences;
 
 public class CustomLogger {
     private static FileHandler txtFile;
     private static SimpleFormatter formatter;
     private static boolean consoleOn = true;
+
+    private static final Preferences userPreferences = Preferences.userRoot().node("IGT_Settings");
 
     /**
      * Setup a log file in addition to standard console output
@@ -19,7 +23,9 @@ public class CustomLogger {
         txtFile.setFormatter(formatter);
 
         log.addHandler(txtFile);
-        log.addHandler(new ConsoleHandler());
+        if(userPreferences.getBoolean("logToConsole", true)) {
+            log.addHandler(new ConsoleHandler());
+        }
         log.setLevel(Level.FINE);
     }
 

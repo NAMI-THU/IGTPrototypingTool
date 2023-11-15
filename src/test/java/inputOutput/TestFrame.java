@@ -76,7 +76,7 @@ public class TestFrame extends JFrame implements ActionListener {
         Object src = e.getSource();
         // The datatransport starts after user interaction
         if (src == startLive) {
-            LivestreamSource liveStream = new LivestreamSource(0);
+            LivestreamSource liveStream = LivestreamSource.forDevice(0);
             imgSrc = liveStream;
             thread = new TestFrameThread(videoPanel, imgSrc);
         }
