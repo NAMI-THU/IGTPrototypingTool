@@ -107,7 +107,7 @@ public class TrackingDataController implements Controller {
 
 
 
-        File file = new File("src/main/resources/sensorTest2.csv");
+        File file = new File("src/main/resources/sensor.csv");
 
         if (file != null) {
             if (trackingService.getTrackingDataSource() != null) {

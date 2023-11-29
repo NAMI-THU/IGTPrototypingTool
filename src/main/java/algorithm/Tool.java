@@ -80,10 +80,15 @@ public class Tool {
         double z = measurements.get(measurements.size() - 1).getPos().getZ();
 
         setPos(new Vector3D(x,y,z));
-        //rotate(rotMat);
-        translate(transformMatrix);
-        movePos(offsetVec);
-
+        //movePos(new Vector3D(-18.175,15.0,10.501));
+        //translate(transformMatrix);
+        //movePos(offsetVec);
+        Matrix3D testMat = new Matrix3D(new double[]{-0.959308, -0.281717, -0.0190508, 0.282028, 0.959268, -0.0162585, -0.0136945, -0.0209698, -0.999686});
+        Vector3D testVec = new Vector3D(-2.47192, -247.737,-1423.7);
+        translate(testMat);
+        movePos(testVec);
+        rotate(rotMat);
+        printPos();
     }
 
     private void translate(Matrix3D mat) {
@@ -134,7 +139,7 @@ public class Tool {
      * Color green implies no collision was detected
      */
 
-    public void checkBounds(STLModel[] stlModels) {
+    public void checkBounds(ArrayList<STLModel> stlModels) {
         if (stlModels != null) {
             for (STLModel stlModel : stlModels) {
                 if (cone.getBoundsInParent().intersects(stlModel.getMeshView().getBoundsInParent())) {
@@ -325,5 +330,9 @@ public class Tool {
         Quaternion rotationError = new Quaternion(0, 0, 0, 1);
 
         return rotationError;
+    }
+
+    public void printPos() {
+        System.out.println("X: " + pos.getX() + " Y: " + pos.getY() + " Z: " + pos.getZ());
     }
 }

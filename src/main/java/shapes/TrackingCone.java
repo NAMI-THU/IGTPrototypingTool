@@ -19,7 +19,7 @@ public class TrackingCone extends MeshView {
 
     public Rotate rx = new Rotate(0, Rotate.X_AXIS);
     public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-    public Rotate rz = new Rotate(0, Rotate.Z_AXIS);
+    public Rotate rz = new Rotate(-90, Rotate.Z_AXIS);
 
     /*
     Constructors

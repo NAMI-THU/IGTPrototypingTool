@@ -24,6 +24,7 @@ import util.SmartGroup;
 import util.Vector3D;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +53,7 @@ public class VisualizationManager {
     private final DoubleProperty angleY = new SimpleDoubleProperty(0);
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
     private Label statusLabel;
-    private STLModel[] stlModels;
+    private ArrayList<STLModel> stlModels;
     private ScrollPane scrollPane;
     private Group meshGroup;
 
@@ -60,7 +61,7 @@ public class VisualizationManager {
         this.statusLabel = statusLabel;
     }
 
-    public STLModel[] getSTLModels() {
+    public ArrayList<STLModel> getSTLModels() {
         return stlModels;
     }
 
@@ -93,30 +94,14 @@ public class VisualizationManager {
      */
 
     public List<File> loadStlModel() {
-        StlMeshImporter importer = new StlMeshImporter();
-
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
 
         if (fileList != null) {
-            stlModels = new STLModel[fileList.size()];
-            for (int i = 0; i < fileList.size(); i++) {
-                try {
-                    importer.read(fileList.get(i));
-                    Mesh mesh = importer.getImport();
-                    String name = getSTLName(fileList.get(i));
-                    stlModels[i] = new STLModel(new MeshView(mesh), name, "ccccccff", true);
-                    stlModels[i].getMeshView().getTransforms().addAll(
-                            //Rotate the Model by 180 degrees for correct display
-                            new Rotate(180, Rotate.X_AXIS)
-                    );
-                    logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Error reading STL file");
-                }
-            }
+            stlModels = new ArrayList<>();
+            loadNewSTLModel(fileList, 0);
         }
         return fileList;
     }
@@ -124,10 +109,9 @@ public class VisualizationManager {
     public void loadLastSTLModels() {
         JSONParser jsonParser = new JSONParser();
         StlMeshImporter importer = new StlMeshImporter();
-        String[] stlNames;
         try {
             JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
-            stlModels = new STLModel[jsonSTLModels.size()];
+            stlModels = new ArrayList<>();
             for (int i = 0; i < jsonSTLModels.size(); i++) {
                 JSONObject jsonSTLModel = (JSONObject) jsonSTLModels.get("STL " + i);
                 try {
@@ -140,8 +124,8 @@ public class VisualizationManager {
                     String hex = (String) jsonSTLModel.get("Color");
                     hex = hex.substring(2);
 
-                    stlModels[i] = new STLModel(new MeshView(mesh), name, hex, visible);
-                    stlModels[i].getMeshView().getTransforms().addAll(
+                    stlModels.add(new STLModel(new MeshView(mesh), name, hex, visible));
+                    stlModels.get(i).getMeshView().getTransforms().addAll(
                             //Rotate the Model by 180 degrees for correct display
                             new Rotate(180, Rotate.X_AXIS)
                     );
@@ -153,6 +137,39 @@ public class VisualizationManager {
             }
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<File> addSTLModels() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Load STL File");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
+        List<File> fileList = fc.showOpenMultipleDialog(new Stage());
+        if (fileList != null) {
+            loadNewSTLModel(fileList, stlModels.size());
+        }
+
+        return fileList;
+    }
+
+    private void loadNewSTLModel(List<File> fileList, int indexOffset) {
+        for (int i = 0; i < fileList.size(); i++) {
+            try {
+                StlMeshImporter importer = new StlMeshImporter();
+
+                importer.read(fileList.get(i));
+                Mesh mesh = importer.getImport();
+                String name = getSTLName(fileList.get(i));
+                stlModels.add(new STLModel(new MeshView(mesh), name, "ccccccff", true));
+                stlModels.get(i + indexOffset).getMeshView().getTransforms().addAll(
+                        //Rotate the Model by 180 degrees for correct display
+                        //new Rotate(180, Rotate.X_AXIS)
+                );
+                //logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
+                System.out.println("STL File " + name + " geladen");
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Error reading STL file");
+            }
         }
     }
 
@@ -341,5 +358,10 @@ public class VisualizationManager {
                 }
             }
         });
+    }
+
+    public void resetView() {
+        angleX.set(0);
+        angleY.set(0);
     }
 }
