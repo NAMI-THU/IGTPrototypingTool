@@ -3,6 +3,7 @@ package controller;
 import algorithm.Tool;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import org.json.JSONObject;
 import shapes.STLModel;
 
@@ -20,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +34,8 @@ public class VisualizationController implements Controller {
     Group meshGroup;
     @FXML
     Button loadStlFile;
+    @FXML
+    Button addStlFile;
     @FXML
     Button start;
     @FXML
@@ -71,7 +76,9 @@ public class VisualizationController implements Controller {
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
 
-    private final TreeItem<String> root = new TreeItem<>("Root");
+    private final TreeItem<String> treeItemRoot = new TreeItem<>("Root");
+    TreeItem<String> stlBranch = new TreeItem<>("Files");
+
 
     //private String[] stlNames;
 
@@ -82,7 +89,8 @@ public class VisualizationController implements Controller {
         start.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
 
         stlTreeView.setShowRoot(false);
-        stlTreeView.setRoot(root);
+        stlTreeView.setRoot(treeItemRoot);
+        treeItemRoot.getChildren().add(stlBranch);
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -106,6 +114,9 @@ public class VisualizationController implements Controller {
         this.sourceConnected.set(value);
     }
 
+    /**
+     * Method to load one or more STL Files and overwrite the existing ones
+     */
     @FXML
     private void loadSTLFile() {
         if (trackingService.getTrackingDataSource() == null) {
@@ -117,38 +128,66 @@ public class VisualizationController implements Controller {
         List<File> fileNames = visualizationManager.loadStlModel();
         visualizationManager.showFigure();
 
-        TreeItem<String> stlBranch = new TreeItem<>("Files");
-        if (root.getChildren().size() > 1) {
-            root.getChildren().remove(1, root.getChildren().size());
-        }
-
-        root.getChildren().add(stlBranch);
-
         JSONObject jsonSTLModels = new JSONObject();
 
-        if (fileNames != null) {
-            for (int i = 0; i < fileNames.size(); i++) {
-                String path = fileNames.get(i).toString();
-                int index = path.lastIndexOf("\\");
-                String name = path.substring(index+1, path.length() - 4);
-                name = "STL " + name;
+        stlBranch.getChildren().removeAll(stlBranch.getChildren());
 
-                JSONObject jsonSTLModel = new JSONObject();
-                jsonSTLModel.put("Name", name);
-                jsonSTLModel.put("Path", path);
-                jsonSTLModel.put("Color", "0xccccccff");
-                jsonSTLModel.put("Visible", "true");
-                jsonSTLModels.put("STL " + i, jsonSTLModel);
-                TreeItem<String> stlFile = new TreeItem<>(name);
-                stlBranch.getChildren().add(stlFile);
-            }
+        if (fileNames != null) {
+            addSTLToJSON(fileNames, jsonSTLModels);
+        }
+    }
+
+    /**
+     * Method to add one or more STL Files to the existing ones
+     */
+    public void addSTLFile() {
+        if (trackingService.getTrackingDataSource() == null) {
+            statusLabel.setText("Select Tracking Data Source first");
+            return;
+        }
+        List<File> fileNames = visualizationManager.addSTLModels();
+        visualizationManager.showFigure();
+        if (fileNames != null) {
+            JSONParser jsonParser = new JSONParser();
             try {
-                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-                file.write(jsonSTLModels.toString());
-                file.close();
-            } catch (IOException e) {
+                JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
+                addSTLToJSON(fileNames, jsonSTLModels);
+            } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    /**
+     * Helper method to add the STl Files to the JSON File
+     *
+     * @param fileNames the JSON file names to be stored
+     * @param jsonSTLModels the JSON Object to which the STL Files should be added
+     */
+    private void addSTLToJSON(List<File> fileNames, JSONObject jsonSTLModels) {
+        System.out.println("Model Size " + jsonSTLModels.size());
+        int offset = jsonSTLModels.size();
+        for (int i = 0; i < fileNames.size(); i++) {
+            String path = fileNames.get(i).toString();
+            int index = path.lastIndexOf("\\");
+            String name = path.substring(index+1, path.length() - 4);
+            name = "STL " + name;
+
+            JSONObject jsonSTLModel = new JSONObject();
+            jsonSTLModel.put("Name", name);
+            jsonSTLModel.put("Path", path);
+            jsonSTLModel.put("Color", "0xccccccff");
+            jsonSTLModel.put("Visible", "true");
+            jsonSTLModels.put("STL " + (i + offset), jsonSTLModel);
+            TreeItem<String> stlFile = new TreeItem<>(name);
+            stlBranch.getChildren().add(stlFile);
+        }
+        try {
+            FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
+            file.write(jsonSTLModels.toJSONString());
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -159,7 +198,7 @@ public class VisualizationController implements Controller {
      */
     public void addTrackerToTreeView(List<Tool> tools) {
         TreeItem<String> trackerBranch = new TreeItem<>("Tracker");
-        root.getChildren().add(trackerBranch);
+        treeItemRoot.getChildren().add(trackerBranch);
         if (tools != null) {
             trackerNames = new String[tools.size()];
             for (int i = 0; i < tools.size(); i++) {
@@ -172,10 +211,8 @@ public class VisualizationController implements Controller {
     }
 
     public void addSTLToTreeView() {
-        STLModel[] stlModels = visualizationManager.getSTLModels();
+        ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
         if (stlModels != null) {
-            TreeItem<String> stlBranch = new TreeItem<>("Files");
-            root.getChildren().add(stlBranch);
             for (STLModel model : stlModels) {
                 TreeItem<String> stlFile = new TreeItem<>(model.getName());
                 stlBranch.getChildren().add(stlFile);
@@ -190,18 +227,13 @@ public class VisualizationController implements Controller {
     private void selectItem() {
         TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
         if (item != null) {
-            String name = item.getValue();
-            Pattern pattern = Pattern.compile("Tool\\d");
-            Matcher matcher = pattern.matcher(name);
-            boolean matchFound = matcher.find();
-            if(matchFound) {
-                activateTrackerVBox(name);
-            }
-            pattern = Pattern.compile("^STL");
-            matcher = pattern.matcher(name);
-            matchFound = matcher.find();
-            if(matchFound) {
+            TreeItem<String> parent = item.getParent();
+            if (parent.getValue().equals("Files")) {
+                String name = item.getValue();
                 activateSTLVBox(name);
+            } else if (parent.getValue().equals("Tracker")) {
+                String name = item.getValue();
+                activateTrackerVBox(name);
             }
         }
     }
@@ -331,8 +363,8 @@ public class VisualizationController implements Controller {
     private void setSTLColor()  {
         int pos = getSelectedSTL();
         if (pos != -1) {
-            STLModel[] stlModels = visualizationManager.getSTLModels();
-            stlModels[pos].setColor(new PhongMaterial(stlColorPicker.getValue()));
+            ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
+            stlModels.get(pos).setColor(new PhongMaterial(stlColorPicker.getValue()));
             changeAttributeOfSTL(pos, "Color", String.valueOf(stlColorPicker.getValue()));
         }
     }
@@ -344,9 +376,9 @@ public class VisualizationController implements Controller {
     private void setSTLVisibility() {
         int pos = getSelectedSTL();
         if (pos != -1) {
-            STLModel[] stlModels = visualizationManager.getSTLModels();
-            boolean visible = stlModels[pos].isVisible();
-            stlModels[pos].setVisible(!visible);
+            ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
+            boolean visible = stlModels.get(pos).isVisible();
+            stlModels.get(pos).setVisible(!visible);
             changeAttributeOfSTL(pos, "Visible", String.valueOf(!visible));
         }
     }
@@ -417,11 +449,11 @@ public class VisualizationController implements Controller {
      */
     private int getSelectedSTL() {
         TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
-        STLModel[] stlModels = visualizationManager.getSTLModels();
+        ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
         String name = item.getValue();
         int pos = -1;
-        for (int i = 0; i < stlModels.length; i++) {
-            if (stlModels[i].getName().equals(name)) {
+        for (int i = 0; i < stlModels.size(); i++) {
+            if (stlModels.get(i).getName().equals(name)) {
                 pos = i;
             }
         }
@@ -447,7 +479,7 @@ public class VisualizationController implements Controller {
         }
         statusLabel.setText("");
 
-        STLModel[] stlModels = visualizationManager.getSTLModels();
+        ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
 
         if (cullBack.isSelected()) {
             for (STLModel model: stlModels) {
@@ -471,7 +503,7 @@ public class VisualizationController implements Controller {
         }
         statusLabel.setText("");
 
-        STLModel[] stlModels = visualizationManager.getSTLModels();
+        ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
 
         if (wireframe.isSelected()) {
             for (STLModel model: stlModels) {
@@ -497,7 +529,7 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void resetView() {
-        visualizationManager.showFigure();
+        visualizationManager.resetView();
     }
 
     @Override

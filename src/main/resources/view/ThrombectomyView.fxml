@@ -60,17 +60,15 @@
                 </yAxis>
             </ImageScatterChart>
             <AnchorPane fx:id="positionDetailBox" prefHeight="360.0" prefWidth="408.0" visible="false">
-                <children>
-                    <Label fx:id="imageLabel" layoutX="21.0" layoutY="6.0" style="-fx-font-weight: bold;"/>
-                    <Label layoutX="31.0" layoutY="49.0" text="X-Value:"/>
-                    <Button fx:id="setPositionBtn" layoutX="271.0" layoutY="180.0" mnemonicParsing="false"
-                            text="Set Position"/>
-                    <Label layoutX="31.0" layoutY="79.0" text="Y-Value:"/>
-                    <Label layoutX="41.0" layoutY="114.0" text="Scale:"/>
-                    <TextField fx:id="imageXValue" layoutX="96.0" layoutY="45.0"/>
-                    <TextField fx:id="imageYValue" layoutX="96.0" layoutY="75.0"/>
-                    <TextField fx:id="imageScale" layoutX="96.0" layoutY="110.0"/>
-                </children>
+                <Label fx:id="imageLabel" layoutX="21.0" layoutY="6.0" style="-fx-font-weight: bold;"/>
+                <Label layoutX="31.0" layoutY="49.0" text="X-Value:"/>
+                <Button fx:id="setPositionBtn" layoutX="271.0" layoutY="180.0" mnemonicParsing="false"
+                        text="Set Position"/>
+                <Label layoutX="31.0" layoutY="79.0" text="Y-Value:"/>
+                <Label layoutX="41.0" layoutY="114.0" text="Scale:"/>
+                <TextField fx:id="imageXValue" layoutX="96.0" layoutY="45.0"/>
+                <TextField fx:id="imageYValue" layoutX="96.0" layoutY="75.0"/>
+                <TextField fx:id="imageScale" layoutX="96.0" layoutY="110.0"/>
             </AnchorPane>
         </VBox>
         <VBox layoutX="820.0" layoutY="25.0" prefHeight="115.0" prefWidth="134.0" spacing="5.0"
