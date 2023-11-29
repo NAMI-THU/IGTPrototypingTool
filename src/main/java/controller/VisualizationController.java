@@ -148,11 +148,11 @@ public class VisualizationController implements Controller {
         List<File> fileNames = visualizationManager.addSTLModels();
         visualizationManager.showFigure();
         if (fileNames != null) {
-            JSONParser jsonParser = new JSONParser();
             try {
-                JSONObject jsonSTLModels = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/json/stlFiles.json"));
-                addSTLToJSON(fileNames, jsonSTLModels);
-            } catch (IOException | ParseException e) {
+            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
+            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            addSTLToJSON(fileNames, jsonSTLModels);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -165,8 +165,8 @@ public class VisualizationController implements Controller {
      * @param jsonSTLModels the JSON Object to which the STL Files should be added
      */
     private void addSTLToJSON(List<File> fileNames, JSONObject jsonSTLModels) {
-        System.out.println("Model Size " + jsonSTLModels.size());
-        int offset = jsonSTLModels.size();
+        System.out.println("Model Size " + jsonSTLModels.length());
+        int offset = jsonSTLModels.length();
         for (int i = 0; i < fileNames.size(); i++) {
             String path = fileNames.get(i).toString();
             int index = path.lastIndexOf("\\");
@@ -184,7 +184,7 @@ public class VisualizationController implements Controller {
         }
         try {
             FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-            file.write(jsonSTLModels.toJSONString());
+            file.write(jsonSTLModels.toString());
             file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

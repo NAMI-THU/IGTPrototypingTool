@@ -58,16 +58,16 @@ public class Tool {
             var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
             JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
             double[] arr = new double[9];
-            JSONArray transformationArray = (JSONArray) jsonTransformationMatrix.get("transformTracker");
+            JSONArray transformationArray = jsonTransformationMatrix.getJSONArray("transformTracker");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    JSONArray row = (JSONArray) transformationArray.get(i);
-                    arr[j + i * 3] = (double) row.get(j);
+                    JSONArray row = transformationArray.getJSONArray(i);
+                    arr[j + i * 3] = row.getDouble(j);
                 }
             }
             transformMatrix = new Matrix3D(arr);
-            JSONArray offset = (JSONArray) jsonTransformationMatrix.get("trackerOffset");
-            offsetVec = new Vector3D((double) offset.get(0), (double) offset.get(1), (double) offset.get(2));
+            JSONArray offset = jsonTransformationMatrix.getJSONArray("trackerOffset");
+            offsetVec = new Vector3D(offset.getDouble(0), offset.getDouble(1), offset.getDouble(2));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
