@@ -1,5 +1,8 @@
 package util;
 
+/**
+ * This class is based on the class Matrix3f from https://github.com/jMonkeyEngine/jmonkeyengine/blob/master/jme3-core/src/main/java/com/jme3/math/Matrix3f.java
+ */
 public class Matrix3D {
     /**
      * A new 3x3 Array as the representation of the matrix
@@ -83,6 +86,21 @@ public class Matrix3D {
     }
 
     /**
+     * Method to return a matrix with only zeros
+     *
+     * @return the matrix
+     */
+    public Matrix3D zero() {
+        Matrix3D store = new Matrix3D();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                store.matrix[i][j] = 0;
+            }
+        }
+        return store;
+    }
+
+    /**
      * Returns the element at the position i,j in the matrix
      *
      * @param i the row index
@@ -160,6 +178,21 @@ public class Matrix3D {
         }
         return result;
     }
+
+    /**
+     * Method to mutliply all values of the current matrix with a scalar
+     *
+     * @param scalar the number with which all values should be multiplied
+     */
+    public void mult(double scalar) {
+        Matrix3D store = new Matrix3D();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                this.matrix[i][j] *= scalar;
+            }
+        }
+    }
+
     /**
      * Helper function to print the 3x3 matrix to the console
      */
@@ -172,5 +205,68 @@ public class Matrix3D {
             result.append("\n");
         }
         return result.toString();
+    }
+
+    /**
+     * Returns the determinant. The matrix is unaffected.
+     *
+     * @return the determinant
+     */
+    public double determinant() {
+        // Rule of Sarrus:
+        double temp0 = this.get(0,0) * this.get(1,1) * this.get(2,2);
+        double temp1 = this.get(0,1) * this.get(1,2) * this.get(2,0);
+        double temp2 = this.get(0,2) * this.get(1,0) * this.get(2,1);
+
+        double temp3 = this.get(0,2) * this.get(1,1) * this.get(2,0);
+        double temp4 = this.get(0,0) * this.get(1,2) * this.get(2,1);
+        double temp5 = this.get(0,1) * this.get(1,0) * this.get(2,2);
+
+        return  (temp0 + temp1 + temp2 - temp3 - temp4 - temp5);
+    }
+
+    /**
+     * Method to return the inverse of a matrix
+     *
+     * @return the invert matrix
+     */
+    public Matrix3D invert() {
+
+        Matrix3D store = new Matrix3D();
+
+        double det = determinant();
+        if (Math.abs(det) <= 0.01) {
+            return store.zero();
+        }
+
+        store.set(0,0, get(1,1) * get(2,2) - get(1,2) * get(2,1));
+        store.set(0,1, get(0,2) * get(2,1) - get(0,1) * get(2,2));
+        store.set(0,2, get(0,1) * get(1,2) - get(0,2) * get(1,1));
+        store.set(1,0, get(1,2) * get(2,0) - get(1,0) * get(2,2));
+        store.set(1,1, get(0,0) * get(2,2) - get(0,2) * get(2,0));
+        store.set(1,2, get(0,2) * get(1,0) - get(0,0) * get(1,2));
+        store.set(2,0, get(1,0) * get(2,1) - get(1,1) * get(2,0));
+        store.set(2,1, get(0,1) * get(2,0) - get(0,0) * get(2,1));
+        store.set(2,2, get(0,0) * get(1,1) - get(0,1) * get(1,0));
+
+        store.mult(1f / det);
+        return store;
+    }
+
+    public static void main(String[] args) {
+        double[] arr = {1.0,2.0,3.0,-2.0,4.0,-1.0,5.0,6.0,2.0};
+        Matrix3D mat = new Matrix3D(arr);
+        mat.print();
+        Matrix3D matI = mat.invert();
+        matI.print();
+    }
+
+    private void print() {
+        for (int i = 0; i < this.matrix.length; i++) {
+            for (int j = 0; j < this.matrix[0].length; j++) {
+                System.out.print(this.matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
