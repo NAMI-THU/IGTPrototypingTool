@@ -261,7 +261,7 @@ public class Matrix3D {
         matI.print();
     }
 
-    private void print() {
+    public void print() {
         for (int i = 0; i < this.matrix.length; i++) {
             for (int j = 0; j < this.matrix[0].length; j++) {
                 System.out.print(this.matrix[i][j] + " ");

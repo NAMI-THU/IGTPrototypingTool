@@ -82,7 +82,7 @@ public class Tool {
         double z = measurements.get(measurements.size() - 1).getPos().getZ();
 
         setPos(new Vector3D(x,y,z));
-        //rotate(rotMat);
+        rotate(rotMat);
         translate(transformMatrix);
         movePos(offsetVec);
 

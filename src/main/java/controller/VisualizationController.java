@@ -165,7 +165,6 @@ public class VisualizationController implements Controller {
      * @param jsonSTLModels the JSON Object to which the STL Files should be added
      */
     private void addSTLToJSON(List<File> fileNames, JSONObject jsonSTLModels) {
-        System.out.println("Model Size " + jsonSTLModels.length());
         int offset = jsonSTLModels.length();
         for (int i = 0; i < fileNames.size(); i++) {
             String path = fileNames.get(i).toString();

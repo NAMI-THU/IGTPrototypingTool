@@ -163,10 +163,9 @@ public class VisualizationManager {
                 stlModels.add(new STLModel(new MeshView(mesh), name, "ccccccff", true));
                 stlModels.get(i + indexOffset).getMeshView().getTransforms().addAll(
                         //Rotate the Model by 180 degrees for correct display
-                        //new Rotate(180, Rotate.X_AXIS)
+                        new Rotate(180, Rotate.X_AXIS)
                 );
                 //logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
-                System.out.println("STL File " + name + " geladen");
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Error reading STL file");
             }
