@@ -1,6 +1,7 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
+import inputOutput.CSVFileReader;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -14,6 +15,7 @@ import util.Matrix3D;
 import util.Quaternion;
 import util.Vector3D;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,7 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The class Tool represents the name of a tool,
@@ -54,6 +58,8 @@ public class Tool {
         this.projection = new NeedleProjection();
         this.projection.setVisible(false);
         this.setConeColor(new PhongMaterial(Color.GRAY));
+
+
         try {
             var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
             JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
@@ -66,6 +72,7 @@ public class Tool {
                 }
             }
             transformMatrix = new Matrix3D(arr);
+            transformMatrix = transformMatrix.invert();
             JSONArray offset = jsonTransformationMatrix.getJSONArray("trackerOffset");
             offsetVec = new Vector3D(offset.getDouble(0), offset.getDouble(1), offset.getDouble(2));
         } catch (IOException e) {
@@ -118,10 +125,12 @@ public class Tool {
         if (d != 0d) {
             double den = 2d * Math.sin(d);
             Point3D p = new Point3D((rotMat.get(2,1) - rotMat.get(1,2)) / den, (rotMat.get(0,2) - rotMat.get(2,0)) / den, (rotMat.get(1,0) - rotMat.get(0,1)) / den);
-            cone.setRotationAxis(p);
-            cone.setRotate(Math.toDegrees(d));
-            projection.setRotationAxis(p);
-            projection.setRotate(Math.toDegrees(d));
+            //cone.setRotationAxis(p);
+            //cone.setRotate(Math.toDegrees(d));
+            cone.rotate(p, d);
+            projection.rotate(p, d);
+            //projection.setRotationAxis(p);
+            //projection.setRotate(Math.toDegrees(d));
         }
     }
 

@@ -1,5 +1,6 @@
 package shapes;
 
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.paint.Color;
@@ -13,22 +14,27 @@ public class NeedleProjection extends Group {
     /*
     Field variables
      */
-    public Rotate rx = new Rotate(-90, Rotate.X_AXIS);
-    public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-    public Rotate rz = new Rotate(0, Rotate.Z_AXIS);
+    private final int LEN = 75;
 
     /*
     Constructors
      */
     public NeedleProjection() {
-        int len = 75;
         int thickness = 1;
-        Box z = new Box(thickness, thickness, len);
-        z.setMaterial(new PhongMaterial(Color.RED));
-        z.setTranslateZ(-len / 2);
+        Box line = new Box(LEN,thickness, thickness);
+        line.setMaterial(new PhongMaterial(Color.RED));
+        line.setTranslateX(-LEN / 2);
+        //line.setTranslateY(LEN / 2);
+        //line.setTranslateZ(-LEN / 2);
         // Only show z-axis
-        getChildren().addAll(z);
 
-        getTransforms().addAll(rx, ry, rz);
+        getChildren().addAll(line);
+
+        //getTransforms().addAll(rx, ry, rz);
+        getTransforms().add(new Rotate(0,0,0,0));
+    }
+
+    public void rotate(Point3D p, double d) {
+        getTransforms().setAll(new Rotate(Math.toDegrees(d), 0, 0, 0, p));
     }
 }

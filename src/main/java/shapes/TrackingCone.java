@@ -16,11 +16,6 @@ public class TrackingCone extends MeshView {
     private static final int DEFAULT_DIVISIONS = 36;
     private static final double DEFAULT_RADIUS = 4.0D;
     private static final double DEFAULT_HEIGHT = 30.0D;
-
-    public Rotate rx = new Rotate(0, Rotate.X_AXIS);
-    public Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-    public Rotate rz = new Rotate(-90, Rotate.Z_AXIS);
-
     /*
     Constructors
      */
@@ -37,7 +32,6 @@ public class TrackingCone extends MeshView {
         setRadius(radius);
         setHeight(height);
         setMesh(createCone(getDivisions(), (float) getRadius(), (float) getHeight()));
-        getTransforms().addAll(rz, ry, rx);
     }
 
     /*
@@ -55,7 +49,7 @@ public class TrackingCone extends MeshView {
     private TriangleMesh createCone(int divisions, float radius, float height) {
         TriangleMesh mesh = new TriangleMesh();
         //Start with the top of the cone, later we will build our faces from these
-        mesh.getPoints().addAll(0, -height / 2, 0); //Point 0: Top of the Cone
+        mesh.getPoints().addAll(0, 0, 0); //Point 0: Top of the Cone
         //Generate the segments of the bottom circle (Cone Base)
         double segment_angle = 2.0 * Math.PI / divisions;
         float x, z;
@@ -66,9 +60,9 @@ public class TrackingCone extends MeshView {
             angle = segment_angle * i;
             x = (float) (radius * Math.cos(angle - halfCount));
             z = (float) (radius * Math.sin(angle - halfCount));
-            mesh.getPoints().addAll(x, height / 2, z);
+            mesh.getPoints().addAll(x, height, z);
         }
-        mesh.getPoints().addAll(0, height / 2, 0); //Point N: Center of the Cone Base
+        mesh.getPoints().addAll(0, height, 0); //Point N: Center of the Cone Base
 
         mesh.getTexCoords().addAll(0, 0);
         //Add the faces "winding" the points generally counter clock wise
@@ -80,6 +74,12 @@ public class TrackingCone extends MeshView {
             );
         }
         return mesh;
+    }
+
+    public void rotate(Point3D p, double d) {
+        getTransforms().clear();
+        getTransforms().add(new Rotate(Math.toDegrees(d), 0, 0, 0, p));
+        getTransforms().add(new Rotate(-90, Rotate.Z_AXIS));
     }
 
     /*
