@@ -59,12 +59,12 @@ public class Tool {
         this.projection.setVisible(false);
         this.setConeColor(new PhongMaterial(Color.GRAY));
 
-
+        /*
         try {
             var jsonString = Files.readString(new File("src/main/resources/json/transformationMatrix.json").toPath());
             JSONObject jsonTransformationMatrix = new JSONObject(jsonString);
             double[] arr = new double[9];
-            JSONArray transformationArray = jsonTransformationMatrix.getJSONArray("transformTracker");
+            JSONArray transformationArray = jsonTransformationMatrix.getJSONArray("timoMatrix");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     JSONArray row = transformationArray.getJSONArray(i);
@@ -72,9 +72,40 @@ public class Tool {
                 }
             }
             transformMatrix = new Matrix3D(arr);
-            transformMatrix = transformMatrix.invert();
+            //transformMatrix = transformMatrix.invert();
             JSONArray offset = jsonTransformationMatrix.getJSONArray("trackerOffset");
             offsetVec = new Vector3D(offset.getDouble(0), offset.getDouble(1), offset.getDouble(2));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+         */
+
+        List<Double> records = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/matrixoutputInverse.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] valuesStr = line.split(";");
+                for (int i = 0; i < 4; i++) {
+                    records.add(Double.parseDouble(valuesStr[i]));
+                }
+            }
+
+            double[] matrixArr = new double[9];
+            double[] vectorArr = new double[3];
+            byte count = 0;
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (j == 3) {
+                        vectorArr[i] = records.get(4*i + j);
+                    } else {
+                        matrixArr[count] = records.get(4*i + j);
+                        count++;
+                    }
+                }
+            }
+            transformMatrix = new Matrix3D(matrixArr);
+            offsetVec = new Vector3D(vectorArr);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -127,8 +158,10 @@ public class Tool {
             Point3D p = new Point3D((rotMat.get(2,1) - rotMat.get(1,2)) / den, (rotMat.get(0,2) - rotMat.get(2,0)) / den, (rotMat.get(1,0) - rotMat.get(0,1)) / den);
             //cone.setRotationAxis(p);
             //cone.setRotate(Math.toDegrees(d));
-            cone.rotate(p, d);
-            projection.rotate(p, d);
+            cone.rotateMatrix(rotMat);
+            projection.rotateMatrix(rotMat);
+            //cone.rotate(p, d);
+            //projection.rotate(p, d);
             //projection.setRotationAxis(p);
             //projection.setRotate(Math.toDegrees(d));
         }

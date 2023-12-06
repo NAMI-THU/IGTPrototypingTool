@@ -7,7 +7,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
+import util.Matrix3D;
 
 public class TrackingCone extends MeshView {
     /*
@@ -79,6 +82,16 @@ public class TrackingCone extends MeshView {
     public void rotate(Point3D p, double d) {
         getTransforms().clear();
         getTransforms().add(new Rotate(Math.toDegrees(d), 0, 0, 0, p));
+        getTransforms().add(new Rotate(-90, Rotate.Z_AXIS));
+    }
+    public void rotateMatrix(Matrix3D rotMat) {
+        getTransforms().clear();
+        getTransforms().add(new Affine(1.0,0.0,0.0,0.0,
+                0.0,1.0,0.0,0.0,
+                0.0,0.0,-1.0,0.0));
+        getTransforms().add(new Affine(rotMat.get(0,0),rotMat.get(0,1),rotMat.get(0,2),0.0,
+                rotMat.get(1,0),rotMat.get(1,1),rotMat.get(1,2),0.0,
+                rotMat.get(2,0),rotMat.get(2,1),rotMat.get(2,2),0.0));
         getTransforms().add(new Rotate(-90, Rotate.Z_AXIS));
     }
 

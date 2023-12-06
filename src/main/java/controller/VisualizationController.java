@@ -343,7 +343,6 @@ public class VisualizationController implements Controller {
     private void setProjecitonVisibility() {
         if (visualizationManager.visualizeCone().get()) {
             List<Tool> tools = trackingService.getDataService().loadNextData(1);
-
             int index = getSelectedTracker();
             boolean visible = tools.get(index).projectionIsVisible();
             tools.get(index).setProjectionVisibility(!visible);
@@ -437,8 +436,8 @@ public class VisualizationController implements Controller {
      */
     private int getSelectedTracker() {
         TreeItem<String> item = stlTreeView.getSelectionModel().getSelectedItem();
-        String name = item.getValue();
-        return Character.getNumericValue(name.charAt(name.length()-1));
+        TreeItem<String> parent = item.getParent();
+        return  parent.getChildren().indexOf(item);
     }
 
     /**
