@@ -125,13 +125,8 @@ public class Tool {
     }
 
     private void rotate(Matrix3D rotMat) {
-        double d = Math.acos((rotMat.getTrace() - 1d) / 2d);
-        if (d != 0d) {
-            double den = 2d * Math.sin(d);
-            Point3D p = new Point3D((rotMat.get(2,1) - rotMat.get(1,2)) / den, (rotMat.get(0,2) - rotMat.get(2,0)) / den, (rotMat.get(1,0) - rotMat.get(0,1)) / den);
-            cone.rotateMatrix(rotMat);
-            projection.rotateMatrix(rotMat);
-        }
+        cone.rotateMatrix(rotMat);
+        projection.rotateMatrix(rotMat);
     }
 
     public void addVisualizationToRoot(Group root) {

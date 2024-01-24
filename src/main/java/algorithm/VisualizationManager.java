@@ -6,6 +6,10 @@ import javafx.scene.shape.Sphere;
 import org.json.JSONObject;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import shapes.CameraContainer;
 import shapes.STLModel;
 import javafx.beans.property.BooleanProperty;
@@ -24,6 +28,10 @@ import shapes.Target;
 import util.SmartGroup;
 import util.Vector3D;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -36,11 +44,7 @@ import java.util.logging.Logger;
  * This class is used to manage the 3D-Visualization.
  */
 public class VisualizationManager {
-    private static final double MODEL_SCALE_FACTOR = 10;
-    private static final double MODEL_X_OFFSET = 0; // standard
-    private static final double MODEL_Y_OFFSET = 0; // standard
     private static final int VIEWPORT_SIZE = 800;
-    private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
     public static final int CAM_MOVEMENT = 25;
     private CameraContainer cameraContainer;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -57,6 +61,7 @@ public class VisualizationManager {
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
     private Label statusLabel;
     private ArrayList<STLModel> stlModels;
+    private LinkedList<Target> targets;
     private ScrollPane scrollPane;
     private Group meshGroup;
 
@@ -109,6 +114,10 @@ public class VisualizationManager {
         return fileList;
     }
 
+    /**
+     * Loads the previously used stl files for visualisation
+     *
+     */
     public void loadLastSTLModels() {
         StlMeshImporter importer = new StlMeshImporter();
         try {
@@ -143,6 +152,11 @@ public class VisualizationManager {
         }
     }
 
+    /**
+     * Adds one or multiple stl files to the existing ones for the visualisation
+     *
+     * @return a string array of the loaded stl file names
+     */
     public List<File> addSTLModels() {
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
@@ -181,6 +195,45 @@ public class VisualizationManager {
         name = name.substring(index+1, name.length() - 4);
         name = "STL " + name;
         return name;
+    }
+
+    public void addPathVisualisation() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Load Path Visualisation");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.mps"));
+        File file = fc.showOpenDialog(new Stage());
+        if (file != null) {
+            // Read xml files:
+            // https://mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // Refresh the target list, everytime you load new targets
+            targets = new LinkedList<>();
+            try {
+                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(file);
+                doc.getDocumentElement().normalize();
+
+                NodeList list = doc.getElementsByTagName("point");
+
+                for (int temp = 0; temp < list.getLength(); temp++) {
+
+                    org.w3c.dom.Node node = list.item(temp);
+
+                    if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                        Element element = (Element) node;
+
+                        double x = Double.parseDouble(element.getElementsByTagName("x").item(0).getTextContent());
+                        double y = Double.parseDouble(element.getElementsByTagName("y").item(0).getTextContent());
+                        double z = Double.parseDouble(element.getElementsByTagName("z").item(0).getTextContent());
+
+                        targets.add(new Target(x, y, z));
+                    }
+                }
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -238,12 +291,8 @@ public class VisualizationManager {
      */
     private SmartGroup buildScene() {
         SmartGroup root = new SmartGroup();
-        //TESTING TARGET LIST:
-        LinkedList<Target> targets = new LinkedList<>();
-        targets.add(new Target(-5.0100867237, -237.739023999, -1415.00915527));
-        targets.add(new Target(52.1601535082, -105.997022902, -1371.00915527));
 
-        // If no stlFiles are loaded
+        // If stlFiles are loaded
         if(stlModels != null) {
             Group stlGroup = new Group();
             for (STLModel model : stlModels) {
@@ -254,14 +303,19 @@ public class VisualizationManager {
             centerZ = stlGroup.getBoundsInParent().getCenterZ();
 
             root.getChildren().add(stlGroup);
-            root.getChildren().addAll(targets);
-
         }
+
+        if (targets != null) {
+            root.getChildren().addAll(targets);
+        }
+
         if (trackingService.getDataService() != null) {
             List<Tool> tools = trackingService.getDataService().loadNextData(1);
             for (Tool tool : tools) {
                 tool.addVisualizationToRoot(root);
-                tool.addTargets(targets);
+                if (targets != null) {
+                    tool.addTargets(targets);
+                }
             }
         }
 

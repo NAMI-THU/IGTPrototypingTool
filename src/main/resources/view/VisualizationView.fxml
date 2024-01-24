@@ -24,7 +24,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="772.0" prefWidth="1075.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualizationController">
+<ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="772.0" prefWidth="1075.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.VisualizationController">
     <VBox maxHeight="Infinity" maxWidth="Infinity" prefHeight="772.0" prefWidth="1075.0">
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -99,9 +99,10 @@
                                     <RowConstraints maxHeight="45.0" minHeight="9.0" prefHeight="28.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                 <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-                                    <Button fx:id="resetView" layoutX="55.0" layoutY="1.0" mnemonicParsing="false" onAction="#resetView" text="Reset View" />
-                                    <Button fx:id="loadStlFile" layoutX="144.0" layoutY="1.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
-                           <Button fx:id="addStlFile" layoutX="223.0" layoutY="1.0" mnemonicParsing="false" onAction="#addSTLFile" text="Add STL" />
+                                    <Button fx:id="resetView" layoutX="102.0" layoutY="1.0" mnemonicParsing="false" onAction="#resetView" text="Reset View" />
+                                    <Button fx:id="loadStlFile" layoutX="188.0" layoutY="1.0" mnemonicParsing="false" onAction="#loadSTLFile" text="Load STL" />
+                           <Button fx:id="addStlFile" layoutX="268.0" layoutY="1.0" mnemonicParsing="false" onAction="#addSTLFile" text="Add STL" />
+                           <Button fx:id="addPath" layoutX="21.0" layoutY="1.0" mnemonicParsing="false" onAction="#addPathVisualisation" text="Add Path" />
                                 </AnchorPane>
                                 <AnchorPane>
                                     <Button fx:id="start" layoutX="128.0" layoutY="2.0" mnemonicParsing="false" onAction="#startTracking" text="Start" AnchorPane.leftAnchor="128.0" AnchorPane.topAnchor="2.0" />

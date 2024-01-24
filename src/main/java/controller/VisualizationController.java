@@ -37,6 +37,8 @@ public class VisualizationController implements Controller {
     @FXML
     Button addStlFile;
     @FXML
+    Button addPath;
+    @FXML
     Button start;
     @FXML
     ToggleButton pause;
@@ -149,9 +151,9 @@ public class VisualizationController implements Controller {
         visualizationManager.showFigure();
         if (fileNames != null) {
             try {
-            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
-            JSONObject jsonSTLModels = new JSONObject(jsonString);
-            addSTLToJSON(fileNames, jsonSTLModels);
+                var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
+                JSONObject jsonSTLModels = new JSONObject(jsonString);
+                addSTLToJSON(fileNames, jsonSTLModels);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -188,6 +190,17 @@ public class VisualizationController implements Controller {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @FXML
+    private void addPathVisualisation() {
+        if (trackingService.getTrackingDataSource() == null) {
+            statusLabel.setText("Select Tracking Data Source first");
+            return;
+        }
+        visualizationManager.addPathVisualisation();
+        visualizationManager.showFigure();
     }
 
     /**
