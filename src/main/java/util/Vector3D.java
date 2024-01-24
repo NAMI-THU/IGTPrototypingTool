@@ -99,21 +99,66 @@ public class Vector3D {
 
     /**
      * Adds a vector to the current vector
+     * Modifies the current vector
      *
      * @param other the other vector to be added to this one
      */
-    public void add(Vector3D other) {
+    public void addLocal(Vector3D other) {
         for (int i = 0; i < this.vector.length; i++) {
             this.vector[i] += other.vector[i];
         }
     }
 
     /**
+     * Adds a vector to the current vector
+     * Returns a new Vector
+     *
+     * @param other the other vector to be added to this one
+     * @return the new vector
+     */
+    public Vector3D add(Vector3D other) {
+        Vector3D newVec = new Vector3D();
+        for (int i = 0; i < this.vector.length; i++) {
+            newVec.vector[i] = this.vector[i] + other.vector[i];
+        }
+        return newVec;
+    }
+
+    /**
+     * Subtracts the other vector from this one
+     * Returns a new Vecotr
+     *
+     * @param other the other vector
+     * @return the new vector
+     */
+    public Vector3D sub(Vector3D other) {
+        Vector3D newVec = new Vector3D();
+        for (int i = 0; i < this.vector.length; i++) {
+            newVec.vector[i] = this.vector[i] - other.vector[i];
+        }
+        return newVec;
+    }
+    /**
+     * Returns the scalar product of this and another vector
+     *
+     * @param other the other vector
+     * @return the scalar
+     */
+    public double dot(Vector3D other) {
+        double sum = 0;
+        for (int i = 0; i < this.vector.length; i++) {
+            sum += this.vector[i] * other.vector[i];
+        }
+        return sum;
+    }
+
+    /**
      * Scalar multiply the current vector with a number
+     * Changes the current vector
      *
      * @param scalar the scalar
      */
-    public void mult(double scalar) {
+    public void multLocal(double scalar) {
         for (int i = 0; i < vector.length; i++) {
             vector[i] *= scalar;
         }
@@ -128,7 +173,7 @@ public class Vector3D {
     public double distTo(Vector3D other) {
         double sum = 0;
         for (int i = 0; i < this.vector.length; i++) {
-            sum += this.vector[i] - other.vector[i];
+            sum += Math.pow(this.vector[i] - other.vector[i],2);
         }
         return Math.sqrt(sum);
     }
@@ -137,5 +182,11 @@ public class Vector3D {
      */
     public void print() {
         System.out.println("(" + vector[0] + ", " + vector[1] + ", " + vector[2] + ")");
+    }
+
+    public static void main(String[] args) {
+        Vector3D a =  new Vector3D(1,2,3);
+        System.out.println(a.dot(a));
+
     }
 }

@@ -1,7 +1,8 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import org.json.JSONArray;
+import javafx.geometry.Bounds;
+import javafx.scene.shape.Sphere;
 import org.json.JSONObject;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -19,12 +20,14 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shapes.Target;
 import util.SmartGroup;
 import util.Vector3D;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -235,6 +238,10 @@ public class VisualizationManager {
      */
     private SmartGroup buildScene() {
         SmartGroup root = new SmartGroup();
+        //TESTING TARGET LIST:
+        LinkedList<Target> targets = new LinkedList<>();
+        targets.add(new Target(-5.0100867237, -237.739023999, -1415.00915527));
+        targets.add(new Target(52.1601535082, -105.997022902, -1371.00915527));
 
         // If no stlFiles are loaded
         if(stlModels != null) {
@@ -247,11 +254,14 @@ public class VisualizationManager {
             centerZ = stlGroup.getBoundsInParent().getCenterZ();
 
             root.getChildren().add(stlGroup);
+            root.getChildren().addAll(targets);
+
         }
         if (trackingService.getDataService() != null) {
             List<Tool> tools = trackingService.getDataService().loadNextData(1);
             for (Tool tool : tools) {
                 tool.addVisualizationToRoot(root);
+                tool.addTargets(targets);
             }
         }
 

@@ -1,9 +1,6 @@
 package shapes;
 
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
-import util.Quaternion;
 import util.Vector3D;
 
 public class CameraContainer {
@@ -24,7 +21,7 @@ public class CameraContainer {
     }
 
     public void move(Vector3D moveVec) {
-        pos.add(moveVec);
+        pos.addLocal(moveVec);
         update();
     }
 
