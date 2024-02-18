@@ -1,0 +1,26 @@
+name: Deploy Java executable
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Environment
+      uses: actions/setup-java@v4
+      with:
+        java-version: 20
+        distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    - name: Build exe
+      run: ./gradlew createExe
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: IGTPrototypingTool
+        path: build/launch4j/
