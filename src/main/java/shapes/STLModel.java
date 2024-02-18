@@ -2,17 +2,17 @@ package shapes;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
-import javafx.scene.transform.Rotate;
 import util.Matrix3D;
 import util.Vector3D;
 
+/**
+ * This class represent a stl model. It has the MehsView, the name, the color and the position of the model
+ */
 public class STLModel {
     private MeshView meshView;
     private String name;
     private Color color;
-
     private Vector3D pos;
 
     public STLModel(MeshView mv) {
@@ -27,11 +27,6 @@ public class STLModel {
         pos = new Vector3D(mv.getTranslateX(), mv.getTranslateY(), mv.getTranslateZ());
     }
 
-    public void transformPosition(Matrix3D transformMatrix) {
-        Vector3D newPos = transformMatrix.mult(pos);
-        newPos.print();
-    }
-
     public void setName(String n) {
         name = n;
     }
@@ -40,6 +35,10 @@ public class STLModel {
         return name;
     }
 
+    /**
+     * A method to set the color of the model.
+     * @param hex a hex value as a string
+     */
     public void setColor(String hex) {
         color = new Color(
                 Integer.valueOf(hex.substring(0, 2), 16) / 255.0,
@@ -59,12 +58,6 @@ public class STLModel {
 
     public MeshView getMeshView() {
         return meshView;
-    }
-
-    public void setPos(Vector3D newPos) {
-        meshView.setTranslateX(newPos.getX());
-        meshView.setTranslateY(newPos.getY());
-        meshView.setTranslateZ(newPos.getZ());
     }
 
     public void setVisible(boolean val) {

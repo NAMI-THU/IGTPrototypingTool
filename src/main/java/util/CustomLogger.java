@@ -2,7 +2,6 @@ package util;
 
 import java.io.IOException;
 import java.util.logging.*;
-import java.util.logging.*;
 import java.util.prefs.Preferences;
 
 public class CustomLogger {

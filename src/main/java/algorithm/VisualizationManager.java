@@ -1,8 +1,6 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import javafx.geometry.Bounds;
-import javafx.scene.shape.Sphere;
 import org.json.JSONObject;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -25,7 +23,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shapes.Target;
-import util.SmartGroup;
 import util.Vector3D;
 
 import javax.xml.XMLConstants;
@@ -45,22 +42,64 @@ import java.util.logging.Logger;
  */
 public class VisualizationManager {
     private static final int VIEWPORT_SIZE = 800;
+    /**
+     * Determines how much the camera moves
+     */
     public static final int CAM_MOVEMENT = 25;
+    /**
+     * A helper container who contains a camera
+     */
     private CameraContainer cameraContainer;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
+    /**
+     * A rotate object around the x-axis, used for the rotation of the visualisation
+     */
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
+    /**
+     * A rotate object around the y-axis, used for the rotation of the visualisation
+     */
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
-    private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+    /**
+     * Defines the x,y and z coordinate of the center of all stl models
+     * this point is the point around which is rotated
+     */
     private double centerX, centerY, centerZ;
+    /**
+     * Two anchor points used when rotating with the mouse
+     */
     private double anchorX, anchorY;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
     private double anchorAngleX = 0;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
     private double anchorAngleY = 0;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
     private final DoubleProperty angleX = new SimpleDoubleProperty(0);
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
     private final DoubleProperty angleY = new SimpleDoubleProperty(0);
+    /**
+     * Boolean if the cone is visualized at the moment
+     */
     private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
+    /**
+     * The current status
+     */
     private Label statusLabel;
+    /**
+     * ArrayList of all stl models
+     */
     private ArrayList<STLModel> stlModels;
+    /**
+     * LinkedList of all trackers
+     */
     private LinkedList<Target> targets;
     private ScrollPane scrollPane;
     private Group meshGroup;
@@ -69,6 +108,10 @@ public class VisualizationManager {
         this.statusLabel = statusLabel;
     }
 
+    /**
+     * Get all currently loaded stl models
+     * @return ArrayList<STLModel> of stl models
+     */
     public ArrayList<STLModel> getSTLModels() {
         return stlModels;
     }
@@ -100,7 +143,6 @@ public class VisualizationManager {
      *
      * @return a string array of the loaded stl file names
      */
-
     public List<File> loadStlModel() {
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
@@ -169,6 +211,11 @@ public class VisualizationManager {
         return fileList;
     }
 
+    /**
+     * Load one or more stl model from a file list and add them to the current ArrayList of stl models
+     * @param fileList the file list of models to be loaded
+     * @param indexOffset the position at which the models are added to the ArrayList
+     */
     private void loadNewSTLModel(List<File> fileList, int indexOffset) {
         for (int i = 0; i < fileList.size(); i++) {
             try {
@@ -189,6 +236,12 @@ public class VisualizationManager {
         }
     }
 
+    /**
+     * A helper method to get the name of a stl file
+     * This requires that the files are named like "name.stl"
+     * @param file the stl file, where you want to extract the name from
+     * @return the name of the stl
+     */
     private String getSTLName(File file) {
         String name = file.toString();
         int index = name.lastIndexOf("\\");
@@ -197,6 +250,10 @@ public class VisualizationManager {
         return name;
     }
 
+    /**
+     * Select a .mps file created from MITK to add two targets to the visualisation
+     * One is the entry point and the other represents the target point
+     */
     public void addPathVisualisation() {
         FileChooser fc = new FileChooser();
         fc.setTitle("Load Path Visualisation");
@@ -272,7 +329,7 @@ public class VisualizationManager {
         }
         statusLabel.setText("");
         // Add MeshView to Group
-        SmartGroup root = buildScene();
+        Group root = buildScene();
         // Create subScene
         SubScene subScene = createScene3D(root);
         // Add subScene to meshGroup
@@ -287,10 +344,10 @@ public class VisualizationManager {
     /**
      * Adds Nodes and Rotation to Group and centres it
      *
-     * @return Group with Model and Tracker
+     * @return Group with stl model, trackers and targets
      */
-    private SmartGroup buildScene() {
-        SmartGroup root = new SmartGroup();
+    private Group buildScene() {
+        Group root = new Group();
 
         // If stlFiles are loaded
         if(stlModels != null) {
@@ -314,7 +371,7 @@ public class VisualizationManager {
             for (Tool tool : tools) {
                 tool.addVisualizationToRoot(root);
                 if (targets != null) {
-                    tool.addTargets(targets);
+                    tool.setTargets(targets);
                 }
             }
         }
@@ -332,7 +389,7 @@ public class VisualizationManager {
      * @param root Group containing the nodes Model and Tracker
      * @return 3d SubScene
      */
-    private SubScene createScene3D(SmartGroup root) {
+    private SubScene createScene3D(Group root) {
         SubScene scene3d = new SubScene(root, VIEWPORT_SIZE, VIEWPORT_SIZE, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) meshGroup.getParent()).heightProperty());
@@ -364,7 +421,7 @@ public class VisualizationManager {
      * @param subScene Scene for MouseEvent
      * @param root SmartGroup
      */
-    private void handleMouse(SubScene subScene, SmartGroup root) {
+    private void handleMouse(SubScene subScene, Group root) {
         subScene.setOnScroll(event -> {
             double delta = event.getDeltaY();
             root.setTranslateZ(root.getTranslateZ() - delta);
@@ -423,6 +480,9 @@ public class VisualizationManager {
         });
     }
 
+    /**
+     * Helper Method used to recenter the view to its original position
+     */
     public void resetView() {
         angleX.set(0);
         angleY.set(0);

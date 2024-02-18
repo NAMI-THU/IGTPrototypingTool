@@ -1,14 +1,13 @@
 package algorithm;
 
 import com.google.gson.annotations.Expose;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import shapes.NeedleProjection;
 import shapes.STLModel;
 import shapes.Target;
 import shapes.TrackingCone;
-import shapes.NeedleProjection;
 import util.Matrix3D;
 import util.Quaternion;
 import util.Vector3D;
@@ -46,6 +45,9 @@ public class Tool {
         init();
     }
 
+    /**
+     * Method to initialize the attributes of the tool
+     */
     public void init() {
         this.measurements = new ArrayList<>();
         this.cone = new TrackingCone(36, 4, 10);
@@ -84,6 +86,9 @@ public class Tool {
         }
     }
 
+    /**
+     * Method to update the current position of the tool and perform all necessary transformations on it
+     */
     public void show() {
         Quaternion rotationMovement = measurements.get(measurements.size() - 1).getRotation();
         Matrix3D rotMat = rotationMovement.toRotationMatrix();
@@ -99,16 +104,26 @@ public class Tool {
         checkTargets();
     }
 
+    /**
+     * Apply a translation matrix to the current position
+     * @param mat
+     */
     private void translate(Matrix3D mat) {
         Vector3D newPos = mat.mult(pos);
         setPos(newPos);
     }
 
+    /**
+     * Set the current position to a new one
+     */
     private void setPos(Vector3D newPos) {
         pos = newPos;
         updatePos();
     }
 
+    /**
+     * Apply the current position of the tool to the cone and projection visualisation
+     */
     private void updatePos() {
         cone.setTranslateX(pos.getX());
         cone.setTranslateY(pos.getY());
@@ -119,25 +134,46 @@ public class Tool {
         projection.setTranslateZ(pos.getZ());
     }
 
+    /**
+     * Add a vector to the current position, effectivly moving it by this vector
+     * @param vec the vector to be added to the current position
+     */
     private void movePos(Vector3D vec) {
         pos.addLocal(vec);
         updatePos();
     }
 
+    /**
+     * Rotate the cone and projection visualisation by a rotation matrix
+     * @param rotMat the rotation matrix
+     */
     private void rotate(Matrix3D rotMat) {
         cone.rotateMatrix(rotMat);
         projection.rotateMatrix(rotMat);
     }
 
+    /**
+     * Helper method for adding the projection and the cone to the visualisation group
+     * @param root
+     */
     public void addVisualizationToRoot(Group root) {
         root.getChildren().add(projection);
         root.getChildren().addAll(cone);
     }
 
-    public void addTargets(LinkedList<Target> targets) {
+    /**
+     * Set the targets of the tool
+     * @param targets the new targets
+     */
+    public void setTargets(LinkedList<Target> targets) {
         this.targets = targets;
     }
 
+    /**
+     * Method to check if the projection intersects a target and if so, change the color of the target
+     * Color red implies an intersection between the projection and the target
+     * Color green implies no intersection was detected
+     */
     public void checkTargets() {
         if (this.targets != null) {
             for (Target t: targets) {
@@ -155,7 +191,6 @@ public class Tool {
      * Color red implies a collision with the model was detected
      * Color green implies no collision was detected
      */
-
     public void checkBounds(ArrayList<STLModel> stlModels) {
         if (stlModels != null) {
             for (STLModel stlModel : stlModels) {
@@ -167,44 +202,85 @@ public class Tool {
             }
         }
     }
+
+    /**
+     * Method to set the color of the cone
+     * @param color the new cone color
+     */
     public void setConeColor(PhongMaterial color) {
         this.color = color;
         cone.setMaterial(color);
     }
 
+    /**
+     * Method to set the size of the cone
+     * @param size the new cone size
+     */
     public void setConeSize(double size) {
         cone.setHeight(size);
         cone.setRadius(size * 0.4);
     }
 
+    /**
+     * Method to set the visibility of the cone
+     * @param visibility boolean, true if visible
+     */
     public void setConeVisibility(boolean visibility) {
         cone.setVisible(visibility);
     }
 
+    /**
+     * Return if cone is visible
+     * @return true if cone is visible
+     */
     public boolean coneIsVisible() {
         return cone.isVisible();
     }
 
+    /**
+     * Method to set the visibility of the projection
+     * @param visibility boolean, true if visible
+     */
     public void setProjectionVisibility(boolean visibility) {
         projection.setVisible(visibility);
     }
 
+    /**
+     * Return if projection is visible
+     * @return true if projection is visible
+     */
     public boolean projectionIsVisible() {
         return projection.isVisible();
     }
 
+    /**
+     * Returns the name of the tool
+     * @return name of the tool
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the tool
+     * @param name new name of the tool
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Returns a list of measurements
+     * @return List<Measurement> all the measurements of the tools
+     */
     public List<Measurement> getMeasurement() {
         return measurements;
     }
 
+    /**
+     * Adds a measurement to the list
+     * @param measurement measurement to be added
+     */
     public void addMeasurement(Measurement measurement) {
         measurements.add(measurement);
     }
@@ -344,6 +420,9 @@ public class Tool {
         return rotationError;
     }
 
+    /**
+     * Helper method to print the current position
+     */
     public void printPos() {
         System.out.println("X: " + pos.getX() + " Y: " + pos.getY() + " Z: " + pos.getZ());
     }

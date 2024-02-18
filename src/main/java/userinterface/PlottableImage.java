@@ -2,7 +2,6 @@ package userinterface;
 
 import javafx.beans.NamedArg;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
@@ -13,7 +12,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
 
-import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 

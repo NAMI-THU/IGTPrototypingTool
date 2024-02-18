@@ -6,6 +6,9 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import util.Vector3D;
 
+/**
+ * This class represents the target. It contains the position and a sphere as the visual representation
+ */
 public class Target extends Group {
     private Vector3D pos;
     private Sphere sphere;

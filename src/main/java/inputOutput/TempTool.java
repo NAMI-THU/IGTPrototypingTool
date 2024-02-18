@@ -1,6 +1,5 @@
 package inputOutput;
 
-import javafx.geometry.Point3D;
 import util.Vector3D;
 
 /**

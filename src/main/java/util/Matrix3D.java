@@ -261,6 +261,10 @@ public class Matrix3D {
         matI.print();
     }
 
+    /**
+     * Helper method to print the matrix
+     */
+
     public void print() {
         for (int i = 0; i < this.matrix.length; i++) {
             for (int j = 0; j < this.matrix[0].length; j++) {

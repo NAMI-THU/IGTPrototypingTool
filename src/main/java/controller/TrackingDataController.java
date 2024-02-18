@@ -96,19 +96,13 @@ public class TrackingDataController implements Controller {
      */
     @FXML
     public void loadCSVFile() {
-        CSVFileReader newSource = null;
+        CSVFileReader newSource;
 
-        /*
         FileChooser fp = new FileChooser();
         fp.setTitle("Load Data");
         fp.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Datei", "*.csv"));
         File file = fp.showOpenDialog(new Stage());
-         */
 
-
-
-        File file = new File("src/main/resources/rotationTest.csv");
-        //File file = new File("src/main/resources/testPfad.csv");
 
         if (file != null) {
             if (trackingService.getTrackingDataSource() != null) {

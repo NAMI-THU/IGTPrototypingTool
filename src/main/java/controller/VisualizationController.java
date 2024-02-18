@@ -3,28 +3,27 @@ package controller;
 import algorithm.Tool;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.*;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
-import javafx.scene.transform.Rotate;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
 import org.json.JSONObject;
 import shapes.STLModel;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.text.ParseException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class VisualizationController implements Controller {
 
@@ -80,9 +79,6 @@ public class VisualizationController implements Controller {
 
     private final TreeItem<String> treeItemRoot = new TreeItem<>("Root");
     TreeItem<String> stlBranch = new TreeItem<>("Files");
-
-
-    //private String[] stlNames;
 
     private String[] trackerNames;
     @Override
@@ -192,7 +188,9 @@ public class VisualizationController implements Controller {
         }
     }
 
-
+    /**
+     * Method to call the addPathVisualisation from the VisualisationManager class
+     */
     @FXML
     private void addPathVisualisation() {
         if (trackingService.getTrackingDataSource() == null) {
@@ -222,6 +220,9 @@ public class VisualizationController implements Controller {
         }
     }
 
+    /**
+     * Adds the name of the stl file to the tree view
+     */
     public void addSTLToTreeView() {
         ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
         if (stlModels != null) {

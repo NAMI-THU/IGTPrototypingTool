@@ -1,18 +1,16 @@
 package algorithm;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import inputOutput.*;
+import javafx.scene.image.Image;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 
-import javafx.scene.image.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ImageDataProcessor accesses AbstractImageSource to control the connection and read images.

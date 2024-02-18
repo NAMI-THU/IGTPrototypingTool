@@ -1,6 +1,5 @@
 package algorithm;
 
-//import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import util.Quaternion;
