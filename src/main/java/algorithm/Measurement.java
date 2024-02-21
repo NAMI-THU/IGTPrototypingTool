@@ -30,11 +30,9 @@ public class Measurement {
         rot_r = (float) tempTool.getRotationR();
 
         this.setPos(new Vector3D(x,y,z));
-        this.setRotation(new Quaternion().set(rot_r, rot_x, rot_y, rot_z));
+        this.setRotation(new Quaternion(rot_r, rot_x, rot_y, rot_z));
         this.setTimestamp(tempTool.getTimestamp());
         this.setToolname(tempTool.getName());
-
-
     }
 
     public Measurement() {

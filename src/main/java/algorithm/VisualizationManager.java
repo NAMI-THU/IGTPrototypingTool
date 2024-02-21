@@ -110,7 +110,8 @@ public class VisualizationManager {
 
     /**
      * Get all currently loaded stl models
-     * @return ArrayList<STLModel> of stl models
+     *
+     * @return ArrayList of stl models
      */
     public ArrayList<STLModel> getSTLModels() {
         return stlModels;
@@ -151,14 +152,13 @@ public class VisualizationManager {
 
         if (fileList != null) {
             stlModels = new ArrayList<>();
-            loadNewSTLModel(fileList, 0);
+            loadNewSTLModel(fileList);
         }
         return fileList;
     }
 
     /**
      * Loads the previously used stl files for visualisation
-     *
      */
     public void loadLastSTLModels() {
         StlMeshImporter importer = new StlMeshImporter();
@@ -205,7 +205,7 @@ public class VisualizationManager {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
         if (fileList != null) {
-            loadNewSTLModel(fileList, stlModels.size());
+            loadNewSTLModel(fileList);
         }
 
         return fileList;
@@ -213,10 +213,10 @@ public class VisualizationManager {
 
     /**
      * Load one or more stl model from a file list and add them to the current ArrayList of stl models
+     *
      * @param fileList the file list of models to be loaded
-     * @param indexOffset the position at which the models are added to the ArrayList
      */
-    private void loadNewSTLModel(List<File> fileList, int indexOffset) {
+    private void loadNewSTLModel(List<File> fileList) {
         for (int i = 0; i < fileList.size(); i++) {
             try {
                 StlMeshImporter importer = new StlMeshImporter();
@@ -224,11 +224,13 @@ public class VisualizationManager {
                 importer.read(fileList.get(i));
                 Mesh mesh = importer.getImport();
                 String name = getSTLName(fileList.get(i));
-                stlModels.add(new STLModel(new MeshView(mesh), name, "ccccccff", true));
-                stlModels.get(i + indexOffset).getMeshView().getTransforms().addAll(
+                STLModel model = new STLModel(new MeshView(mesh), name, "ccccccff", true);
+                model.getMeshView().getTransforms().addAll(
                         //Rotate the Model by 180 degrees for correct display
                         new Rotate(180, Rotate.X_AXIS)
                 );
+                stlModels.add(model);
+
                 //logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Error reading STL file");
@@ -239,13 +241,14 @@ public class VisualizationManager {
     /**
      * A helper method to get the name of a stl file
      * This requires that the files are named like "name.stl"
+     *
      * @param file the stl file, where you want to extract the name from
      * @return the name of the stl
      */
     private String getSTLName(File file) {
         String name = file.toString();
         int index = name.lastIndexOf("\\");
-        name = name.substring(index+1, name.length() - 4);
+        name = name.substring(index + 1, name.length() - 4);
         name = "STL " + name;
         return name;
     }
@@ -270,20 +273,14 @@ public class VisualizationManager {
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(file);
                 doc.getDocumentElement().normalize();
-
                 NodeList list = doc.getElementsByTagName("point");
-
                 for (int temp = 0; temp < list.getLength(); temp++) {
-
                     org.w3c.dom.Node node = list.item(temp);
-
                     if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                         Element element = (Element) node;
-
                         double x = Double.parseDouble(element.getElementsByTagName("x").item(0).getTextContent());
                         double y = Double.parseDouble(element.getElementsByTagName("y").item(0).getTextContent());
                         double z = Double.parseDouble(element.getElementsByTagName("z").item(0).getTextContent());
-
                         targets.add(new Target(x, y, z));
                     }
                 }
@@ -350,7 +347,7 @@ public class VisualizationManager {
         Group root = new Group();
 
         // If stlFiles are loaded
-        if(stlModels != null) {
+        if (stlModels != null) {
             Group stlGroup = new Group();
             for (STLModel model : stlModels) {
                 stlGroup.getChildren().add(model.getMeshView());
@@ -412,14 +409,14 @@ public class VisualizationManager {
         cameraContainer = new CameraContainer(true);
         Vector3D newPos = new Vector3D(centerX, centerY, centerZ);
         cameraContainer.setPos(newPos);
-        cameraContainer.move(new Vector3D(0,0,-500));
+        cameraContainer.move(new Vector3D(0, 0, -500));
     }
 
     /**
      * Adds Mouse Controls to the Scene
      *
      * @param subScene Scene for MouseEvent
-     * @param root SmartGroup
+     * @param root     SmartGroup
      */
     private void handleMouse(SubScene subScene, Group root) {
         subScene.setOnScroll(event -> {
@@ -446,36 +443,40 @@ public class VisualizationManager {
     /**
      * Adds Keyboard Controls to the Scene
      *
-     * @param scrollPane        Pane for KeyEvent
+     * @param scrollPane      Pane for KeyEvent
      * @param cameraContainer Camera to be controlled
      */
     private void handleKeyboard(ScrollPane scrollPane, CameraContainer cameraContainer) {
 
         scrollPane.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case S, DOWN -> {
+                case S:
+                case DOWN:
                     Vector3D down = new Vector3D(0, 1, 0);
                     down.setMag(CAM_MOVEMENT);
                     cameraContainer.move(down);
                     event.consume();
-                }
-                case W, UP -> {
+                    break;
+                case W:
+                case UP:
                     Vector3D up = new Vector3D(0, -1, 0);
                     up.setMag(CAM_MOVEMENT);
                     cameraContainer.move(up);
                     event.consume();
-                }
-                case D, RIGHT -> {
+                    break;
+                case D:
+                case RIGHT:
                     Vector3D right = new Vector3D(1, 0, 0);
                     right.setMag(CAM_MOVEMENT);
                     cameraContainer.move(right);
-                }
-                case A, LEFT -> {
+                    break;
+                case A:
+                case LEFT:
                     Vector3D left = new Vector3D(-1, 0, 0);
                     left.setMag(CAM_MOVEMENT);
                     cameraContainer.move(left);
                     event.consume();
-                }
+                    break;
             }
         });
     }

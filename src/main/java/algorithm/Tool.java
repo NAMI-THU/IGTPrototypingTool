@@ -34,7 +34,7 @@ public class Tool {
     private Matrix3D transformMatrix;
     private Vector3D offsetVec;
     private PhongMaterial color;
-    private LinkedList<Target> targets;
+    private List<Target> targets;
 
     public Tool(String name) {
         this.name = name;
@@ -271,7 +271,7 @@ public class Tool {
 
     /**
      * Returns a list of measurements
-     * @return List<Measurement> all the measurements of the tools
+     * @return List containing all the measurements of the tools
      */
     public List<Measurement> getMeasurement() {
         return measurements;

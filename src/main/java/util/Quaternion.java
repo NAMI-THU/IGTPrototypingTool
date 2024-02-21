@@ -63,7 +63,7 @@ public class Quaternion {
     }
 
     /**
-     * Returns the x0 (real) component.
+     * Returns the w (real) component.
      *
      * @return the value of the {@link #w} component
      */
@@ -72,7 +72,7 @@ public class Quaternion {
     }
 
     /**
-     * Returns the x1 component.
+     * Returns the x component.
      *
      * @return the value of the {@link #x} component
      */
@@ -81,7 +81,7 @@ public class Quaternion {
     }
 
     /**
-     * Returns the x2 component.
+     * Returns the y component.
      *
      * @return the value of the {@link #y} component
      */
@@ -90,7 +90,7 @@ public class Quaternion {
     }
 
     /**
-     * Returns the x3 component.
+     * Returns the z component.
      *
      * @return the value of the {@link #z} component
      */
@@ -101,17 +101,17 @@ public class Quaternion {
     /**
      * Sets all 4 components to specified values.
      *
-     * @param x0 the x0 component
-     * @param x1 the x1 component
-     * @param x2 the x2 component
-     * @param x3 the x3 component
+     * @param w the w (real) component
+     * @param x the x component
+     * @param y the y component
+     * @param z the z component
      * @return the (modified) current instance
      */
-    public Quaternion set(double x0, double x1, double x2, double x3) {
-        this.w = x0;
-        this.x = x1;
-        this.y = x2;
-        this.z = x3;
+    public Quaternion set(double w, double x, double y, double z) {
+        this.w = w;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         return this;
     }
 

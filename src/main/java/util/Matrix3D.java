@@ -121,7 +121,6 @@ public class Matrix3D {
      *
      * @param i the row index
      * @param j the column index
-     * @return the value of the element at (i, j)
      * @throws IllegalArgumentException if either index isn't 0, 1, or 2
      */
     public void set(int i, int j, double num) {
@@ -251,26 +250,5 @@ public class Matrix3D {
 
         store.mult(1f / det);
         return store;
-    }
-
-    public static void main(String[] args) {
-        double[] arr = {1.0,2.0,3.0,-2.0,4.0,-1.0,5.0,6.0,2.0};
-        Matrix3D mat = new Matrix3D(arr);
-        mat.print();
-        Matrix3D matI = mat.invert();
-        matI.print();
-    }
-
-    /**
-     * Helper method to print the matrix
-     */
-
-    public void print() {
-        for (int i = 0; i < this.matrix.length; i++) {
-            for (int j = 0; j < this.matrix[0].length; j++) {
-                System.out.print(this.matrix[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 }

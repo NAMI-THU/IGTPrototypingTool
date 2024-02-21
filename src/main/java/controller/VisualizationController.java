@@ -354,18 +354,13 @@ public class VisualizationController implements Controller {
     }
 
     @FXML
-    private void setProjecitonVisibility() {
+    private void setProjectionVisibility() {
         if (visualizationManager.visualizeCone().get()) {
             List<Tool> tools = trackingService.getDataService().loadNextData(1);
             int index = getSelectedTracker();
             boolean visible = tools.get(index).projectionIsVisible();
             tools.get(index).setProjectionVisibility(!visible);
         }
-    }
-
-    @FXML
-    private void changeTrackerName() {
-
     }
 
     /**

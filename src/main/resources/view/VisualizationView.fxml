@@ -35,7 +35,7 @@
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                 <VBox fx:id="trackerVBox" disable="true" prefHeight="748.0" prefWidth="143.0">
-                    <TextField fx:id="trackerTextField" onAction="#changeTrackerName" prefHeight="37.0" prefWidth="143.0" />
+                    <TextField fx:id="trackerTextField" prefHeight="37.0" prefWidth="143.0" />
                     <VBox fillWidth="false" prefHeight="42.0" prefWidth="748.0" spacing="10.0">
                         <Label alignment="CENTER" prefHeight="17.0" prefWidth="146.0" text="Tracker Size:" textAlignment="CENTER" />
                         <Slider fx:id="trackerSlider" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="0" onMouseDragged="#setTrackerSize" value="10.0" />
@@ -52,7 +52,7 @@
                         <CheckBox fx:id="trackingVisibleCB" mnemonicParsing="false" onAction="#setTrackerVisibility" selected="true" text="Show Tracker" />
                     </HBox>
                     <HBox alignment="CENTER" prefHeight="22.0" prefWidth="143.0">
-                        <CheckBox fx:id="needleProjectionCB" mnemonicParsing="false" onAction="#setProjecitonVisibility" text="Needle Projection" />
+                        <CheckBox fx:id="needleProjectionCB" mnemonicParsing="false" onAction="#setProjectionVisibility" text="Needle Projection" />
                     </HBox>
                 </VBox>
                 <VBox fx:id="stlVBox" disable="true" layoutY="1.0" prefHeight="748.0" prefWidth="143.0" visible="false">

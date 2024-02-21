@@ -180,13 +180,7 @@ public class Vector3D {
     /**
      * Helper function to show the vector on the console
      */
-    public void print() {
-        System.out.println("(" + vector[0] + ", " + vector[1] + ", " + vector[2] + ")");
-    }
-
-    public static void main(String[] args) {
-        Vector3D a =  new Vector3D(1,2,3);
-        System.out.println(a.dot(a));
-
+    public String toString() {
+        return "(" + vector[0] + ", " + vector[1] + ", " + vector[2] + ")";
     }
 }

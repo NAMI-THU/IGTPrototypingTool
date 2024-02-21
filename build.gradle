@@ -7,19 +7,14 @@
  */
 
 plugins {
-
     // Apply the application plugin to add support for building a CLI application
     id 'application'
-
 	// Apply JavaFX plugin, necessary for GUI
     id 'org.openjfx.javafxplugin' version '0.1.0'
-
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
-
     // Spotbugs is a static analyzer for java
     id 'com.github.spotbugs' version '6.0.7'
-
     // With this plugin, we can build a Windows executable
     id 'edu.sc.seis.launch4j' version '3.0.5'
 }
