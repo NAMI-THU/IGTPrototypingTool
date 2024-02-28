@@ -13,7 +13,7 @@ jobs:
     - name: Setup Environment
       uses: actions/setup-java@v4
       with:
-        java-version: 20
+        java-version: 11
         distribution: 'temurin'
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
