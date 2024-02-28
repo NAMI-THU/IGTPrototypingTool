@@ -105,7 +105,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>com.neuronrobotics.sdk.addons.kinematics.math.TransformNR</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTxTransform(java.lang.String)" class="member-name-link">getTxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Request for a transform for transmition to IGT</div>
@@ -116,8 +116,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Request for status from IGT/Slicer</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRxDataArray(java.lang.String,Jama.Matrix)" class="member-name-link">onRxDataArray</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- Jama.Matrix&nbsp;data)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRxDataArray(java.lang.String,util.Matrix3D)" class="member-name-link">onRxDataArray</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../../util/Matrix3D.html" title="class in util">Matrix3D</a>&nbsp;data)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This is the handler for an array of raw data in an array</div>
 </div>
@@ -140,8 +140,8 @@ loadScripts(document, 'script');</script>
 <div class="block">This is the handler for a String packet</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRxTransform(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)" class="member-name-link">onRxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRxTransform(java.lang.String,util.TransformNR)" class="member-name-link">onRxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method will be called by the IGT server when a transform is received.</div>
 </div>
@@ -175,10 +175,10 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="onRxTransform(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)">
+<section class="detail" id="onRxTransform(java.lang.String,util.TransformNR)">
 <h3>onRxTransform</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">onRxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</span></div>
+ <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</span></div>
 <div class="block">This method will be called by the IGT server when a transform is received. Supports:
  TRANSFORM
  QTRANS
@@ -194,7 +194,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getTxTransform(java.lang.String)">
 <h3>getTxTransform</h3>
-<div class="member-signature"><span class="return-type">com.neuronrobotics.sdk.addons.kinematics.math.TransformNR</span>&nbsp;<span class="element-name">getTxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="member-signature"><span class="return-type"><a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a></span>&nbsp;<span class="element-name">getTxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
 <div class="block">Request for a transform for transmition to IGT</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -242,10 +242,10 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="onRxDataArray(java.lang.String,Jama.Matrix)">
+<section class="detail" id="onRxDataArray(java.lang.String,util.Matrix3D)">
 <h3>onRxDataArray</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">onRxDataArray</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- Jama.Matrix&nbsp;data)</span></div>
+ <a href="../../../../util/Matrix3D.html" title="class in util">Matrix3D</a>&nbsp;data)</span></div>
 <div class="block">This is the handler for an array of raw data in an array</div>
 <dl class="notes">
 <dt>Parameters:</dt>
