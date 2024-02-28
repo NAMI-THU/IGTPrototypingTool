@@ -108,7 +108,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Measurement</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(inputOutput.TempTool)" class="member-name-link">Measurement</a><wbr>(<a href="../inputOutput/TempTool.html" title="class in inputOutput">TempTool</a>&nbsp;tempTool)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(inputOutput.Tool)" class="member-name-link">Measurement</a><wbr>(<a href="../inputOutput/Tool.html" title="class in inputOutput">Tool</a>&nbsp;tool)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -127,10 +127,10 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getError()" class="member-name-link">getError</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../util/Vector3D.html" title="class in util">Vector3D</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPos()" class="member-name-link">getPos</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>javafx.geometry.Point3D</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPoint()" class="member-name-link">getPoint</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../util/Quaternion.html" title="class in util">Quaternion</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.jme3.math.Quaternion</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRotation()" class="member-name-link">getRotation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
@@ -143,10 +143,10 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setError(double)" class="member-name-link">setError</a><wbr>(double&nbsp;error)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPos(util.Vector3D)" class="member-name-link">setPos</a><wbr>(<a href="../util/Vector3D.html" title="class in util">Vector3D</a>&nbsp;pos)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPoint(javafx.geometry.Point3D)" class="member-name-link">setPoint</a><wbr>(javafx.geometry.Point3D&nbsp;point)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRotation(util.Quaternion)" class="member-name-link">setRotation</a><wbr>(<a href="../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;rotation)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRotation(com.jme3.math.Quaternion)" class="member-name-link">setRotation</a><wbr>(com.jme3.math.Quaternion&nbsp;rotation)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTimestamp(double)" class="member-name-link">setTimestamp</a><wbr>(double&nbsp;timestamp)</code></div>
@@ -172,9 +172,9 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(inputOutput.TempTool)">
+<section class="detail" id="&lt;init&gt;(inputOutput.Tool)">
 <h3>Measurement</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Measurement</span><wbr><span class="parameters">(<a href="../inputOutput/TempTool.html" title="class in inputOutput">TempTool</a>&nbsp;tempTool)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Measurement</span><wbr><span class="parameters">(<a href="../inputOutput/Tool.html" title="class in inputOutput">Tool</a>&nbsp;tool)</span></div>
 </section>
 </li>
 <li>
@@ -194,25 +194,25 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getRotation()">
 <h3>getRotation</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/Quaternion.html" title="class in util">Quaternion</a></span>&nbsp;<span class="element-name">getRotation</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.jme3.math.Quaternion</span>&nbsp;<span class="element-name">getRotation</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="setRotation(util.Quaternion)">
+<section class="detail" id="setRotation(com.jme3.math.Quaternion)">
 <h3>setRotation</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRotation</span><wbr><span class="parameters">(<a href="../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;rotation)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRotation</span><wbr><span class="parameters">(com.jme3.math.Quaternion&nbsp;rotation)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="getPos()">
-<h3>getPos</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/Vector3D.html" title="class in util">Vector3D</a></span>&nbsp;<span class="element-name">getPos</span>()</div>
+<section class="detail" id="getPoint()">
+<h3>getPoint</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">javafx.geometry.Point3D</span>&nbsp;<span class="element-name">getPoint</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="setPos(util.Vector3D)">
-<h3>setPos</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPos</span><wbr><span class="parameters">(<a href="../util/Vector3D.html" title="class in util">Vector3D</a>&nbsp;pos)</span></div>
+<section class="detail" id="setPoint(javafx.geometry.Point3D)">
+<h3>setPoint</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPoint</span><wbr><span class="parameters">(javafx.geometry.Point3D&nbsp;point)</span></div>
 </section>
 </li>
 <li>
