@@ -18,7 +18,7 @@ plugins {
     id 'checkstyle'
 
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '6.0.7'
+    id 'com.github.spotbugs' version '6.0.8'
 
     // With this plugin, we can build a Windows executable
     id 'edu.sc.seis.launch4j' version '3.0.5'
@@ -53,9 +53,9 @@ dependencies {
     implementation 'us.ihmc:jimStlMeshImporterJFX:0.7'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.10.2'
 }
 
 // JUnit 5 support
