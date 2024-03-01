@@ -132,18 +132,18 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TrackingDataManager.html" title="class in algorithm">TrackingDataManager</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataManager()" class="member-name-link">getDataManager</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Tool.html" title="class in algorithm">Tool</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getToolByName(java.lang.String)" class="member-name-link">getToolByName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method checks if the tool exists.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Tool.html" title="class in algorithm">Tool</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadNextData(int)" class="member-name-link">loadNextData</a><wbr>(int&nbsp;countToGetNext)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The method loadNextData gets a number of how much data should be
  reloaded.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Tool.html" title="class in algorithm">Tool</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadNextData(int,boolean)" class="member-name-link">loadNextData</a><wbr>(int&nbsp;countToGetNext,
  boolean&nbsp;updateSource)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -225,8 +225,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getToolByName(java.lang.String)">
 <h3>getToolByName</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Tool.html" title="class in algorithm">Tool</a></span>&nbsp;<span class="element-name">getToolByName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span>
-                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a></span>&nbsp;<span class="element-name">getToolByName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span>
+                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
 <div class="block">This method checks if the tool exists. A for-loop is used to go
  through the list of tools of type ToolMeasure. If the name of the
  searched tool is the same as in the list then the tool will be
@@ -257,7 +257,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="loadNextData(int)">
 <h3>loadNextData</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Tool.html" title="class in algorithm">Tool</a>&gt;</span>&nbsp;<span class="element-name">loadNextData</span><wbr><span class="parameters">(int&nbsp;countToGetNext)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a>&gt;</span>&nbsp;<span class="element-name">loadNextData</span><wbr><span class="parameters">(int&nbsp;countToGetNext)</span></div>
 <div class="block">The method loadNextData gets a number of how much data should be
  reloaded. In a loop the tools of DataMangager are brought. A list of
  measurements is created. AverageMeasurment is called and calculated.
@@ -274,7 +274,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="loadNextData(int,boolean)">
 <h3>loadNextData</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Tool.html" title="class in algorithm">Tool</a>&gt;</span>&nbsp;<span class="element-name">loadNextData</span><wbr><span class="parameters">(int&nbsp;countToGetNext,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ToolMeasure.html" title="class in algorithm">ToolMeasure</a>&gt;</span>&nbsp;<span class="element-name">loadNextData</span><wbr><span class="parameters">(int&nbsp;countToGetNext,
  boolean&nbsp;updateSource)</span></div>
 </section>
 </li>

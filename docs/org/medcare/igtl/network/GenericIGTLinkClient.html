@@ -167,7 +167,7 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">** To get response Handler</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.neuronrobotics.sdk.addons.kinematics.math.TransformNR</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTxTransform(java.lang.String)" class="member-name-link">getTxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Request for a transform for transmition to IGT</div>
@@ -178,8 +178,8 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 <div class="block">Request for status from IGT/Slicer</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRxDataArray(java.lang.String,util.Matrix3D)" class="member-name-link">onRxDataArray</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../../../util/Matrix3D.html" title="class in util">Matrix3D</a>&nbsp;data)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRxDataArray(java.lang.String,Jama.Matrix)" class="member-name-link">onRxDataArray</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ Jama.Matrix&nbsp;data)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This is the handler for an array of raw data in an array</div>
 </div>
@@ -202,8 +202,8 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 <div class="block">This is the handler for a String packet</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRxTransform(java.lang.String,util.TransformNR)" class="member-name-link">onRxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRxTransform(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)" class="member-name-link">onRxTransform</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method will be called by the IGT server when a transform is received.</div>
 </div>
@@ -227,8 +227,8 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
  float[]&nbsp;data)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pushPose(java.lang.String,util.TransformNR)" class="member-name-link">pushPose</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;pose)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pushPose(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)" class="member-name-link">pushPose</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;pose)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pushStatus(java.lang.String,int,int,java.lang.String)" class="member-name-link">pushStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
@@ -248,8 +248,8 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
  <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;msg)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pushTransformMessage(java.lang.String,util.TransformNR)" class="member-name-link">pushTransformMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pushTransformMessage(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)" class="member-name-link">pushTransformMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeIOpenIgtOnPacket(org.medcare.igtl.network.IOpenIgtPacketListener)" class="member-name-link">removeIOpenIgtOnPacket</a><wbr>(<a href="IOpenIgtPacketListener.html" title="interface in org.medcare.igtl.network">IOpenIgtPacketListener</a>&nbsp;l)</code></div>
@@ -320,10 +320,10 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 </section>
 </li>
 <li>
-<section class="detail" id="onRxTransform(java.lang.String,util.TransformNR)">
+<section class="detail" id="onRxTransform(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)">
 <h3>onRxTransform</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onRxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</span></div>
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</span></div>
 <div class="block">This method will be called by the IGT server when a transform is received. Supports:
  TRANSFORM
  QTRANS
@@ -331,7 +331,7 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
  POSITION</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="IOpenIgtPacketListener.html#onRxTransform(java.lang.String,util.TransformNR)">onRxTransform</a></code>&nbsp;in interface&nbsp;<code><a href="IOpenIgtPacketListener.html" title="interface in org.medcare.igtl.network">IOpenIgtPacketListener</a></code></dd>
+<dd><code><a href="IOpenIgtPacketListener.html#onRxTransform(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)">onRxTransform</a></code>&nbsp;in interface&nbsp;<code><a href="IOpenIgtPacketListener.html" title="interface in org.medcare.igtl.network">IOpenIgtPacketListener</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>name</code> - The string in the 'NAME' field of the IGT packet</dd>
 <dd><code>t</code> - </dd>
@@ -341,7 +341,7 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 <li>
 <section class="detail" id="getTxTransform(java.lang.String)">
 <h3>getTxTransform</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a></span>&nbsp;<span class="element-name">getTxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.neuronrobotics.sdk.addons.kinematics.math.TransformNR</span>&nbsp;<span class="element-name">getTxTransform</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
 <div class="block">Request for a transform for transmition to IGT</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -397,14 +397,14 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 </section>
 </li>
 <li>
-<section class="detail" id="onRxDataArray(java.lang.String,util.Matrix3D)">
+<section class="detail" id="onRxDataArray(java.lang.String,Jama.Matrix)">
 <h3>onRxDataArray</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onRxDataArray</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../../../util/Matrix3D.html" title="class in util">Matrix3D</a>&nbsp;data)</span></div>
+ Jama.Matrix&nbsp;data)</span></div>
 <div class="block">This is the handler for an array of raw data in an array</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="IOpenIgtPacketListener.html#onRxDataArray(java.lang.String,util.Matrix3D)">onRxDataArray</a></code>&nbsp;in interface&nbsp;<code><a href="IOpenIgtPacketListener.html" title="interface in org.medcare.igtl.network">IOpenIgtPacketListener</a></code></dd>
+<dd><code><a href="IOpenIgtPacketListener.html#onRxDataArray(java.lang.String,Jama.Matrix)">onRxDataArray</a></code>&nbsp;in interface&nbsp;<code><a href="IOpenIgtPacketListener.html" title="interface in org.medcare.igtl.network">IOpenIgtPacketListener</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>name</code> - A string of what type of data to get</dd>
 <dd><code>data</code> - An array of data</dd>
@@ -491,10 +491,10 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 </section>
 </li>
 <li>
-<section class="detail" id="pushPose(java.lang.String,util.TransformNR)">
+<section class="detail" id="pushPose(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)">
 <h3>pushPose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">pushPose</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;pose)</span></div>
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;pose)</span></div>
 </section>
 </li>
 <li>
@@ -524,10 +524,10 @@ implements <a href="IOpenIgtPacketListener.html" title="interface in org.medcare
 </section>
 </li>
 <li>
-<section class="detail" id="pushTransformMessage(java.lang.String,util.TransformNR)">
+<section class="detail" id="pushTransformMessage(java.lang.String,com.neuronrobotics.sdk.addons.kinematics.math.TransformNR)">
 <h3>pushTransformMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">pushTransformMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
- <a href="../../../../util/TransformNR.html" title="class in util">TransformNR</a>&nbsp;t)</span></div>
+ com.neuronrobotics.sdk.addons.kinematics.math.TransformNR&nbsp;t)</span></div>
 </section>
 </li>
 <li>

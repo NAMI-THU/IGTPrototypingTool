@@ -125,7 +125,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static int</code></div>
 <div class="col-second odd-row-color"><code><a href="#POSITION_ONLY" class="member-name-link">POSITION_ONLY</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a></code></div>
+<div class="col-first even-row-color"><code>com.neuronrobotics.sdk.addons.kinematics.math.RotationNR</code></div>
 <div class="col-second even-row-color"><code><a href="#quaternion" class="member-name-link">quaternion</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static int</code></div>
@@ -145,9 +145,9 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,double%5B%5D,util.Quaternion)" class="member-name-link">PositionMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,double%5B%5D,com.neuronrobotics.sdk.addons.kinematics.math.RotationNR)" class="member-name-link">PositionMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
  double[]&nbsp;ds,
- <a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;RotationNR)</code></div>
+ com.neuronrobotics.sdk.addons.kinematics.math.RotationNR&nbsp;RotationNR)</code></div>
 <div class="col-last even-row-color">
 <div class="block">** Constructor to be used to create message to send them with this
  constructor you must use method SetImageHeader, then CreateBody and then
@@ -185,7 +185,7 @@ loadScripts(document, 'script');</script>
 <div class="block">** To get position_data byte array
  **</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.neuronrobotics.sdk.addons.kinematics.math.RotationNR</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getQuaternion()" class="member-name-link">getQuaternion</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">** To get Image quaternion
@@ -215,8 +215,8 @@ loadScripts(document, 'script');</script>
 <div class="block">** To extract image characteristics from position_data byte array</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPositionData(double%5B%5D,util.Quaternion,int)" class="member-name-link">setPositionData</a><wbr>(double[]&nbsp;position,
- <a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;quaternion,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPositionData(double%5B%5D,com.neuronrobotics.sdk.addons.kinematics.math.RotationNR,int)" class="member-name-link">setPositionData</a><wbr>(double[]&nbsp;position,
+ com.neuronrobotics.sdk.addons.kinematics.math.RotationNR&nbsp;quaternion,
  int&nbsp;quaternionSize)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">** To create position_data from image characteristics and to get the byte array to send</div>
@@ -297,7 +297,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="quaternion">
 <h3>quaternion</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a></span>&nbsp;<span class="element-name">quaternion</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.neuronrobotics.sdk.addons.kinematics.math.RotationNR</span>&nbsp;<span class="element-name">quaternion</span></div>
 </section>
 </li>
 </ul>
@@ -309,11 +309,11 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,double[],util.Quaternion)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,double[],com.neuronrobotics.sdk.addons.kinematics.math.RotationNR)">
 <h3>PositionMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">PositionMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;deviceName,
  double[]&nbsp;ds,
- <a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;RotationNR)</span></div>
+ com.neuronrobotics.sdk.addons.kinematics.math.RotationNR&nbsp;RotationNR)</span></div>
 <div class="block">** Constructor to be used to create message to send them with this
  constructor you must use method SetImageHeader, then CreateBody and then
  getBytes to send them
@@ -384,10 +384,10 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="setPositionData(double[],util.Quaternion,int)">
+<section class="detail" id="setPositionData(double[],com.neuronrobotics.sdk.addons.kinematics.math.RotationNR,int)">
 <h3>setPositionData</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">setPositionData</span><wbr><span class="parameters">(double[]&nbsp;position,
- <a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a>&nbsp;quaternion,
+ com.neuronrobotics.sdk.addons.kinematics.math.RotationNR&nbsp;quaternion,
  int&nbsp;quaternionSize)</span></div>
 <div class="block">** To create position_data from image characteristics and to get the byte array to send</div>
 <dl class="notes">
@@ -467,7 +467,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getQuaternion()">
 <h3>getQuaternion</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../util/Quaternion.html" title="class in util">Quaternion</a></span>&nbsp;<span class="element-name">getQuaternion</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.neuronrobotics.sdk.addons.kinematics.math.RotationNR</span>&nbsp;<span class="element-name">getQuaternion</span>()</div>
 <div class="block">** To get Image quaternion
  **</div>
 <dl class="notes">
