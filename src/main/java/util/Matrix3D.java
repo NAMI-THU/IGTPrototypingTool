@@ -257,7 +257,9 @@ public class Matrix3D {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Matrix3D matrix3D)) return false;
+        if (!(o instanceof Matrix3D)) return false;
+
+        Matrix3D matrix3D = (Matrix3D) o;
 
         return Arrays.deepEquals(matrix, matrix3D.matrix);
     }

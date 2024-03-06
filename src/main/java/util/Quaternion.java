@@ -465,7 +465,9 @@ public class Quaternion {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Quaternion that)) return false;
+        if (!(o instanceof Quaternion)) return false;
+
+        Quaternion that = (Quaternion) o;
 
         if (Double.compare(w, that.w) != 0) return false;
         if (Double.compare(x, that.x) != 0) return false;

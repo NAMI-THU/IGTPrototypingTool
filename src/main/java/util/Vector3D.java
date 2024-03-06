@@ -189,7 +189,9 @@ public class Vector3D {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Vector3D vector3D)) return false;
+        if (!(o instanceof Vector3D)) return false;
+
+        Vector3D vector3D = (Vector3D) o;
 
         return Arrays.equals(vector, vector3D.vector);
     }
