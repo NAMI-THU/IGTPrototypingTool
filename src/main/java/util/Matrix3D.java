@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Arrays;
+
 /**
  * This class is based on the class Matrix3f from https://github.com/jMonkeyEngine/jmonkeyengine/blob/master/jme3-core/src/main/java/com/jme3/math/Matrix3f.java
  */
@@ -250,5 +252,18 @@ public class Matrix3D {
 
         store.mult(1f / det);
         return store;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Matrix3D matrix3D)) return false;
+
+        return Arrays.deepEquals(matrix, matrix3D.matrix);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(matrix);
     }
 }

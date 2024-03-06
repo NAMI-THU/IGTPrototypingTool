@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Arrays;
+
 public class Vector3D {
 
     /**
@@ -182,5 +184,18 @@ public class Vector3D {
      */
     public String toString() {
         return "(" + vector[0] + ", " + vector[1] + ", " + vector[2] + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vector3D vector3D)) return false;
+
+        return Arrays.equals(vector, vector3D.vector);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(vector);
     }
 }

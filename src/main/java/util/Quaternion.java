@@ -461,4 +461,30 @@ public class Quaternion {
     public String toString() {
         return "W: " + w + " X: " + x + " Y: " + y + " Z: " + z;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Quaternion that)) return false;
+
+        if (Double.compare(w, that.w) != 0) return false;
+        if (Double.compare(x, that.x) != 0) return false;
+        if (Double.compare(y, that.y) != 0) return false;
+        return Double.compare(z, that.z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(w);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(x);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }
