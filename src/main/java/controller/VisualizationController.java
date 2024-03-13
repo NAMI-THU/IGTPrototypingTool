@@ -407,6 +407,7 @@ public class VisualizationController implements Controller {
             var userPreferences = Preferences.userRoot().node("IGT_Settings");
             userPreferences.put("visualisationTransformMatrix", file.getAbsolutePath());
             selectedMatrixFile.setText(file.getName());
+            visualizationManager.scheduleReloadMatrix();
         }
     }
 

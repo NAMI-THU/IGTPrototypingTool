@@ -61,10 +61,13 @@ public class Tool {
         this.projection.setVisible(true);
         this.setConeColor(new PhongMaterial(Color.GRAY));
 
-        var userPreferences = Preferences.userRoot().node("IGT_Settings");
-        var matrixPath = userPreferences.get("visualisationTransformMatrix","");
+        loadTransformationMatrix();
+    }
 
-        if (matrixPath.isEmpty() || Files.notExists(Path.of(matrixPath))) {
+    public void loadTransformationMatrix(){
+        var userPreferences = Preferences.userRoot().node("IGT_Settings");
+        var path = userPreferences.get("visualisationTransformMatrix","");
+        if(path.isEmpty() || Files.notExists(Path.of(path))) {
             transformMatrix = Matrix3D.identity();
             offsetVec = Vector3D.zero();
             logger.warning("No visualisation matrix found, using identity matrix");
@@ -72,7 +75,7 @@ public class Tool {
         }
 
         List<Double> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(matrixPath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] valuesStr = line.split(";");

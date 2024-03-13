@@ -103,6 +103,8 @@ public class VisualizationManager {
     private ScrollPane scrollPane;
     private Group meshGroup;
 
+    private boolean flagReloadMatrix = false;
+
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
@@ -301,9 +303,20 @@ public class VisualizationManager {
         List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
         for (Tool tool : tools) {
+            if (flagReloadMatrix) {
+                tool.loadTransformationMatrix();
+            }
             tool.show();
             tool.checkBounds(stlModels);
         }
+        flagReloadMatrix = false;
+    }
+
+    /**
+     * This will set a flag that makes tools reload the transformation matrix from source on the next update
+     */
+    public void scheduleReloadMatrix(){
+        flagReloadMatrix = true;
     }
 
     /**
