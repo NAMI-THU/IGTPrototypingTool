@@ -30,7 +30,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +95,7 @@ public class VisualizationManager {
     /**
      * ArrayList of all stl models
      */
-    private ArrayList<STLModel> stlModels;
+    private ArrayList<STLModel> stlModels = new ArrayList<>();
     /**
      * LinkedList of all trackers
      */
@@ -139,23 +138,6 @@ public class VisualizationManager {
         return visualizeCone;
     }
 
-    /**
-     * Loads one or multiple stl files for the visualisation
-     *
-     * @return a string array of the loaded stl file names
-     */
-    public List<File> loadStlModel() {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Load STL File");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
-        List<File> fileList = fc.showOpenMultipleDialog(new Stage());
-
-        if (fileList != null) {
-            stlModels = new ArrayList<>();
-            loadNewSTLModel(fileList);
-        }
-        return fileList;
-    }
 
     /**
      * Loads the previously used stl files for visualisation
@@ -191,6 +173,14 @@ public class VisualizationManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Clears all stl models and paths from the visualisation
+     */
+    public void clearSTLModelsAndPaths() {
+        stlModels.clear();
+        targets.clear();
     }
 
     /**

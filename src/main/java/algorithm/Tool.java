@@ -15,9 +15,13 @@ import util.Vector3D;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * The class Tool represents the name of a tool,
@@ -35,6 +39,8 @@ public class Tool {
     private Vector3D offsetVec;
     private PhongMaterial color;
     private List<Target> targets;
+
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public Tool(String name) {
         this.name = name;
@@ -55,8 +61,18 @@ public class Tool {
         this.projection.setVisible(true);
         this.setConeColor(new PhongMaterial(Color.GRAY));
 
+        var userPreferences = Preferences.userRoot().node("IGT_Settings");
+        var matrixPath = userPreferences.get("visualisationTransformMatrix","");
+
+        if (matrixPath.isEmpty() || Files.notExists(Path.of(matrixPath))) {
+            transformMatrix = Matrix3D.identity();
+            offsetVec = Vector3D.zero();
+            logger.warning("No visualisation matrix found, using identity matrix");
+            return;
+        }
+
         List<Double> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/matrixoutputInverse.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(matrixPath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] valuesStr = line.split(";");

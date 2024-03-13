@@ -13,18 +13,20 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.json.JSONObject;
 import shapes.STLModel;
 import util.Persistence;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class VisualizationController implements Controller {
 
@@ -33,7 +35,9 @@ public class VisualizationController implements Controller {
     @FXML
     Group meshGroup;
     @FXML
-    Button loadStlFile;
+    Button selectMatrixFile;
+    @FXML
+    Button clearFiles;
     @FXML
     Button addStlFile;
     @FXML
@@ -61,7 +65,7 @@ public class VisualizationController implements Controller {
     @FXML
     TextField trackerTextField;
     @FXML
-    Label stlLabel;
+    TextField stlLabel;
     @FXML
     ColorPicker stlColorPicker;
     @FXML
@@ -70,6 +74,8 @@ public class VisualizationController implements Controller {
     CheckBox trackingVisibleCB;
     @FXML
     CheckBox needleProjectionCB;
+    @FXML
+    Label selectedMatrixFile;
     TrackingDataController trackingDataController;
     VisualizationManager visualizationManager;
     TrackingService trackingService = TrackingService.getInstance();
@@ -90,6 +96,10 @@ public class VisualizationController implements Controller {
         stlTreeView.setShowRoot(false);
         stlTreeView.setRoot(treeItemRoot);
         treeItemRoot.getChildren().add(stlBranch);
+
+        var userPreferences = Preferences.userRoot().node("IGT_Settings");
+        var matrixFile = userPreferences.get("visualisationTransformMatrix", "None selected!");
+        selectedMatrixFile.setText(Path.of(matrixFile).getFileName().toString());
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -103,6 +113,8 @@ public class VisualizationController implements Controller {
 
     public void injectVisualizationManager(VisualizationManager visualizationManager) {
         this.visualizationManager = visualizationManager;
+        visualizationManager.setPane(this.scrollPane);
+        visualizationManager.setMeshGroup(this.meshGroup);
     }
 
     public void setVisualizationRunning(Boolean value) {
@@ -114,29 +126,6 @@ public class VisualizationController implements Controller {
     }
 
     /**
-     * Method to load one or more STL Files and overwrite the existing ones
-     */
-    @FXML
-    private void loadSTLFile() {
-        if (trackingService.getTrackingDataSource() == null) {
-            statusLabel.setText("Select Tracking Data Source first");
-            return;
-        }
-        visualizationManager.setPane(this.scrollPane);
-        visualizationManager.setMeshGroup(this.meshGroup);
-        List<File> fileNames = visualizationManager.loadStlModel();
-        visualizationManager.showFigure();
-
-        JSONObject jsonSTLModels = new JSONObject();
-
-        stlBranch.getChildren().removeAll(stlBranch.getChildren());
-
-        if (fileNames != null) {
-            addSTLToJSON(fileNames, jsonSTLModels);
-        }
-    }
-
-    /**
      * Method to add one or more STL Files to the existing ones
      */
     public void addSTLFile() {
@@ -144,6 +133,7 @@ public class VisualizationController implements Controller {
             statusLabel.setText("Select Tracking Data Source first");
             return;
         }
+
         List<File> fileNames = visualizationManager.addSTLModels();
         visualizationManager.showFigure();
         if (fileNames != null) {
@@ -385,6 +375,38 @@ public class VisualizationController implements Controller {
             boolean visible = stlModels.get(pos).isVisible();
             stlModels.get(pos).setVisible(!visible);
             changeAttributeOfSTL(pos, "Visible", String.valueOf(!visible));
+        }
+    }
+
+    @FXML
+    private void clearFiles(){
+        Alert alert = new Alert(Alert.AlertType.WARNING ,"", ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Clear Files");
+        alert.setHeaderText("Are you sure you want to clear all files?");
+        alert.setContentText("This will remove all STL files from the visualization.");
+
+        if (alert.showAndWait().get() == ButtonType.YES) {
+            try {
+                visualizationManager.clearSTLModelsAndPaths();
+                stlBranch.getChildren().clear();
+                visualizationManager.showFigure();
+                Persistence.writeStlSaveFile(new JSONObject());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @FXML
+    private void selectMatrixFile(){
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Select transformation matrix");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File file = fc.showOpenDialog(new Stage());
+        if(file!=null){
+            var userPreferences = Preferences.userRoot().node("IGT_Settings");
+            userPreferences.put("visualisationTransformMatrix", file.getAbsolutePath());
+            selectedMatrixFile.setText(file.getName());
         }
     }
 

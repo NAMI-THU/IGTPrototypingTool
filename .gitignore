@@ -41,3 +41,4 @@ hs_err_pid*
 # Gradle 
 .gradle
 src/main/resources/rotationTest.csv
+stlFiles.json
