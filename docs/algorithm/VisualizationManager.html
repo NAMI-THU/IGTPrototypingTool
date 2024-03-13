@@ -147,23 +147,23 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds one or multiple stl files to the existing ones for the visualisation</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="../shapes/STLModel.html" title="class in shapes">STLModel</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSTLModels()" class="member-name-link">getSTLModels</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearSTLModelsAndPaths()" class="member-name-link">clearSTLModelsAndPaths</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Clears all stl models and paths from the visualisation</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="../shapes/STLModel.html" title="class in shapes">STLModel</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSTLModels()" class="member-name-link">getSTLModels</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get all currently loaded stl models</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#injectStatusLabel(javafx.scene.control.Label)" class="member-name-link">injectStatusLabel</a><wbr>(javafx.scene.control.Label&nbsp;statusLabel)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadLastSTLModels()" class="member-name-link">loadLastSTLModels</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Loads the previously used stl files for visualisation</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadStlModel()" class="member-name-link">loadStlModel</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#injectStatusLabel(javafx.scene.control.Label)" class="member-name-link">injectStatusLabel</a><wbr>(javafx.scene.control.Label&nbsp;statusLabel)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadLastSTLModels()" class="member-name-link">loadLastSTLModels</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Loads one or multiple stl files for the visualisation</div>
+<div class="block">Loads the previously used stl files for visualisation</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resetView()" class="member-name-link">resetView</a>()</code></div>
@@ -294,21 +294,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="loadStlModel()">
-<h3>loadStlModel</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&gt;</span>&nbsp;<span class="element-name">loadStlModel</span>()</div>
-<div class="block">Loads one or multiple stl files for the visualisation</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>a string array of the loaded stl file names</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="loadLastSTLModels()">
 <h3>loadLastSTLModels</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadLastSTLModels</span>()</div>
 <div class="block">Loads the previously used stl files for visualisation</div>
+</section>
+</li>
+<li>
+<section class="detail" id="clearSTLModelsAndPaths()">
+<h3>clearSTLModelsAndPaths</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearSTLModelsAndPaths</span>()</div>
+<div class="block">Clears all stl models and paths from the visualisation</div>
 </section>
 </li>
 <li>
