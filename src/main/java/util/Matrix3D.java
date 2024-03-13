@@ -20,6 +20,14 @@ public class Matrix3D {
     }
 
     /**
+     * Static method for clearly creating an identity matrix
+     * @return identity matrix
+     */
+    public static Matrix3D identity() {
+        return new Matrix3D();
+    }
+
+    /**
      * Instantiates a matrix with specified elements.
      *
      * @param flattenedMatrix the 3x3 Matrix as a 1d array. Must have 9 Elements.
@@ -186,7 +194,6 @@ public class Matrix3D {
      * @param scalar the number with which all values should be multiplied
      */
     public void mult(double scalar) {
-        Matrix3D store = new Matrix3D();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 this.matrix[i][j] *= scalar;

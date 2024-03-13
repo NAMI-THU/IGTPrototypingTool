@@ -163,8 +163,7 @@ public class VisualizationManager {
     public void loadLastSTLModels() {
         StlMeshImporter importer = new StlMeshImporter();
         try {
-            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
-            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            JSONObject jsonSTLModels = util.Persistence.readStlSaveFile();
             stlModels = new ArrayList<>();
             for (int i = 0; i < jsonSTLModels.length(); i++) {
                 JSONObject jsonSTLModel = jsonSTLModels.getJSONObject("STL " + i);
@@ -260,7 +259,7 @@ public class VisualizationManager {
     public void addPathVisualisation() {
         FileChooser fc = new FileChooser();
         fc.setTitle("Load Path Visualisation");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.mps"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("MPS Files", "*.mps"));
         File file = fc.showOpenDialog(new Stage());
         if (file != null) {
             // Read xml files:

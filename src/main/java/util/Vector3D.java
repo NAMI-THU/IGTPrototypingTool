@@ -43,6 +43,14 @@ public class Vector3D {
     }
 
     /**
+     * Returns a zero vector (identity operation)
+     * @return the zero vector
+     */
+    public static Vector3D zero() {
+        return new Vector3D(0, 0, 0);
+    }
+
+    /**
      * Method to set the vectors components
      *
      * @param i the position of the component

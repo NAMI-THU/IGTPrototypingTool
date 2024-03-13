@@ -15,6 +15,7 @@ import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import org.json.JSONObject;
 import shapes.STLModel;
+import util.Persistence;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -147,8 +148,7 @@ public class VisualizationController implements Controller {
         visualizationManager.showFigure();
         if (fileNames != null) {
             try {
-                var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
-                JSONObject jsonSTLModels = new JSONObject(jsonString);
+                var jsonSTLModels = Persistence.readStlSaveFile();
                 addSTLToJSON(fileNames, jsonSTLModels);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -180,9 +180,7 @@ public class VisualizationController implements Controller {
             stlBranch.getChildren().add(stlFile);
         }
         try {
-            FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-            file.write(jsonSTLModels.toString());
-            file.close();
+            Persistence.writeStlSaveFile(jsonSTLModels);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -399,8 +397,7 @@ public class VisualizationController implements Controller {
      */
     private void changeAttributeOfSTL(int index, String attribute, String value) {
         try {
-            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
-            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            var jsonSTLModels = Persistence.readStlSaveFile();
             JSONObject updatedModels = new JSONObject();
 
             for (int i = 0; i < jsonSTLModels.length(); i++) {
@@ -411,9 +408,7 @@ public class VisualizationController implements Controller {
                 updatedModels.put("STL " + i, jsonSTLModel);
             }
             try {
-                FileWriter file = new FileWriter("src/main/resources/json/stlFiles.json");
-                file.write(jsonSTLModels.toString());
-                file.close();
+                Persistence.writeStlSaveFile(updatedModels);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -430,8 +425,7 @@ public class VisualizationController implements Controller {
      */
     private JSONObject getSelectedJSON(int index) {
         try {
-            var jsonString = Files.readString(new File("src/main/resources/json/stlFiles.json").toPath());
-            JSONObject jsonSTLModels = new JSONObject(jsonString);
+            var jsonSTLModels = Persistence.readStlSaveFile();
             return jsonSTLModels.getJSONObject("STL " + index);
         } catch (IOException e) {
             throw new RuntimeException(e);
