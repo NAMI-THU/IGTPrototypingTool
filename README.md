@@ -1,4 +1,7 @@
-# IGTPrototypingTool
+# IGTPrototypingTool ![IGTPT Icon](src/main/resources/icon/icon_small.png "IGTPT Icon")
+
+![Build Status](https://github.com/NAMI-THU/IGTPrototypingTool/actions/workflows/gradle-build.yml/badge.svg?branch=master)
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://nami-thu.github.io/IGTPrototypingTool/)
 
 A tool that provides basic functionalities for IGT.
 Tracker can be connected using OpenIGTLink, and the reported information can be used for conveniently implementing some functionality.
@@ -8,8 +11,6 @@ This tool started as a student project and is currently actively maintained by v
 Currently, at least **Java 11** is required, but all LTS versions upwards (Java 15, Java 17) and also Java 20 are supported.
 
 # Building
-![Build Status](https://github.com/NAMI-THU/IGTPrototypingTool/actions/workflows/gradle-build.yml/badge.svg?branch=master)
-[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://nami-thu.github.io/IGTPrototypingTool/)
 
 \
 For building, you can import this project as a *Gradle project* into your IDE, or you
