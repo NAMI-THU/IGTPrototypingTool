@@ -16,9 +16,9 @@
 
 package org.medcare.igtl.messages;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
+import util.Quaternion;
 
 
 /**
@@ -39,7 +39,7 @@ public class PositionMessage extends OpenIGTMessage {
     private int quaternionSize = ALL;
 
     public static double[] position = new double[3]; // float 32bits
-    public RotationNR quaternion; // float 32bits
+    public Quaternion quaternion; // float 32bits
     private byte[] position_data;
     private int bodyLength;
 
@@ -54,7 +54,7 @@ public class PositionMessage extends OpenIGTMessage {
      **/
 
 
-    public PositionMessage(String deviceName, double[] ds, RotationNR RotationNR) {
+    public PositionMessage(String deviceName, double[] ds, Quaternion RotationNR) {
         super(deviceName);
         setPositionData(ds, RotationNR, 4);
     }
@@ -112,7 +112,7 @@ public class PositionMessage extends OpenIGTMessage {
      * @param quaternionSize **
      * @return the bytes array created from the value
      */
-    public byte[] setPositionData(double[] position, RotationNR quaternion, int quaternionSize) {
+    public byte[] setPositionData(double[] position, Quaternion quaternion, int quaternionSize) {
         setPosition(position);
         setQuaternion(quaternion);
         this.quaternionSize = quaternionSize;
@@ -130,10 +130,10 @@ public class PositionMessage extends OpenIGTMessage {
 //                bytesArray.putDouble(0, 4);
 //                bytesArray.putDouble(0, 4);
 //                bytesArray.putDouble(1, 4);
-        bytesArray.putDouble(quaternion.getRotationMatrix2QuaturnionX(), 4);
-        bytesArray.putDouble(quaternion.getRotationMatrix2QuaturnionY(), 4);
-        bytesArray.putDouble(quaternion.getRotationMatrix2QuaturnionZ(), 4);
-        bytesArray.putDouble(quaternion.getRotationMatrix2QuaturnionW(), 4);
+        bytesArray.putDouble(quaternion.getW(), 4);
+        bytesArray.putDouble(quaternion.getX(), 4);
+        bytesArray.putDouble(quaternion.getY(), 4);
+        bytesArray.putDouble(quaternion.getZ(), 4);
 
         position_data = bytesArray.getBytes();
         packBody();
@@ -170,7 +170,7 @@ public class PositionMessage extends OpenIGTMessage {
         for (int i = 0; i < quaternionSize; i++) {
             q[i] = bytesArray.getDouble(4); // float32
         }
-        setQuaternion(new RotationNR(q));
+        setQuaternion(new Quaternion(q));
     }
 
     /**
@@ -221,7 +221,7 @@ public class PositionMessage extends OpenIGTMessage {
      *
      * @param quaternion **
      */
-    void setQuaternion(RotationNR quaternion) {
+    void setQuaternion(Quaternion quaternion) {
         this.quaternion = quaternion;
     }
 
@@ -234,7 +234,7 @@ public class PositionMessage extends OpenIGTMessage {
      * @param w  **
      */
     void setQuaternion(double ox, double oy, double oz, double w) {
-        quaternion = new RotationNR(w, ox, oy, oz);
+        quaternion = new Quaternion(w, ox, oy, oz);
     }
 
     /**
@@ -243,7 +243,7 @@ public class PositionMessage extends OpenIGTMessage {
      *
      * @return the quaternion array
      */
-    public RotationNR getQuaternion() {
+    public Quaternion getQuaternion() {
         return quaternion;
     }
 

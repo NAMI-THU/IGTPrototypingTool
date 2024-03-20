@@ -1,7 +1,8 @@
 
 package inputOutput;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+
+import util.TransformNR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,12 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
     public void connect(){
         if (myOpenIGTLinkConnection == null) {
             myOpenIGTLinkConnection = new OpenIGTLinkConnection();
-            toolList = new ArrayList<>();
+            tempToolList = new ArrayList<>();
         }
     }
 
     @Override
-    public ArrayList<Tool> update() {
+    public ArrayList<TempTool> update() {
         if(myOpenIGTLinkConnection == null){
             connect();
         }
@@ -43,7 +44,7 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
             for (OpenIGTLinkConnection.ToolData t : rawToolList)
                 this.setValues(t.name, t.t);
         }
-        return toolList;
+        return tempToolList;
     }
 
     /**
@@ -61,14 +62,14 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         coordinate_y = t.getY();
         coordinate_z = t.getZ();
 
-        rotation_r = t.getRotation().getRotationMatrix2QuaturnionW();
-        rotation_x = t.getRotation().getRotationMatrix2QuaturnionX();
-        rotation_y = t.getRotation().getRotationMatrix2QuaturnionY();
-        rotation_z = t.getRotation().getRotationMatrix2QuaturnionZ();
+        rotation_r = t.getRotation().getW();
+        rotation_x = t.getRotation().getX();
+        rotation_y = t.getRotation().getY();
+        rotation_z = t.getRotation().getZ();
 
-        for (Tool cur_tool : toolList) {
-            if (cur_tool.getName().equals(n)) {
-                cur_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
+        for (TempTool cur_Temp_tool : tempToolList) {
+            if (cur_Temp_tool.getName().equals(n)) {
+                cur_Temp_tool.setData(timestamp, valid, coordinate_x, coordinate_y,
                         coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                         name);
                 return;
@@ -76,11 +77,11 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         }
 
 
-        Tool newTool = new Tool();
-        newTool.setData(timestamp, valid, coordinate_x, coordinate_y,
+        TempTool newTempTool = new TempTool();
+        newTempTool.setData(timestamp, valid, coordinate_x, coordinate_y,
                 coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                 name);
-        this.toolList.add(newTool);
+        this.tempToolList.add(newTempTool);
 
     }
 

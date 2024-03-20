@@ -3,7 +3,6 @@ package controller;
 import algorithm.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.javafx.collections.ObservableListWrapper;
 import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
@@ -23,9 +22,10 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import org.opencv.core.*;
-import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Point3;
 import userinterface.PlottableImage;
 
 import javax.imageio.ImageIO;
@@ -36,10 +36,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -262,13 +261,13 @@ public class AutoTrackController implements Controller {
         if(source == null || service == null){return;}
 
         source.update();
-        List<ToolMeasure> tools = service.loadNextData(1);
+        List<Tool> tools = service.loadNextData(1);
 
         if (tools.isEmpty()) return;
 
         lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
-            ToolMeasure tool = tools.get(i);
+            Tool tool = tools.get(i);
             if (dataSeries.size() <= i) {
                 var series = new XYChart.Series<Number, Number>();
                 series.setName(tool.getName());
@@ -281,7 +280,7 @@ public class AutoTrackController implements Controller {
 
             var series = dataSeries.get(i);
             var measurements = tool.getMeasurement();
-            var point = measurements.get(measurements.size() - 1).getPoint();
+            var point = measurements.get(measurements.size() - 1).getPos();
             var data = series.getData();
             var max_num_points = 4; // 1
 

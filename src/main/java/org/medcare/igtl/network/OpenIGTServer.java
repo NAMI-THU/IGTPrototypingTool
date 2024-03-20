@@ -19,7 +19,6 @@
 
 package org.medcare.igtl.network;
 
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import org.medcare.igtl.messages.OpenIGTMessage;
 import org.medcare.igtl.util.ErrorManager;
 import org.medcare.igtl.util.Header;

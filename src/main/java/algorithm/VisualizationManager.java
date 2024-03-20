@@ -1,28 +1,37 @@
 package algorithm;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import com.jme3.math.Quaternion;
-import inputOutput.Tool;
+import org.json.JSONObject;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import shapes.CameraContainer;
+import shapes.STLModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import shapes.TrackingCone;
-import shapes.TrackingSphere;
+import shapes.Target;
+import util.Vector3D;
 
-import java.io.File;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,40 +40,82 @@ import java.util.logging.Logger;
  * This class is used to manage the 3D-Visualization.
  */
 public class VisualizationManager {
-
-    private Label statusLabel;
+    private static final int VIEWPORT_SIZE = 800;
+    /**
+     * Determines how much the camera moves
+     */
+    public static final int CAM_MOVEMENT = 25;
+    /**
+     * A helper container who contains a camera
+     */
+    private CameraContainer cameraContainer;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final TrackingService trackingService = TrackingService.getInstance();
-
-    private TrackingCone[] trackingCones;
-    private TrackingSphere[] trackingSpheres;
-    private MeshView[] stlFiles;
-
+    /**
+     * A rotate object around the x-axis, used for the rotation of the visualisation
+     */
+    private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
+    /**
+     * A rotate object around the y-axis, used for the rotation of the visualisation
+     */
+    private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
+    /**
+     * Defines the x,y and z coordinate of the center of all stl models
+     * this point is the point around which is rotated
+     */
+    private double centerX, centerY, centerZ;
+    /**
+     * Two anchor points used when rotating with the mouse
+     */
+    private double anchorX, anchorY;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
+    private double anchorAngleX = 0;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
+    private double anchorAngleY = 0;
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
+    private final DoubleProperty angleX = new SimpleDoubleProperty(0);
+    /**
+     * Anchor angle used when rotating with the mouse
+     */
+    private final DoubleProperty angleY = new SimpleDoubleProperty(0);
+    /**
+     * Boolean if the cone is visualized at the moment
+     */
+    private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
+    /**
+     * The current status
+     */
+    private Label statusLabel;
+    /**
+     * ArrayList of all stl models
+     */
+    private ArrayList<STLModel> stlModels = new ArrayList<>();
+    /**
+     * LinkedList of all trackers
+     */
+    private LinkedList<Target> targets;
     private ScrollPane scrollPane;
     private Group meshGroup;
 
-    private static final double MODEL_SCALE_FACTOR = 10;
-    private static final double MODEL_X_OFFSET = 0; // standard
-    private static final double MODEL_Y_OFFSET = 0; // standard
-    private static final int VIEWPORT_SIZE = 800;
-    private static final int VIEWPORT_CENTER = VIEWPORT_SIZE / 2;
-    private double mouseOldX, mouseOldY = 0;
-    private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-    private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
-    private final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
-    private final BooleanProperty visualizeCone = new SimpleBooleanProperty(true);
-
+    private boolean flagReloadMatrix = false;
 
     public void injectStatusLabel(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
 
-    public MeshView[] getMeshView() {
-        return stlFiles;
-    }
-
-    public TrackingCone[] getTrackingCones() {
-        return trackingCones;
+    /**
+     * Get all currently loaded stl models
+     *
+     * @return ArrayList of stl models
+     */
+    public ArrayList<STLModel> getSTLModels() {
+        return stlModels;
     }
 
     /**
@@ -89,63 +140,143 @@ public class VisualizationManager {
         return visualizeCone;
     }
 
+
     /**
-     * Creates a Tracker Shape for each device
+     * Loads the previously used stl files for visualisation
      */
-    private void createTrackerShape() {
-        if (trackingService.getTrackingDataSource() == null) {
-            statusLabel.setText("No Tracking Data Source");
-            return;
-        }
-        statusLabel.setText("");
+    public void loadLastSTLModels() {
+        StlMeshImporter importer = new StlMeshImporter();
+        try {
+            JSONObject jsonSTLModels = util.Persistence.readStlSaveFile();
+            stlModels = new ArrayList<>();
+            for (int i = 0; i < jsonSTLModels.length(); i++) {
+                JSONObject jsonSTLModel = jsonSTLModels.getJSONObject("STL " + i);
+                try {
+                    File file = new File(jsonSTLModel.getString("Path"));
+                    importer.read(file);
+                    Mesh mesh = importer.getImport();
 
-        // update after CSV/IGT data has been loaded
-        trackingService.getTrackingDataSource().update();
-        ArrayList<Tool> tools = trackingService.getTrackingDataSource().getLastToolList();
+                    boolean visible = jsonSTLModel.getBoolean("Visible");
+                    String name = jsonSTLModel.getString("Name");
+                    String hex = jsonSTLModel.getString("Color");
+                    hex = hex.substring(2);
 
-        if (tools != null && visualizeCone.get()) {
-            trackingCones = new TrackingCone[tools.size()];
-
-            for (int i = 0; i < trackingCones.length; i++) {
-                trackingCones[i] = new TrackingCone(36, 4, 10);
+                    stlModels.add(new STLModel(new MeshView(mesh), name, hex, visible));
+                    stlModels.get(i).getMeshView().getTransforms().addAll(
+                            //Rotate the Model by 180 degrees for correct display
+                            new Rotate(180, Rotate.X_AXIS)
+                    );
+                    logger.log(Level.INFO, "STL file read from: " + jsonSTLModel.get("Path"));
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Last STL File could not be loaded");
+                    stlModels = null;
+                }
             }
-        } else if (tools != null && !visualizeCone.get()) {
-            trackingSpheres = new TrackingSphere[tools.size()];
-
-            for (int i = 0; i < trackingSpheres.length; i++) {
-                trackingSpheres[i] = new TrackingSphere(8, 5, Color.RED);
-            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-
     }
 
     /**
-     * loads an STL File for Visualization
+     * Clears all stl models and paths from the visualisation
      */
-    public void loadStlModel() {
-        StlMeshImporter importer = new StlMeshImporter();
+    public void clearSTLModelsAndPaths() {
+        stlModels.clear();
+        targets.clear();
+    }
+
+    /**
+     * Adds one or multiple stl files to the existing ones for the visualisation
+     *
+     * @return a string array of the loaded stl file names
+     */
+    public List<File> addSTLModels() {
         FileChooser fc = new FileChooser();
         fc.setTitle("Load STL File");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("STL Files", "*.stl"));
         List<File> fileList = fc.showOpenMultipleDialog(new Stage());
-
         if (fileList != null) {
-            stlFiles = new MeshView[fileList.size()];
+            loadNewSTLModel(fileList);
+        }
 
-            for (int i = 0; i < fileList.size(); i++) {
-                try {
-                    importer.read(fileList.get(i));
-                    Mesh mesh = importer.getImport();
-                    stlFiles[i] = new MeshView(mesh);
-                    stlFiles[i].getTransforms().addAll(
-                            //Rotate the Model by 180 degrees for correct display
-                            new Rotate(180, Rotate.X_AXIS)
-                    );
-                    logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Error reading STL file");
+        return fileList;
+    }
+
+    /**
+     * Load one or more stl model from a file list and add them to the current ArrayList of stl models
+     *
+     * @param fileList the file list of models to be loaded
+     */
+    private void loadNewSTLModel(List<File> fileList) {
+        for (int i = 0; i < fileList.size(); i++) {
+            try {
+                StlMeshImporter importer = new StlMeshImporter();
+
+                importer.read(fileList.get(i));
+                Mesh mesh = importer.getImport();
+                String name = getSTLName(fileList.get(i));
+                STLModel model = new STLModel(new MeshView(mesh), name, "ccccccff", true);
+                model.getMeshView().getTransforms().addAll(
+                        //Rotate the Model by 180 degrees for correct display
+                        new Rotate(180, Rotate.X_AXIS)
+                );
+                stlModels.add(model);
+
+                //logger.log(Level.INFO, "STL file read from: " + fileList.get(i).getAbsolutePath());
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Error reading STL file");
+            }
+        }
+    }
+
+    /**
+     * A helper method to get the name of a stl file
+     * This requires that the files are named like "name.stl"
+     *
+     * @param file the stl file, where you want to extract the name from
+     * @return the name of the stl
+     */
+    private String getSTLName(File file) {
+        String name = file.toString();
+        int index = name.lastIndexOf("\\");
+        name = name.substring(index + 1, name.length() - 4);
+        name = "STL " + name;
+        return name;
+    }
+
+    /**
+     * Select a .mps file created from MITK to add two targets to the visualisation
+     * One is the entry point and the other represents the target point
+     */
+    public void addPathVisualisation() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Load Path Visualisation");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("MPS Files", "*.mps"));
+        File file = fc.showOpenDialog(new Stage());
+        if (file != null) {
+            // Read xml files:
+            // https://mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // Refresh the target list, everytime you load new targets
+            targets = new LinkedList<>();
+            try {
+                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(file);
+                doc.getDocumentElement().normalize();
+                NodeList list = doc.getElementsByTagName("point");
+                for (int temp = 0; temp < list.getLength(); temp++) {
+                    org.w3c.dom.Node node = list.item(temp);
+                    if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                        Element element = (Element) node;
+                        double x = Double.parseDouble(element.getElementsByTagName("x").item(0).getTextContent());
+                        double y = Double.parseDouble(element.getElementsByTagName("y").item(0).getTextContent());
+                        double z = Double.parseDouble(element.getElementsByTagName("z").item(0).getTextContent());
+                        targets.add(new Target(x, y, z));
+                    }
                 }
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -159,10 +290,7 @@ public class VisualizationManager {
             statusLabel.setText("No Tracking Data Source");
             return;
         }
-        if (stlFiles == null) {
-            statusLabel.setText("Load STL Model for Visualization");
-            return;
-        }
+
         // timeline has not been started in trackingData view
         if (trackingService.getTimeline() == null) {
             statusLabel.setText("Start Tracking in Tracking Data View first");
@@ -172,108 +300,30 @@ public class VisualizationManager {
 
         // loads the next set of tracking data
         trackingService.getTrackingDataSource().update();
-        List<ToolMeasure> tools = trackingService.getDataService().loadNextData(1);
+        List<Tool> tools = trackingService.getDataService().loadNextData(1);
 
-            for (int i = 0; i < tools.size(); i++) {
-                List<Measurement> measurements = tools.get(i).getMeasurement();
-                float[] eulerAngles = new float[3];
-
-                Quaternion rotationMovement = tools.get(i).getMeasurement().get(measurements.size() - 1).getRotation();
-                rotationMovement.toAngles(eulerAngles);
-
-                double x = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getX();
-                double y = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getY();
-                double z = tools.get(i).getMeasurement().get(measurements.size() - 1).getPoint().getZ();
-                // convert Quaternion to Euler
-                float yaw = eulerAngles[0];
-                float roll = eulerAngles[1];
-                float pitch = eulerAngles[2];
-                // convert Euler to angles
-                double yawAngle = Math.toDegrees(yaw);
-                double rollAngle = Math.toDegrees(roll);
-                double pitchAngle = Math.toDegrees(pitch);
-
-                boolean showRotations = false;
-                if (showRotations) {
-                    System.out.println(tools.get(i).getName());
-                    System.out.println("yaw:!" + yaw);
-                    System.out.println("yawAngle!" + yawAngle);
-                    System.out.println("roll:!" + roll);
-                    System.out.println("rollAngle!" + rollAngle);
-                    System.out.println("pitch:!" + pitch);
-                    System.out.println("pitchAngle!" + pitchAngle);
-                    System.out.print("\n");
-                }
-
-            if (trackingCones != null && visualizeCone.get()) {
-                trackingCones[i].setTranslateX(x);
-                trackingCones[i].setTranslateY(y);
-                trackingCones[i].setTranslateZ(z);
-                matrixRotateNode(trackingCones[i], -pitch, -yaw, -roll);
-            } else if (trackingSpheres != null && !visualizeCone.get()) {
-                trackingSpheres[i].setTranslateX(x);
-                trackingSpheres[i].setTranslateY(y);
-                trackingSpheres[i].setTranslateZ(z);
-                matrixRotateNode(trackingSpheres[i], -pitch, -yaw, -roll);
+        for (Tool tool : tools) {
+            if (flagReloadMatrix) {
+                tool.loadTransformationMatrix();
             }
-
-
-                checkBounds();
-            }
+            tool.show();
+            tool.checkBounds(stlModels);
+        }
+        flagReloadMatrix = false;
     }
 
     /**
-     * Rotate the Node by providing three rotations (Yaw, Roll, Pitch)
-     * author Jose Pereda
-     *
-     * @param n   Node to rotate
-     * @param alf Euler Angle alf
-     * @param bet Euler Angle bet
-     * @param gam Euler Angle gam
+     * This will set a flag that makes tools reload the transformation matrix from source on the next update
      */
-    private void matrixRotateNode(Node n, double alf, double bet, double gam) {
-        double A11 = Math.cos(alf) * Math.cos(gam);
-        double A12 = Math.cos(bet) * Math.sin(alf) + Math.cos(alf) * Math.sin(bet) * Math.sin(gam);
-        double A13 = Math.sin(alf) * Math.sin(bet) - Math.cos(alf) * Math.cos(bet) * Math.sin(gam);
-        double A21 = -Math.cos(gam) * Math.sin(alf);
-        double A22 = Math.cos(alf) * Math.cos(bet) - Math.sin(alf) * Math.sin(bet) * Math.sin(gam);
-        double A23 = Math.cos(alf) * Math.sin(bet) + Math.cos(bet) * Math.sin(alf) * Math.sin(gam);
-        double A31 = Math.sin(gam);
-        double A32 = -Math.cos(gam) * Math.sin(bet);
-        double A33 = Math.cos(bet) * Math.cos(gam);
-
-        double d = Math.acos((A11 + A22 + A33 - 1d) / 2d);
-        if (d != 0d) {
-            double den = 2d * Math.sin(d);
-            Point3D p = new Point3D((A32 - A23) / den, (A13 - A31) / den, (A21 - A12) / den);
-            n.setRotationAxis(p);
-            n.setRotate(Math.toDegrees(d));
-        }
-    }
-
-    /**
-     * Checks for collision and changes tracker color accordingly
-     * Color red implies a collision with the model was detected
-     * Color green implies no collision was detected
-     */
-    private void checkBounds() {
-        if (visualizeCone.get()) {
-            for (TrackingCone trackingCone : trackingCones) {
-                for (MeshView stlFile : stlFiles
-                ) {
-                    if (trackingCone.getBoundsInParent().intersects(stlFile.getBoundsInParent())) {
-                        trackingCone.setMaterial(new PhongMaterial(Color.RED));
-                    }
-                }
-            }
-        }
+    public void scheduleReloadMatrix(){
+        flagReloadMatrix = true;
     }
 
     /**
      * Adds the Nodes and Controls to the Scene
      */
     public void showFigure() {
-        if (trackingService.getTrackingDataSource() == null || stlFiles == null) {
+        if (trackingService.getTrackingDataSource() == null) {
             return;
         }
         statusLabel.setText("");
@@ -286,49 +336,48 @@ public class VisualizationManager {
         // size will not impact the size of parent and resizing will also work when reducing the AnchorPane object's size
         subScene.setManaged(false);
 
-        handleKeyboard(scrollPane, subScene.getCamera());
+        handleKeyboard(scrollPane, cameraContainer);
         handleMouse(subScene, root);
     }
 
     /**
      * Adds Nodes and Rotation to Group and centres it
      *
-     * @return Group with Model and Tracker
+     * @return Group with stl model, trackers and targets
      */
     private Group buildScene() {
         Group root = new Group();
 
-        root.getChildren().addAll(stlFiles);
+        // If stlFiles are loaded
+        if (stlModels != null) {
+            Group stlGroup = new Group();
+            for (STLModel model : stlModels) {
+                stlGroup.getChildren().add(model.getMeshView());
+            }
+            centerX = stlGroup.getBoundsInParent().getCenterX();
+            centerY = stlGroup.getBoundsInParent().getCenterY();
+            centerZ = stlGroup.getBoundsInParent().getCenterZ();
 
-        if (trackingCones == null && trackingSpheres == null) {
-            createTrackerShape();
+            root.getChildren().add(stlGroup);
         }
 
-        if (trackingCones != null && visualizeCone.get()) {
-            root.getChildren().addAll(trackingCones);
-        } else if (trackingSpheres != null && !visualizeCone.get()) {
-            root.getChildren().addAll(trackingSpheres);
+        if (targets != null) {
+            root.getChildren().addAll(targets);
         }
 
-        rotateX.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateX.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateX.setPivotZ(VIEWPORT_CENTER);
+        if (trackingService.getDataService() != null) {
+            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            for (Tool tool : tools) {
+                tool.addVisualizationToRoot(root);
+                if (targets != null) {
+                    tool.setTargets(targets);
+                }
+            }
+        }
 
-        rotateY.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateY.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateY.setPivotZ(VIEWPORT_CENTER);
-
-        rotateZ.setPivotX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        rotateZ.setPivotY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        rotateZ.setPivotZ(VIEWPORT_CENTER);
-
-        // centre the node
-        root.setTranslateX(VIEWPORT_CENTER + MODEL_X_OFFSET);
-        root.setTranslateY(VIEWPORT_CENTER + MODEL_Y_OFFSET);
-        root.setTranslateZ(VIEWPORT_CENTER);
-        root.setScaleX(MODEL_SCALE_FACTOR);
-        root.setScaleY(MODEL_SCALE_FACTOR);
-        root.setScaleZ(MODEL_SCALE_FACTOR);
+        rotateX = new Rotate(0, centerX, centerY, centerZ, Rotate.X_AXIS);
+        rotateY = new Rotate(0, centerX, centerY, centerZ, Rotate.Y_AXIS);
+        root.getTransforms().addAll(rotateX, rotateY);
 
         return root;
     }
@@ -343,11 +392,13 @@ public class VisualizationManager {
         SubScene scene3d = new SubScene(root, VIEWPORT_SIZE, VIEWPORT_SIZE, true, SceneAntialiasing.BALANCED);
         scene3d.widthProperty().bind(((AnchorPane) meshGroup.getParent()).widthProperty());
         scene3d.heightProperty().bind(((AnchorPane) meshGroup.getParent()).heightProperty());
-        PerspectiveCamera perspectiveCamera = initCamera();
+        initCamera();
+        PerspectiveCamera perspectiveCamera = cameraContainer.getPerspectiveCamera();
 
         scene3d.setFill(Color.DARKGREY);
+
         scene3d.setCamera(perspectiveCamera);
-        scene3d.setPickOnBounds(true);
+        scene3d.setPickOnBounds(false);
         return scene3d;
     }
 
@@ -356,82 +407,87 @@ public class VisualizationManager {
      *
      * @return PerspectiveCamera
      */
-    private PerspectiveCamera initCamera() {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
-        perspectiveCamera.setTranslateX(0);
-        perspectiveCamera.setTranslateY(0);
-        perspectiveCamera.setTranslateZ(0);
-        perspectiveCamera.setNearClip(0.1);
-        perspectiveCamera.setFarClip(1000.0);
-
-        perspectiveCamera.getTransforms().addAll(rotateX, rotateY, new Translate(0, 0, -1000));
-        return perspectiveCamera;
+    private void initCamera() {
+        cameraContainer = new CameraContainer(true);
+        Vector3D newPos = new Vector3D(centerX, centerY, centerZ);
+        cameraContainer.setPos(newPos);
+        cameraContainer.move(new Vector3D(0, 0, -500));
     }
 
     /**
      * Adds Mouse Controls to the Scene
      *
      * @param subScene Scene for MouseEvent
-     * @param root     Group containing the nodes to be controlled
+     * @param root     SmartGroup
      */
     private void handleMouse(SubScene subScene, Group root) {
         subScene.setOnScroll(event -> {
-            double zoomFactor = 1.05;
-            double deltaY = event.getDeltaY();
-            if (deltaY < 0) {
-                zoomFactor = 2.0 - zoomFactor;
-            }
-            root.setScaleX(root.getScaleX() * zoomFactor);
-            root.setScaleY(root.getScaleY() * zoomFactor);
-            root.setScaleZ(root.getScaleZ() * zoomFactor);
-            event.consume();
+            double delta = event.getDeltaY();
+            root.setTranslateZ(root.getTranslateZ() - delta);
         });
+
+        rotateX.angleProperty().bind(angleX);
+        rotateY.angleProperty().bind(angleY);
+
         subScene.setOnMousePressed(event -> {
-            mouseOldX = event.getSceneX();
-            mouseOldY = event.getSceneY();
+            anchorX = event.getSceneX();
+            anchorY = event.getSceneY();
+            anchorAngleX = angleX.get();
+            anchorAngleY = angleY.get();
         });
 
         subScene.setOnMouseDragged(event -> {
-            rotateX.setAngle(rotateX.getAngle() - (event.getSceneY() - mouseOldY));
-            rotateY.setAngle(rotateY.getAngle() + (event.getSceneX() - mouseOldX));
-            mouseOldX = event.getSceneX();
-            mouseOldY = event.getSceneY();
-
+            angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+            angleY.set(anchorAngleY + (anchorX - event.getSceneX()));
         });
     }
 
     /**
      * Adds Keyboard Controls to the Scene
      *
-     * @param scrollPane        Pane for KeyEvent
-     * @param perspectiveCamera Camera to be controlled
+     * @param scrollPane      Pane for KeyEvent
+     * @param cameraContainer Camera to be controlled
      */
-    private void handleKeyboard(ScrollPane scrollPane, Camera perspectiveCamera) {
+    private void handleKeyboard(ScrollPane scrollPane, CameraContainer cameraContainer) {
 
         scrollPane.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case S:
                 case DOWN:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() - 100);
+                    Vector3D down = new Vector3D(0, 1, 0);
+                    down.setMag(CAM_MOVEMENT);
+                    cameraContainer.move(down);
                     event.consume();
                     break;
                 case W:
                 case UP:
-                    perspectiveCamera.translateYProperty().set(perspectiveCamera.getTranslateY() + 100);
+                    Vector3D up = new Vector3D(0, -1, 0);
+                    up.setMag(CAM_MOVEMENT);
+                    cameraContainer.move(up);
                     event.consume();
                     break;
                 case D:
                 case RIGHT:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() + 100);
-                    event.consume();
+                    Vector3D right = new Vector3D(1, 0, 0);
+                    right.setMag(CAM_MOVEMENT);
+                    cameraContainer.move(right);
                     break;
                 case A:
                 case LEFT:
-                    perspectiveCamera.translateXProperty().set(perspectiveCamera.getTranslateX() - 100);
+                    Vector3D left = new Vector3D(-1, 0, 0);
+                    left.setMag(CAM_MOVEMENT);
+                    cameraContainer.move(left);
                     event.consume();
                     break;
             }
         });
     }
 
+    /**
+     * Helper Method used to recenter the view to its original position
+     */
+    public void resetView() {
+        angleX.set(0);
+        angleY.set(0);
+    }
 }

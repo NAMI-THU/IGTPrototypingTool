@@ -83,29 +83,29 @@ public class CSVFileReader extends AbstractTrackingDataSource {
      *
      * @return ArrayList of tools
      */
-    public ArrayList<Tool> update() {
-        toolList = new ArrayList<>(toolNames.size());
+    public ArrayList<TempTool> update() {
+        tempToolList = new ArrayList<>(toolNames.size());
         if (recordNumber >= records.size() && repeatMode) {
             recordNumber = 0;
         } else if (recordNumber >= records.size()) {
-            return toolList;
+            return tempToolList;
         }
 
         CSVRecord currentRecord = records.get(recordNumber);
         for (String toolName : toolNames) {
-            toolList.add(parseTool(currentRecord, toolName));
+            tempToolList.add(parseTool(currentRecord, toolName));
         }
         recordNumber += 1;
-        return toolList;
+        return tempToolList;
     }
 
     @Override
     public void closeConnection() {}
 
-    private Tool parseTool(final CSVRecord record, final String toolName) {
+    private TempTool parseTool(final CSVRecord record, final String toolName) {
         String[] headers = {"TimeStamp_", "Valid_", "X_", "Y_", "Z_",
                 "QX_", "QY_", "QZ_", "QR_"};
-        Tool t = new Tool();
+        TempTool t = new TempTool();
 
         double[] data = Arrays.stream(headers)
                 .map(s -> s + toolName)

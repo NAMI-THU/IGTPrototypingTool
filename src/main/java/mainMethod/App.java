@@ -1,12 +1,5 @@
 package mainMethod;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +7,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import util.ControllerCollector;
 import util.CustomLogger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class App extends Application {
     static Logger logger = Logger.getLogger(Application.class.getName());

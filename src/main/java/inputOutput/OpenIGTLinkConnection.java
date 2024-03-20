@@ -1,9 +1,5 @@
 package inputOutput;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-
-import Jama.Matrix;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +10,8 @@ import org.medcare.igtl.messages.ImageMessage;
 import org.medcare.igtl.network.GenericIGTLinkClient;
 import org.medcare.igtl.network.IOpenIgtPacketListener;
 import org.medcare.igtl.util.Status;
+import util.Matrix3D;
+import util.TransformNR;
 
 /**
  * builds a connection based on OpenIGTLink for tracking data and image data.
@@ -240,7 +238,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
     }
 
     @Override
-    public void onRxDataArray(String name, Matrix data) {
+    public void onRxDataArray(String name, Matrix3D data) {
     }
 
     @Override

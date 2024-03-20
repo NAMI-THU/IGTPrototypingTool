@@ -1,7 +1,7 @@
 package org.medcare.igtl.messages;
 
-import Jama.Matrix;
 import org.medcare.igtl.util.Header;
+import util.Matrix3D;
 
 public class DataArrayMessage extends OpenIGTMessage {
     /**
@@ -33,7 +33,7 @@ public class DataArrayMessage extends OpenIGTMessage {
         return null;
     }
 
-    public Matrix getDataMatrix() {
+    public Matrix3D getDataMatrix() {
         // TODO Auto-generated method stub
         return null;
     }

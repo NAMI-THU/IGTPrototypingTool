@@ -1,17 +1,17 @@
 package inputOutput;
 
-import javafx.geometry.Point3D;
+import util.Vector3D;
 
 /**
  * This class is used as an object to temporary save the values of a tool,
- * which are separated in CSVFileReader.  These tool objects will be cached in
+ * which are separated in CSVFileReader. These tool objects will be cached in
  * an ArrayList which is used later for various calculation.
  *
  * @author Jonas Lang (comments)
  */
-public class Tool {
+public class TempTool {
 
-    private Point3D coordinate;
+    private Vector3D coordinate;
     private double rotationX, rotationY, rotationZ, rotationR;
     private double valid;
     private double timestamp;
@@ -40,14 +40,13 @@ public class Tool {
         this.timestamp = timestamp;
         this.valid = valid;
 
-        coordinate = new Point3D(coordinate_x, coordinate_y, coordinate_z);
+        coordinate = new Vector3D(coordinate_x, coordinate_y, coordinate_z);
 
         this.rotationX = rotation_x;
         this.rotationY = rotation_y;
         this.rotationZ = rotation_z;
         this.rotationR = rotation_r;
         this.name = name;
-
     }
 
     /**
@@ -73,7 +72,7 @@ public class Tool {
      *
      * @return the tool's coordinates
      */
-    public Point3D getCoordinate() {
+    public Vector3D getCoordinate() {
         return coordinate;
     }
 
@@ -130,7 +129,7 @@ public class Tool {
      * @param other The object to compare against
      * @return If the two objects are the same
      */
-    public boolean equals(final Tool other) {
+    public boolean equals(final TempTool other) {
         return this.name.equals(other.name)
                 && this.coordinate.equals(other.coordinate)
                 && this.rotationX - other.rotationX < 1e-6

@@ -1,8 +1,8 @@
 package algorithm;
 
-import com.jme3.math.Quaternion;
 import javafx.geometry.Point3D;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import util.Quaternion;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +29,7 @@ public class TrackingDataProcessor {
          * calculates the distance between the points of
          * firstAverageMeasurement and secondAverageMeasurement
          */
-        return getDistance(firstAverageMeasurement.getPoint(),
-                secondAverageMeasurement.getPoint()) - expectedDistance;
+        return firstAverageMeasurement.getPos().distTo(secondAverageMeasurement.getPos()) - expectedDistance;
     }
 
     /**
@@ -47,8 +46,8 @@ public class TrackingDataProcessor {
      */
 
     public static Quaternion getAccuracyRotation(Quaternion expectedRotation,
-                                          Measurement firstMeasurement,
-                                          Measurement secondMeasurement) {
+                                                 Measurement firstMeasurement,
+                                                 Measurement secondMeasurement) {
         return secondMeasurement.getRotation()
                 .subtract(firstMeasurement.getRotation())
                 .subtract(expectedRotation);
