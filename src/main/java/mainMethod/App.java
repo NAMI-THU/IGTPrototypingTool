@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import util.ControllerCollector;
 import util.CustomLogger;
@@ -36,6 +37,7 @@ public class App extends Application {
         primaryStage.setTitle("IGT Prototyping Tool");
         primaryStage.setMinHeight(400);
         primaryStage.setMinWidth(800);
+        primaryStage.getIcons().add(new Image("icon/icon.png"));
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);

@@ -98,4 +98,5 @@ spotbugsMain {
 
 launch4j {
     mainClassName = 'mainMethod.StartClass'
+    icon = "${projectDir}/src/main/resources/icon/icon.ico"
 }
