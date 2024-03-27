@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithm.*;
+import inputOutput.AIDataSource;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import javafx.animation.Animation;
@@ -119,6 +120,26 @@ public class TrackingDataController implements Controller {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);
                 statusLabel.setText("Error loading CSV file");
             }
+        }
+    }
+
+    @FXML
+    public void loadAIData() {
+        System.out.println("AI DATA LOADING");
+
+        AIDataSource newSource = new AIDataSource();
+
+        if (trackingService.getTrackingDataSource() != null) {
+            disconnectSource();
+        }
+
+        try {
+            trackingService.changeTrackingSource(newSource);
+            sourceConnected.setValue(true);
+            visualizationController.setSourceConnected(true);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading AI DATA", e);
+            statusLabel.setText("Error loading AI DATA SOURCE");
         }
     }
 
