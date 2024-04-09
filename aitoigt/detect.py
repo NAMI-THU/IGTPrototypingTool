@@ -36,7 +36,10 @@ import platform
 import sys
 import pyigtl as igtl
 from pathlib import Path
- 
+import pyvirtualcam
+
+CAM = pyvirtualcam.Camera(width=640, height=480, fps=20)
+
 import torch
  
 FILE = Path(__file__).resolve()
@@ -252,6 +255,10 @@ def run(
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
+
+                # Send RGB image to virtual camera
+                im0VIRT = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+                CAM.send(im0VIRT)
                 cv2.waitKey(1)  # 1 millisecond
  
             # Save results (image with detections)
