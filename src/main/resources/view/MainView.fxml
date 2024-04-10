@@ -44,6 +44,9 @@
             <Tab closable="false" fx:id="visualizationTab" text="Visualization" onSelectionChanged="#onChangeView">
                 <fx:include fx:id="visualization" source="VisualizationView.fxml"/>
             </Tab>
+                <Tab closable="false" fx:id="annotationTab" text="Annotation" onSelectionChanged="#onChangeView">
+                <fx:include fx:id="annotation" source="AnnotationView.fxml"/>
+            </Tab>
         </TabPane>
     </center>
     <bottom>
