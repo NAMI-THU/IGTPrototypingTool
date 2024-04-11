@@ -17,6 +17,7 @@ server = pyigtl.OpenIGTLinkServer(port=18944, local_server=True)
 image_size = [400, 200]
 
 timestep = 0
+last_matrix = np.eye(4)
 
 while True:
 
@@ -25,18 +26,31 @@ while True:
         sleep(0.1)
         continue
 
+    # Init vars
     timestep += 1
+    theta = timestep * 0.01
 
     # Generate transform
     matrix = np.eye(4)
-    matrix[0, 3] = sin(timestep * 0.01) * 20.0
-    rotation_angle_rad = timestep * 0.5 * pi / 180.0
-    matrix[1, 1] = cos(rotation_angle_rad)
-    matrix[2, 1] = -sin(rotation_angle_rad)
-    matrix[1, 2] = sin(rotation_angle_rad)
-    matrix[2, 2] = cos(rotation_angle_rad)
-    transform_message = pyigtl.TransformMessage(matrix, device_name="ImageToReference", timestamp=1)
 
+    # Set position
+    matrix[0, 3] = sin(theta) * 100.0
+    matrix[1, 3] = sin(theta) * cos(theta) * 100.0
+    
+    # Set orientation
+    direction = last_matrix[:3, 3] - matrix[:3, 3]
+    angle = (-np.pi) + np.arctan2(direction[1], direction[0])   # -90 degree offset because -X is the forward direction of the IGTP pointer model
+    nlah = np.array([[np.cos(angle), -np.sin(angle), 0], [np.sin(angle), np.cos(angle), 0], [0, 0, 1]])
+    matrix[:3, :3] = nlah
+    
+    # Debugging
+    print(f"Y Coord: {direction[1]}")
+    print(f"X Coord: {direction[0]}")
+    print(f"Angle: {angle}")
+
+    # Send transform message
+    last_matrix = matrix
+    transform_message = pyigtl.TransformMessage(matrix, device_name="ImageToReference", timestamp=1)
 
     # Send messages
     server.send_message(transform_message)
