@@ -36,10 +36,7 @@ import platform
 import sys
 import pyigtl as igtl
 from pathlib import Path
-import pyvirtualcam
-
-CAM = pyvirtualcam.Camera(width=640, height=480, fps=20)
-
+ 
 import torch
  
 FILE = Path(__file__).resolve()
@@ -47,6 +44,8 @@ ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+
+last_matrix = np.eye(4)
  
 from ultralytics.utils.plotting import Annotator, colors, save_one_box
  
@@ -238,15 +237,26 @@ def run(
                         save_one_box(xyxy, imc, file=save_dir / "crops" / names[c] / f"{p.stem}.jpg", BGR=True)
  
                 if open_igt:
+
+                    # Generate matrix
+                    global last_matrix
                     matrix = np.eye(4)
     
+                    # Set position
                     matrix[0, 3] = xyxy[0]
                     matrix[1, 3] = xyxy[1]
-    
+
+                    # Set orientation
+                    direction = last_matrix[:3, 3] - matrix[:3, 3]
+                    angle = (-np.pi) + np.arctan2(direction[1], direction[0])   # -90 degree offset because -X is the forward direction of the IGTP pointer model
+                    rotation_matrix = np.array([[np.cos(angle), -np.sin(angle), 0], [np.sin(angle), np.cos(angle), 0], [0, 0, 1]])
+                    matrix[:3, :3] = rotation_matrix
+
+                    # Send transform message
+                    last_matrix = matrix
                     transform_message = igtl.TransformMessage(matrix, device_name="ImageToReference", timestamp=1)
-    
                     server.send_message(transform_message)
- 
+
             # Stream results
             im0 = annotator.result()
             if view_img:
@@ -255,10 +265,6 @@ def run(
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
-
-                # Send RGB image to virtual camera
-                im0VIRT = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-                CAM.send(im0VIRT)
                 cv2.waitKey(1)  # 1 millisecond
  
             # Save results (image with detections)
