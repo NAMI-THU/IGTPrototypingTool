@@ -22,18 +22,30 @@
                </children></HBox>
          </bottom>
          <top>
-            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="368.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="368.0" style="-fx-border-color: grey;">
                <BorderPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </BorderPane.margin>
                <children>
-                  <Button mnemonicParsing="false" text="Example" />
-               </children></HBox>
+                  <HBox>
+                     <children>
+                        <Button fx:id="exampleButton" onAction="#Handle_Upload_Functionality" text="IMPORT"
+                                prefWidth="120.0" prefHeight="40.0"
+                                style="-fx-font-size: 16px;" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="195" top="30"/>
+                     </HBox.margin>
+                  </HBox>
+               </children>
+            </HBox>
          </top>
+
+
          <left>
             <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="202.0" prefWidth="188.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
                <content>
-                  <VBox id="uploadedImages" prefHeight="200.0" prefWidth="100.0" />
+                  <VBox fx:id="uploadedImages" prefHeight="200.0" prefWidth="100.0" />
                </content>
                <BorderPane.margin>
                   <Insets left="10.0" right="10.0" />
@@ -43,7 +55,7 @@
          <center>
             <TitledPane collapsible="false" text="Selected Image" textAlignment="CENTER" BorderPane.alignment="CENTER">
                <content>
-                  <ImageView id="selectedImage" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                </content>
                <BorderPane.margin>
                   <Insets right="10.0" />
