@@ -1,14 +1,16 @@
 package controller;
-import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
@@ -17,7 +19,10 @@ import java.util.ResourceBundle;
 public class AnnotationController implements Controller {
     @FXML
     public VBox uploadedImages;
+    @FXML
     public Button uploadImagesButton;
+    @FXML
+    public ScrollPane selectedImagePane;
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
@@ -74,17 +79,57 @@ public class AnnotationController implements Controller {
     }
 
     private void selectImage(Image image, ImageView imageView) {
-        if (currentSelectedImageView != null) {
-            currentSelectedImageView.setStyle("");
-        }
 
         if (selectedImageView != null) {
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
+
+            // Create a new Scale transformation for the ImageView
+            Scale scale = new Scale();
+            selectedImageView.getTransforms().add(scale);
+
+            // Create a Group and add the ImageView to it
+            Group group = new Group(selectedImageView);
+
+            // Replace the content of the ScrollPane with the Group
+            this.selectedImagePane.setContent(group);
+
+            // Add a ScrollEvent handler to the ScrollPane
+            this.selectedImagePane.addEventFilter(ScrollEvent.ANY, event -> {
+                if (event.isControlDown()) {
+                    // Convert the mouse coordinates to the coordinate system of the Group
+                    double mouseX = event.getX() - group.getBoundsInParent().getMinX();
+                    double mouseY = event.getY() - group.getBoundsInParent().getMinY();
+
+                    // Adjust the pivot points to the mouse's current position
+                    scale.setPivotX(mouseX);
+                    scale.setPivotY(mouseY);
+
+                    double zoomFactor = 1.05;
+
+                    if (event.getDeltaY() > 0) {
+                        // Zoom in
+                        scale.setX(scale.getX() * zoomFactor);
+                        scale.setY(scale.getY() * zoomFactor);
+                    } else {
+                        // Zoom out, but do not go below a certain minimum value
+                        if (scale.getX() > 1.0 && scale.getY() > 1.0) {
+                            scale.setX(scale.getX() / zoomFactor);
+                            scale.setY(scale.getY() / zoomFactor);
+                        }
+                    }
+
+                    event.consume();
+                }
+            });
+
+            imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+            currentSelectedImageView = imageView;
+
         }
-        imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-        currentSelectedImageView = imageView;
+
+
     }
 
     public void Select_Next_Image(ActionEvent actionEvent) {

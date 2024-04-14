@@ -74,14 +74,14 @@
             </ScrollPane>
          </left>
          <center>
-            <TitledPane collapsible="false" text="Selected Image" textAlignment="CENTER" BorderPane.alignment="CENTER">
+            <ScrollPane fx:id="selectedImagePane" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"  BorderPane.alignment="CENTER">
                <content>
                   <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                </content>
                <BorderPane.margin>
                   <Insets right="10.0" />
                </BorderPane.margin>
-            </TitledPane>
+            </ScrollPane>
          </center>
       </BorderPane>
    </content>
