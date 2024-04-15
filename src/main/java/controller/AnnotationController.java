@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import util.AnnotationData;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -82,7 +84,12 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Handle the Annotation Event
+     * @param event
+     */
     private void annotationEvent(MouseEvent event) {
+        System.out.println("MouseEvent: " + event);
         //To not create Duplicates
         if(annotatedRectangle == null) {
             annotatedRectangle = new Rectangle(event.getX() - 10, event.getY() - 10, 20, 20);
@@ -98,6 +105,7 @@ public class AnnotationController implements Controller {
             annotatedRectangle.setHeight(20);
         }
 
+        //AnnotationData.getInstance().addAnnotation(new AnnotationData.Annotation(event.getX() - 10, event.getY() - 10, ));
     }
 
 }
