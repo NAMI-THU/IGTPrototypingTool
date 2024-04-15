@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
    xmlns="http://javafx.com/javafx/21"
@@ -76,7 +77,9 @@
          <center>
             <TitledPane collapsible="false" text="Selected Image" textAlignment="CENTER" BorderPane.alignment="CENTER">
                <content>
-                  <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <Pane fx:id="annotationPane">
+                     <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  </Pane>
                </content>
                <BorderPane.margin>
                   <Insets right="10.0" />

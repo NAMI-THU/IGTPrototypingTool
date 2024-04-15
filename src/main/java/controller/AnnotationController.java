@@ -2,11 +2,13 @@ package controller;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
@@ -18,6 +20,10 @@ public class AnnotationController implements Controller {
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
+    @FXML
+    private Pane annotationPane;
+
+    private Rectangle annotatedRectangle;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -71,6 +77,27 @@ public class AnnotationController implements Controller {
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
+            selectedImageView.setOnMouseClicked(this::annotationEvent);
+
         }
     }
+
+    private void annotationEvent(MouseEvent event) {
+        //To not create Duplicates
+        if(annotatedRectangle == null) {
+            annotatedRectangle = new Rectangle(event.getX() - 10, event.getY() - 10, 20, 20);
+            annotatedRectangle.setFill(Color.TRANSPARENT);
+            annotatedRectangle.setStroke(Color.rgb(6, 207, 236));
+            annotatedRectangle.setStrokeWidth(2);
+            annotatedRectangle.setVisible(true);
+            annotationPane.getChildren().add(annotatedRectangle); // Add it to the Scene
+        }else{
+            annotatedRectangle.setX(event.getX() - 10);
+            annotatedRectangle.setY(event.getY() - 10);
+            annotatedRectangle.setWidth(20);
+            annotatedRectangle.setHeight(20);
+        }
+
+    }
+
 }
