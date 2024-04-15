@@ -1,6 +1,8 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AnnotationData {
 
@@ -12,14 +14,12 @@ public class AnnotationData {
         private double middlePointY;
         private double boundingBoxWidth;
         private double boundingBoxHeight;
-        private String imgName;
 
-        public Annotation(double middlePointX, double middlePointY, double boundingBoxWidth, double boundingBoxHeight, String imgName) {
+        public Annotation(double middlePointX, double middlePointY, double boundingBoxWidth, double boundingBoxHeight) {
             this.middlePointX = middlePointX;
             this.middlePointY = middlePointY;
             this.boundingBoxWidth = boundingBoxWidth;
             this.boundingBoxHeight = boundingBoxHeight;
-            this.imgName = imgName;
         }
         public double getMiddlePointX() {return middlePointX;}
         public double getMiddlePointY() {return middlePointY;}
@@ -29,12 +29,18 @@ public class AnnotationData {
 
     private static AnnotationData instance = new AnnotationData();
 
-    private ArrayList<Annotation> annotations;
+    private Map<String, Annotation> annotations;
     private AnnotationData(){
-        annotations = new ArrayList<>();
+        annotations = new HashMap();
     }
 
-    public void addAnnotation(Annotation annotation){}
+    public void addAnnotation(String path,
+                              double middlePointX,
+                              double middlePointY,
+                              double boundingBoxWidth,
+                              double boundingBoxHeight){
+
+    }
 
     public static AnnotationData getInstance() {
         return instance;

@@ -2,6 +2,7 @@ package controller;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +27,8 @@ public class AnnotationController implements Controller {
     private Pane annotationPane;
 
     private Rectangle annotatedRectangle;
+    private boolean dragged = false;
+    private double annotationPointX, annotationPointY;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -79,33 +82,56 @@ public class AnnotationController implements Controller {
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
-            selectedImageView.setOnMouseClicked(this::annotationEvent);
-
+            selectedImageView.setOnMousePressed(this::pressedAnnotationEvent);
+            selectedImageView.setOnMouseReleased(this::releasedAnnotationEvent);
+            selectedImageView.setOnMouseDragged(this::dragAnnotationEvent);
         }
     }
 
-    /**
-     * Handle the Annotation Event
-     * @param event
-     */
-    private void annotationEvent(MouseEvent event) {
-        System.out.println("MouseEvent: " + event);
+    private void dragAnnotationEvent(MouseEvent event) {
+        if(event.isControlDown()){
+            double x2 = event.getX();
+            double y2 = event.getY();
+            annotatedRectangle.setX(annotationPointX);
+            annotatedRectangle.setY(annotationPointY);
+            annotatedRectangle.setWidth(Math.abs(x2 - annotationPointX));
+            annotatedRectangle.setHeight(Math.abs(y2 - annotationPointY));
+            dragged = true;
+        }
+    }
+
+    private void pressedAnnotationEvent(MouseEvent event) {
         //To not create Duplicates
+        annotationPointX = event.getX();
+        annotationPointY = event.getY();
+
         if(annotatedRectangle == null) {
-            annotatedRectangle = new Rectangle(event.getX() - 10, event.getY() - 10, 20, 20);
+            annotatedRectangle = new Rectangle();
             annotatedRectangle.setFill(Color.TRANSPARENT);
             annotatedRectangle.setStroke(Color.rgb(6, 207, 236));
             annotatedRectangle.setStrokeWidth(2);
             annotatedRectangle.setVisible(true);
             annotationPane.getChildren().add(annotatedRectangle); // Add it to the Scene
-        }else{
-            annotatedRectangle.setX(event.getX() - 10);
-            annotatedRectangle.setY(event.getY() - 10);
+        }
+
+    }
+    /**
+     * Handle the Simple Annotation Event where the user clicks once without dragging.
+     * Here the size of the rectangle is fixed
+     * @param event
+     */
+    private void releasedAnnotationEvent(MouseEvent event) {
+        if(!dragged){
+            annotatedRectangle.setX(annotationPointX - 10);
+            annotatedRectangle.setY(annotationPointY - 10);
             annotatedRectangle.setWidth(20);
             annotatedRectangle.setHeight(20);
         }
+        dragged = false;
 
-        //AnnotationData.getInstance().addAnnotation(new AnnotationData.Annotation(event.getX() - 10, event.getY() - 10, ));
+        AnnotationData.getInstance().addAnnotation(
+                selectedImageView.getImage().getUrl(),
+                annotationPointX, annotationPointY, 20.0, 20.0);
     }
 
 }
