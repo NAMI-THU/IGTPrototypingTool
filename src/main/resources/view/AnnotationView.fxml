@@ -9,9 +9,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.Group?>
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
-   xmlns="http://javafx.com/javafx/21"
-   xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AnnotationController">
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AnnotationController">
    <content>
       <BorderPane>
          <bottom>
@@ -74,13 +75,14 @@
             </ScrollPane>
          </left>
          <center>
-            <ScrollPane fx:id="selectedImagePane" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"  BorderPane.alignment="CENTER">
-               <content>
-                  <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-               </content>
+            <ScrollPane fx:id="selectedImagePane" BorderPane.alignment="CENTER">
                <BorderPane.margin>
-                  <Insets right="10.0" />
+                  <Insets right="10.0"/>
                </BorderPane.margin>
+               <Group>
+                  <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true"
+                             preserveRatio="true"/>
+               </Group>
             </ScrollPane>
          </center>
       </BorderPane>

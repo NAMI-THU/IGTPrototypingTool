@@ -80,31 +80,24 @@ public class AnnotationController implements Controller {
 
     private void selectImage(Image image, ImageView imageView) {
 
-        if (selectedImageView != null) {
+        if (selectedImageView != null && currentSelectedImageView != imageView) {
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
 
+            selectedImageView.getTransforms().clear();
             // Create a new Scale transformation for the ImageView
             Scale scale = new Scale();
             selectedImageView.getTransforms().add(scale);
 
-            // Create a Group and add the ImageView to it
-            Group group = new Group(selectedImageView);
-
-            // Replace the content of the ScrollPane with the Group
-            this.selectedImagePane.setContent(group);
-
             // Add a ScrollEvent handler to the ScrollPane
             this.selectedImagePane.addEventFilter(ScrollEvent.ANY, event -> {
                 if (event.isControlDown()) {
-                    // Convert the mouse coordinates to the coordinate system of the Group
-                    double mouseX = event.getX() - group.getBoundsInParent().getMinX();
-                    double mouseY = event.getY() - group.getBoundsInParent().getMinY();
+
 
                     // Adjust the pivot points to the mouse's current position
-                    scale.setPivotX(mouseX);
-                    scale.setPivotY(mouseY);
+                    scale.setPivotX(event.getX());
+                    scale.setPivotY(event.getY());
 
                     double zoomFactor = 1.05;
 
@@ -124,9 +117,11 @@ public class AnnotationController implements Controller {
                 }
             });
 
+            if (currentSelectedImageView != null){
+                currentSelectedImageView.setStyle("");
+            }
             imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
             currentSelectedImageView = imageView;
-
         }
 
 
