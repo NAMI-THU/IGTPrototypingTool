@@ -71,6 +71,14 @@ public class AnnotationData {
         return null;
     }
 
+    /**
+     * Function to delete the Annotation of one Image
+     * @param path Image path (Key for the Map)
+     */
+    public void deleteAnnotation(String path){
+        //Todo
+    }
+
     public static AnnotationData getInstance() {
         return instance;
     }

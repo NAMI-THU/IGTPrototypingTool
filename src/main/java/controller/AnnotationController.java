@@ -8,6 +8,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,6 +27,7 @@ public class AnnotationController implements Controller {
     private Pane annotationPane;
 
     private Rectangle annotatedRectangle;
+    private Circle middlePoint;
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
 
@@ -87,13 +89,23 @@ public class AnnotationController implements Controller {
 
             // Get Rectangle and 'unnormalize' the values
             annotationPane.getChildren().remove(annotatedRectangle);
+            annotationPane.getChildren().remove(middlePoint);
             annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
+            if(middlePoint != null) {
+                middlePoint = null;
+            }
             if(annotatedRectangle != null) {
                 annotatedRectangle.setX(annotatedRectangle.getX()*selectedImageView.getImage().getWidth());
                 annotatedRectangle.setY(annotatedRectangle.getY()*selectedImageView.getImage().getHeight());
                 annotatedRectangle.setWidth(annotatedRectangle.getWidth()*selectedImageView.getImage().getWidth());
                 annotatedRectangle.setHeight(annotatedRectangle.getHeight()*selectedImageView.getImage().getHeight());
                 annotationPane.getChildren().add(annotatedRectangle);
+                middlePoint = new Circle(0,0,2);
+                middlePoint.setFill(Color.rgb(6, 207, 236));
+                middlePoint.setCenterX(annotatedRectangle.getX()+(annotatedRectangle.getWidth()/2));
+                middlePoint.setCenterY(annotatedRectangle.getY()+(annotatedRectangle.getHeight()/2));
+                annotationPane.getChildren().add(middlePoint);
+
             }
         }
     }
@@ -123,6 +135,11 @@ public class AnnotationController implements Controller {
             annotatedRectangle.setVisible(true);
             annotationPane.getChildren().add(annotatedRectangle); // Add it to the Scene
         }
+        if(middlePoint == null) {
+            middlePoint = new Circle(0, 0, 2);
+            middlePoint.setFill(Color.rgb(6, 207, 236));
+            annotationPane.getChildren().add(middlePoint);
+        }
 
     }
     /**
@@ -141,7 +158,10 @@ public class AnnotationController implements Controller {
             annotationPointX += annotatedRectangle.getWidth()/2;
             annotationPointY += annotatedRectangle.getHeight()/2;
         }
+        middlePoint.setCenterX(annotationPointX);
+        middlePoint.setCenterY(annotationPointY);
         dragged = false;
+
         AnnotationData.getInstance().addAnnotation(
                 selectedImageView.getImage().getUrl(),
                 annotationPointX /selectedImageView.getImage().getWidth(),
