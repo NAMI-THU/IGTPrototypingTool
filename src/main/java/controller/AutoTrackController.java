@@ -80,6 +80,8 @@ public class AutoTrackController implements Controller {
     public PlottableImage videoImagePlot;
     @FXML
     public CheckBox use3dTransformCheckBox;
+    @FXML
+    public CheckBox inSetReferenceMode;
 
     private TrackingDataController trackingDataController;
     private Label statusLabel;
@@ -102,6 +104,8 @@ public class AutoTrackController implements Controller {
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
     private Mat cachedTransformMatrix = null;
 
+    private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -122,10 +126,21 @@ public class AutoTrackController implements Controller {
         generateMatrixButton.disableProperty().bind(Bindings.size(clicked_image_points).lessThan(4));
         generateMatrixButton.textProperty().bind(Bindings.concat("Generate (",Bindings.size(clicked_image_points),"/4)"));
 
+        referencePoint.setName("reference point");
+        referencePoint.getData().add(new XYChart.Data<>(100,100));
+        dataSeries.add(referencePoint);
+
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
-
+        videoImagePlot.registerImageClickedHandler(this::onSRM);
         loadAvailableVideoDevicesAsync();
+    }
+
+    private void onSRM(double v, double v1) {
+        if (inSetReferenceMode.isSelected()) {
+            System.out.println("Set reference point to "+v+" "+v1);
+            referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
+        }
     }
 
     @Override
@@ -580,6 +595,7 @@ public class AutoTrackController implements Controller {
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
+        System.out.println("clicked on image");
         var trackingData = lastTrackingData;
         if(trackingData.size() > 0 && clicked_image_points.size() < 4) {
             // We also directly save the tracking-coordinates at this point.
