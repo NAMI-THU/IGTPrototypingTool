@@ -2,7 +2,6 @@ package controller;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -85,6 +84,17 @@ public class AnnotationController implements Controller {
             selectedImageView.setOnMousePressed(this::pressedAnnotationEvent);
             selectedImageView.setOnMouseReleased(this::releasedAnnotationEvent);
             selectedImageView.setOnMouseDragged(this::dragAnnotationEvent);
+
+            // Get Rectangle and 'unnormalize' the values
+            annotationPane.getChildren().remove(annotatedRectangle);
+            annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
+            if(annotatedRectangle != null) {
+                annotatedRectangle.setX(annotatedRectangle.getX()*selectedImageView.getImage().getWidth());
+                annotatedRectangle.setY(annotatedRectangle.getY()*selectedImageView.getImage().getHeight());
+                annotatedRectangle.setWidth(annotatedRectangle.getWidth()*selectedImageView.getImage().getWidth());
+                annotatedRectangle.setHeight(annotatedRectangle.getHeight()*selectedImageView.getImage().getHeight());
+                annotationPane.getChildren().add(annotatedRectangle);
+            }
         }
     }
 
@@ -118,7 +128,7 @@ public class AnnotationController implements Controller {
     /**
      * Handle the Simple Annotation Event where the user clicks once without dragging.
      * Here the size of the rectangle is fixed
-     * @param event
+     * @param event The Mouse Event
      */
     private void releasedAnnotationEvent(MouseEvent event) {
         if(!dragged){
@@ -126,12 +136,19 @@ public class AnnotationController implements Controller {
             annotatedRectangle.setY(annotationPointY - 10);
             annotatedRectangle.setWidth(20);
             annotatedRectangle.setHeight(20);
+        }else {
+            // Calculate the Middle point of the rectangle
+            annotationPointX += annotatedRectangle.getWidth()/2;
+            annotationPointY += annotatedRectangle.getHeight()/2;
         }
         dragged = false;
-
         AnnotationData.getInstance().addAnnotation(
                 selectedImageView.getImage().getUrl(),
-                annotationPointX, annotationPointY, 20.0, 20.0);
-    }
+                annotationPointX /selectedImageView.getImage().getWidth(),
+                annotationPointY /selectedImageView.getImage().getHeight(),
+                annotatedRectangle.getWidth()/selectedImageView.getImage().getWidth(),
+                annotatedRectangle.getHeight()/selectedImageView.getImage().getHeight()
+        );
 
+    }
 }
