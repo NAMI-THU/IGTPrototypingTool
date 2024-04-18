@@ -14,6 +14,8 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -82,6 +84,8 @@ public class AutoTrackController implements Controller {
     public CheckBox use3dTransformCheckBox;
     @FXML
     public CheckBox inSetReferenceMode;
+    @FXML
+    public LineChart<Number, Number> lineChart;
 
     private TrackingDataController trackingDataController;
     private Label statusLabel;
@@ -105,6 +109,10 @@ public class AutoTrackController implements Controller {
     private Mat cachedTransformMatrix = null;
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
+
+    NumberAxis xAxis = new NumberAxis(-500, 500, 100);
+    NumberAxis yAxis = new NumberAxis(-500, 500, 100);
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -134,6 +142,20 @@ public class AutoTrackController implements Controller {
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
         videoImagePlot.registerImageClickedHandler(this::onSRM);
         loadAvailableVideoDevicesAsync();
+
+        lineChart.getXAxis().setVisible(false);
+        lineChart.getYAxis().setVisible(false);
+        lineChart.setLegendVisible(false);
+        videoImagePlot.setLegendVisible(false);
+        lineChart.setMouseTransparent(true);
+        lineChart.setAnimated(false);
+        lineChart.setCreateSymbols(true);
+        lineChart.setAlternativeRowFillVisible(false);
+        lineChart.setAlternativeColumnFillVisible(false);
+        lineChart.setHorizontalGridLinesVisible(false);
+        lineChart.setVerticalGridLinesVisible(false);
+        lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
+
     }
 
     private void onSRM(double v, double v1) {
@@ -264,6 +286,22 @@ public class AutoTrackController implements Controller {
         }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+            System.out.println("setting new linechart axis");
+            ((NumberAxis) lineChart.getXAxis()).setAutoRanging(false);
+            ((NumberAxis) lineChart.getXAxis()).setLowerBound(((NumberAxis) videoImagePlot.getXAxis()).getLowerBound());
+            ((NumberAxis) lineChart.getXAxis()).setUpperBound(((NumberAxis) videoImagePlot.getXAxis()).getUpperBound());
+            ((NumberAxis) lineChart.getXAxis()).setTickUnit(((NumberAxis) videoImagePlot.getXAxis()).getTickUnit());
+            ((NumberAxis) lineChart.getYAxis()).setAutoRanging(false);
+            ((NumberAxis) lineChart.getYAxis()).setLowerBound(((NumberAxis) videoImagePlot.getYAxis()).getLowerBound());
+            ((NumberAxis) lineChart.getYAxis()).setUpperBound(((NumberAxis) videoImagePlot.getYAxis()).getUpperBound());
+            ((NumberAxis) lineChart.getYAxis()).setTickUnit(((NumberAxis) videoImagePlot.getYAxis()).getTickUnit());
+
+            lineChart.prefWidthProperty().bind(videoImagePlot.widthProperty());
+            lineChart.prefHeightProperty().bind(videoImagePlot.heightProperty());
+            lineChart.minWidthProperty().bind(videoImagePlot.widthProperty());
+            lineChart.minHeightProperty().bind(videoImagePlot.heightProperty());
+            lineChart.maxWidthProperty().bind(videoImagePlot.widthProperty());
+            lineChart.maxHeightProperty().bind(videoImagePlot.heightProperty());
         }
     }
 
