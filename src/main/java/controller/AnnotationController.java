@@ -1,28 +1,27 @@
 package controller;
-import java.util.List;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import util.AnnotationData;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
 public class AnnotationController implements Controller {
     @FXML
     public VBox uploadedImages;
@@ -47,11 +46,13 @@ public class AnnotationController implements Controller {
     public void initialize(URL location, ResourceBundle resources) {
         // Initialization code goes here
     }
+
     @FXML
     @Override
     public void close() {
         unregisterController();
     }
+
     @FXML
     public void Handle_Upload_Functionality(ActionEvent actionEvent) {
         try {
@@ -74,6 +75,7 @@ public class AnnotationController implements Controller {
             e.printStackTrace();
         }
     }
+
     private void displayImage(File file) {
         Image image = new Image(file.toURI().toString());
         ImageView imageView = new ImageView(image);
@@ -89,19 +91,18 @@ public class AnnotationController implements Controller {
     }
 
     private void selectImage(Image image, ImageView imageView) {
-
         if (selectedImageView != null && currentSelectedImageView != imageView) {
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
 
-            selectedImageView.getTransforms().clear();
+            annotationPane.getTransforms().clear();
             // Create a new Scale transformation for the ImageView
             Scale scale = new Scale();
-            selectedImageView.getTransforms().add(scale);
+            annotationPane.getTransforms().add(scale);
 
             // Add a ScrollEvent handler to the ScrollPane
-            this.selectedImagePane.addEventFilter(ScrollEvent.ANY, event -> {
+            annotationPane.setOnScroll(event -> {
                 if (event.isControlDown()) {
 
 
@@ -127,14 +128,16 @@ public class AnnotationController implements Controller {
                 }
             });
 
-            if (currentSelectedImageView != null){
+            if (currentSelectedImageView != null) {
                 currentSelectedImageView.setStyle("");
             }
             imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
             currentSelectedImageView = imageView;
+            checkForExistingAnnotationData();
+            selectedImageView.setOnMouseDragged(this::dragAnnotationEvent);
+            selectedImageView.setOnMousePressed(this::pressedAnnotationEvent);
+            selectedImageView.setOnMouseReleased(this::releasedAnnotationEvent);
         }
-
-
     }
 
     public void Select_Next_Image(ActionEvent actionEvent) {
@@ -162,61 +165,53 @@ public class AnnotationController implements Controller {
                     selectImage(image, previousImageView);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private void selectImage(Image image) {
-        if (selectedImageView != null) {
-            selectedImageView.setImage(image);
-            selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
-            selectedImageView.setPreserveRatio(true);
-            selectedImageView.setOnMousePressed(this::pressedAnnotationEvent);
-            selectedImageView.setOnMouseReleased(this::releasedAnnotationEvent);
-            selectedImageView.setOnMouseDragged(this::dragAnnotationEvent);
 
-            // Get Rectangle and 'unnormalize' the values
-            annotationPane.getChildren().remove(annotatedRectangle);
-            annotationPane.getChildren().remove(middlePoint);
-            annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
-            if(middlePoint != null) {
-                middlePoint = null;
-            }
-            if(annotatedRectangle != null) {
-                annotatedRectangle.setX(annotatedRectangle.getX()*selectedImageView.getImage().getWidth());
-                annotatedRectangle.setY(annotatedRectangle.getY()*selectedImageView.getImage().getHeight());
-                annotatedRectangle.setWidth(annotatedRectangle.getWidth()*selectedImageView.getImage().getWidth());
-                annotatedRectangle.setHeight(annotatedRectangle.getHeight()*selectedImageView.getImage().getHeight());
-                annotationPane.getChildren().add(annotatedRectangle);
-                middlePoint = new Circle(0,0,2);
-                middlePoint.setFill(Color.rgb(6, 207, 236));
-                middlePoint.setCenterX(annotatedRectangle.getX()+(annotatedRectangle.getWidth()/2));
-                middlePoint.setCenterY(annotatedRectangle.getY()+(annotatedRectangle.getHeight()/2));
-                annotationPane.getChildren().add(middlePoint);
+    private void checkForExistingAnnotationData() {
+        // Get Rectangle and 'unnormalize' the values
+        annotationPane.getChildren().remove(annotatedRectangle);
+        annotationPane.getChildren().remove(middlePoint);
+        annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
+        if (middlePoint != null) {
+            middlePoint = null;
+        }
+        if (annotatedRectangle != null) {
+            annotatedRectangle.setX(annotatedRectangle.getX() * selectedImageView.getImage().getWidth());
+            annotatedRectangle.setY(annotatedRectangle.getY() * selectedImageView.getImage().getHeight());
+            annotatedRectangle.setWidth(annotatedRectangle.getWidth() * selectedImageView.getImage().getWidth());
+            annotatedRectangle.setHeight(annotatedRectangle.getHeight() * selectedImageView.getImage().getHeight());
+            annotationPane.getChildren().add(annotatedRectangle);
+            middlePoint = new Circle(0, 0, 2);
+            middlePoint.setFill(Color.rgb(6, 207, 236));
+            middlePoint.setCenterX(annotatedRectangle.getX() + (annotatedRectangle.getWidth() / 2));
+            middlePoint.setCenterY(annotatedRectangle.getY() + (annotatedRectangle.getHeight() / 2));
+            annotationPane.getChildren().add(middlePoint);
 
-            }
         }
     }
 
     private void dragAnnotationEvent(MouseEvent event) {
-        if(event.isControlDown()){
+        if (event.isControlDown()) {
             double x2 = event.getX();
             double y2 = event.getY();
             annotatedRectangle.setX(annotationPointX);
             annotatedRectangle.setY(annotationPointY);
             annotatedRectangle.setWidth(Math.abs(x2 - annotationPointX));
             annotatedRectangle.setHeight(Math.abs(y2 - annotationPointY));
+            middlePoint.setCenterX(annotationPointX + annotatedRectangle.getWidth() / 2);
+            middlePoint.setCenterY(annotationPointY + annotatedRectangle.getHeight() / 2);
             dragged = true;
         }
     }
 
     private void pressedAnnotationEvent(MouseEvent event) {
-        //To not create Duplicates
         annotationPointX = event.getX();
         annotationPointY = event.getY();
 
-        if(annotatedRectangle == null) {
+        if (annotatedRectangle == null) {
             annotatedRectangle = new Rectangle();
             annotatedRectangle.setFill(Color.TRANSPARENT);
             annotatedRectangle.setStroke(Color.rgb(6, 207, 236));
@@ -224,39 +219,42 @@ public class AnnotationController implements Controller {
             annotatedRectangle.setVisible(true);
             annotationPane.getChildren().add(annotatedRectangle); // Add it to the Scene
         }
-        if(middlePoint == null) {
+        if (middlePoint == null) {
             middlePoint = new Circle(0, 0, 2);
             middlePoint.setFill(Color.rgb(6, 207, 236));
             annotationPane.getChildren().add(middlePoint);
         }
 
     }
+
     /**
      * Handle the Simple Annotation Event where the user clicks once without dragging.
      * Here the size of the rectangle is fixed
+     *
      * @param event The Mouse Event
      */
     private void releasedAnnotationEvent(MouseEvent event) {
-        if(!dragged){
+        if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
             annotatedRectangle.setY(annotationPointY - 10);
             annotatedRectangle.setWidth(20);
             annotatedRectangle.setHeight(20);
-        }else {
+            middlePoint.setCenterX(annotationPointX);
+            middlePoint.setCenterY(annotationPointY);
+        } else {
             // Calculate the Middle point of the rectangle
-            annotationPointX += annotatedRectangle.getWidth()/2;
-            annotationPointY += annotatedRectangle.getHeight()/2;
+            annotationPointX += annotatedRectangle.getWidth() / 2;
+            annotationPointY += annotatedRectangle.getHeight() / 2;
         }
-        middlePoint.setCenterX(annotationPointX);
-        middlePoint.setCenterY(annotationPointY);
+
         dragged = false;
 
         AnnotationData.getInstance().addAnnotation(
                 selectedImageView.getImage().getUrl(),
-                annotationPointX /selectedImageView.getImage().getWidth(),
-                annotationPointY /selectedImageView.getImage().getHeight(),
-                annotatedRectangle.getWidth()/selectedImageView.getImage().getWidth(),
-                annotatedRectangle.getHeight()/selectedImageView.getImage().getHeight()
+                annotationPointX / selectedImageView.getImage().getWidth(),
+                annotationPointY / selectedImageView.getImage().getHeight(),
+                annotatedRectangle.getWidth() / selectedImageView.getImage().getWidth(),
+                annotatedRectangle.getHeight() / selectedImageView.getImage().getHeight()
         );
 
     }
