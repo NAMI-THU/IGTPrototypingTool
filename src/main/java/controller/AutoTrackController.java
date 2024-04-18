@@ -41,6 +41,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -109,6 +110,7 @@ public class AutoTrackController implements Controller {
     private Mat cachedTransformMatrix = null;
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
+    private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
 
     NumberAxis xAxis = new NumberAxis(-500, 500, 100);
     NumberAxis yAxis = new NumberAxis(-500, 500, 100);
@@ -155,7 +157,7 @@ public class AutoTrackController implements Controller {
         lineChart.setHorizontalGridLinesVisible(false);
         lineChart.setVerticalGridLinesVisible(false);
         lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
-
+        lineChart.setData(lineDataSeries);
     }
 
     private void onSRM(double v, double v1) {
@@ -329,14 +331,27 @@ public class AutoTrackController implements Controller {
                 series.getData().remove(0);
                 // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
 //                videoImagePlot.initSensorCurve(series);
+
+
+            }
+
+            if (lineDataSeries.size() <= i) {
+                // create series for line
+                // this series will include the reference point and current point
+                var lineSeries = new XYChart.Series<Number, Number>();
+                lineDataSeries.add(lineSeries);
+                lineSeries.getData().remove(0);
             }
 
             var series = dataSeries.get(i);
             var measurements = tool.getMeasurement();
             var point = measurements.get(measurements.size() - 1).getPos();
             var data = series.getData();
-            var max_num_points = 4; // 1
+            var max_num_points = 6; // 1
 
+            var lineSeries = lineDataSeries.get(i);
+            //var lineData = lineSeries.getData();
+            ObservableList<XYChart. Data<Number, Number>> lineData = FXCollections.observableArrayList();
             var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
@@ -344,8 +359,14 @@ public class AutoTrackController implements Controller {
 
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 
+            lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
+            lineData.add(new XYChart.Data<>(referencePoint.getData().get(0).getXValue(), referencePoint.getData().get(0).getYValue()));
+
+            lineSeries.setData(lineData);
+
             if(data.size() > max_num_points){
                 data.remove(0);
+                //lineData.remove(0);
             }
         }
     }
@@ -375,7 +396,7 @@ public class AutoTrackController implements Controller {
                 gson.toJson(trackingData, fw);
             }
         } catch (IOException e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error saving captured data", e);
+            logger.log(Level.SEVERE, "Error saving captured data", e);
             e.printStackTrace();
         }
     }
@@ -407,7 +428,7 @@ public class AutoTrackController implements Controller {
             try {
                 Desktop.getDesktop().open(new File(directory));
             } catch (IOException e) {
-                logger.log(java.util.logging.Level.SEVERE, "Error opening output directory", e);
+                logger.log(Level.SEVERE, "Error opening output directory", e);
                 e.printStackTrace();
             }
         }
@@ -468,7 +489,7 @@ public class AutoTrackController implements Controller {
             cachedTransformMatrix = null;
             userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
+            logger.log(Level.SEVERE, "Error loading matrix", e);
             e.printStackTrace();
         }
     }
@@ -485,7 +506,7 @@ public class AutoTrackController implements Controller {
                 regMatrixStatusBox.setSelected(true);
                 cachedTransformMatrix = null;
             }catch (FileNotFoundException e) {
-                logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
+                logger.log(Level.SEVERE, "Error loading matrix", e);
                 e.printStackTrace();
             }
         }
@@ -515,7 +536,7 @@ public class AutoTrackController implements Controller {
                 cachedTransformMatrix = null;
                 userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
             } catch (IOException e) {
-                logger.log(java.util.logging.Level.SEVERE, "Error saving matrix", e);
+                logger.log(Level.SEVERE, "Error saving matrix", e);
                 e.printStackTrace();
             }
         }
@@ -525,7 +546,7 @@ public class AutoTrackController implements Controller {
         var lastLocation = userPreferences.get(key,defaultLocation);
         var lastLocationFile = new File(lastLocation);
         if(!lastLocationFile.exists()){
-            logger.log(java.util.logging.Level.WARNING, "Last directory does not exist, default directory instead");
+            logger.log(Level.WARNING, "Last directory does not exist, default directory instead");
             lastLocationFile = new File(defaultLocation);
         }
         return lastLocationFile;
