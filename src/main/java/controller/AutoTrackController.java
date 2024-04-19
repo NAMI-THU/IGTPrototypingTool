@@ -288,7 +288,6 @@ public class AutoTrackController implements Controller {
         }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
-            System.out.println("setting new linechart axis");
             ((NumberAxis) lineChart.getXAxis()).setAutoRanging(false);
             ((NumberAxis) lineChart.getXAxis()).setLowerBound(((NumberAxis) videoImagePlot.getXAxis()).getLowerBound());
             ((NumberAxis) lineChart.getXAxis()).setUpperBound(((NumberAxis) videoImagePlot.getXAxis()).getUpperBound());
@@ -323,7 +322,7 @@ public class AutoTrackController implements Controller {
         lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
-            if (dataSeries.size() <= i) {
+            if (dataSeries.size() <= i + 1) {
                 var series = new XYChart.Series<Number, Number>();
                 series.setName(tool.getName());
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
@@ -343,7 +342,8 @@ public class AutoTrackController implements Controller {
                 lineSeries.getData().remove(0);
             }
 
-            var series = dataSeries.get(i);
+
+            var series = dataSeries.get(i + 1);
             var measurements = tool.getMeasurement();
             var point = measurements.get(measurements.size() - 1).getPos();
             var data = series.getData();
@@ -357,10 +357,18 @@ public class AutoTrackController implements Controller {
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
+
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 
             lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
             lineData.add(new XYChart.Data<>(referencePoint.getData().get(0).getXValue(), referencePoint.getData().get(0).getYValue()));
+
+
+            System.out.println(referencePoint.getData().get(0).getXValue());
+            System.out.println(referencePoint.getData().get(0).getYValue());
+
+            System.out.println("------------");
+
 
             lineSeries.setData(lineData);
 
