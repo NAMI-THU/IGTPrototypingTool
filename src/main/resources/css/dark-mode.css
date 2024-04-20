@@ -1,0 +1,44 @@
+.root {
+    -fx-background-color: #424242;
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+.scroll-pane {
+    -fx-background: #424242;
+    -fx-border-color: #333333;
+}
+
+.border-pane {
+    -fx-background-color: #424242;
+}
+
+.vbox {
+    -fx-background-color: #424242;
+}
+.scroll-bar {
+    -fx-background-color: #333333;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #555555;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #444444;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: #333333;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}

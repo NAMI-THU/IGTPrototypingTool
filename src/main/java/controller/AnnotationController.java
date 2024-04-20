@@ -3,6 +3,7 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -263,7 +264,10 @@ public class AnnotationController implements Controller {
         );
 
     }
-
+    /**
+     * Handles Export based Functionality
+     * @param event The Mouse Event
+     */
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (selectedImageView != null && annotatedRectangle != null) {
@@ -290,7 +294,7 @@ public class AnnotationController implements Controller {
             double normWidth = annotatedRectangle.getWidth() / imageWidth;
             double normHeight = annotatedRectangle.getHeight() / imageHeight;
 
-            int classId = 0; // or dynamically determine the class ID if needed
+            int classId = 0; //As we have only one class based requirement
 
             String line = String.format("%d %.5f %.5f %.5f %.5f", classId, centerX, centerY, normWidth, normHeight);
             writer.println(line);
@@ -307,10 +311,37 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
+    /**
+     * Handles Dark/Light-Mode based Functionality
+     * @param event The Mouse Event
+     */
+    @FXML
+    private void handleToggleTheme(ActionEvent event) {
+        try {
+            Scene scene = ((Node) event.getSource()).getScene();
+            String lightModeUrl = getClass().getResource("/css/light-mode.css").toExternalForm();
+            String darkModeUrl = getClass().getResource("/css/dark-mode.css").toExternalForm();
 
+            System.out.println("Light Mode URL: " + lightModeUrl);
+            System.out.println("Dark Mode URL: " + darkModeUrl);
 
-
-
-
-
+            if (scene.getStylesheets().contains(darkModeUrl)) {
+                scene.getStylesheets().remove(darkModeUrl);
+                scene.getStylesheets().add(lightModeUrl);
+            } else {
+                scene.getStylesheets().remove(lightModeUrl);
+                scene.getStylesheets().add(darkModeUrl);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to toggle theme.");
+        }
+    }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

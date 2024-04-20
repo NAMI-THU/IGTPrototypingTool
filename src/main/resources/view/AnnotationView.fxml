@@ -62,6 +62,11 @@
                         <Insets left="55.0" right="55.0" />
                      </HBox.margin>
                   </Button>
+                  <Button fx:id="toggleThemeButton" text="Dark/Light-Mode" onAction="#handleToggleTheme" HBox.hgrow="ALWAYS" maxWidth="170" style="-fx-font-size: 16px;">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
          </top>
