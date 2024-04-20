@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 
 <?import javafx.scene.Group?>
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
@@ -80,8 +81,9 @@
                   <Insets right="10.0"/>
                </BorderPane.margin>
                <Group>
-                  <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true"
-                             preserveRatio="true"/>
+                   <Pane fx:id="annotationPane">
+                       <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                   </Pane>
                </Group>
             </ScrollPane>
          </center>
