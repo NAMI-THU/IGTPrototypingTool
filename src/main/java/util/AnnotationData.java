@@ -76,7 +76,9 @@ public class AnnotationData {
      * @param path Image path (Key for the Map)
      */
     public void deleteAnnotation(String path){
-        //Todo
+        if(annotations.containsKey(path)){
+            annotations.remove(path);
+        }
     }
 
     public static AnnotationData getInstance() {

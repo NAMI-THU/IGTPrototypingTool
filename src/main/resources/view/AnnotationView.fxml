@@ -57,7 +57,7 @@
                      </HBox.margin>
                   </Button>
                   <Button fx:id="exampleButton" text="Export" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;" />
-                  <Button fx:id="exampleButton" text="Clear Marks" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
+                  <Button fx:id="clearMarksButton" onAction="#clearAnnotations" text="Clear Marks" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
                      <HBox.margin>
                         <Insets left="55.0" right="55.0" />
                      </HBox.margin>
