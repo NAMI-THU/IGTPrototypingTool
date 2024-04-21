@@ -25,12 +25,14 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class AnnotationController implements Controller {
     @FXML
-    public VBox uploadedImages;
+    public VBox uploadedImages;     //Where the users see the files
     @FXML
     public Button uploadImagesButton;
     @FXML
@@ -47,6 +49,8 @@ public class AnnotationController implements Controller {
     private double annotationPointX, annotationPointY;
 
     private List<File> selectedImages;
+    private Set<String> uploadedFilePaths = new HashSet<>();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,7 +70,7 @@ public class AnnotationController implements Controller {
             fileChooser.setTitle("Select Images");
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.gif", "*.bmp")
+                    new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png")
             );
             Stage currentStage = (Stage) ((javafx.scene.Node) actionEvent.getSource()).getScene().getWindow();
 
@@ -74,7 +78,13 @@ public class AnnotationController implements Controller {
 
             if (selectedImages != null) {
                 for (File file : selectedImages) {
-                    displayImage(file);
+                    if (!uploadedFilePaths.contains(file.getAbsolutePath())) {
+                        displayImage(file);
+                        uploadedFilePaths.add(file.getAbsolutePath());
+                    } else {
+                        // Optionally, alert the user that the file has already been uploaded
+                        showAlert("Duplicate File", "The file " + file.getName() + " has already been uploaded.");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -177,13 +187,13 @@ public class AnnotationController implements Controller {
     }
 
     public void clearAnnotations(ActionEvent actionEvent) {
-      if(annotatedRectangle != null){
-        annotationPane.getChildren().remove(annotatedRectangle);
-        annotationPane.getChildren().remove(middlePoint);
-        AnnotationData.getInstance().deleteAnnotation(selectedImageView.getImage().getUrl());
-        middlePoint = null;
-        annotatedRectangle = null;
-      }
+        if(annotatedRectangle != null){
+            annotationPane.getChildren().remove(annotatedRectangle);
+            annotationPane.getChildren().remove(middlePoint);
+            AnnotationData.getInstance().deleteAnnotation(selectedImageView.getImage().getUrl());
+            middlePoint = null;
+            annotatedRectangle = null;
+        }
     }
 
     private void checkForExistingAnnotationData() {
@@ -283,6 +293,18 @@ public class AnnotationController implements Controller {
         if (selectedImageView != null && annotatedRectangle != null) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Annotations");
+
+            try {
+                String currentImageUrl = selectedImageView.getImage().getUrl();
+                String currentImageName = new File(new URL(currentImageUrl).toURI().getPath()).getName();
+                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + "_annotations.txt";
+                fileChooser.setInitialFileName(initialFileName);
+            } catch (Exception e) {
+                fileChooser.setInitialFileName("default_annotations.txt");
+                showAlert("Error", "There was an issue processing the image file name.");
+                e.printStackTrace();
+            }
+
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
             File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
 
@@ -293,6 +315,8 @@ public class AnnotationController implements Controller {
             showNoAnnotationAlert();
         }
     }
+
+
 
     private void saveAnnotationsToFile(File file) {
         try (PrintWriter writer = new PrintWriter(file)) {
@@ -348,10 +372,11 @@ public class AnnotationController implements Controller {
         }
     }
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }
+
 }
