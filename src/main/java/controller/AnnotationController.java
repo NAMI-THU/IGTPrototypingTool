@@ -32,7 +32,7 @@ import java.util.Set;
 
 public class AnnotationController implements Controller {
     @FXML
-    public VBox uploadedImages;
+    public VBox uploadedImages;     //Where the users see the files
     @FXML
     public Button uploadImagesButton;
     @FXML
@@ -293,6 +293,18 @@ public class AnnotationController implements Controller {
         if (selectedImageView != null && annotatedRectangle != null) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Annotations");
+
+            try {
+                String currentImageUrl = selectedImageView.getImage().getUrl();
+                String currentImageName = new File(new URL(currentImageUrl).toURI().getPath()).getName();
+                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + "_annotations.txt";
+                fileChooser.setInitialFileName(initialFileName);
+            } catch (Exception e) {
+                fileChooser.setInitialFileName("default_annotations.txt");
+                showAlert("Error", "There was an issue processing the image file name.");
+                e.printStackTrace();
+            }
+
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
             File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
 
@@ -303,6 +315,8 @@ public class AnnotationController implements Controller {
             showNoAnnotationAlert();
         }
     }
+
+
 
     private void saveAnnotationsToFile(File file) {
         try (PrintWriter writer = new PrintWriter(file)) {
