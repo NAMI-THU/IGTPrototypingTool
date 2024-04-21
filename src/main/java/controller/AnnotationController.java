@@ -2,6 +2,9 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -18,6 +21,9 @@ import javafx.stage.Stage;
 import util.AnnotationData;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -267,5 +273,85 @@ public class AnnotationController implements Controller {
                 annotatedRectangle.getHeight() / selectedImageView.getImage().getHeight()
         );
 
+    }
+    /**
+     * Handles Export based Functionality
+     * @param event The Mouse Event
+     */
+    @FXML
+    private void handleExportAction(ActionEvent event) {
+        if (selectedImageView != null && annotatedRectangle != null) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Annotations");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
+
+            if (file != null) {
+                saveAnnotationsToFile(file);
+            }
+        } else {
+            showNoAnnotationAlert();
+        }
+    }
+
+    private void saveAnnotationsToFile(File file) {
+        try (PrintWriter writer = new PrintWriter(file)) {
+            double imageWidth = selectedImageView.getImage().getWidth();
+            double imageHeight = selectedImageView.getImage().getHeight();
+
+            double centerX = (annotatedRectangle.getX() + annotatedRectangle.getWidth() / 2) / imageWidth;
+            double centerY = (annotatedRectangle.getY() + annotatedRectangle.getHeight() / 2) / imageHeight;
+            double normWidth = annotatedRectangle.getWidth() / imageWidth;
+            double normHeight = annotatedRectangle.getHeight() / imageHeight;
+
+            int classId = 0; //As we have only one class based requirement
+
+            String line = String.format("%d %.5f %.5f %.5f %.5f", classId, centerX, centerY, normWidth, normHeight);
+            writer.println(line);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showNoAnnotationAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("No Annotation Found");
+        alert.setHeaderText(null);
+        alert.setContentText("No Annotation Found to process.");
+        alert.showAndWait();
+    }
+
+    /**
+     * Handles Dark/Light-Mode based Functionality
+     * @param event The Mouse Event
+     */
+    @FXML
+    private void handleToggleTheme(ActionEvent event) {
+        try {
+            Scene scene = ((Node) event.getSource()).getScene();
+            String lightModeUrl = getClass().getResource("/css/light-mode.css").toExternalForm();
+            String darkModeUrl = getClass().getResource("/css/dark-mode.css").toExternalForm();
+
+            System.out.println("Light Mode URL: " + lightModeUrl);
+            System.out.println("Dark Mode URL: " + darkModeUrl);
+
+            if (scene.getStylesheets().contains(darkModeUrl)) {
+                scene.getStylesheets().remove(darkModeUrl);
+                scene.getStylesheets().add(lightModeUrl);
+            } else {
+                scene.getStylesheets().remove(lightModeUrl);
+                scene.getStylesheets().add(darkModeUrl);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to toggle theme.");
+        }
+    }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

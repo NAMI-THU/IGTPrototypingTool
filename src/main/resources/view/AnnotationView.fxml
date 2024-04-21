@@ -56,10 +56,17 @@
                         <Insets left="55.0" right="55.0" />
                      </HBox.margin>
                   </Button>
+                  <Button fx:id="ExportButton" text="Export" prefWidth="120.0" prefHeight="40.0" onAction="#handleExportAction" style="-fx-font-size: 16px;" />
+                  <Button fx:id="exampleButton" text="Clear Marks" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
                   <Button fx:id="exampleButton" text="Export" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;" />
                   <Button fx:id="clearMarksButton" onAction="#clearAnnotations" text="Clear Marks" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
                      <HBox.margin>
                         <Insets left="55.0" right="55.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="toggleThemeButton" text="Dark/Light-Mode" onAction="#handleToggleTheme" HBox.hgrow="ALWAYS" maxWidth="170" style="-fx-font-size: 16px;">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
                </children>
@@ -81,9 +88,9 @@
                   <Insets right="10.0"/>
                </BorderPane.margin>
                <Group>
-                   <Pane fx:id="annotationPane">
-                       <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                   </Pane>
+                  <Pane fx:id="annotationPane">
+                     <ImageView fx:id="selectedImageView" fitHeight="500.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  </Pane>
                </Group>
             </ScrollPane>
          </center>
