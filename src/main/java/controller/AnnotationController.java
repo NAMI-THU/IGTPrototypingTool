@@ -176,6 +176,16 @@ public class AnnotationController implements Controller {
         }
     }
 
+    public void clearAnnotations(ActionEvent actionEvent) {
+      if(annotatedRectangle != null){
+        annotationPane.getChildren().remove(annotatedRectangle);
+        annotationPane.getChildren().remove(middlePoint);
+        AnnotationData.getInstance().deleteAnnotation(selectedImageView.getImage().getUrl());
+        middlePoint = null;
+        annotatedRectangle = null;
+      }
+    }
+
     private void checkForExistingAnnotationData() {
         // Get Rectangle and 'unnormalize' the values
         annotationPane.getChildren().remove(annotatedRectangle);
