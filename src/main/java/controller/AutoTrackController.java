@@ -249,7 +249,7 @@ public class AutoTrackController implements Controller {
             var selectedItem = sourceChoiceBox.getSelectionModel().getSelectedItem();
             int deviceId = deviceIdMapping.get(selectedItem);
             imageDataManager.closeConnection();
-            imageDataManager.openConnection(VideoSource.LIVESTREAM, deviceId);
+            imageDataManager.openConnection(VideoSource.LIVESTREAM, 1);
             if (videoTimeline == null) {
                 videoTimeline = new Timeline();
                 videoTimeline.setCycleCount(Animation.INDEFINITE);
