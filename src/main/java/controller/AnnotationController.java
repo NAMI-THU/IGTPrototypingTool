@@ -23,7 +23,6 @@ import util.AnnotationData;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
@@ -372,7 +371,7 @@ public class AnnotationController implements Controller {
         }
     }
     @FXML
-    public void handleNoTipAction(ActionEvent event) {
+    public void deletionfunctionality(ActionEvent event) {
         if (currentSelectedImageView != null) {
             String imagePath = null;
             try {
