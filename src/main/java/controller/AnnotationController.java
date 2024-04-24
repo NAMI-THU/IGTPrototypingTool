@@ -386,8 +386,8 @@ public class AnnotationController implements Controller {
                 uploadedFilePaths.remove(imagePath);
             }
             if (selectedImageView.getImage() == currentSelectedImageView.getImage()) {
-                selectedImageView.setImage(null);
                 clearAnnotations(event);
+                selectedImageView.setImage(null);
             }
             currentSelectedImageView = null;
         } else {
