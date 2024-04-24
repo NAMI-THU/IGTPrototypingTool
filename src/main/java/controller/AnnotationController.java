@@ -374,24 +374,29 @@ public class AnnotationController implements Controller {
     @FXML
     public void handleNoTipAction(ActionEvent event) {
         if (currentSelectedImageView != null) {
-            // Remove the image view from the VBox
+            String imagePath = null;
+            try {
+                imagePath = new File(new URL(currentSelectedImageView.getImage().getUrl()).toURI()).getAbsolutePath();
+            } catch (Exception e) {
+                showAlert("Error", "Could not retrieve file path from the image.");
+                e.printStackTrace();
+            }
+
             uploadedImages.getChildren().remove(currentSelectedImageView);
-            // Remove the image path from the set
-            uploadedFilePaths.remove(currentSelectedImageView.getImage().getUrl());
-            // Check if the selected image is the one being displayed, and clear it
+            if (imagePath != null && uploadedFilePaths.contains(imagePath)) {
+                uploadedFilePaths.remove(imagePath);
+            }
             if (selectedImageView.getImage() == currentSelectedImageView.getImage()) {
                 selectedImageView.setImage(null);
+                clearAnnotations(event);
             }
-            // Optionally, clear any associated annotations
-            clearAnnotations(event);
-            // Reset the current selected image view reference
             currentSelectedImageView = null;
         } else {
             showAlert("No Selection", "No image is currently selected to delete.");
         }
     }
 
-    // Add this method if not already present in your code
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
