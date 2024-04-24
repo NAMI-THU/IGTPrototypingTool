@@ -23,7 +23,6 @@ import util.AnnotationData;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
@@ -371,6 +370,32 @@ public class AnnotationController implements Controller {
             showAlert("Error", "Failed to toggle theme.");
         }
     }
+    @FXML
+    public void deletionfunctionality(ActionEvent event) {
+        if (currentSelectedImageView != null) {
+            String imagePath = null;
+            try {
+                imagePath = new File(new URL(currentSelectedImageView.getImage().getUrl()).toURI()).getAbsolutePath();
+            } catch (Exception e) {
+                showAlert("Error", "Could not retrieve file path from the image.");
+                e.printStackTrace();
+            }
+
+            uploadedImages.getChildren().remove(currentSelectedImageView);
+            if (imagePath != null && uploadedFilePaths.contains(imagePath)) {
+                uploadedFilePaths.remove(imagePath);
+            }
+            if (selectedImageView.getImage() == currentSelectedImageView.getImage()) {
+                clearAnnotations(event);
+                selectedImageView.setImage(null);
+            }
+            currentSelectedImageView = null;
+        } else {
+            showAlert("No Selection", "No image is currently selected to delete.");
+        }
+    }
+
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -378,5 +403,6 @@ public class AnnotationController implements Controller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
 
 }

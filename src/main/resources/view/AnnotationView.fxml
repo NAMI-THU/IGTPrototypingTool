@@ -17,34 +17,30 @@
    <content>
       <BorderPane>
          <bottom>
-            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="368.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </BorderPane.margin>
+            <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="368.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button mnemonicParsing="false" text="No Tip" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
+                  <Button mnemonicParsing="false" text="Delete" prefWidth="120.0" prefHeight="40.0" onAction="#deletionfunctionality" style="-fx-font-size: 16px;">
                      <HBox.margin>
-                        <Insets left="55.0" right="55.0" />
+                        <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="&lt;" onAction="#Select_Previous_Image"  prefHeight="40.0" style="-fx-font-weight: bold;-fx-font-size: 16px;">
+                  <Button mnemonicParsing="false" text="&lt;" onAction="#Select_Previous_Image" prefHeight="40.0" style="-fx-font-weight: bold; -fx-font-size: 16px;">
                      <HBox.margin>
-                        <Insets left="2.0" right="2.0" />
+                        <Insets right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="&gt;" onAction="#Select_Next_Image" prefHeight="40.0" style="-fx-font-weight: bold;-fx-font-size: 16px;">
+                  <Button mnemonicParsing="false" text="&gt;" onAction="#Select_Next_Image" prefHeight="40.0" style="-fx-font-weight: bold; -fx-font-size: 16px;">
                      <HBox.margin>
-                        <Insets left="2.0" right="2.0" />
+                        <Insets right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="Done" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
-                     <HBox.margin>
-                        <Insets left="55.0" right="55.0" />
-                     </HBox.margin>
-                  </Button>
+                  <!-- Spacer to push everything to the left -->
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <!-- Other controls can be added here, which will be aligned to the right -->
                </children>
             </HBox>
          </bottom>
+
          <top>
             <HBox alignment="CENTER" prefHeight="80.0" prefWidth="368.0" BorderPane.alignment="CENTER">
                <BorderPane.margin>
@@ -62,7 +58,7 @@
                         <Insets left="55.0" right="55.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="toggleThemeButton" text="Dark/Light-Mode" onAction="#handleToggleTheme" HBox.hgrow="ALWAYS" maxWidth="170" style="-fx-font-size: 16px;">
+                  <Button fx:id="toggleThemeButton" text="Theme" onAction="#handleToggleTheme" HBox.hgrow="ALWAYS" maxWidth="170" style="-fx-font-size: 16px;">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
