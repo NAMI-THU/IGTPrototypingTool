@@ -363,13 +363,6 @@ public class AutoTrackController implements Controller {
             lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
             lineData.add(new XYChart.Data<>(referencePoint.getData().get(0).getXValue(), referencePoint.getData().get(0).getYValue()));
 
-
-            System.out.println(referencePoint.getData().get(0).getXValue());
-            System.out.println(referencePoint.getData().get(0).getYValue());
-
-            System.out.println("------------");
-
-
             lineSeries.setData(lineData);
 
             if(data.size() > max_num_points){
