@@ -22,7 +22,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </BorderPane.margin>
                <children>
-                  <Button mnemonicParsing="false" text="No Tip" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
+                  <Button mnemonicParsing="false" text="No Tip" prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;" onAction="#handleNoTipAction">
                      <HBox.margin>
                         <Insets left="55.0" right="55.0" />
                      </HBox.margin>
