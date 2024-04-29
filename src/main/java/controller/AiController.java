@@ -10,7 +10,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,11 +17,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -30,19 +25,10 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point3;
 import userinterface.PlottableImage;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class AiController implements Controller {
@@ -50,51 +36,23 @@ public class AiController implements Controller {
     private final ImageDataManager imageDataManager = new ImageDataManager();
     private final TrackingService trackingService = TrackingService.getInstance();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
-    private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    private static final Preferences userPreferences = Preferences.userRoot().node("AutoTrack");
     private static final Preferences userPreferencesGlobal = Preferences.userRoot().node("IGT_Settings");
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
     @FXML
     public CheckBox trackingConnectedStatusBox;
-    @FXML
-    public CheckBox regMatrixStatusBox;
-    @FXML
-    public Button regMatrixImportButton;
-    @FXML
-    public Button generateMatrixButton;
-    @FXML
-    public TextField outputPathField;
-    @FXML
-    public Button outputPathButton;
-    @FXML
-    public ComboBox<String> captureRateComboBox;
-    @FXML
-    public ToggleButton autoCaptureToggleButton;
-    @FXML
-    public Button singleCaptureButton;
-    @FXML
-    public ProgressIndicator captureProgressSpinner;
-    @FXML
     public ProgressIndicator connectionProgressSpinner;
     @FXML
     public PlottableImage videoImagePlot;
-    @FXML
-    public CheckBox use3dTransformCheckBox;
     @FXML
     public CheckBox inSetReferenceMode;
     @FXML
     public LineChart<Number, Number> lineChart;
 
-    private TrackingDataController trackingDataController;
     private Label statusLabel;
     private Timeline videoTimeline;
-    private Timeline autoCaptureTimeline;
     private BufferedImage currentShowingImage;
-    private boolean captureScheduled = false;
-    private String lastMatrixPath = "";
     private List<ExportMeasurement> lastTrackingData = new ArrayList<>();
 
     // Used to crop the image to the actual content. Dirty describes whether the roi cache needs to be updated on the next transform, it's set when a new matrix is loaded
@@ -123,18 +81,8 @@ public class AiController implements Controller {
         trackingService.registerObserver((sourceChanged,dataServiceChanged,timelineChanged) -> updateTrackingInformation());
 
         connectionProgressSpinner.setVisible(false);
-        captureProgressSpinner.setVisible(false);
         sourceChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> changeVideoView());
         sourceChoiceBox.setTooltip(new Tooltip("If you have multiple cameras connected, enable \"Search for more videos\" in the settings view to see all available devices"));
-        captureRateComboBox.getItems().addAll("1000", "2000", "5000", "10000", "30000");
-        captureRateComboBox.getSelectionModel().select(0);
-
-        var expression = trackingConnectedStatusBox.selectedProperty().and(regMatrixStatusBox.selectedProperty()).and(outputPathField.textProperty().isNotEmpty());
-        autoCaptureToggleButton.disableProperty().bind(expression.not());
-        singleCaptureButton.disableProperty().bind(expression.not());
-
-        generateMatrixButton.disableProperty().bind(Bindings.size(clicked_image_points).lessThan(4));
-        generateMatrixButton.textProperty().bind(Bindings.concat("Generate (",Bindings.size(clicked_image_points),"/4)"));
 
         referencePoint.setName("reference point");
         referencePoint.getData().add(new XYChart.Data<>(100,100));
@@ -172,9 +120,6 @@ public class AiController implements Controller {
         unregisterController();
         if (videoTimeline != null) {
             videoTimeline.stop();
-        }
-        if (autoCaptureTimeline != null) {
-            autoCaptureTimeline.stop();
         }
         imageDataManager.closeConnection();
     }
@@ -282,10 +227,6 @@ public class AiController implements Controller {
             updateTrackingData();
         }
 
-        if (this.captureScheduled) {
-            this.captureScheduled = false;
-            saveCapturedData(currentShowingImage, lastTrackingData);
-        }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
             ((NumberAxis) lineChart.getXAxis()).setAutoRanging(false);
@@ -352,7 +293,7 @@ public class AiController implements Controller {
             var lineSeries = lineDataSeries.get(i);
             //var lineData = lineSeries.getData();
             ObservableList<XYChart. Data<Number, Number>> lineData = FXCollections.observableArrayList();
-            var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            var shifted_points = applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
@@ -370,187 +311,6 @@ public class AiController implements Controller {
                 //lineData.remove(0);
             }
         }
-    }
-
-    /**
-     * Request a capture in the next frame.
-     * We don't want to write out the current image and tracking position, as they might not match exactly (-> refresh rate of the video view)
-     * Therefore, we schedule to capture the next measurement once the video image is updated next.
-     */
-    private void doSingleCaptureOnNextFrame() {
-        this.captureScheduled = true;
-    }
-
-    /**
-     * Saves an image and tracking data to output files
-     *
-     * @param image        The current image to save
-     * @param trackingData The corresponding tracking data measurements
-     */
-    private void saveCapturedData(BufferedImage image, List<ExportMeasurement> trackingData) {
-        try {
-            File outputDirectory = new File(outputPathField.getText());
-            var files = outputDirectory.listFiles();
-            var nextIndex = ((files != null ? files.length : 0) / 2) + 1;
-            ImageIO.write(image, "png", Path.of(outputDirectory.getAbsolutePath(), "capture_" + nextIndex + ".png").toFile());
-            try (FileWriter fw = new FileWriter(Path.of(outputDirectory.getAbsolutePath(), "capture_" + nextIndex + ".json").toFile())) {
-                gson.toJson(trackingData, fw);
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error saving captured data", e);
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Action that is called when the user wants to set an output directory
-     */
-    @FXML
-    public void on_browseOutputDirectory() {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select Output Directory");
-        var lastLocationFile = getLastKnownFileLocation("outputDirectory",System.getProperty("user.home"));
-        directoryChooser.setInitialDirectory(lastLocationFile);
-        var directory = directoryChooser.showDialog(null);
-        if (directory != null) {
-            outputPathField.setText(directory.getAbsolutePath());
-            outputPathField.positionCaret(directory.getAbsolutePath().length());
-            userPreferences.put("outputDirectory", directory.getAbsolutePath());
-        }
-    }
-
-    /**
-     * Action that is called when the user wants to open the output directory
-     */
-    @FXML
-    public void on_openOutputDirectory() {
-        var directory = outputPathField.getText();
-        if (directory != null) {
-            try {
-                Desktop.getDesktop().open(new File(directory));
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error opening output directory", e);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Called when the "Single Capture" Button is pressed.
-     */
-    @FXML
-    public void on_doSingleCapture() {
-        doSingleCaptureOnNextFrame();
-    }
-
-    /**
-     * Called, when the "Auto Capture" Button is toggled (on or off)
-     */
-    @FXML
-    public void on_doAutoCapture() {
-        if (autoCaptureToggleButton.isSelected()) {
-            if (autoCaptureTimeline == null) {
-                captureProgressSpinner.setVisible(true);
-                autoCaptureTimeline = new Timeline();
-                autoCaptureTimeline.setCycleCount(Animation.INDEFINITE);
-                autoCaptureTimeline.getKeyFrames().add(
-                        new KeyFrame(Duration.millis(Integer.parseInt(captureRateComboBox.getSelectionModel().getSelectedItem())),
-                                event -> doSingleCaptureOnNextFrame())
-                );
-                autoCaptureTimeline.play();
-            }
-        } else {
-            if (autoCaptureTimeline != null) {
-                autoCaptureTimeline.stop();
-                autoCaptureTimeline = null;
-                captureProgressSpinner.setVisible(false);
-            }
-        }
-    }
-
-    /**
-     * Called, when "Import Matrix" Button is pressed.
-     */
-    @FXML
-    public void on_importMatrix() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Matrix JSON");
-        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(lastLocationFile);
-        var inputFile = fileChooser.showOpenDialog(null);
-        if(inputFile == null){
-            return;
-        }
-        try {
-            var path = inputFile.getAbsolutePath();
-            lastMatrixPath = path;
-            transformationMatrix = TransformationMatrix.loadFromJSON(path);
-            roiDirty = true;
-            regMatrixStatusBox.setSelected(true);
-            cachedTransformMatrix = null;
-            userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
-        }catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, "Error loading matrix", e);
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Reloads the matrix from the last given path (so it's easier to change from the outside)
-     */
-    @FXML
-    public void on_reloadMatrix(){
-        if (lastMatrixPath != null && !lastMatrixPath.isEmpty()) {
-            try {
-                transformationMatrix = TransformationMatrix.loadFromJSON(lastMatrixPath);
-                roiDirty = true;
-                regMatrixStatusBox.setSelected(true);
-                cachedTransformMatrix = null;
-            }catch (FileNotFoundException e) {
-                logger.log(Level.SEVERE, "Error loading matrix", e);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @FXML
-    public void on_generateMatrix(){
-        var transformationMatrix = new TransformationMatrix();
-        transformationMatrix.imagePoints = new float[4][];
-        transformationMatrix.trackingPoints = new float[4][];
-        for(int i = 0;i<clicked_image_points.size();i++){
-            transformationMatrix.imagePoints[i] = new float[]{(float) clicked_image_points.get(i).x, (float) clicked_image_points.get(i).y, (float) clicked_image_points.get(i).z};
-            transformationMatrix.trackingPoints[i] = new float[]{(float) clicked_tracker_points.get(i).x, (float) clicked_tracker_points.get(i).y, (float) clicked_tracker_points.get(i).z};
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Set save location for matrix json");
-        var lastLocationFile = getLastKnownFileLocation("matrixDirectory",System.getProperty("user.home"));
-        fileChooser.setInitialDirectory(lastLocationFile);
-        fileChooser.setInitialFileName("transformationMatrix.json");
-        var saveFile = fileChooser.showSaveDialog(null);
-        if(saveFile != null){
-            try {
-                transformationMatrix.saveToJSON(saveFile);
-                this.transformationMatrix = transformationMatrix;
-                regMatrixStatusBox.setSelected(true);
-                cachedTransformMatrix = null;
-                userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error saving matrix", e);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private File getLastKnownFileLocation(String key, String defaultLocation){
-        var lastLocation = userPreferences.get(key,defaultLocation);
-        var lastLocationFile = new File(lastLocation);
-        if(!lastLocationFile.exists()){
-            logger.log(Level.WARNING, "Last directory does not exist, default directory instead");
-            lastLocationFile = new File(defaultLocation);
-        }
-        return lastLocationFile;
     }
 
     /**
@@ -622,32 +382,6 @@ public class AiController implements Controller {
         out[2] = 0;
         return out;
     }
-
-    /**
-     * Applies the (3D) transformation on a tracking point
-     * @param x X-Coordinate of the point
-     * @param y Y-Coordinate of the point
-     * @param z Z-Coordinate of the point
-     * @return The transformed point as array of length 3 (xyz)
-     */
-    private double[] applyTrackingTransformation3d(double x, double y, double z){
-        var matrix = transformationMatrix.getTransformMatOpenCvEstimated3d();
-        var vector = new Mat(4,1, CvType.CV_64F);
-        vector.put(0,0,x);
-        vector.put(1,0,y);
-        vector.put(2,0,z);
-        vector.put(3,0,1);
-
-        var pos_star = new Mat();
-        Core.gemm(matrix, vector,1, new Mat(),1,pos_star);
-        //Core.perspectiveTransform();  // Maybe try this?
-        double[] out = new double[3];
-        out[0] = pos_star.get(0,0)[0];
-        out[1] = pos_star.get(1,0)[0];
-        out[2] = pos_star.get(2,0)[0];
-        return out;
-    }
-
 
     /**
      * Called, when the user clicks on the live image. Used to get landmarks for transformation. Uses 0 for the image plane as default
