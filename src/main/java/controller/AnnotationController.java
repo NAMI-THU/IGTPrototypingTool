@@ -104,15 +104,12 @@ public class AnnotationController implements Controller {
         imageView.setFitWidth(100);
         imageView.setPreserveRatio(true);
 
-        // Decode the file name to handle URL-encoded spaces and other characters
         String decodedFileName = URLDecoder.decode(file.getName(), StandardCharsets.UTF_8.toString());
 
-        // Create a label with the decoded file name
         Label fileNameLabel = new Label(decodedFileName);
         fileNameLabel.setStyle("-fx-text-fill: black; -fx-font-size: 12px;");
 
-        // Create a VBox to hold the label and the image view
-        VBox vbox = new VBox(5); // 5 is the spacing between the label and the image
+        VBox vbox = new VBox(5);
         vbox.getChildren().addAll(fileNameLabel, imageView);
 
         imageView.setOnMouseClicked(event -> {
