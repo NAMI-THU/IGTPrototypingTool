@@ -13,10 +13,16 @@ import java.util.Map;
  */
 public class AnnotationData {
 
+    public interface PublicAnnotation {
+        double getMiddlePointX();
+        double getMiddlePointY();
+        double getBoundingBoxWidth();
+        double getBoundingBoxHeight();
+    }
     /**
      * Private Class to save the Annotation Data
      */
-    private static class Annotation{
+    private static class Annotation implements PublicAnnotation{
         private final double middlePointX;
         private final double middlePointY;
         private final double boundingBoxWidth;
@@ -83,5 +89,13 @@ public class AnnotationData {
 
     public static AnnotationData getInstance() {
         return instance;
+    }
+
+    public Map<String, PublicAnnotation> getAnnotations() {
+        return new HashMap<>(annotations);
+    }
+
+    public PublicAnnotation getAnnotationEntry(String path){
+        return annotations.get(path);
     }
 }

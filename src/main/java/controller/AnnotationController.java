@@ -15,19 +15,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.DirectoryChooser;
 import util.AnnotationData;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class AnnotationController implements Controller {
     @FXML
@@ -308,7 +307,7 @@ public class AnnotationController implements Controller {
             File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
 
             if (file != null) {
-                saveAnnotationsToFile(file);
+                saveAnnotationsToFile(file, AnnotationData.getInstance().getAnnotationEntry(selectedImageView.getImage().getUrl()));
             }
         } else {
             showNoAnnotationAlert();
@@ -317,20 +316,94 @@ public class AnnotationController implements Controller {
 
 
 
-    private void saveAnnotationsToFile(File file) {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///Export-All-Functionality----------START
+
+    @FXML
+    private void handleExportAllAction(ActionEvent event) {
+        // Checking if there are no images uploaded
+        if (uploadedImages.getChildren().isEmpty()) {
+            showAlert("Export Error", "There are no images to export.");
+            return;
+        }
+
+        List<String> unannotatedImages = new ArrayList<>();
+        for (Node node : uploadedImages.getChildren()) {
+            ImageView imageView = (ImageView) node;
+            if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
+                unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
+            }
+        }
+
+        if (!unannotatedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedImages);
+            return;
+        }
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Directory to Save Annotations");
+        File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
+
+        if (selectedDirectory != null) {
+            AnnotationData.getInstance().getAnnotations().forEach((path, annotation) -> {
+                File file = null;
+                try {
+                    file = new File(new URL(path).toURI());
+                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + "_annotations.txt";
+                    File annotationFile = new File(selectedDirectory, fileName);
+                    saveAnnotationsToFile(annotationFile, annotation);
+                } catch (Exception e) {
+                    showAlert("Error", "Failed to save annotations for " + file.getName());
+                }
+            });
+        }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Unannotated Images");
+        alert.setHeaderText("The following images have no annotations:");
+
+        VBox vbox = new VBox(5);
+        for (String imageName : unannotatedImages) {
+            Text imageText = new Text(imageName);
+            vbox.getChildren().add(imageText);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(vbox);
+        scrollPane.setPrefSize(300, 150);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        alert.getDialogPane().setContent(scrollPane);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///Export-All-Functionality----------END
+
+
+
+    /**
+     * Handles the Saving of Annotations to a File
+     * @param file The File to save the Annotations to
+     * @param annotation The Annotation Data to save
+     */
+
+    private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
-            double imageWidth = selectedImageView.getImage().getWidth();
-            double imageHeight = selectedImageView.getImage().getHeight();
-
-            double centerX = (annotatedRectangle.getX() + annotatedRectangle.getWidth() / 2) / imageWidth;
-            double centerY = (annotatedRectangle.getY() + annotatedRectangle.getHeight() / 2) / imageHeight;
-            double normWidth = annotatedRectangle.getWidth() / imageWidth;
-            double normHeight = annotatedRectangle.getHeight() / imageHeight;
-
-            int classId = 0; //As we have only one class based requirement
-
-            String line = String.format("%d %.5f %.5f %.5f %.5f", classId, centerX, centerY, normWidth, normHeight);
-            writer.println(line);
+           String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
+                            writer.println(line);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -394,15 +467,4 @@ public class AnnotationController implements Controller {
             showAlert("No Selection", "No image is currently selected to delete.");
         }
     }
-
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-
 }
