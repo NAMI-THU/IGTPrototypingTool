@@ -417,14 +417,18 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
+
+
+    ///Below Code Now is part of the MainController Class, as it has been approved to be part of the main application
     /**
      * Handles Dark/Light-Mode based Functionality
      * @param event The Mouse Event
      */
+    /*
     @FXML
     private void handleToggleTheme(ActionEvent event) {
         try {
-            Scene scene = ((Node) event.getSource()).getScene();
+           Scene = ((Node) event.getSource()).getScene();
             String lightModeUrl = getClass().getResource("/css/light-mode.css").toExternalForm();
             String darkModeUrl = getClass().getResource("/css/dark-mode.css").toExternalForm();
 
@@ -443,6 +447,10 @@ public class AnnotationController implements Controller {
             showAlert("Error", "Failed to toggle theme.");
         }
     }
+    */
+
+
+
     @FXML
     public void deletionfunctionality(ActionEvent event) {
         if (currentSelectedImageView != null) {

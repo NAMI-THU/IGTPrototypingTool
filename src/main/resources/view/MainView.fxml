@@ -31,6 +31,9 @@
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" onAction="#openAboutView" text="About"/>
             </Menu>
+            <Menu mnemonicParsing="false" text="Theme">
+                <MenuItem mnemonicParsing="false" onAction="#handleToggleTheme" text="Toggle Dark/Light Mode"/>
+            </Menu>
         </MenuBar>
     </top>
     <center>
