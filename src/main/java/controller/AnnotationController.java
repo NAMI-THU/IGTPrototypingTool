@@ -1,15 +1,19 @@
 package controller;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -48,6 +52,8 @@ public class AnnotationController implements Controller {
 
     private List<File> selectedImages;
     private Set<String> uploadedFilePaths = new HashSet<>();
+    // store the paths of the selected Image, so you can Export the data based on these keys
+    private Set<String> selectedFilePaths = new HashSet<>();
 
 
     @Override
@@ -91,6 +97,15 @@ public class AnnotationController implements Controller {
     }
 
     private void displayImage(File file) {
+        HBox hbox = new HBox();
+        //Setting the space between the nodes of a HBox pane
+        hbox.setSpacing(10);
+
+        CheckBox checkBox = new CheckBox();
+        checkBox.setSelected(false);
+
+        hbox.setMargin(checkBox, new Insets(10, 30, 10, 10));
+
         Image image = new Image(file.toURI().toString());
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(100);
@@ -101,7 +116,17 @@ public class AnnotationController implements Controller {
             selectImage(image, imageView);
         });
 
-        uploadedImages.getChildren().add(imageView);
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) { // Checkbox is now selected
+                selectedFilePaths.add(imageView.getImage().getUrl());
+            } else { // Checkbox is now unselected
+                selectedFilePaths.remove(imageView.getImage().getUrl());
+            }
+        });
+
+        hbox.getChildren().add(imageView);
+        hbox.getChildren().add(checkBox);
+        uploadedImages.getChildren().add(hbox);
     }
 
     private void selectImage(Image image, ImageView imageView) {
