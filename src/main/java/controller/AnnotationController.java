@@ -18,6 +18,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.DirectoryChooser;
 import util.AnnotationData;
 
 import java.io.File;
@@ -308,29 +309,50 @@ public class AnnotationController implements Controller {
             File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
 
             if (file != null) {
-                saveAnnotationsToFile(file);
+                saveAnnotationsToFile(file, AnnotationData.getInstance().getAnnotationEntry(selectedImageView.getImage().getUrl()));
             }
         } else {
             showNoAnnotationAlert();
         }
     }
 
+        /**
+     * Handles Export All based Functionality
+     * @param event The Mouse Event
+     */
+    @FXML
+    private void handleExportAllAction(ActionEvent event) {
+        if (selectedImageView != null && annotatedRectangle != null) {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Select Directory to Save Annotations");
+            File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
 
+            if (selectedDirectory != null) {
+                AnnotationData.getInstance().getAnnotations().forEach((path, annotation) -> {
+                    try {
+                        File file = new File(new URL(path).toURI());
+                        String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + "_annotations.txt";
+                        File annotationFile = new File(selectedDirectory, fileName);
 
-    private void saveAnnotationsToFile(File file) {
+                        saveAnnotationsToFile(annotationFile, annotation);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Handles the Saving of Annotations to a File
+     * @param file The File to save the Annotations to
+     * @param annotation The Annotation Data to save
+     */
+
+    private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
-            double imageWidth = selectedImageView.getImage().getWidth();
-            double imageHeight = selectedImageView.getImage().getHeight();
-
-            double centerX = (annotatedRectangle.getX() + annotatedRectangle.getWidth() / 2) / imageWidth;
-            double centerY = (annotatedRectangle.getY() + annotatedRectangle.getHeight() / 2) / imageHeight;
-            double normWidth = annotatedRectangle.getWidth() / imageWidth;
-            double normHeight = annotatedRectangle.getHeight() / imageHeight;
-
-            int classId = 0; //As we have only one class based requirement
-
-            String line = String.format("%d %.5f %.5f %.5f %.5f", classId, centerX, centerY, normWidth, normHeight);
-            writer.println(line);
+           String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
+                            writer.println(line);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
