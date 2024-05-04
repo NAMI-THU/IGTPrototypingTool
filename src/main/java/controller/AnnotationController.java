@@ -352,12 +352,18 @@ public class AnnotationController implements Controller {
 
         List<String> unannotatedImages = new ArrayList<>();
         for (Node node : uploadedImages.getChildren()) {
-            ImageView imageView = (ImageView) node;
-            if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
-                unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
+            if (node instanceof HBox) {
+                HBox hbox = (HBox) node;
+                for (Node child : hbox.getChildren()) {
+                    if (child instanceof ImageView) {
+                        ImageView imageView = (ImageView) child;
+                        if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
+                            unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
+                        }
+                    }
+                }
             }
         }
-
         if (!unannotatedImages.isEmpty()) {
             showUnannotatedImagesAlert(unannotatedImages);
             return;
