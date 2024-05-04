@@ -195,7 +195,7 @@ public class MainController implements Controller {
             MenuItem menuItem = (MenuItem) event.getSource();
             Scene scene = menuItem.getParentPopup().getOwnerWindow().getScene();
 
-            String lightModeUrl = Objects.requireNonNull(getClass().getResource("/css/light-mode.css")).toExternalForm();
+            String lightModeUrl = Objects.requireNonNull(getClass().getResource("/css/customstyle.css")).toExternalForm();
             String darkModeUrl = Objects.requireNonNull(getClass().getResource("/css/dark-mode.css")).toExternalForm();
 
             System.out.println("Light Mode URL: " + lightModeUrl);
