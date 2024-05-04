@@ -2,14 +2,17 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -46,8 +49,9 @@ public class AnnotationController implements Controller {
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
 
-    private List<File> selectedImages;
     private Set<String> uploadedFilePaths = new HashSet<>();
+    // store the paths of the selected Image, so you can Export the data based on these keys
+    private Set<String> selectedFilePaths = new HashSet<>();
 
 
     @Override
@@ -72,7 +76,7 @@ public class AnnotationController implements Controller {
             );
             Stage currentStage = (Stage) ((javafx.scene.Node) actionEvent.getSource()).getScene().getWindow();
 
-            this.selectedImages = fileChooser.showOpenMultipleDialog(currentStage);
+            List<File> selectedImages = fileChooser.showOpenMultipleDialog(currentStage);
 
             if (selectedImages != null) {
                 for (File file : selectedImages) {
@@ -86,11 +90,20 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while choosing File: " + e.getMessage()) ;
         }
     }
 
     private void displayImage(File file) {
+        HBox hbox = new HBox();
+        //Setting the space between the nodes of a HBox pane
+        hbox.setSpacing(10);
+
+        CheckBox checkBox = new CheckBox();
+        checkBox.setSelected(false);
+
+        hbox.setMargin(checkBox, new Insets(10, 30, 10, 10));
+
         Image image = new Image(file.toURI().toString());
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(100);
@@ -100,8 +113,18 @@ public class AnnotationController implements Controller {
         imageView.setOnMouseClicked(event -> {
             selectImage(image, imageView);
         });
+        // Add or Remove the selected file paths to the HasSet
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) { // Checkbox is now selected
+                selectedFilePaths.add(imageView.getImage().getUrl());
+            } else { // Checkbox is now unselected
+                selectedFilePaths.remove(imageView.getImage().getUrl());
+            }
+        });
 
-        uploadedImages.getChildren().add(imageView);
+        hbox.getChildren().add(imageView);
+        hbox.getChildren().add(checkBox);
+        uploadedImages.getChildren().add(hbox);
     }
 
     private void selectImage(Image image, ImageView imageView) {
@@ -165,7 +188,7 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while selecting next Image: " + e.getMessage()) ;
         }
     }
 
@@ -180,7 +203,7 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while selecting previous Image: " + e.getMessage()) ;
         }
     }
 
@@ -300,7 +323,7 @@ public class AnnotationController implements Controller {
             } catch (Exception e) {
                 fileChooser.setInitialFileName("default_annotations.txt");
                 showAlert("Error", "There was an issue processing the image file name.");
-                e.printStackTrace();
+                System.err.println("Error while Exporting: " + e.getMessage()) ;
             }
 
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
@@ -353,7 +376,7 @@ public class AnnotationController implements Controller {
                     File annotationFile = new File(selectedDirectory, fileName);
                     saveAnnotationsToFile(annotationFile, annotation);
                 } catch (Exception e) {
-                    showAlert("Error", "Failed to save annotations for " + file.getName());
+                    showAlert("Error", "Failed to save annotations for " + path);
                 }
             });
         }
@@ -405,7 +428,7 @@ public class AnnotationController implements Controller {
            String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
                             writer.println(line);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Error while saving Annotation to File: " + e.getMessage()) ;
         }
     }
 
@@ -439,7 +462,7 @@ public class AnnotationController implements Controller {
                 scene.getStylesheets().add(darkModeUrl);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while changing Theme: " + e.getMessage()) ;
             showAlert("Error", "Failed to toggle theme.");
         }
     }
@@ -451,12 +474,13 @@ public class AnnotationController implements Controller {
                 imagePath = new File(new URL(currentSelectedImageView.getImage().getUrl()).toURI()).getAbsolutePath();
             } catch (Exception e) {
                 showAlert("Error", "Could not retrieve file path from the image.");
-                e.printStackTrace();
+                System.err.println("Error while retrieving filepath during deletion: " + e.getMessage()) ;
             }
 
             uploadedImages.getChildren().remove(currentSelectedImageView);
-            if (imagePath != null && uploadedFilePaths.contains(imagePath)) {
+            if (imagePath != null) {
                 uploadedFilePaths.remove(imagePath);
+                selectedFilePaths.remove(imagePath);
             }
             if (selectedImageView.getImage() == currentSelectedImageView.getImage()) {
                 clearAnnotations(event);
