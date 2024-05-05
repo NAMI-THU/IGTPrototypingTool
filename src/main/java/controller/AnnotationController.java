@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -49,9 +48,9 @@ public class AnnotationController implements Controller {
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
 
-    private Set<String> uploadedFilePaths = new HashSet<>();
+    private final Set<String> uploadedFilePaths = new HashSet<>();
     // store the paths of the selected Image, so you can Export the data based on these keys
-    private Set<String> selectedFilePaths = new HashSet<>();
+    private final Set<String> selectedFilePaths = new HashSet<>();
 
 
     @Override
@@ -102,7 +101,7 @@ public class AnnotationController implements Controller {
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(false);
 
-        hbox.setMargin(checkBox, new Insets(10, 30, 10, 10));
+        HBox.setMargin(checkBox, new Insets(10, 30, 10, 10));
 
         Image image = new Image(file.toURI().toString());
         ImageView imageView = new ImageView(image);
@@ -177,7 +176,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void Select_Next_Image(ActionEvent actionEvent) {
+    public void Select_Next_Image() {
         try {
             if (currentSelectedImageView != null) {
                 int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
@@ -192,7 +191,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void Select_Previous_Image(ActionEvent actionEvent) {
+    public void Select_Previous_Image() {
         try {
             if (currentSelectedImageView != null) {
                 int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
@@ -207,7 +206,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void clearAnnotations(ActionEvent actionEvent) {
+    public void clearAnnotations() {
         if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
             annotationPane.getChildren().remove(middlePoint);
@@ -353,11 +352,9 @@ public class AnnotationController implements Controller {
 
         List<String> unannotatedImages = new ArrayList<>();
         for (Node node : uploadedImages.getChildren()) {
-            if (node instanceof HBox) {
-                HBox hbox = (HBox) node;
+            if (node instanceof HBox hbox) {
                 for (Node child : hbox.getChildren()) {
-                    if (child instanceof ImageView) {
-                        ImageView imageView = (ImageView) child;
+                    if (child instanceof ImageView imageView) {
                         if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
                             unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
                         }
@@ -451,49 +448,17 @@ public class AnnotationController implements Controller {
     ///Below Code Now is part of the MainController Class, as it has been approved to be part of the main application
 
     /**
-     * Handles Dark/Light-Mode based Functionality
-     *
-     * @param event The Mouse Event
-     */
-    /*
-    @FXML
-    private void handleToggleTheme(ActionEvent event) {
-        try {
-           Scene = ((Node) event.getSource()).getScene();
-            String lightModeUrl = getClass().getResource("/css/light-mode.css").toExternalForm();
-            String darkModeUrl = getClass().getResource("/css/dark-mode.css").toExternalForm();
-
-            System.out.println("Light Mode URL: " + lightModeUrl);
-            System.out.println("Dark Mode URL: " + darkModeUrl);
-
-            if (scene.getStylesheets().contains(darkModeUrl)) {
-                scene.getStylesheets().remove(darkModeUrl);
-                scene.getStylesheets().add(lightModeUrl);
-            } else {
-                scene.getStylesheets().remove(lightModeUrl);
-                scene.getStylesheets().add(darkModeUrl);
-            }
-        } catch (Exception e) {
-            System.err.println("Error while changing Theme: " + e.getMessage()) ;
-            showAlert("Error", "Failed to toggle theme.");
-        }
-    }
-    */
-
-    /**
      * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
      *
-     * @param event The Mouse Event
      */
     @FXML
-    public void deletionfunctionality(ActionEvent event) {
+    public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
         boolean currentDisplayedRemoved = false;
         boolean atLeastOneSelected = false;
         // Iterate over each node in the uploadedImages VBox
         for (Node node : uploadedImages.getChildren()) {
-            if (node instanceof HBox) {
-                HBox hbox = (HBox) node;
+            if (node instanceof HBox hbox) {
                 ImageView imageView = (ImageView) hbox.getChildren().get(0);
                 CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
                 // Check if the CheckBox is selected for deletion
