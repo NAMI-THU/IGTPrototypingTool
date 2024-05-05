@@ -460,7 +460,7 @@ public class AnnotationController implements Controller {
                         if (AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl())) {
                             System.out.println("Annotation deleted for image: " + imagePath);
                         } else {
-                            System.out.println("No annotation found or error deleting annotation for image: " + imagePath);
+                            //System.out.println("No annotation found or error deleting annotation for image: " + imagePath);
                         }
                         toRemove.add(node);
                         uploadedFilePaths.remove(imagePath);
@@ -495,5 +495,5 @@ public class AnnotationController implements Controller {
 
 
 
-    
+
 }
