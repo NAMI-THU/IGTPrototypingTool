@@ -47,17 +47,13 @@ public class AnnotationController implements Controller {
     private Circle middlePoint;
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
-
     private final Set<String> uploadedFilePaths = new HashSet<>();
     // store the paths of the selected Image, so you can Export the data based on these keys
     private final Set<String> selectedFilePaths = new HashSet<>();
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Initialization code goes here
     }
-
     @FXML
     @Override
     public void close() {
@@ -215,7 +211,7 @@ public class AnnotationController implements Controller {
     }
 
     private void checkForExistingAnnotationData() {
-        // Get Rectangle and 'unnormalize' the values
+        // Get Rectangle and 'normalize' the values
         annotationPane.getChildren().remove(annotatedRectangle);
         annotationPane.getChildren().remove(middlePoint);
         annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
@@ -277,6 +273,7 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
+
     private void releasedAnnotationEvent(MouseEvent event) {
         if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
@@ -308,6 +305,7 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
+
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (selectedImageView != null && annotatedRectangle != null) {
@@ -336,7 +334,6 @@ public class AnnotationController implements Controller {
         }
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------START
 
@@ -347,7 +344,6 @@ public class AnnotationController implements Controller {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-
         List<String> unannotatedImages = new ArrayList<>();
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox hbox) {
@@ -364,11 +360,9 @@ public class AnnotationController implements Controller {
             showUnannotatedImagesAlert(unannotatedImages);
             return;
         }
-
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
-
         if (selectedDirectory != null) {
             AnnotationData.getInstance().getAnnotations().forEach((path, annotation) -> {
                 File file = null;
@@ -413,7 +407,6 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------END
 
@@ -442,12 +435,11 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
-
-
     /**
      * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
      *
      */
+
     @FXML
     public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
@@ -499,4 +491,9 @@ public class AnnotationController implements Controller {
         }
     }
 
+
+
+
+
+    
 }
