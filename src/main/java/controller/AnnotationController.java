@@ -489,40 +489,52 @@ public class AnnotationController implements Controller {
     public void deletionfunctionality(ActionEvent event) {
         List<Node> toRemove = new ArrayList<>();
         boolean currentDisplayedRemoved = false;
-
+        boolean atLeastOneSelected = false;
+        // Iterate over each node in the uploadedImages VBox
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox) {
                 HBox hbox = (HBox) node;
                 ImageView imageView = (ImageView) hbox.getChildren().get(0);
                 CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
+                // Check if the CheckBox is selected for deletion
                 if (checkBox.isSelected()) {
+                    atLeastOneSelected = true;
                     String imagePath = null;
                     try {
                         imagePath = new File(new URL(imageView.getImage().getUrl()).toURI()).getAbsolutePath();
-                        toRemove.add(node); // Mark for removal
+                        // Delete annotation from AnnotationData
+                        if (AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl())) {
+                            System.out.println("Annotation deleted for image: " + imagePath);
+                        } else {
+                            System.out.println("No annotation found or error deleting annotation for image: " + imagePath);
+                        }
+                        toRemove.add(node);
                         uploadedFilePaths.remove(imagePath);
                         selectedFilePaths.remove(imagePath);
-                        AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl());
                         if (imageView.equals(currentSelectedImageView)) {
                             currentDisplayedRemoved = true;
                         }
                     } catch (Exception e) {
-                        showAlert("Error", "Could not retrieve file path from the image.");
+                        showAlert("Error", "Could not retrieve file path from the image: " + e.getMessage());
                         System.err.println("Error while retrieving filepath during deletion: " + e.getMessage());
                     }
                 }
             }
         }
-
-        uploadedImages.getChildren().removeAll(toRemove); // Removing from the UI
-
-        if (currentDisplayedRemoved) {
-            selectedImageView.setImage(null);
-            currentSelectedImageView = null;
+        if (atLeastOneSelected) {
+            uploadedImages.getChildren().removeAll(toRemove);
+            if (currentDisplayedRemoved) {
+                selectedImageView.setImage(null);
+                currentSelectedImageView = null;
+            }
+        } else {
+            showAlert("Notice", "No images selected for deletion.");
         }
 
+        // Notify if all images have been deleted
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Notice", "All images have been deleted.");
         }
     }
+
 }
