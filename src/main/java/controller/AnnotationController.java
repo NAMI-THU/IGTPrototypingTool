@@ -489,6 +489,7 @@ public class AnnotationController implements Controller {
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Notice", "All images have been deleted.");
         }
+        clearAnnotations();
     }
 
 
