@@ -320,7 +320,7 @@ public class AnnotationController implements Controller {
             try {
                 String currentImageUrl = selectedImageView.getImage().getUrl();
                 String currentImageName = new File(new URL(currentImageUrl).toURI().getPath()).getName();
-                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + "_annotations.txt";
+                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + ".txt";
                 fileChooser.setInitialFileName(initialFileName);
             } catch (Exception e) {
                 fileChooser.setInitialFileName("default_annotations.txt");
@@ -379,7 +379,7 @@ public class AnnotationController implements Controller {
                 File file = null;
                 try {
                     file = new File(new URL(path).toURI());
-                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + "_annotations.txt";
+                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
                     File annotationFile = new File(selectedDirectory, fileName);
                     saveAnnotationsToFile(annotationFile, annotation);
                 } catch (Exception e) {
