@@ -83,7 +83,6 @@ public class AnnotationController implements Controller {
                         displayImage(file);
                         uploadedFilePaths.add(file.getAbsolutePath());
                     } else {
-                        // Optionally, alert the user that the file has already been uploaded
                         showAlert("Duplicate File", "The file " + file.getName() + " has already been uploaded.");
                     }
                 }
@@ -95,7 +94,6 @@ public class AnnotationController implements Controller {
 
     private void displayImage(File file) {
         HBox hbox = new HBox();
-        //Setting the space between the nodes of a HBox pane
         hbox.setSpacing(10);
 
         CheckBox checkBox = new CheckBox();
@@ -445,7 +443,6 @@ public class AnnotationController implements Controller {
     }
 
 
-    ///Below Code Now is part of the MainController Class, as it has been approved to be part of the main application
 
     /**
      * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
