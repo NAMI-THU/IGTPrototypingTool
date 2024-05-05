@@ -42,3 +42,7 @@
     -fx-background-insets: 2;
     -fx-background-radius: 5;
 }
+
+.red-green-checkbox{
+    -fx-border-color: red;
+}
