@@ -90,7 +90,7 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while choosing File: " + e.getMessage()) ;
+            System.err.println("Error while choosing File: " + e.getMessage());
         }
     }
 
@@ -188,7 +188,7 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while selecting next Image: " + e.getMessage()) ;
+            System.err.println("Error while selecting next Image: " + e.getMessage());
         }
     }
 
@@ -203,12 +203,12 @@ public class AnnotationController implements Controller {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while selecting previous Image: " + e.getMessage()) ;
+            System.err.println("Error while selecting previous Image: " + e.getMessage());
         }
     }
 
     public void clearAnnotations(ActionEvent actionEvent) {
-        if(annotatedRectangle != null){
+        if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
             annotationPane.getChildren().remove(middlePoint);
             AnnotationData.getInstance().deleteAnnotation(selectedImageView.getImage().getUrl());
@@ -305,8 +305,10 @@ public class AnnotationController implements Controller {
         );
 
     }
+
     /**
      * Handles Export based Functionality
+     *
      * @param event The Mouse Event
      */
     @FXML
@@ -323,7 +325,7 @@ public class AnnotationController implements Controller {
             } catch (Exception e) {
                 fileChooser.setInitialFileName("default_annotations.txt");
                 showAlert("Error", "There was an issue processing the image file name.");
-                System.err.println("Error while Exporting: " + e.getMessage()) ;
+                System.err.println("Error while Exporting: " + e.getMessage());
             }
 
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
@@ -336,7 +338,6 @@ public class AnnotationController implements Controller {
             showNoAnnotationAlert();
         }
     }
-
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,19 +423,19 @@ public class AnnotationController implements Controller {
     ///Export-All-Functionality----------END
 
 
-
     /**
      * Handles the Saving of Annotations to a File
-     * @param file The File to save the Annotations to
+     *
+     * @param file       The File to save the Annotations to
      * @param annotation The Annotation Data to save
      */
 
     private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
-           String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
-                            writer.println(line);
+            String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
+            writer.println(line);
         } catch (FileNotFoundException e) {
-            System.err.println("Error while saving Annotation to File: " + e.getMessage()) ;
+            System.err.println("Error while saving Annotation to File: " + e.getMessage());
         }
     }
 
@@ -447,10 +448,11 @@ public class AnnotationController implements Controller {
     }
 
 
-
     ///Below Code Now is part of the MainController Class, as it has been approved to be part of the main application
+
     /**
      * Handles Dark/Light-Mode based Functionality
+     *
      * @param event The Mouse Event
      */
     /*
@@ -478,31 +480,49 @@ public class AnnotationController implements Controller {
     }
     */
 
-
-
+    /**
+     * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
+     *
+     * @param event The Mouse Event
+     */
     @FXML
     public void deletionfunctionality(ActionEvent event) {
-        if (currentSelectedImageView != null) {
-            String imagePath = null;
-            try {
-                imagePath = new File(new URL(currentSelectedImageView.getImage().getUrl()).toURI()).getAbsolutePath();
-            } catch (Exception e) {
-                showAlert("Error", "Could not retrieve file path from the image.");
-                System.err.println("Error while retrieving filepath during deletion: " + e.getMessage()) ;
-            }
+        List<Node> toRemove = new ArrayList<>();
+        boolean currentDisplayedRemoved = false;
 
-            uploadedImages.getChildren().remove(currentSelectedImageView);
-            if (imagePath != null) {
-                uploadedFilePaths.remove(imagePath);
-                selectedFilePaths.remove(imagePath);
+        for (Node node : uploadedImages.getChildren()) {
+            if (node instanceof HBox) {
+                HBox hbox = (HBox) node;
+                ImageView imageView = (ImageView) hbox.getChildren().get(0);
+                CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
+                if (checkBox.isSelected()) {
+                    String imagePath = null;
+                    try {
+                        imagePath = new File(new URL(imageView.getImage().getUrl()).toURI()).getAbsolutePath();
+                        toRemove.add(node); // Mark for removal
+                        uploadedFilePaths.remove(imagePath);
+                        selectedFilePaths.remove(imagePath);
+                        AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl());
+                        if (imageView.equals(currentSelectedImageView)) {
+                            currentDisplayedRemoved = true;
+                        }
+                    } catch (Exception e) {
+                        showAlert("Error", "Could not retrieve file path from the image.");
+                        System.err.println("Error while retrieving filepath during deletion: " + e.getMessage());
+                    }
+                }
             }
-            if (selectedImageView.getImage() == currentSelectedImageView.getImage()) {
-                clearAnnotations(event);
-                selectedImageView.setImage(null);
-            }
+        }
+
+        uploadedImages.getChildren().removeAll(toRemove); // Removing from the UI
+
+        if (currentDisplayedRemoved) {
+            selectedImageView.setImage(null);
             currentSelectedImageView = null;
-        } else {
-            showAlert("No Selection", "No image is currently selected to delete.");
+        }
+
+        if (uploadedImages.getChildren().isEmpty()) {
+            showAlert("Notice", "All images have been deleted.");
         }
     }
 }
