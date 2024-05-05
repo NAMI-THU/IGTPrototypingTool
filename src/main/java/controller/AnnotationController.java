@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -48,17 +47,13 @@ public class AnnotationController implements Controller {
     private Circle middlePoint;
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
-
-    private Set<String> uploadedFilePaths = new HashSet<>();
+    private final Set<String> uploadedFilePaths = new HashSet<>();
     // store the paths of the selected Image, so you can Export the data based on these keys
-    private Set<String> selectedFilePaths = new HashSet<>();
-
-
+    private final Set<String> selectedFilePaths = new HashSet<>();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Initialization code goes here
     }
-
     @FXML
     @Override
     public void close() {
@@ -84,7 +79,6 @@ public class AnnotationController implements Controller {
                         displayImage(file);
                         uploadedFilePaths.add(file.getAbsolutePath());
                     } else {
-                        // Optionally, alert the user that the file has already been uploaded
                         showAlert("Duplicate File", "The file " + file.getName() + " has already been uploaded.");
                     }
                 }
@@ -96,13 +90,12 @@ public class AnnotationController implements Controller {
 
     private void displayImage(File file) {
         HBox hbox = new HBox();
-        //Setting the space between the nodes of a HBox pane
         hbox.setSpacing(10);
 
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(false);
 
-        hbox.setMargin(checkBox, new Insets(10, 30, 10, 10));
+        HBox.setMargin(checkBox, new Insets(10, 30, 10, 10));
 
         Image image = new Image(file.toURI().toString());
         ImageView imageView = new ImageView(image);
@@ -177,7 +170,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void Select_Next_Image(ActionEvent actionEvent) {
+    public void Select_Next_Image() {
         try {
             if (currentSelectedImageView != null) {
                 int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
@@ -192,7 +185,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void Select_Previous_Image(ActionEvent actionEvent) {
+    public void Select_Previous_Image() {
         try {
             if (currentSelectedImageView != null) {
                 int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
@@ -207,7 +200,7 @@ public class AnnotationController implements Controller {
         }
     }
 
-    public void clearAnnotations(ActionEvent actionEvent) {
+    public void clearAnnotations() {
         if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
             annotationPane.getChildren().remove(middlePoint);
@@ -218,7 +211,7 @@ public class AnnotationController implements Controller {
     }
 
     private void checkForExistingAnnotationData() {
-        // Get Rectangle and 'unnormalize' the values
+        // Get Rectangle and 'normalize' the values
         annotationPane.getChildren().remove(annotatedRectangle);
         annotationPane.getChildren().remove(middlePoint);
         annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
@@ -280,6 +273,7 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
+
     private void releasedAnnotationEvent(MouseEvent event) {
         if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
@@ -311,6 +305,7 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
+
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (selectedImageView != null && annotatedRectangle != null) {
@@ -320,7 +315,7 @@ public class AnnotationController implements Controller {
             try {
                 String currentImageUrl = selectedImageView.getImage().getUrl();
                 String currentImageName = new File(new URL(currentImageUrl).toURI().getPath()).getName();
-                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + "_annotations.txt";
+                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + ".txt";
                 fileChooser.setInitialFileName(initialFileName);
             } catch (Exception e) {
                 fileChooser.setInitialFileName("default_annotations.txt");
@@ -339,7 +334,6 @@ public class AnnotationController implements Controller {
         }
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------START
 
@@ -350,14 +344,11 @@ public class AnnotationController implements Controller {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-
         List<String> unannotatedImages = new ArrayList<>();
         for (Node node : uploadedImages.getChildren()) {
-            if (node instanceof HBox) {
-                HBox hbox = (HBox) node;
+            if (node instanceof HBox hbox) {
                 for (Node child : hbox.getChildren()) {
-                    if (child instanceof ImageView) {
-                        ImageView imageView = (ImageView) child;
+                    if (child instanceof ImageView imageView) {
                         if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
                             unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
                         }
@@ -369,17 +360,15 @@ public class AnnotationController implements Controller {
             showUnannotatedImagesAlert(unannotatedImages);
             return;
         }
-
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
-
         if (selectedDirectory != null) {
             AnnotationData.getInstance().getAnnotations().forEach((path, annotation) -> {
                 File file = null;
                 try {
                     file = new File(new URL(path).toURI());
-                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + "_annotations.txt";
+                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
                     File annotationFile = new File(selectedDirectory, fileName);
                     saveAnnotationsToFile(annotationFile, annotation);
                 } catch (Exception e) {
@@ -418,7 +407,6 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------END
 
@@ -447,82 +435,65 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
-
-    ///Below Code Now is part of the MainController Class, as it has been approved to be part of the main application
-
-    /**
-     * Handles Dark/Light-Mode based Functionality
-     *
-     * @param event The Mouse Event
-     */
-    /*
-    @FXML
-    private void handleToggleTheme(ActionEvent event) {
-        try {
-           Scene = ((Node) event.getSource()).getScene();
-            String lightModeUrl = getClass().getResource("/css/light-mode.css").toExternalForm();
-            String darkModeUrl = getClass().getResource("/css/dark-mode.css").toExternalForm();
-
-            System.out.println("Light Mode URL: " + lightModeUrl);
-            System.out.println("Dark Mode URL: " + darkModeUrl);
-
-            if (scene.getStylesheets().contains(darkModeUrl)) {
-                scene.getStylesheets().remove(darkModeUrl);
-                scene.getStylesheets().add(lightModeUrl);
-            } else {
-                scene.getStylesheets().remove(lightModeUrl);
-                scene.getStylesheets().add(darkModeUrl);
-            }
-        } catch (Exception e) {
-            System.err.println("Error while changing Theme: " + e.getMessage()) ;
-            showAlert("Error", "Failed to toggle theme.");
-        }
-    }
-    */
-
     /**
      * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
      *
-     * @param event The Mouse Event
      */
+
     @FXML
-    public void deletionfunctionality(ActionEvent event) {
+    public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
         boolean currentDisplayedRemoved = false;
-
+        boolean atLeastOneSelected = false;
+        // Iterate over each node in the uploadedImages VBox
         for (Node node : uploadedImages.getChildren()) {
-            if (node instanceof HBox) {
-                HBox hbox = (HBox) node;
+            if (node instanceof HBox hbox) {
                 ImageView imageView = (ImageView) hbox.getChildren().get(0);
                 CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
+                // Check if the CheckBox is selected for deletion
                 if (checkBox.isSelected()) {
+                    atLeastOneSelected = true;
                     String imagePath = null;
                     try {
                         imagePath = new File(new URL(imageView.getImage().getUrl()).toURI()).getAbsolutePath();
-                        toRemove.add(node); // Mark for removal
+                        // Delete annotation from AnnotationData
+                        if (AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl())) {
+                            System.out.println("Annotation deleted for image: " + imagePath);
+                        } else {
+                            //System.out.println("No annotation found or error deleting annotation for image: " + imagePath);
+                        }
+                        toRemove.add(node);
                         uploadedFilePaths.remove(imagePath);
                         selectedFilePaths.remove(imagePath);
-                        AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl());
                         if (imageView.equals(currentSelectedImageView)) {
                             currentDisplayedRemoved = true;
                         }
                     } catch (Exception e) {
-                        showAlert("Error", "Could not retrieve file path from the image.");
+                        showAlert("Error", "Could not retrieve file path from the image: " + e.getMessage());
                         System.err.println("Error while retrieving filepath during deletion: " + e.getMessage());
                     }
                 }
             }
         }
-
-        uploadedImages.getChildren().removeAll(toRemove); // Removing from the UI
-
-        if (currentDisplayedRemoved) {
-            selectedImageView.setImage(null);
-            currentSelectedImageView = null;
+        if (atLeastOneSelected) {
+            uploadedImages.getChildren().removeAll(toRemove);
+            if (currentDisplayedRemoved) {
+                selectedImageView.setImage(null);
+                currentSelectedImageView = null;
+            }
+        } else {
+            showAlert("Notice", "No images selected for deletion.");
         }
 
+        // Notify if all images have been deleted
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Notice", "All images have been deleted.");
         }
     }
+
+
+
+
+
+
 }
