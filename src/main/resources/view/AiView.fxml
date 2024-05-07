@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import userinterface.PlottableImage?>
-<?import javafx.scene.chart.LineChart?>
+<?import java.lang.String?>
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.AiController">
@@ -60,12 +61,19 @@
                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                         </padding>
                     </HBox>
-                    <CheckBox fx:id="inSetReferenceMode" mnemonicParsing="false"
-                              text="Set reference mode">
-                        <padding>
-                            <Insets left="10.0" right="10.0" top="5.0"/>
-                        </padding>
-                    </CheckBox>
+                    <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308"
+                          maxWidth="1.7976931348623157E308" spacing="20.0">
+                    <Label text="Refrence mode" textAlignment="CENTER"/>
+                    <ChoiceBox fx:id="ModeSelection">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Single Point Mode" />
+                                <String fx:value="Path Mode" />
+                            </FXCollections>
+                        </items>
+
+                    </ChoiceBox>
+                    </HBox>
                 </VBox>
             </TitledPane>
         </HBox>
