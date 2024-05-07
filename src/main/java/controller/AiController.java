@@ -45,6 +45,10 @@ public class AiController implements Controller {
     public LineChart<Number, Number> lineChart;
     @FXML
     public ChoiceBox<String> ModeSelection;
+    @FXML
+    public TitledPane PathControlPanel;
+    @FXML
+    public Button clearAll;
 
     private Label statusLabel;
     private Timeline videoTimeline;
@@ -64,7 +68,6 @@ public class AiController implements Controller {
     private Mat cachedTransformMatrix = null;
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
-    private final XYChart.Series<Number, Number> referencePoint2 = new XYChart.Series<Number, Number>();
     private final ArrayList<XYChart.Series<Number, Number>> referencePointsListPath = new ArrayList<XYChart.Series<Number, Number>>();
     private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
 
@@ -101,16 +104,25 @@ public class AiController implements Controller {
         lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         lineChart.setData(lineDataSeries);
 
+
+        //State machine for the choice box for point mode selection
         ModeSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             dataSeries.clear();
             if (Objects.equals(newValue, "Single Point Mode")) {
                 dataSeries.add(referencePoint);
+                PathControlPanel.setVisible(false);
             }
             if (Objects.equals(newValue, "Path Mode")) {
                 dataSeries.addAll(referencePointsListPath);
+                PathControlPanel.setVisible(true);
             }
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
+        });
+
+        clearAll.setOnAction((event) -> {
+            dataSeries.clear();
+            referencePointsListPath.clear();
         });
     }
 
