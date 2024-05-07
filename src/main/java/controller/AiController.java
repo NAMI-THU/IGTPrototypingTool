@@ -1,8 +1,6 @@
 package controller;
 
 import algorithm.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
@@ -17,7 +15,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
 import javafx.util.Duration;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -28,7 +25,6 @@ import userinterface.PlottableImage;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 public class AiController implements Controller {
@@ -46,9 +42,9 @@ public class AiController implements Controller {
     @FXML
     public PlottableImage videoImagePlot;
     @FXML
-    public CheckBox inSetReferenceMode;
-    @FXML
     public LineChart<Number, Number> lineChart;
+    @FXML
+    public ChoiceBox<String> ModeSelection;
 
     private Label statusLabel;
     private Timeline videoTimeline;
@@ -68,6 +64,7 @@ public class AiController implements Controller {
     private Mat cachedTransformMatrix = null;
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
+    private final XYChart.Series<Number, Number> referencePoint2 = new XYChart.Series<Number, Number>();
     private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
 
     NumberAxis xAxis = new NumberAxis(-500, 500, 100);
@@ -83,10 +80,6 @@ public class AiController implements Controller {
         connectionProgressSpinner.setVisible(false);
         sourceChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> changeVideoView());
         sourceChoiceBox.setTooltip(new Tooltip("If you have multiple cameras connected, enable \"Search for more videos\" in the settings view to see all available devices"));
-
-        referencePoint.setName("reference point");
-        referencePoint.getData().add(new XYChart.Data<>(100,100));
-        dataSeries.add(referencePoint);
 
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
@@ -106,13 +99,30 @@ public class AiController implements Controller {
         lineChart.setVerticalGridLinesVisible(false);
         lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         lineChart.setData(lineDataSeries);
+
+        ModeSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            dataSeries.clear();
+            if (Objects.equals(newValue, "Single Point Mode")) {
+                dataSeries.add(referencePoint);
+            }
+            System.out.println("Selected item: " + newValue );
+            // Add your custom code here...
+        });
     }
 
     private void onSRM(double v, double v1) {
-        if (inSetReferenceMode.isSelected()) {
-            System.out.println("Set reference point to "+v+" "+v1);
-            referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
+        switch (ModeSelection.getValue()){
+            case "Single Point Mode":
+                System.out.println("Set reference point to "+v+" "+v1);
+                referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
+                break;
+            case "Path Mode":
+                System.out.println("Pathmmode wow");
+                referencePoint.setData(null);
+                //Add the section here chatgpt
+                break;
         }
+
     }
 
     @Override

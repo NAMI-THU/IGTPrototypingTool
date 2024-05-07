@@ -63,7 +63,7 @@
                     </HBox>
                     <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308"
                           maxWidth="1.7976931348623157E308" spacing="20.0">
-                    <Label text="Refrence mode" textAlignment="CENTER"/>
+                    <Label text="Reference mode" textAlignment="CENTER"/>
                     <ChoiceBox fx:id="ModeSelection">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
