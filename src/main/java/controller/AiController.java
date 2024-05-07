@@ -65,6 +65,7 @@ public class AiController implements Controller {
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
     private final XYChart.Series<Number, Number> referencePoint2 = new XYChart.Series<Number, Number>();
+    private final ArrayList<XYChart.Series<Number, Number>> referencePointsListPath = new ArrayList<XYChart.Series<Number, Number>>();
     private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
 
     NumberAxis xAxis = new NumberAxis(-500, 500, 100);
@@ -105,6 +106,9 @@ public class AiController implements Controller {
             if (Objects.equals(newValue, "Single Point Mode")) {
                 dataSeries.add(referencePoint);
             }
+            if (Objects.equals(newValue, "Path Mode")) {
+                dataSeries.addAll(referencePointsListPath);
+            }
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
         });
@@ -117,9 +121,9 @@ public class AiController implements Controller {
                 referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
                 break;
             case "Path Mode":
-                System.out.println("Pathmmode wow");
-                referencePoint.setData(null);
-                //Add the section here chatgpt
+                referencePointsListPath.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
+                dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
+                //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 break;
         }
 
