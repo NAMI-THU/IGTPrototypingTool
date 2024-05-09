@@ -23,7 +23,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.DirectoryChooser;
 import util.AnnotationData;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -50,9 +49,18 @@ public class AnnotationController implements Controller {
     private final Set<String> uploadedFilePaths = new HashSet<>();
     // store the paths of the selected Image, so you can Export the data based on these keys
     private final Set<String> selectedFilePaths = new HashSet<>();
+    private int currentImageIndex = 0; // Default to the first image
+    private final List<Image> imageList = new ArrayList<>(); // Store all loaded images
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialization code goes here
+        System.out.println("Initializing Controller");
+        if (selectedImageView == null) {
+            System.out.println("Error: selectedImageView is null");
+        }
+        if (uploadedImages == null) {
+            System.out.println("Error: uploadedImages is null");
+        }
     }
     @FXML
     @Override
@@ -98,6 +106,7 @@ public class AnnotationController implements Controller {
         HBox.setMargin(checkBox, new Insets(10, 30, 10, 10));
 
         Image image = new Image(file.toURI().toString());
+        imageList.add(image); // Adding the image to the list
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(100);
         imageView.setFitWidth(100);
@@ -121,85 +130,86 @@ public class AnnotationController implements Controller {
     }
 
     private void selectImage(Image image, ImageView imageView) {
-        if (selectedImageView != null && currentSelectedImageView != imageView) {
+        try {
+            // Check if the necessary UI components are available
+            if (selectedImageView == null) {
+                System.out.println("Error: selectedImageView is not initialized.");
+                return;
+            }
+
+            // Update the display image
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
 
-            annotationPane.getTransforms().clear();
-            // Create a new Scale transformation for the ImageView
-            Scale scale = new Scale();
-            annotationPane.getTransforms().add(scale);
+            // Reset style of previously selected image if it exists
+            if (currentSelectedImageView != null && currentSelectedImageView != imageView) {
+                currentSelectedImageView.setStyle("");  // Remove any special styling
+            }
 
-            // Add a ScrollEvent handler to the ScrollPane
-            annotationPane.setOnScroll(event -> {
-                if (event.isControlDown()) {
+            // Highlight the new selected image view if it's not null
+            if (imageView != null) {
+                currentSelectedImageView = imageView;
+                imageView.setStyle("-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 0); -fx-border-color: blue; -fx-border-width: 2;");
+            }
 
+            // Scroll to the selected image
+            scrollToSelectedImage();
 
-                    // Adjust the pivot points to the mouse's current position
-                    scale.setPivotX(event.getX());
-                    scale.setPivotY(event.getY());
+            // Update annotation pane if necessary
+            if (annotationPane != null) {
+                annotationPane.getTransforms().clear();
+                Scale scale = new Scale();
+                annotationPane.getTransforms().add(scale);
 
-                    double zoomFactor = 1.05;
+                // Handle scroll events for zooming
+                annotationPane.setOnScroll(event -> {
+                    if (event.isControlDown()) {
+                        double zoomFactor = 1.05;
+                        scale.setPivotX(event.getX());
+                        scale.setPivotY(event.getY());
 
-                    if (event.getDeltaY() > 0) {
-                        // Zoom in
-                        scale.setX(scale.getX() * zoomFactor);
-                        scale.setY(scale.getY() * zoomFactor);
-                    } else {
-                        // Zoom out, but do not go below a certain minimum value
-                        if (scale.getX() > 1.0 && scale.getY() > 1.0) {
+                        if (event.getDeltaY() > 0) {
+                            scale.setX(scale.getX() * zoomFactor);
+                            scale.setY(scale.getY() * zoomFactor);
+                        } else if (scale.getX() > 1.0 && scale.getY() > 1.0) {
                             scale.setX(scale.getX() / zoomFactor);
                             scale.setY(scale.getY() / zoomFactor);
                         }
+                        event.consume();
                     }
-
-                    event.consume();
-                }
-            });
-
-            if (currentSelectedImageView != null) {
-                currentSelectedImageView.setStyle("");
+                });
             }
-            imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-            currentSelectedImageView = imageView;
+
+            // Check and load existing annotation data
             checkForExistingAnnotationData();
-            selectedImageView.setOnMouseDragged(this::dragAnnotationEvent);
-            selectedImageView.setOnMousePressed(this::pressedAnnotationEvent);
-            selectedImageView.setOnMouseReleased(this::releasedAnnotationEvent);
+
+        } catch (Exception e) {
+            System.out.println("Exception in selectImage: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-
+    private void scrollToSelectedImage() {
+        if (currentSelectedImageView != null && selectedImagePane != null) {
+            double viewportHeight = selectedImagePane.getHeight();
+            double imageY = currentSelectedImageView.localToScene(currentSelectedImageView.getBoundsInLocal()).getMinY();
+            double offsetY = imageY - selectedImagePane.getScene().getY() - viewportHeight / 2 + currentSelectedImageView.getBoundsInLocal().getHeight() / 2;
+            double vValue = offsetY / (uploadedImages.getHeight() - viewportHeight);
+            selectedImagePane.setVvalue(Math.max(0, Math.min(vValue, 1)));  // Clamp vValue to be between 0 and 1
+        }
+    }
     public void Select_Next_Image() {
-        try {
-            if (currentSelectedImageView != null) {
-                int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
-                if (currentIndex < uploadedImages.getChildren().size() - 1) {
-                    ImageView nextImageView = (ImageView) uploadedImages.getChildren().get(currentIndex + 1);
-                    Image image = nextImageView.getImage();
-                    selectImage(image, nextImageView);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error while selecting next Image: " + e.getMessage());
+        if (currentImageIndex < imageList.size() - 1) {
+            currentImageIndex++;
+            selectImage(imageList.get(currentImageIndex), null); // Update the image display
         }
     }
-
     public void Select_Previous_Image() {
-        try {
-            if (currentSelectedImageView != null) {
-                int currentIndex = uploadedImages.getChildren().indexOf(currentSelectedImageView);
-                if (currentIndex > 0) {
-                    ImageView previousImageView = (ImageView) uploadedImages.getChildren().get(currentIndex - 1);
-                    Image image = previousImageView.getImage();
-                    selectImage(image, previousImageView);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error while selecting previous Image: " + e.getMessage());
+        if (currentImageIndex > 0) {
+            currentImageIndex--;
+            selectImage(imageList.get(currentImageIndex), null); // Update the image display
         }
     }
-
     public void clearAnnotations() {
         if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
