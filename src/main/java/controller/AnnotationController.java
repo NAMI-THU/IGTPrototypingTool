@@ -191,52 +191,36 @@ public class AnnotationController implements Controller {
 
     private void selectImage(Image image, ImageView imageView) {
         try {
-            // Ensure there are images in the list before attempting to select one
             if (imageList.isEmpty()) {
                 selectedImageView.setImage(null);
                 System.out.println("No images to display.");
                 return;
             }
-
-            // Update the current image index to the selected image's index in the list
             currentImageIndex = imageList.indexOf(image);
-            if (currentImageIndex == -1) { // If the image is not found in the list, log an error
+            if (currentImageIndex == -1) {
                 System.out.println("Selected image is not in the image list.");
                 return;
             }
-
-            // Check if the necessary UI components are available
             if (selectedImageView == null) {
                 System.out.println("Error: selectedImageView is not initialized.");
                 return;
             }
-
-            // Update the display image
             selectedImageView.setImage(image);
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
-
-            // Reset style of previously selected image view, if it exists
             if (currentSelectedImageView != null && currentSelectedImageView != imageView) {
-                currentSelectedImageView.setStyle("");  // Remove any special styling
+                currentSelectedImageView.setStyle("");
             }
 
-            // Highlight the new selected image view if it's not null
             if (imageView != null) {
                 currentSelectedImageView = imageView;
                 imageView.setStyle("-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 0); -fx-border-color: blue; -fx-border-width: 2;");
             }
-
-            // Scroll to the selected image in the scroll pane
             scrollToSelectedImage();
-
-            // Update annotation pane if necessary
             if (annotationPane != null) {
                 annotationPane.getTransforms().clear();
                 Scale scale = new Scale();
                 annotationPane.getTransforms().add(scale);
-
-                // Handle scroll events for zooming
                 annotationPane.setOnScroll(event -> {
                     if (event.isControlDown()) {
                         double zoomFactor = 1.05;
@@ -254,10 +238,7 @@ public class AnnotationController implements Controller {
                     }
                 });
             }
-
-            // Check and load existing annotation data if available
             checkForExistingAnnotationData();
-
         } catch (Exception e) {
             System.out.println("Exception in selectImage: " + e.getMessage());
             e.printStackTrace();
