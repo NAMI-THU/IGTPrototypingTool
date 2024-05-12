@@ -118,17 +118,6 @@ public class AnnotationController implements Controller {
     public void close() {
         unregisterController();
     }
-
-
-
-
-
-
-
-
-
-
-
     @FXML
     public void Handle_Upload_Functionality(ActionEvent actionEvent) {
         try {
@@ -188,7 +177,6 @@ public class AnnotationController implements Controller {
         hbox.getChildren().add(checkBox);
         uploadedImages.getChildren().add(hbox);
     }
-
     private void selectImage(Image image, ImageView imageView) {
         try {
             if (imageList.isEmpty()) {
@@ -262,7 +250,6 @@ public class AnnotationController implements Controller {
             annotatedRectangle = null;
         }
     }
-
     private void checkForExistingAnnotationData() {
         // Clear existing annotations if any
         if (annotatedRectangle != null) {
@@ -292,7 +279,6 @@ public class AnnotationController implements Controller {
             annotationPane.getChildren().add(middlePoint);
         }
     }
-
     private void dragAnnotationEvent(MouseEvent event) {
         if (event.isControlDown()) {
             double x2 = event.getX();
@@ -306,7 +292,6 @@ public class AnnotationController implements Controller {
             dragged = true;
         }
     }
-
     private void pressedAnnotationEvent(MouseEvent event) {
         annotationPointX = event.getX();
         annotationPointY = event.getY();
@@ -326,7 +311,6 @@ public class AnnotationController implements Controller {
         }
 
     }
-
     /**
      * Handle the Simple Annotation Event where the user clicks once without dragging.
      * Here the size of the rectangle is fixed
@@ -358,7 +342,6 @@ public class AnnotationController implements Controller {
         );
 
     }
-
     /**
      * Handles Export based Functionality
      *
@@ -391,24 +374,8 @@ public class AnnotationController implements Controller {
             showNoAnnotationAlert();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------START
-
     @FXML
     private void handleExportAllAction(ActionEvent event) {
         // Check if there are no images uploaded
@@ -448,7 +415,6 @@ public class AnnotationController implements Controller {
                     });
         }
     }
-
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -456,7 +422,6 @@ public class AnnotationController implements Controller {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
     private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Unannotated Images");
@@ -477,35 +442,14 @@ public class AnnotationController implements Controller {
         alert.setResizable(true);
         alert.showAndWait();
     }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Handles the Saving of Annotations to a File
      *
      * @param file       The File to save the Annotations to
      * @param annotation The Annotation Data to save
      */
-
     private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
             String line = String.format("%d %.5f %.5f %.5f %.5f",
@@ -516,7 +460,6 @@ public class AnnotationController implements Controller {
             System.err.println("Error while saving Annotation to File: " + e.getMessage());
         }
     }
-
     private void showNoAnnotationAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("No Annotation Found");
@@ -524,12 +467,10 @@ public class AnnotationController implements Controller {
         alert.setContentText("No Annotation Found to process.");
         alert.showAndWait();
     }
-
     /**
      * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
      *
      */
-
     @FXML
     public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
