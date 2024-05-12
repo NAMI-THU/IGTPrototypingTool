@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AnnotationController implements Controller {
     @FXML
@@ -51,22 +52,82 @@ public class AnnotationController implements Controller {
     private final Set<String> selectedFilePaths = new HashSet<>();
     private int currentImageIndex = 0; // Default to the first image
     private final List<Image> imageList = new ArrayList<>(); // Store all loaded images
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("Initializing Controller");
-        if (selectedImageView == null) {
-            System.out.println("Error: selectedImageView is null");
+        if (annotationPane != null) {
+            setupAnnotationHandlers();
         }
-        if (uploadedImages == null) {
-            System.out.println("Error: uploadedImages is null");
+
+        uploadedImages.setFocusTraversable(true);
+        uploadedImages.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case RIGHT:
+                    selectNextImage();
+                    break;
+                case LEFT:
+                    selectPreviousImage();
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+    private void setupAnnotationHandlers() {
+        annotationPane.setOnMousePressed(this::pressedAnnotationEvent);
+        annotationPane.setOnMouseDragged(this::dragAnnotationEvent);
+        annotationPane.setOnMouseReleased(this::releasedAnnotationEvent);
+    }
+    public void selectNextImage() {
+        // Check if there's a next image in the list
+        if (currentImageIndex < imageList.size() - 1) {
+            currentImageIndex++;
+            Image nextImage = imageList.get(currentImageIndex);
+            ImageView nextImageView = findImageViewForImage(nextImage);
+            selectImage(nextImage, nextImageView);
+        } else {
+            System.out.println("No next image available.");
         }
+    }
+
+    public void selectPreviousImage() {
+        // Check if there's a previous image in the list
+        if (currentImageIndex > 0) {
+            currentImageIndex--;
+            Image prevImage = imageList.get(currentImageIndex);
+            ImageView prevImageView = findImageViewForImage(prevImage);
+            selectImage(prevImage, prevImageView);
+        } else {
+            System.out.println("No previous image available.");
+        }
+    }
+
+    private ImageView findImageViewForImage(Image image) {
+        for (Node node : uploadedImages.getChildren()) {
+            if (node instanceof HBox) {
+                ImageView imageView = (ImageView) ((HBox) node).getChildren().get(0);
+                if (imageView.getImage().equals(image)) {
+                    return imageView;
+                }
+            }
+        }
+        return null; // Not found
     }
     @FXML
     @Override
     public void close() {
         unregisterController();
     }
+
+
+
+
+
+
+
+
+
+
 
     @FXML
     public void Handle_Upload_Functionality(ActionEvent actionEvent) {
@@ -95,7 +156,6 @@ public class AnnotationController implements Controller {
             System.err.println("Error while choosing File: " + e.getMessage());
         }
     }
-
     private void displayImage(File file) {
         HBox hbox = new HBox();
         hbox.setSpacing(10);
@@ -131,6 +191,20 @@ public class AnnotationController implements Controller {
 
     private void selectImage(Image image, ImageView imageView) {
         try {
+            // Ensure there are images in the list before attempting to select one
+            if (imageList.isEmpty()) {
+                selectedImageView.setImage(null);
+                System.out.println("No images to display.");
+                return;
+            }
+
+            // Update the current image index to the selected image's index in the list
+            currentImageIndex = imageList.indexOf(image);
+            if (currentImageIndex == -1) { // If the image is not found in the list, log an error
+                System.out.println("Selected image is not in the image list.");
+                return;
+            }
+
             // Check if the necessary UI components are available
             if (selectedImageView == null) {
                 System.out.println("Error: selectedImageView is not initialized.");
@@ -142,7 +216,7 @@ public class AnnotationController implements Controller {
             selectedImageView.setFitWidth(selectedImageView.getScene().getWidth());
             selectedImageView.setPreserveRatio(true);
 
-            // Reset style of previously selected image if it exists
+            // Reset style of previously selected image view, if it exists
             if (currentSelectedImageView != null && currentSelectedImageView != imageView) {
                 currentSelectedImageView.setStyle("");  // Remove any special styling
             }
@@ -153,7 +227,7 @@ public class AnnotationController implements Controller {
                 imageView.setStyle("-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 0); -fx-border-color: blue; -fx-border-width: 2;");
             }
 
-            // Scroll to the selected image
+            // Scroll to the selected image in the scroll pane
             scrollToSelectedImage();
 
             // Update annotation pane if necessary
@@ -181,7 +255,7 @@ public class AnnotationController implements Controller {
                 });
             }
 
-            // Check and load existing annotation data
+            // Check and load existing annotation data if available
             checkForExistingAnnotationData();
 
         } catch (Exception e) {
@@ -198,18 +272,6 @@ public class AnnotationController implements Controller {
             selectedImagePane.setVvalue(Math.max(0, Math.min(vValue, 1)));  // Clamp vValue to be between 0 and 1
         }
     }
-    public void Select_Next_Image() {
-        if (currentImageIndex < imageList.size() - 1) {
-            currentImageIndex++;
-            selectImage(imageList.get(currentImageIndex), null); // Update the image display
-        }
-    }
-    public void Select_Previous_Image() {
-        if (currentImageIndex > 0) {
-            currentImageIndex--;
-            selectImage(imageList.get(currentImageIndex), null); // Update the image display
-        }
-    }
     public void clearAnnotations() {
         if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
@@ -221,25 +283,32 @@ public class AnnotationController implements Controller {
     }
 
     private void checkForExistingAnnotationData() {
-        // Get Rectangle and 'normalize' the values
-        annotationPane.getChildren().remove(annotatedRectangle);
-        annotationPane.getChildren().remove(middlePoint);
-        annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
+        // Clear existing annotations if any
+        if (annotatedRectangle != null) {
+            annotationPane.getChildren().remove(annotatedRectangle);
+            annotatedRectangle = null;
+        }
         if (middlePoint != null) {
+            annotationPane.getChildren().remove(middlePoint);
             middlePoint = null;
         }
+
+        // Reload annotation if it exists
+        annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
         if (annotatedRectangle != null) {
+            // Apply the transformations to the rectangle to match the image dimensions
             annotatedRectangle.setX(annotatedRectangle.getX() * selectedImageView.getImage().getWidth());
             annotatedRectangle.setY(annotatedRectangle.getY() * selectedImageView.getImage().getHeight());
             annotatedRectangle.setWidth(annotatedRectangle.getWidth() * selectedImageView.getImage().getWidth());
             annotatedRectangle.setHeight(annotatedRectangle.getHeight() * selectedImageView.getImage().getHeight());
+
             annotationPane.getChildren().add(annotatedRectangle);
+
             middlePoint = new Circle(0, 0, 2);
             middlePoint.setFill(Color.rgb(6, 207, 236));
             middlePoint.setCenterX(annotatedRectangle.getX() + (annotatedRectangle.getWidth() / 2));
             middlePoint.setCenterY(annotatedRectangle.getY() + (annotatedRectangle.getHeight() / 2));
             annotationPane.getChildren().add(middlePoint);
-
         }
     }
 
@@ -283,7 +352,6 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
-
     private void releasedAnnotationEvent(MouseEvent event) {
         if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
@@ -315,7 +383,6 @@ public class AnnotationController implements Controller {
      *
      * @param event The Mouse Event
      */
-
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (selectedImageView != null && annotatedRectangle != null) {
@@ -344,47 +411,60 @@ public class AnnotationController implements Controller {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Export-All-Functionality----------START
 
     @FXML
     private void handleExportAllAction(ActionEvent event) {
-        // Checking if there are no images uploaded
+        // Check if there are no images uploaded
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-        List<String> unannotatedImages = new ArrayList<>();
-        for (Node node : uploadedImages.getChildren()) {
-            if (node instanceof HBox hbox) {
-                for (Node child : hbox.getChildren()) {
-                    if (child instanceof ImageView imageView) {
-                        if (AnnotationData.getInstance().getAnnotation(imageView.getImage().getUrl()) == null) {
-                            unannotatedImages.add(new File(imageView.getImage().getUrl()).getName());
-                        }
-                    }
-                }
-            }
-        }
-        if (!unannotatedImages.isEmpty()) {
-            showUnannotatedImagesAlert(unannotatedImages);
-            return;
-        }
+
+        // Collect currently displayed images' URLs
+        Set<String> displayedImagesUrls = uploadedImages.getChildren().stream()
+                .filter(node -> node instanceof HBox)
+                .map(node -> (HBox) node)
+                .map(hbox -> (ImageView) hbox.getChildren().get(0))
+                .map(ImageView::getImage)
+                .map(Image::getUrl)
+                .collect(Collectors.toSet());
+
+        // Directory chooser for user to select where to save annotations
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
+
         if (selectedDirectory != null) {
-            AnnotationData.getInstance().getAnnotations().forEach((path, annotation) -> {
-                File file = null;
-                try {
-                    file = new File(new URL(path).toURI());
-                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
-                    File annotationFile = new File(selectedDirectory, fileName);
-                    saveAnnotationsToFile(annotationFile, annotation);
-                } catch (Exception e) {
-                    showAlert("Error", "Failed to save annotations for " + path);
-                }
-            });
+            // Iterate over each annotation and save only those that match the displayed images
+            AnnotationData.getInstance().getAnnotations().entrySet().stream()
+                    .filter(entry -> displayedImagesUrls.contains(entry.getKey()))
+                    .forEach(entry -> {
+                        try {
+                            String path = entry.getKey();
+                            File file = new File(new URL(path).toURI());
+                            String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
+                            File annotationFile = new File(selectedDirectory, fileName);
+                            saveAnnotationsToFile(annotationFile, entry.getValue());
+                        } catch (Exception e) {
+                            showAlert("Error", "Failed to save annotations for " + entry.getKey());
+                        }
+                    });
         }
     }
 
@@ -421,6 +501,23 @@ public class AnnotationController implements Controller {
     ///Export-All-Functionality----------END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Handles the Saving of Annotations to a File
      *
@@ -430,7 +527,9 @@ public class AnnotationController implements Controller {
 
     private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
-            String line = String.format("%d %.5f %.5f %.5f %.5f", 0, annotation.getMiddlePointX(), annotation.getMiddlePointY(), annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
+            String line = String.format("%d %.5f %.5f %.5f %.5f",
+                    0, annotation.getMiddlePointX(), annotation.getMiddlePointY(),
+                    annotation.getBoundingBoxWidth(), annotation.getBoundingBoxHeight());
             writer.println(line);
         } catch (FileNotFoundException e) {
             System.err.println("Error while saving Annotation to File: " + e.getMessage());
@@ -453,25 +552,19 @@ public class AnnotationController implements Controller {
     @FXML
     public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
+        List<Image> imagesToRemove = new ArrayList<>();
         boolean currentDisplayedRemoved = false;
         boolean atLeastOneSelected = false;
-        // Iterate over each node in the uploadedImages VBox
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox hbox) {
                 ImageView imageView = (ImageView) hbox.getChildren().get(0);
                 CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
-                // Check if the CheckBox is selected for deletion
                 if (checkBox.isSelected()) {
                     atLeastOneSelected = true;
                     String imagePath = null;
                     try {
                         imagePath = new File(new URL(imageView.getImage().getUrl()).toURI()).getAbsolutePath();
-                        // Delete annotation from AnnotationData
-                        if (AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl())) {
-                            System.out.println("Annotation deleted for image: " + imagePath);
-                        } else {
-                            //System.out.println("No annotation found or error deleting annotation for image: " + imagePath);
-                        }
+                        imagesToRemove.add(imageView.getImage());
                         toRemove.add(node);
                         uploadedFilePaths.remove(imagePath);
                         selectedFilePaths.remove(imagePath);
@@ -487,9 +580,11 @@ public class AnnotationController implements Controller {
         }
         if (atLeastOneSelected) {
             uploadedImages.getChildren().removeAll(toRemove);
+            imageList.removeAll(imagesToRemove);
             if (currentDisplayedRemoved) {
                 selectedImageView.setImage(null);
                 currentSelectedImageView = null;
+                currentImageIndex = Math.min(currentImageIndex, imageList.size() - 1);
             }
         } else {
             showAlert("Notice", "No images selected for deletion.");
@@ -501,10 +596,5 @@ public class AnnotationController implements Controller {
         }
         clearAnnotations();
     }
-
-
-
-
-
 
 }
