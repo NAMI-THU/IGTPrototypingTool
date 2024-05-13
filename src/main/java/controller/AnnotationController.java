@@ -227,7 +227,6 @@ public class AnnotationController implements Controller {
             checkForExistingAnnotationData();
         } catch (Exception e) {
             System.out.println("Exception in selectImage: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     private void scrollToSelectedImage() {
