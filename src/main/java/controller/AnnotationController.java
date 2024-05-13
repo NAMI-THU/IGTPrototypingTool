@@ -35,6 +35,9 @@ public class AnnotationController implements Controller {
     public Button uploadImagesButton;
     @FXML
     public ScrollPane selectedImagePane;
+    public Button ExportButtonAll;
+    public Button ExportButton;
+    public Button clearMarksButton;
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
