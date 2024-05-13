@@ -104,6 +104,8 @@ public class AiController implements Controller {
         lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         lineChart.setData(lineDataSeries);
 
+        ModeSelection.setValue("Single Point Mode");
+        dataSeries.add(referencePoint);
 
         //State machine for the choice box for point mode selection
         ModeSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -111,10 +113,12 @@ public class AiController implements Controller {
             if (Objects.equals(newValue, "Single Point Mode")) {
                 dataSeries.add(referencePoint);
                 PathControlPanel.setVisible(false);
+                lineDataSeries.clear();
             }
             if (Objects.equals(newValue, "Path Mode")) {
                 dataSeries.addAll(referencePointsListPath);
                 PathControlPanel.setVisible(true);
+                connectPointsPathMode();
             }
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
@@ -123,6 +127,7 @@ public class AiController implements Controller {
         clearAll.setOnAction((event) -> {
             dataSeries.clear();
             referencePointsListPath.clear();
+            lineDataSeries.clear();
         });
     }
 
@@ -136,9 +141,31 @@ public class AiController implements Controller {
                 referencePointsListPath.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
                 //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
+                connectPointsPathMode();
+
+                lineDataSeries.get(lineDataSeries.size() - 1).setName("Line");
                 break;
         }
 
+    }
+
+    private void connectPointsPathMode(){
+        for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
+            XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
+            XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
+
+            // Get the last point of the current series and the first point of the next series
+            XYChart.Data<Number, Number> lastPoint = series.getData().get(series.getData().size() - 1);
+            XYChart.Data<Number, Number> firstPointNext = nextSeries.getData().get(0);
+
+            // Create a new series to represent the line between the two points
+            XYChart.Series<Number, Number> lineSeries = new XYChart.Series<>();
+            lineSeries.getData().add(new XYChart.Data<>(lastPoint.getXValue(), lastPoint.getYValue()));
+            lineSeries.getData().add(new XYChart.Data<>(firstPointNext.getXValue(), firstPointNext.getYValue()));
+
+            // Add the line series to the line chart
+            lineDataSeries.add(lineSeries);
+        }
     }
 
     @Override
