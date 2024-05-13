@@ -1,5 +1,4 @@
 package controller;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -29,7 +28,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-
 public class AnnotationController implements Controller {
     @FXML
     public VBox uploadedImages;     //Where the users see the files
@@ -342,40 +340,54 @@ public class AnnotationController implements Controller {
         );
 
     }
-    /**
-     * Handles Export based Functionality
-     *
-     * @param event The Mouse Event
-     */
+    ///Export-Functionality---------- START
     @FXML
     private void handleExportAction(ActionEvent event) {
-        if (selectedImageView != null && annotatedRectangle != null) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Annotations");
+        if (uploadedImages.getChildren().isEmpty()) {
+            showAlert("Export Error", "There are no images to export.");
+            return;
+        }
+        Set<String> selectedImagesUrls = uploadedImages.getChildren().stream()
+                .filter(node -> node instanceof HBox)
+                .map(node -> (HBox) node)
+                .filter(hbox -> ((CheckBox) hbox.getChildren().get(1)).isSelected())
+                .map(hbox -> (ImageView) hbox.getChildren().get(0))
+                .map(ImageView::getImage)
+                .map(Image::getUrl)
+                .collect(Collectors.toSet());
 
-            try {
-                String currentImageUrl = selectedImageView.getImage().getUrl();
-                String currentImageName = new File(new URL(currentImageUrl).toURI().getPath()).getName();
-                String initialFileName = currentImageName.substring(0, currentImageName.lastIndexOf('.')) + ".txt";
-                fileChooser.setInitialFileName(initialFileName);
-            } catch (Exception e) {
-                fileChooser.setInitialFileName("default_annotations.txt");
-                showAlert("Error", "There was an issue processing the image file name.");
-                System.err.println("Error while Exporting: " + e.getMessage());
-            }
-
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-            File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
-
-            if (file != null) {
-                saveAnnotationsToFile(file, AnnotationData.getInstance().getAnnotationEntry(selectedImageView.getImage().getUrl()));
-            }
-        } else {
-            showNoAnnotationAlert();
+        if (selectedImagesUrls.isEmpty()) {
+            showAlert("No Selection", "No images have been check-marked for export.");
+            return;
+        }
+        Map<String, AnnotationData.PublicAnnotation> annotations = AnnotationData.getInstance().getAnnotations();
+        Set<String> annotatedAndSelectedUrls = selectedImagesUrls.stream()
+                .filter(annotations::containsKey)
+                .collect(Collectors.toSet());
+        List<String> unannotatedSelectedImages = selectedImagesUrls.stream()
+                .filter(url -> !annotations.containsKey(url))
+                .map(url -> new File(url).getName())
+                .collect(Collectors.toList());
+        if (!unannotatedSelectedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedSelectedImages);
+            return;
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Directory to Save Annotations");
+        File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
+        if (selectedDirectory != null) {
+            annotatedAndSelectedUrls.forEach(url -> {
+                try {
+                    File file = new File(new URL(url).toURI());
+                    String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
+                    File annotationFile = new File(selectedDirectory, fileName);
+                    saveAnnotationsToFile(annotationFile, annotations.get(url));
+                } catch (Exception e) {
+                    showAlert("Error", "Failed to save annotations for " + url);
+                }
+            });
         }
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///Export-All-Functionality----------START
     @FXML
     private void handleExportAllAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
@@ -442,7 +454,7 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///Export-All-Functionality----------END
+    ///Export-Functionality----------END
     /**
      * Handles the Saving of Annotations to a File
      *
@@ -459,17 +471,6 @@ public class AnnotationController implements Controller {
             System.err.println("Error while saving Annotation to File: " + e.getMessage());
         }
     }
-    private void showNoAnnotationAlert() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("No Annotation Found");
-        alert.setHeaderText(null);
-        alert.setContentText("No Annotation Found to process.");
-        alert.showAndWait();
-    }
-    /**
-     * Handles Deleting Functionality - Multiple Deletion Functionality has been also implemented
-     *
-     */
     @FXML
     public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
@@ -510,12 +511,10 @@ public class AnnotationController implements Controller {
         } else {
             showAlert("Notice", "No images selected for deletion.");
         }
-
         // Notify if all images have been deleted
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Notice", "All images have been deleted.");
         }
         clearAnnotations();
     }
-
 }
