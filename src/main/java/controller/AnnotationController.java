@@ -378,13 +378,10 @@ public class AnnotationController implements Controller {
     ///Export-All-Functionality----------START
     @FXML
     private void handleExportAllAction(ActionEvent event) {
-        // Check if there are no images uploaded
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-
-        // Collect currently displayed images' URLs
         Set<String> displayedImagesUrls = uploadedImages.getChildren().stream()
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox) node)
@@ -392,14 +389,19 @@ public class AnnotationController implements Controller {
                 .map(ImageView::getImage)
                 .map(Image::getUrl)
                 .collect(Collectors.toSet());
+        List<String> unannotatedImages = displayedImagesUrls.stream()
+                .filter(url -> AnnotationData.getInstance().getAnnotation(url) == null)
+                .map(url -> new File(url).getName())
+                .collect(Collectors.toList());
 
-        // Directory chooser for user to select where to save annotations
+        if (!unannotatedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedImages);
+            return;
+        }
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
-
         if (selectedDirectory != null) {
-            // Iterate over each annotation and save only those that match the displayed images
             AnnotationData.getInstance().getAnnotations().entrySet().stream()
                     .filter(entry -> displayedImagesUrls.contains(entry.getKey()))
                     .forEach(entry -> {
@@ -415,31 +417,28 @@ public class AnnotationController implements Controller {
                     });
         }
     }
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
     private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Unannotated Images");
         alert.setHeaderText("The following images have no annotations:");
-
         VBox vbox = new VBox(5);
         for (String imageName : unannotatedImages) {
             Text imageText = new Text(imageName);
             vbox.getChildren().add(imageText);
         }
-
         ScrollPane scrollPane = new ScrollPane(vbox);
         scrollPane.setPrefSize(300, 150);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
         alert.getDialogPane().setContent(scrollPane);
         alert.setResizable(true);
+        alert.showAndWait();
+    }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
         alert.showAndWait();
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
