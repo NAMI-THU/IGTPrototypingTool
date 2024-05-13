@@ -342,7 +342,6 @@ public class AnnotationController implements Controller {
         );
 
     }
-    ///Export-Functionality---------- START
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
@@ -455,8 +454,6 @@ public class AnnotationController implements Controller {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///Export-Functionality----------END
     /**
      * Handles the Saving of Annotations to a File
      *
