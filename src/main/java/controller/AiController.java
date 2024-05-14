@@ -118,7 +118,7 @@ public class AiController implements Controller {
             if (Objects.equals(newValue, "Path Mode")) {
                 dataSeries.addAll(referencePointsListPath);
                 PathControlPanel.setVisible(true);
-                connectPointsPathMode();
+                redrawPointsPathMode();
             }
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
@@ -150,6 +150,24 @@ public class AiController implements Controller {
     }
 
     private void connectPointsPathMode(){
+        for (int i = referencePointsListPath.size() - 2; i < referencePointsListPath.size() - 1; i++) {
+            XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
+            XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
+
+            // Get the last point of the current series and the first point of the next series
+            XYChart.Data<Number, Number> lastPoint = series.getData().get(series.getData().size() - 1);
+            XYChart.Data<Number, Number> firstPointNext = nextSeries.getData().get(0);
+
+            // Create a new series to represent the line between the two points
+            XYChart.Series<Number, Number> lineSeries = new XYChart.Series<>();
+            lineSeries.getData().add(new XYChart.Data<>(lastPoint.getXValue(), lastPoint.getYValue()));
+            lineSeries.getData().add(new XYChart.Data<>(firstPointNext.getXValue(), firstPointNext.getYValue()));
+
+            // Add the line series to the line chart
+            lineDataSeries.add(lineSeries);
+        }
+    }
+    private void redrawPointsPathMode(){
         for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
             XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
             XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
@@ -247,7 +265,7 @@ public class AiController implements Controller {
             var selectedItem = sourceChoiceBox.getSelectionModel().getSelectedItem();
             int deviceId = deviceIdMapping.get(selectedItem);
             imageDataManager.closeConnection();
-            imageDataManager.openConnection(VideoSource.LIVESTREAM, 1);
+            imageDataManager.openConnection(VideoSource.LIVESTREAM, 2);
             if (videoTimeline == null) {
                 videoTimeline = new Timeline();
                 videoTimeline.setCycleCount(Animation.INDEFINITE);
