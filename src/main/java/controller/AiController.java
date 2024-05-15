@@ -139,14 +139,15 @@ public class AiController implements Controller {
             case "Single Point Mode":
                 System.out.println("Set reference point to "+v+" "+v1);
                 referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
+                trackingPoint.setData(referencePoint.getData());
                 break;
             case "Path Mode":
                 referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
                 //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 connectPointsPathMode();
+                trackingPoint = referencePointsListPath.get(0);
 
-                lineDataSeries.get(lineDataSeries.size() - 1).setName("Line");
                 break;
         }
 
