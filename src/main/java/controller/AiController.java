@@ -146,7 +146,7 @@ public class AiController implements Controller {
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
                 //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 connectPointsPathMode();
-                trackingPoint = referencePointsListPath.get(0);
+                trackingPoint = new XYChart.Series<>("hi",FXCollections.observableArrayList(new XYChart.Data<>(referencePointsListPath.get(0).getData().get(0).getXValue(),referencePointsListPath.get(0).getData().get(0).getXValue())));
 
                 break;
         }
