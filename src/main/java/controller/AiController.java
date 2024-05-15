@@ -68,6 +68,7 @@ public class AiController implements Controller {
     private Mat cachedTransformMatrix = null;
 
     private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
+    private XYChart.Series<Number, Number> trackingPoint = new XYChart.Series<Number, Number>();
     private final ArrayList<XYChart.Series<Number, Number>> referencePointsListPath = new ArrayList<XYChart.Series<Number, Number>>();
     private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
 
@@ -114,11 +115,13 @@ public class AiController implements Controller {
                 dataSeries.add(referencePoint);
                 PathControlPanel.setVisible(false);
                 lineDataSeries.clear();
+                trackingPoint.setData(referencePoint.getData());
             }
             if (Objects.equals(newValue, "Path Mode")) {
                 dataSeries.addAll(referencePointsListPath);
                 PathControlPanel.setVisible(true);
                 redrawPointsPathMode();
+                trackingPoint = referencePointsListPath.get(0);
             }
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
@@ -138,7 +141,7 @@ public class AiController implements Controller {
                 referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
                 break;
             case "Path Mode":
-                referencePointsListPath.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
+                referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
                 //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 connectPointsPathMode();
@@ -150,7 +153,11 @@ public class AiController implements Controller {
     }
 
     private void connectPointsPathMode(){
-        for (int i = referencePointsListPath.size() - 2; i < referencePointsListPath.size() - 1; i++) {
+        if(referencePointsListPath.size() == 1) {
+            return;
+        }
+        int i = referencePointsListPath.size() - 2;
+
             XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
             XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
 
@@ -165,7 +172,7 @@ public class AiController implements Controller {
 
             // Add the line series to the line chart
             lineDataSeries.add(lineSeries);
-        }
+
     }
     private void redrawPointsPathMode(){
         for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
