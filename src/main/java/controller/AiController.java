@@ -380,7 +380,7 @@ public class AiController implements Controller {
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 
             lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
-            lineData.add(new XYChart.Data<>(referencePoint.getData().get(0).getXValue(), referencePoint.getData().get(0).getYValue()));
+            lineData.add(new XYChart.Data<>(trackingPoint.getData().get(0).getXValue(), trackingPoint.getData().get(0).getYValue()));
 
             lineSeries.setData(lineData);
 
