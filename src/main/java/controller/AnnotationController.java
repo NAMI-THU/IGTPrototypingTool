@@ -564,7 +564,7 @@ public class AnnotationController implements Controller {
                 {"Next", "Click this button to navigate to the next image."},
                 {"Previous", "Click this button to navigate to the previous image."},
                 {"", "To annotate an image, click and drag to create a bounding box. Hold down the Ctrl key to resize the bounding box."},
-                {"Special Keybindnings:", ""},
+                {"Special Keybindings:", ""},
                 {"Ctrl + Mousewheel (on an image): ", "Zoom"},
                 {"Ctrl + Mouse drag (on an image): ", "Custom sized annotation box"},
                 {"Arrows: ", "Move zoomed images"}
