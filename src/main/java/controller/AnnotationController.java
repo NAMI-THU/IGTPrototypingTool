@@ -1,8 +1,12 @@
 package controller;
+
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -10,17 +14,22 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import util.AnnotationData;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +47,7 @@ public class AnnotationController implements Controller {
     public Button ExportButtonAll;
     public Button ExportButton;
     public Button clearMarksButton;
+    public Button helpButton;
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
@@ -515,5 +525,61 @@ public class AnnotationController implements Controller {
             showAlert("Notice", "All images have been deleted.");
         }
         clearAnnotations();
+    }
+    @FXML
+    public void handleHelpButtonAction() {
+        try {
+            Stage helpStage = new Stage();
+            helpStage.initModality(Modality.APPLICATION_MODAL);
+            helpStage.setTitle("Help");
+            VBox helpContent = new VBox();
+            helpContent.setPadding(new Insets(10));
+            helpContent.setSpacing(10);
+            helpContent.setStyle("-fx-background-color: #f0f0f0; -fx-border-radius: 10; -fx-background-radius: 10;");
+            GridPane helpGrid = getHelpGrid();
+            helpGrid.setPadding(new Insets(10));
+            helpGrid.setVgap(10);
+            helpGrid.setHgap(10);
+            helpGrid.setStyle("-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: #cccccc; -fx-border-width: 1;");
+            helpContent.getChildren().add(helpGrid);
+            Scene helpScene = new Scene(helpContent);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), helpContent);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
+            helpStage.setScene(helpScene);
+            helpStage.sizeToScene();
+            helpStage.showAndWait();
+        } catch (Exception e) {
+            System.err.println("Error while opening Help window: " + e.getMessage());
+        }
+    }
+    private static GridPane getHelpGrid() {
+        String[][] helpTextArray = {
+                {"Import", "Click this button to import images into the tool."},
+                {"Clear Marks", "Click this button to clear all annotation marks from the currently displayed image."},
+                {"Delete", "Click this button to delete the selected images from the tool."},
+                {"Specific Export", "Click this button to export annotations for the selected images."},
+                {"Export All", "Click this button to export annotations for all images."},
+                {"Next", "Click this button to navigate to the next image."},
+                {"Previous", "Click this button to navigate to the previous image."},
+                {"", "To annotate an image, click and drag to create a bounding box. Hold down the Ctrl key to resize the bounding box."}
+        };
+        GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+        for (int i = 0; i < helpTextArray.length; i++) {
+            String[] helpEntry = helpTextArray[i];
+            Text buttonName = new Text(helpEntry[0]);
+            buttonName.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+            GridPane.setHalignment(buttonName, HPos.LEFT);
+            Text description = new Text(helpEntry[1]);
+            description.setFont(Font.font("Arial", 16));
+            GridPane.setHalignment(description, HPos.LEFT);
+            gridPane.add(buttonName, 0, i);
+            gridPane.add(description, 1, i);
+        }
+        return gridPane;
     }
 }
