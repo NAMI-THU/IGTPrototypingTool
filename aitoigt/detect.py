@@ -36,7 +36,11 @@ import platform
 import sys
 import pyigtl as igtl
 from pathlib import Path
- 
+
+import pyvirtualcam
+
+CAM = pyvirtualcam.Camera(width=640, height=480, fps=20)
+
 import torch
 
 FILE = Path(__file__).resolve()
@@ -244,7 +248,7 @@ def run(
     
                     # Set position
                     matrix[0, 3] = xyxy[0]
-                    matrix[1, 3] = xyxy[1]
+                    matrix[1, 3] = xyxy[1] * -1 + 500
 
                     # Set orientation
                     direction = last_matrix[:3, 3] - matrix[:3, 3]
@@ -266,7 +270,9 @@ def run(
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
-
+                # Send RGB image to virtual camera
+                im0VIRT = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+                CAM.send(im0VIRT)
             # Save results (image with detections)
             if save_img:
                 if dataset.mode == "image":
