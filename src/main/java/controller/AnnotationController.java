@@ -7,10 +7,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -82,11 +79,26 @@ public class AnnotationController implements Controller {
                 case LEFT:
                     selectPreviousImage();
                     break;
+                case A:
+                    if (event.isControlDown()) {
+                        selectAllCheckboxes();
+                    }
+                    break;
                 default:
                     break;
             }
         });
     }
+
+    private void selectAllCheckboxes() {
+        for (Node node : uploadedImages.getChildren()) {
+            if (node instanceof HBox) {
+                CheckBox checkBox = (CheckBox) ((HBox) node).getChildren().get(1);
+                checkBox.setSelected(true);
+            }
+        }
+    }
+
     private void setupAnnotationHandlers() {
         annotationPane.setOnMousePressed(this::pressedAnnotationEvent);
         annotationPane.setOnMouseDragged(this::dragAnnotationEvent);
@@ -614,6 +626,17 @@ public class AnnotationController implements Controller {
             showAlert("No Selection", "No images have been check-marked for No Tip processing.");
             return;
         }
+
+        // Confirmation dialog
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Confirmation");
+        confirmationAlert.setHeaderText("Mark as No Tip");
+        confirmationAlert.setContentText("Are you sure you want to mark these pictures as No Tip Found?");
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+        if (result.isPresent() && result.get() != ButtonType.OK) {
+            return; // If not confirmed, exit the method
+        }
+
         boolean allRenamed = true;
         StringBuilder successMessage = new StringBuilder("The following files have been renamed to NoTipFound_<original name>:\n");
         for (String imageUrl : selectedImageUrls) {
@@ -639,6 +662,7 @@ public class AnnotationController implements Controller {
             showAlert("Success", successMessage.toString());
         }
     }
+
     private void removeImageFromApplication(String imageUrl, List<Node> nodesToRemove) {
         imageList.removeIf(image -> image.getUrl().equals(imageUrl));
         uploadedFilePaths.remove(imageUrl);
