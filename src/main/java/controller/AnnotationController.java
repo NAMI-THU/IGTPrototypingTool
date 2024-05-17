@@ -583,6 +583,7 @@ public class AnnotationController implements Controller {
                 {"Special Keybindings:", ""},
                 {"Ctrl + Mousewheel (on an image): ", "Zoom"},
                 {"Ctrl + Mouse drag (on an image): ", "Custom sized annotation box"},
+                {"Ctrl + A (After Selecting one image Checkbox): ", "All pictures will be check marked"},
                 {"Arrows: ", "Move zoomed images"}
         };
 
