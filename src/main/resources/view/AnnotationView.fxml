@@ -60,6 +60,13 @@
                </HBox.margin>
             </Button>
             <Pane HBox.hgrow="ALWAYS"/> <!-- Spacer to push the buttons to the right -->
+            <Button fx:id="noTipButton" text="No Tip" prefWidth="120.0" prefHeight="40.0"
+                    onAction="#handleNoTipAction" style="-fx-font-size: 16px;">
+               <HBox.margin>
+                  <Insets right="10.0"/>
+               </HBox.margin>
+            </Button>
+
             <Button fx:id="uploadImagesButton" onAction="#Handle_Upload_Functionality" text="Import"
                     prefWidth="120.0" prefHeight="40.0" style="-fx-font-size: 16px;">
                <HBox.margin>

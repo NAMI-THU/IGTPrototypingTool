@@ -54,6 +54,9 @@ public class AnnotationController implements Controller {
     @FXML
     private Pane annotationPane;
 
+    @FXML
+    private Button noTipButton;
+
     private Rectangle annotatedRectangle;
     private Circle middlePoint;
     private boolean dragged = false;
@@ -136,7 +139,7 @@ public class AnnotationController implements Controller {
             fileChooser.setTitle("Select Images");
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png")
+                    new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.bmp", "*.gif", "*.jpeg", "*.tiff", "*.tif")
             );
             Stage currentStage = (Stage) ((javafx.scene.Node) actionEvent.getSource()).getScene().getWindow();
 
@@ -561,6 +564,7 @@ public class AnnotationController implements Controller {
                 {"Delete", "Click this button to delete the selected images from the tool."},
                 {"Specific Export", "Click this button to export annotations for the selected images."},
                 {"Export All", "Click this button to export annotations for all images."},
+                {"No Tip", "Click this button to rename selected images to 'NoTipFound_<original name>' and remove them from the application."},
                 {"Next", "Click this button to navigate to the next image."},
                 {"Previous", "Click this button to navigate to the previous image."},
                 {"", "To annotate an image, click and drag to create a bounding box. Hold down the Ctrl key to resize the bounding box."},
@@ -568,12 +572,13 @@ public class AnnotationController implements Controller {
                 {"Ctrl + Mousewheel (on an image): ", "Zoom"},
                 {"Ctrl + Mouse drag (on an image): ", "Custom sized annotation box"},
                 {"Arrows: ", "Move zoomed images"}
-
         };
+
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
         gridPane.setHgap(10);
+
         for (int i = 0; i < helpTextArray.length; i++) {
             String[] helpEntry = helpTextArray[i];
             Text buttonName = new Text(helpEntry[0]);
@@ -585,6 +590,75 @@ public class AnnotationController implements Controller {
             gridPane.add(buttonName, 0, i);
             gridPane.add(description, 1, i);
         }
+
         return gridPane;
+    }
+
+
+    @FXML
+    private void handleNoTipAction(ActionEvent event) {
+        List<Node> nodesToRemove = new ArrayList<>();
+        List<String> selectedImageUrls = new ArrayList<>();
+
+        for (Node node : uploadedImages.getChildren()) {
+            if (node instanceof HBox hbox) {
+                CheckBox checkBox = (CheckBox) hbox.getChildren().get(1);
+                if (checkBox.isSelected()) {
+                    ImageView imageView = (ImageView) hbox.getChildren().get(0);
+                    selectedImageUrls.add(imageView.getImage().getUrl());
+                    nodesToRemove.add(node);
+                }
+            }
+        }
+        if (selectedImageUrls.isEmpty()) {
+            showAlert("No Selection", "No images have been check-marked for No Tip processing.");
+            return;
+        }
+        boolean allRenamed = true;
+        StringBuilder successMessage = new StringBuilder("The following files have been renamed to NoTipFound_<original name>:\n");
+        for (String imageUrl : selectedImageUrls) {
+            try {
+                File selectedFile = new File(new URL(imageUrl).toURI());
+                String fileName = selectedFile.getName();
+                String newFileName = "NoTipFound_" + fileName;
+                File renamedFile = new File(selectedFile.getParent(), newFileName);
+
+                if (selectedFile.renameTo(renamedFile)) {
+                    successMessage.append(newFileName).append("\n");
+                    removeImageFromApplication(imageUrl, nodesToRemove);
+                } else {
+                    allRenamed = false;
+                    showAlert("Error", "Failed to rename file: " + fileName);
+                }
+            } catch (Exception e) {
+                allRenamed = false;
+                showAlert("Error", "An error occurred: " + e.getMessage());
+            }
+        }
+        if (allRenamed) {
+            showAlert("Success", successMessage.toString());
+        }
+    }
+    private void removeImageFromApplication(String imageUrl, List<Node> nodesToRemove) {
+        imageList.removeIf(image -> image.getUrl().equals(imageUrl));
+        uploadedFilePaths.remove(imageUrl);
+        selectedFilePaths.remove(imageUrl);
+
+        // Remove the image from the uploadedImages VBox
+        for (Node node : nodesToRemove) {
+            if (node instanceof HBox) {
+                ImageView imageView = (ImageView) ((HBox) node).getChildren().get(0);
+                if (imageView.getImage().getUrl().equals(imageUrl)) {
+                    uploadedImages.getChildren().remove(node);
+                    break;
+                }
+            }
+        }
+        if (currentSelectedImageView != null && currentSelectedImageView.getImage().getUrl().equals(imageUrl)) {
+            selectedImageView.setImage(null);
+            currentSelectedImageView = null;
+            currentImageIndex = Math.min(currentImageIndex, imageList.size() - 1);
+        }
+        clearAnnotations();
     }
 }
