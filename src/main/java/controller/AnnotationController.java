@@ -1,5 +1,5 @@
 package controller;
-
+import javafx.scene.control.Label;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -45,14 +45,15 @@ public class AnnotationController implements Controller {
     public Button ExportButton;
     public Button clearMarksButton;
     public Button helpButton;
+    public Button noTipButton;
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
     @FXML
     private Pane annotationPane;
-
     @FXML
-    private Button noTipButton;
+    private Label uploadedImagesCountLabel;
+
 
     private Rectangle annotatedRectangle;
     private Circle middlePoint;
@@ -63,6 +64,8 @@ public class AnnotationController implements Controller {
     private final Set<String> selectedFilePaths = new HashSet<>();
     private int currentImageIndex = 0; // Default to the first image
     private final List<Image> imageList = new ArrayList<>(); // Store all loaded images
+    private final Set<String> noTipImageUrls = new HashSet<>();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("Initializing Controller");
@@ -100,9 +103,21 @@ public class AnnotationController implements Controller {
     }
 
     private void setupAnnotationHandlers() {
-        annotationPane.setOnMousePressed(this::pressedAnnotationEvent);
-        annotationPane.setOnMouseDragged(this::dragAnnotationEvent);
-        annotationPane.setOnMouseReleased(this::releasedAnnotationEvent);
+        annotationPane.setOnMousePressed(event -> {
+            if (currentSelectedImageView != null && !noTipImageUrls.contains(currentSelectedImageView.getImage().getUrl())) {
+                pressedAnnotationEvent(event);
+            }
+        });
+        annotationPane.setOnMouseDragged(event -> {
+            if (currentSelectedImageView != null && !noTipImageUrls.contains(currentSelectedImageView.getImage().getUrl())) {
+                dragAnnotationEvent(event);
+            }
+        });
+        annotationPane.setOnMouseReleased(event -> {
+            if (currentSelectedImageView != null && !noTipImageUrls.contains(currentSelectedImageView.getImage().getUrl())) {
+                releasedAnnotationEvent();
+            }
+        });
     }
     public void selectNextImage() {
         // Check if there's a next image in the list
@@ -158,19 +173,42 @@ public class AnnotationController implements Controller {
             List<File> selectedImages = fileChooser.showOpenMultipleDialog(currentStage);
 
             if (selectedImages != null) {
+                List<String> duplicateFiles = new ArrayList<>();
                 for (File file : selectedImages) {
                     if (!uploadedFilePaths.contains(file.getAbsolutePath())) {
                         displayImage(file);
                         uploadedFilePaths.add(file.getAbsolutePath());
                     } else {
-                        showAlert("Duplicate File", "The file " + file.getName() + " has already been uploaded.");
+                        duplicateFiles.add(file.getName());
                     }
+                }
+                if (!duplicateFiles.isEmpty()) {
+                    showDuplicateFilesAlert(duplicateFiles);
                 }
             }
         } catch (Exception e) {
             System.err.println("Error while choosing File: " + e.getMessage());
         }
     }
+
+    private void showDuplicateFilesAlert(List<String> duplicateFiles) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Duplicate Files");
+        alert.setHeaderText("The following files have already been uploaded:");
+        VBox vbox = new VBox(5);
+        for (String fileName : duplicateFiles) {
+            Text fileText = new Text(fileName);
+            vbox.getChildren().add(fileText);
+        }
+        ScrollPane scrollPane = new ScrollPane(vbox);
+        scrollPane.setPrefSize(300, 150);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        alert.getDialogPane().setContent(scrollPane);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
     private void displayImage(File file) {
         HBox hbox = new HBox();
         hbox.setSpacing(10);
@@ -190,7 +228,7 @@ public class AnnotationController implements Controller {
         imageView.setOnMouseClicked(event -> {
             selectImage(image, imageView);
         });
-        // Add or Remove the selected file paths to the HasSet
+        // Add or Remove the selected file paths to the HashSet
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Checkbox is now selected
                 selectedFilePaths.add(imageView.getImage().getUrl());
@@ -202,7 +240,9 @@ public class AnnotationController implements Controller {
         hbox.getChildren().add(imageView);
         hbox.getChildren().add(checkBox);
         uploadedImages.getChildren().add(hbox);
+        updateUploadedImagesCount();
     }
+
     private void selectImage(Image image, ImageView imageView) {
         try {
             if (imageList.isEmpty()) {
@@ -257,6 +297,7 @@ public class AnnotationController implements Controller {
             System.out.println("Exception in selectImage: " + e.getMessage());
         }
     }
+
     private void scrollToSelectedImage() {
         if (currentSelectedImageView != null && selectedImagePane != null) {
             double viewportHeight = selectedImagePane.getHeight();
@@ -286,8 +327,14 @@ public class AnnotationController implements Controller {
             middlePoint = null;
         }
 
+        String imageUrl = selectedImageView.getImage().getUrl();
+        if (noTipImageUrls.contains(imageUrl)) {
+            showAlert("Info", "This image is marked as 'No Tip' and cannot be annotated.");
+            return;
+        }
+
         // Reload annotation if it exists
-        annotatedRectangle = AnnotationData.getInstance().getAnnotation(selectedImageView.getImage().getUrl());
+        annotatedRectangle = AnnotationData.getInstance().getAnnotation(imageUrl);
         if (annotatedRectangle != null) {
             // Apply the transformations to the rectangle to match the image dimensions
             annotatedRectangle.setX(annotatedRectangle.getX() * selectedImageView.getImage().getWidth());
@@ -340,9 +387,8 @@ public class AnnotationController implements Controller {
      * Handle the Simple Annotation Event where the user clicks once without dragging.
      * Here the size of the rectangle is fixed
      *
-     * @param event The Mouse Event
      */
-    private void releasedAnnotationEvent(MouseEvent event) {
+    private void releasedAnnotationEvent() {
         if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
             annotatedRectangle.setY(annotationPointY - 10);
@@ -386,23 +432,24 @@ public class AnnotationController implements Controller {
             showAlert("No Selection", "No images have been check-marked for export.");
             return;
         }
-        Map<String, AnnotationData.PublicAnnotation> annotations = AnnotationData.getInstance().getAnnotations();
-        Set<String> annotatedAndSelectedUrls = selectedImagesUrls.stream()
-                .filter(annotations::containsKey)
-                .collect(Collectors.toSet());
+
+        // Check if all selected images have annotations
         List<String> unannotatedSelectedImages = selectedImagesUrls.stream()
-                .filter(url -> !annotations.containsKey(url))
+                .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
                 .map(url -> new File(url).getName())
                 .collect(Collectors.toList());
+
         if (!unannotatedSelectedImages.isEmpty()) {
             showUnannotatedImagesAlert(unannotatedSelectedImages);
             return;
         }
+
+        Map<String, AnnotationData.PublicAnnotation> annotations = AnnotationData.getInstance().getAnnotations();
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
         if (selectedDirectory != null) {
-            annotatedAndSelectedUrls.forEach(url -> {
+            selectedImagesUrls.forEach(url -> {
                 try {
                     File file = new File(new URL(url).toURI());
                     String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
@@ -414,21 +461,25 @@ public class AnnotationController implements Controller {
             });
         }
     }
+
+
     @FXML
     private void handleExportAllAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-        Set<String> displayedImagesUrls = uploadedImages.getChildren().stream()
+        Set<String> allImagesUrls = uploadedImages.getChildren().stream()
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox) node)
                 .map(hbox -> (ImageView) hbox.getChildren().get(0))
                 .map(ImageView::getImage)
                 .map(Image::getUrl)
                 .collect(Collectors.toSet());
-        List<String> unannotatedImages = displayedImagesUrls.stream()
-                .filter(url -> AnnotationData.getInstance().getAnnotation(url) == null)
+
+        // Check if all uploaded images have annotations
+        List<String> unannotatedImages = allImagesUrls.stream()
+                .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
                 .map(url -> new File(url).getName())
                 .collect(Collectors.toList());
 
@@ -436,12 +487,13 @@ public class AnnotationController implements Controller {
             showUnannotatedImagesAlert(unannotatedImages);
             return;
         }
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
         if (selectedDirectory != null) {
             AnnotationData.getInstance().getAnnotations().entrySet().stream()
-                    .filter(entry -> displayedImagesUrls.contains(entry.getKey()))
+                    .filter(entry -> allImagesUrls.contains(entry.getKey()))
                     .forEach(entry -> {
                         try {
                             String path = entry.getKey();
@@ -455,6 +507,7 @@ public class AnnotationController implements Controller {
                     });
         }
     }
+
     private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Unannotated Images");
@@ -532,6 +585,7 @@ public class AnnotationController implements Controller {
                 currentSelectedImageView = null;
                 currentImageIndex = Math.min(currentImageIndex, imageList.size() - 1);
             }
+            updateUploadedImagesCount();
         } else {
             showAlert("Notice", "No images selected for deletion.");
         }
@@ -541,6 +595,13 @@ public class AnnotationController implements Controller {
         }
         clearAnnotations();
     }
+
+    private void updateUploadedImagesCount() {
+        int count = uploadedImages.getChildren().size();
+        uploadedImagesCountLabel.setText("Images: " + count);
+    }
+
+
     @FXML
     public void handleHelpButtonAction() {
         try {
@@ -609,8 +670,7 @@ public class AnnotationController implements Controller {
 
 
     @FXML
-    private void handleNoTipAction(ActionEvent event) {
-        List<Node> nodesToRemove = new ArrayList<>();
+    private void handleNoTipAction() {
         List<String> selectedImageUrls = new ArrayList<>();
 
         for (Node node : uploadedImages.getChildren()) {
@@ -619,7 +679,6 @@ public class AnnotationController implements Controller {
                 if (checkBox.isSelected()) {
                     ImageView imageView = (ImageView) hbox.getChildren().get(0);
                     selectedImageUrls.add(imageView.getImage().getUrl());
-                    nodesToRemove.add(node);
                 }
             }
         }
@@ -638,47 +697,41 @@ public class AnnotationController implements Controller {
             return; // If not confirmed, exit the method
         }
 
-        boolean allRenamed = true;
-        StringBuilder successMessage = new StringBuilder("The following files have been renamed to NoTipFound_<original name>:\n");
+        boolean allMarked = true;
+        StringBuilder successMessage = new StringBuilder("The following files have been marked as No Tip Found in the application:\n");
         for (String imageUrl : selectedImageUrls) {
             try {
-                File selectedFile = new File(new URL(imageUrl).toURI());
-                String fileName = selectedFile.getName();
-                String newFileName = "NoTipFound_" + fileName;
-                File renamedFile = new File(selectedFile.getParent(), newFileName);
-
-                if (selectedFile.renameTo(renamedFile)) {
-                    successMessage.append(newFileName).append("\n");
-                    removeImageFromApplication(imageUrl, nodesToRemove);
-                } else {
-                    allRenamed = false;
-                    showAlert("Error", "Failed to rename file: " + fileName);
-                }
+                markImageAsNoTip(imageUrl);
+                successMessage.append(imageUrl).append("\n");
             } catch (Exception e) {
-                allRenamed = false;
-                showAlert("Error", "An error occurred: " + e.getMessage());
+                allMarked = false;
+               // showAlert("Error", "An error occurred: " + e.getMessage());
             }
         }
-        if (allRenamed) {
+        if (allMarked) {
             showAlert("Success", successMessage.toString());
         }
     }
 
-    private void removeImageFromApplication(String imageUrl, List<Node> nodesToRemove) {
-        imageList.removeIf(image -> image.getUrl().equals(imageUrl));
-        uploadedFilePaths.remove(imageUrl);
-        selectedFilePaths.remove(imageUrl);
+    private void markImageAsNoTip(String imageUrl) {
+        // Add "No Tip" annotation
+        AnnotationData.getInstance().addAnnotation(
+                imageUrl, 0, 0, 0, 0);
 
-        // Remove the image from the uploadedImages VBox
-        for (Node node : nodesToRemove) {
+        // Add to No Tip set
+        noTipImageUrls.add(imageUrl);
+
+        // Update the UI
+        for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox) {
                 ImageView imageView = (ImageView) ((HBox) node).getChildren().get(0);
                 if (imageView.getImage().getUrl().equals(imageUrl)) {
-                    uploadedImages.getChildren().remove(node);
+                    ((CheckBox) ((HBox) node).getChildren().get(1)).setText("No Tip");
                     break;
                 }
             }
         }
+
         if (currentSelectedImageView != null && currentSelectedImageView.getImage().getUrl().equals(imageUrl)) {
             selectedImageView.setImage(null);
             currentSelectedImageView = null;
