@@ -569,6 +569,7 @@ public class AnnotationController implements Controller {
                         uploadedFilePaths.remove(imagePath);
                         selectedFilePaths.remove(imagePath);
                         noTipImageUrls.remove(imageView.getImage().getUrl()); // Remove from noTipImageUrls set
+                        AnnotationData.getInstance().deleteAnnotation(imageView.getImage().getUrl()); // Remove annotation
 
                         if (imageView.equals(currentSelectedImageView)) {
                             currentDisplayedRemoved = true;
@@ -601,6 +602,7 @@ public class AnnotationController implements Controller {
 
         clearAnnotations();
     }
+
 
 
     private void updateUploadedImagesCount() {
