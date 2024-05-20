@@ -1,4 +1,5 @@
 package controller;
+
 import javafx.scene.control.Label;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -34,9 +35,14 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+
+/**
+ * The AnnotationController class manages the user interface for
+ * uploading, viewing, and annotating images in the application.
+ */
 public class AnnotationController implements Controller {
     @FXML
-    public VBox uploadedImages;     //Where the users see the files
+    public VBox uploadedImages;     // Where the users see the files
     @FXML
     public Button uploadImagesButton;
     @FXML
@@ -54,18 +60,23 @@ public class AnnotationController implements Controller {
     @FXML
     private Label uploadedImagesCountLabel;
 
-
     private Rectangle annotatedRectangle;
     private Circle middlePoint;
     private boolean dragged = false;
     private double annotationPointX, annotationPointY;
     private final Set<String> uploadedFilePaths = new HashSet<>();
-    // store the paths of the selected Image, so you can Export the data based on these keys
+    // Store the paths of the selected Image, so you can Export the data based on these keys
     private final Set<String> selectedFilePaths = new HashSet<>();
     private int currentImageIndex = 0; // Default to the first image
     private final List<Image> imageList = new ArrayList<>(); // Store all loaded images
     private final Set<String> noTipImageUrls = new HashSet<>();
 
+    /**
+     * Initializes the controller then sets up event handlers and initial states.
+     *
+     * @param location  The location used to resolve relative paths for the root object.
+     * @param resources The resources used to localize the root object.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("Initializing Controller");
@@ -93,6 +104,9 @@ public class AnnotationController implements Controller {
         });
     }
 
+    /**
+     * Selects all checkboxes for uploaded images.
+     */
     private void selectAllCheckboxes() {
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox) {
@@ -102,6 +116,9 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Sets up mouse event handlers for annotation actions.
+     */
     private void setupAnnotationHandlers() {
         annotationPane.setOnMousePressed(event -> {
             if (currentSelectedImageView != null && !noTipImageUrls.contains(currentSelectedImageView.getImage().getUrl())) {
@@ -119,6 +136,11 @@ public class AnnotationController implements Controller {
             }
         });
     }
+
+    /**
+     * Selects the next image in the list.
+     * If no next image is available, it prints a message.
+     */
     public void selectNextImage() {
         // Check if there's a next image in the list
         if (currentImageIndex < imageList.size() - 1) {
@@ -131,6 +153,10 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Selects the previous image in the list.
+     * If no previous image is available, it prints a message.
+     */
     public void selectPreviousImage() {
         // Check if there's a previous image in the list
         if (currentImageIndex > 0) {
@@ -143,6 +169,12 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Finds the ImageView of a given image.
+     *
+     * @param image The image to find the ImageView for.
+     * @return The ImageView of the image.
+     */
     private ImageView findImageViewForImage(Image image) {
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox) {
@@ -154,11 +186,21 @@ public class AnnotationController implements Controller {
         }
         return null; // Not found
     }
+
+    /**
+     * Closes the controller and cleans up.
+     */
     @FXML
     @Override
     public void close() {
         unregisterController();
     }
+
+    /**
+     * Handles the upload functionality for selecting and displaying images.
+     *
+     * @param actionEvent The event triggered by the upload button.
+     */
     @FXML
     public void Handle_Upload_Functionality(ActionEvent actionEvent) {
         try {
@@ -191,6 +233,11 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Displays an alert for duplicate files.
+     *
+     * @param duplicateFiles List of duplicate files.
+     */
     private void showDuplicateFilesAlert(List<String> duplicateFiles) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Duplicate Files");
@@ -209,6 +256,11 @@ public class AnnotationController implements Controller {
         alert.showAndWait();
     }
 
+    /**
+     * Displays an image file in the application.
+     *
+     * @param file The image file to be displayed.
+     */
     private void displayImage(File file) {
         HBox hbox = new HBox();
         hbox.setSpacing(10);
@@ -243,6 +295,13 @@ public class AnnotationController implements Controller {
         updateUploadedImagesCount();
     }
 
+    /**
+     * Selects an image for display and annotation.
+     * Updates image view, also handles scrolling and zooming functionalities.
+     *
+     * @param image     The image to be selected.
+     * @param imageView The ImageView of the selected image.
+     */
     private void selectImage(Image image, ImageView imageView) {
         try {
             if (imageList.isEmpty()) {
@@ -298,6 +357,10 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Scrolls the selected image into view within the selectedImagePane.
+     * Also adjusts the scrollbar.
+     */
     private void scrollToSelectedImage() {
         if (currentSelectedImageView != null && selectedImagePane != null) {
             double viewportHeight = selectedImagePane.getHeight();
@@ -307,6 +370,11 @@ public class AnnotationController implements Controller {
             selectedImagePane.setVvalue(Math.max(0, Math.min(vValue, 1)));  // Clamp vValue to be between 0 and 1
         }
     }
+
+    /**
+     * Removes any existing annotations from pane.
+     * Also deletes the annotation data of the selected image.
+     */
     public void clearAnnotations() {
         if (annotatedRectangle != null) {
             annotationPane.getChildren().remove(annotatedRectangle);
@@ -316,6 +384,11 @@ public class AnnotationController implements Controller {
             annotatedRectangle = null;
         }
     }
+
+    /**
+     * Clears any existing annotations, then retrieves and displays annotation data.
+     * Also creates and displays the middle point of the annotation.
+     */
     private void checkForExistingAnnotationData() {
         // Clear existing annotations if any
         if (annotatedRectangle != null) {
@@ -351,6 +424,11 @@ public class AnnotationController implements Controller {
             annotationPane.getChildren().add(middlePoint);
         }
     }
+
+    /**
+     * Allows for a variable annotation rectangle to be displayed at the cursor position.
+     * Only works when control is held down.
+     */
     private void dragAnnotationEvent(MouseEvent event) {
         if (event.isControlDown()) {
             double x2 = event.getX();
@@ -364,6 +442,11 @@ public class AnnotationController implements Controller {
             dragged = true;
         }
     }
+
+    /**
+     * Allows for a square annotation rectangle to be displayed at the cursor position.
+     * Default size for annotations.
+     */
     private void pressedAnnotationEvent(MouseEvent event) {
         annotationPointX = event.getX();
         annotationPointY = event.getY();
@@ -381,12 +464,11 @@ public class AnnotationController implements Controller {
             middlePoint.setFill(Color.rgb(6, 207, 236));
             annotationPane.getChildren().add(middlePoint);
         }
-
     }
+
     /**
-     * Handle the Simple Annotation Event where the user clicks once without dragging.
-     * Here the size of the rectangle is fixed
-     *
+     * Handles the released annotation event.
+     * Finalizes the dragged annotation and stores annotation data.
      */
     private void releasedAnnotationEvent() {
         if (!dragged) {
@@ -411,8 +493,15 @@ public class AnnotationController implements Controller {
                 annotatedRectangle.getWidth() / selectedImageView.getImage().getWidth(),
                 annotatedRectangle.getHeight() / selectedImageView.getImage().getHeight()
         );
-
     }
+
+    /**
+     * Handles the export action for saving annotations of selected images to files.
+     * Allows for annotation data to be saved as text files in the desired directory.
+     * Does not allow for unannotated images to be exported.
+     *
+     * @param event The ActionEvent representing the export action.
+     */
     @FXML
     private void handleExportAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
@@ -462,7 +551,13 @@ public class AnnotationController implements Controller {
         }
     }
 
-
+    /**
+     * Handles the export action for saving annotations of all displayed images to files.
+     * Allows for annotation data to be saved as text files in the desired directory.
+     * Does not allow for unannotated images to be exported.
+     *
+     * @param event The ActionEvent representing the export all action.
+     */
     @FXML
     private void handleExportAllAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
@@ -508,6 +603,11 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Handles the alert that unannotated images cannot be exported.
+     *
+     * @param unannotatedImages A list of the names of unannotated images.
+     */
     private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Unannotated Images");
@@ -525,6 +625,13 @@ public class AnnotationController implements Controller {
         alert.setResizable(true);
         alert.showAndWait();
     }
+
+    /**
+     * Displays a generic information alert.
+     *
+     * @param title   The title of the alert.
+     * @param content The content of the alert.
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -532,11 +639,12 @@ public class AnnotationController implements Controller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     /**
-     * Handles the Saving of Annotations to a File
+     * Handles the Saving of Annotations to a File.
      *
-     * @param file       The File to save the Annotations to
-     * @param annotation The Annotation Data to save
+     * @param file       The file to save the annotations to.
+     * @param annotation The annotation data to save.
      */
     private void saveAnnotationsToFile(File file, AnnotationData.PublicAnnotation annotation) {
         try (PrintWriter writer = new PrintWriter(file)) {
@@ -548,6 +656,12 @@ public class AnnotationController implements Controller {
             System.err.println("Error while saving Annotation to File: " + e.getMessage());
         }
     }
+
+    /**
+     * Handles the deletion functionality for selected images.
+     * Removes related image data and annotation data from all locations.
+     * Updates currently displayed image and image status.
+     */
     @FXML
     public void deletionfunctionality() {
         List<Node> toRemove = new ArrayList<>();
@@ -603,14 +717,18 @@ public class AnnotationController implements Controller {
         clearAnnotations();
     }
 
-
-
+    /**
+     * Updates the count of uploaded images.
+     */
     private void updateUploadedImagesCount() {
         int count = uploadedImages.getChildren().size();
         uploadedImagesCountLabel.setText("Images: " + count);
     }
 
-
+    /**
+     * Handles the action when the help button is clicked.
+     * Creates window with information on how to use this application.
+     */
     @FXML
     public void handleHelpButtonAction() {
         try {
@@ -639,6 +757,12 @@ public class AnnotationController implements Controller {
             System.err.println("Error while opening Help window: " + e.getMessage());
         }
     }
+
+    /**
+     * Generates a grid containing helpful information.
+     *
+     * @return A GridPane containing helpful information.
+     */
     private static GridPane getHelpGrid() {
         String[][] helpTextArray = {
                 {"Import", "Click this button to import images into the tool."},
@@ -677,7 +801,9 @@ public class AnnotationController implements Controller {
         return gridPane;
     }
 
-
+    /**
+     * Handles the action to mark images as No Tip.
+     */
     @FXML
     private void handleNoTipAction() {
         List<String> selectedImageUrls = new ArrayList<>();
@@ -714,7 +840,7 @@ public class AnnotationController implements Controller {
                 successMessage.append(imageUrl).append("\n");
             } catch (Exception e) {
                 allMarked = false;
-               // showAlert("Error", "An error occurred: " + e.getMessage());
+                // showAlert("Error", "An error occurred: " + e.getMessage());
             }
         }
         if (allMarked) {
@@ -722,6 +848,11 @@ public class AnnotationController implements Controller {
         }
     }
 
+    /**
+     * Marks an image as No Tip.
+     *
+     * @param imageUrl The URL of the image to be marked as No Tip.
+     */
     private void markImageAsNoTip(String imageUrl) {
         // Add "No Tip" annotation
         AnnotationData.getInstance().addAnnotation(
