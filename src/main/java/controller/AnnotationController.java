@@ -554,6 +554,7 @@ public class AnnotationController implements Controller {
         List<Image> imagesToRemove = new ArrayList<>();
         boolean currentDisplayedRemoved = false;
         boolean atLeastOneSelected = false;
+
         for (Node node : uploadedImages.getChildren()) {
             if (node instanceof HBox hbox) {
                 ImageView imageView = (ImageView) hbox.getChildren().get(0);
@@ -567,6 +568,8 @@ public class AnnotationController implements Controller {
                         toRemove.add(node);
                         uploadedFilePaths.remove(imagePath);
                         selectedFilePaths.remove(imagePath);
+                        noTipImageUrls.remove(imageView.getImage().getUrl()); // Remove from noTipImageUrls set
+
                         if (imageView.equals(currentSelectedImageView)) {
                             currentDisplayedRemoved = true;
                         }
@@ -577,6 +580,7 @@ public class AnnotationController implements Controller {
                 }
             }
         }
+
         if (atLeastOneSelected) {
             uploadedImages.getChildren().removeAll(toRemove);
             imageList.removeAll(imagesToRemove);
@@ -589,12 +593,15 @@ public class AnnotationController implements Controller {
         } else {
             showAlert("Notice", "No images selected for deletion.");
         }
+
         // Notify if all images have been deleted
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Notice", "All images have been deleted.");
         }
+
         clearAnnotations();
     }
+
 
     private void updateUploadedImagesCount() {
         int count = uploadedImages.getChildren().size();
