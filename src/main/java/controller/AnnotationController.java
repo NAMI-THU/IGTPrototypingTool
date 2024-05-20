@@ -407,6 +407,18 @@ public class AnnotationController implements Controller {
             showAlert("No Selection", "No images have been check-marked for export.");
             return;
         }
+
+        // Check if all selected images have annotations
+        List<String> unannotatedSelectedImages = selectedImagesUrls.stream()
+                .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
+                .map(url -> new File(url).getName())
+                .collect(Collectors.toList());
+
+        if (!unannotatedSelectedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedSelectedImages);
+            return;
+        }
+
         Map<String, AnnotationData.PublicAnnotation> annotations = AnnotationData.getInstance().getAnnotations();
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
@@ -442,6 +454,18 @@ public class AnnotationController implements Controller {
                 .map(ImageView::getImage)
                 .map(Image::getUrl)
                 .collect(Collectors.toSet());
+
+        // Check if all displayed images have annotations
+        List<String> unannotatedDisplayedImages = displayedImagesUrls.stream()
+                .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
+                .map(url -> new File(url).getName())
+                .collect(Collectors.toList());
+
+        if (!unannotatedDisplayedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedDisplayedImages);
+            return;
+        }
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory to Save Annotations");
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
@@ -457,19 +481,6 @@ public class AnnotationController implements Controller {
                             saveAnnotationsToFile(annotationFile, entry.getValue());
                         } catch (Exception e) {
                             showAlert("Error", "Failed to save annotations for " + entry.getKey());
-                        }
-                    });
-            // Export "No Tip" annotations
-            displayedImagesUrls.stream()
-                    .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
-                    .forEach(url -> {
-                        try {
-                            File file = new File(new URL(url).toURI());
-                            String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
-                            File annotationFile = new File(selectedDirectory, fileName);
-                            saveNoTipAnnotationToFile(annotationFile);
-                        } catch (Exception e) {
-                            showAlert("Error", "Failed to save annotations for " + url);
                         }
                     });
         }
