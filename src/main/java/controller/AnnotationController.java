@@ -637,7 +637,8 @@ public class AnnotationController implements Controller {
                 {"Delete", "Click this button to delete the selected images from the tool."},
                 {"Specific Export", "Click this button to export annotations for the selected images."},
                 {"Export All", "Click this button to export annotations for all images."},
-                {"No Tip", "Click this button to rename selected images to be marked as NoTip found, now the picture won't be allowed to be annotated, unless you reload in the application again."},
+                {"No Tip", "Click this button to rename selected images to be marked as NoTip found. Now the picture "},
+                { "", "won't be allowed to be annotated, unless you reload in the application again."},
                 {"Next", "Click this button to navigate to the next image."},
                 {"Previous", "Click this button to navigate to the previous image."},
                 {"", "To annotate an image, click and drag to create a bounding box. Hold down the Ctrl key to resize the bounding box."},
@@ -647,7 +648,6 @@ public class AnnotationController implements Controller {
                 {"Ctrl + A (After Selecting one image Checkbox): ", "All pictures will be check marked"},
                 {"Arrows: ", "Move zoomed images"}
         };
-
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
