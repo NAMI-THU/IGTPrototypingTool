@@ -172,19 +172,42 @@ public class AnnotationController implements Controller {
             List<File> selectedImages = fileChooser.showOpenMultipleDialog(currentStage);
 
             if (selectedImages != null) {
+                List<String> duplicateFiles = new ArrayList<>();
                 for (File file : selectedImages) {
                     if (!uploadedFilePaths.contains(file.getAbsolutePath())) {
                         displayImage(file);
                         uploadedFilePaths.add(file.getAbsolutePath());
                     } else {
-                        showAlert("Duplicate File", "The file " + file.getName() + " has already been uploaded.");
+                        duplicateFiles.add(file.getName());
                     }
+                }
+                if (!duplicateFiles.isEmpty()) {
+                    showDuplicateFilesAlert(duplicateFiles);
                 }
             }
         } catch (Exception e) {
             System.err.println("Error while choosing File: " + e.getMessage());
         }
     }
+
+    private void showDuplicateFilesAlert(List<String> duplicateFiles) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Duplicate Files");
+        alert.setHeaderText("The following files have already been uploaded:");
+        VBox vbox = new VBox(5);
+        for (String fileName : duplicateFiles) {
+            Text fileText = new Text(fileName);
+            vbox.getChildren().add(fileText);
+        }
+        ScrollPane scrollPane = new ScrollPane(vbox);
+        scrollPane.setPrefSize(300, 150);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        alert.getDialogPane().setContent(scrollPane);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
     private void displayImage(File file) {
         HBox hbox = new HBox();
         hbox.setSpacing(10);
