@@ -1,5 +1,5 @@
 package controller;
-
+import javafx.scene.control.Label;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -45,14 +45,15 @@ public class AnnotationController implements Controller {
     public Button ExportButton;
     public Button clearMarksButton;
     public Button helpButton;
+    public Button noTipButton;
     @FXML
     private ImageView selectedImageView;
     private ImageView currentSelectedImageView;
     @FXML
     private Pane annotationPane;
-
     @FXML
-    private Button noTipButton;
+    private Label uploadedImagesCountLabel;
+
 
     private Rectangle annotatedRectangle;
     private Circle middlePoint;
@@ -114,7 +115,7 @@ public class AnnotationController implements Controller {
         });
         annotationPane.setOnMouseReleased(event -> {
             if (currentSelectedImageView != null && !noTipImageUrls.contains(currentSelectedImageView.getImage().getUrl())) {
-                releasedAnnotationEvent(event);
+                releasedAnnotationEvent();
             }
         });
     }
@@ -227,7 +228,7 @@ public class AnnotationController implements Controller {
         imageView.setOnMouseClicked(event -> {
             selectImage(image, imageView);
         });
-        // Add or Remove the selected file paths to the HasSet
+        // Add or Remove the selected file paths to the HashSet
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Checkbox is now selected
                 selectedFilePaths.add(imageView.getImage().getUrl());
@@ -239,7 +240,9 @@ public class AnnotationController implements Controller {
         hbox.getChildren().add(imageView);
         hbox.getChildren().add(checkBox);
         uploadedImages.getChildren().add(hbox);
+        updateUploadedImagesCount();
     }
+
     private void selectImage(Image image, ImageView imageView) {
         try {
             if (imageList.isEmpty()) {
@@ -384,9 +387,8 @@ public class AnnotationController implements Controller {
      * Handle the Simple Annotation Event where the user clicks once without dragging.
      * Here the size of the rectangle is fixed
      *
-     * @param event The Mouse Event
      */
-    private void releasedAnnotationEvent(MouseEvent event) {
+    private void releasedAnnotationEvent() {
         if (!dragged) {
             annotatedRectangle.setX(annotationPointX - 10);
             annotatedRectangle.setY(annotationPointY - 10);
@@ -452,11 +454,7 @@ public class AnnotationController implements Controller {
                     File file = new File(new URL(url).toURI());
                     String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".txt";
                     File annotationFile = new File(selectedDirectory, fileName);
-                    if (annotations.containsKey(url)) {
-                        saveAnnotationsToFile(annotationFile, annotations.get(url));
-                    } else {
-                        saveNoTipAnnotationToFile(annotationFile);
-                    }
+                    saveAnnotationsToFile(annotationFile, annotations.get(url));
                 } catch (Exception e) {
                     showAlert("Error", "Failed to save annotations for " + url);
                 }
@@ -464,13 +462,14 @@ public class AnnotationController implements Controller {
         }
     }
 
+
     @FXML
     private void handleExportAllAction(ActionEvent event) {
         if (uploadedImages.getChildren().isEmpty()) {
             showAlert("Export Error", "There are no images to export.");
             return;
         }
-        Set<String> displayedImagesUrls = uploadedImages.getChildren().stream()
+        Set<String> allImagesUrls = uploadedImages.getChildren().stream()
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox) node)
                 .map(hbox -> (ImageView) hbox.getChildren().get(0))
@@ -478,14 +477,14 @@ public class AnnotationController implements Controller {
                 .map(Image::getUrl)
                 .collect(Collectors.toSet());
 
-        // Check if all displayed images have annotations
-        List<String> unannotatedDisplayedImages = displayedImagesUrls.stream()
+        // Check if all uploaded images have annotations
+        List<String> unannotatedImages = allImagesUrls.stream()
                 .filter(url -> !AnnotationData.getInstance().getAnnotations().containsKey(url))
                 .map(url -> new File(url).getName())
                 .collect(Collectors.toList());
 
-        if (!unannotatedDisplayedImages.isEmpty()) {
-            showUnannotatedImagesAlert(unannotatedDisplayedImages);
+        if (!unannotatedImages.isEmpty()) {
+            showUnannotatedImagesAlert(unannotatedImages);
             return;
         }
 
@@ -494,7 +493,7 @@ public class AnnotationController implements Controller {
         File selectedDirectory = directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
         if (selectedDirectory != null) {
             AnnotationData.getInstance().getAnnotations().entrySet().stream()
-                    .filter(entry -> displayedImagesUrls.contains(entry.getKey()))
+                    .filter(entry -> allImagesUrls.contains(entry.getKey()))
                     .forEach(entry -> {
                         try {
                             String path = entry.getKey();
@@ -508,6 +507,7 @@ public class AnnotationController implements Controller {
                     });
         }
     }
+
 
     private void saveNoTipAnnotationToFile(File file) {
         try (PrintWriter writer = new PrintWriter(file)) {
@@ -594,6 +594,7 @@ public class AnnotationController implements Controller {
                 currentSelectedImageView = null;
                 currentImageIndex = Math.min(currentImageIndex, imageList.size() - 1);
             }
+            updateUploadedImagesCount();
         } else {
             showAlert("Notice", "No images selected for deletion.");
         }
@@ -603,6 +604,13 @@ public class AnnotationController implements Controller {
         }
         clearAnnotations();
     }
+
+    private void updateUploadedImagesCount() {
+        int count = uploadedImages.getChildren().size();
+        uploadedImagesCountLabel.setText("Images: " + count);
+    }
+
+
     @FXML
     public void handleHelpButtonAction() {
         try {
@@ -671,7 +679,7 @@ public class AnnotationController implements Controller {
 
 
     @FXML
-    private void handleNoTipAction(ActionEvent event) {
+    private void handleNoTipAction() {
         List<String> selectedImageUrls = new ArrayList<>();
 
         for (Node node : uploadedImages.getChildren()) {
@@ -706,7 +714,7 @@ public class AnnotationController implements Controller {
                 successMessage.append(imageUrl).append("\n");
             } catch (Exception e) {
                 allMarked = false;
-                showAlert("Error", "An error occurred: " + e.getMessage());
+               // showAlert("Error", "An error occurred: " + e.getMessage());
             }
         }
         if (allMarked) {
@@ -733,31 +741,6 @@ public class AnnotationController implements Controller {
             }
         }
 
-        if (currentSelectedImageView != null && currentSelectedImageView.getImage().getUrl().equals(imageUrl)) {
-            selectedImageView.setImage(null);
-            currentSelectedImageView = null;
-            currentImageIndex = Math.min(currentImageIndex, imageList.size() - 1);
-        }
-        clearAnnotations();
-    }
-
-
-
-    private void removeImageFromApplication(String imageUrl, List<Node> nodesToRemove) {
-        imageList.removeIf(image -> image.getUrl().equals(imageUrl));
-        uploadedFilePaths.remove(imageUrl);
-        selectedFilePaths.remove(imageUrl);
-
-        // Remove the image from the uploadedImages VBox
-        for (Node node : nodesToRemove) {
-            if (node instanceof HBox) {
-                ImageView imageView = (ImageView) ((HBox) node).getChildren().get(0);
-                if (imageView.getImage().getUrl().equals(imageUrl)) {
-                    uploadedImages.getChildren().remove(node);
-                    break;
-                }
-            }
-        }
         if (currentSelectedImageView != null && currentSelectedImageView.getImage().getUrl().equals(imageUrl)) {
             selectedImageView.setImage(null);
             currentSelectedImageView = null;
