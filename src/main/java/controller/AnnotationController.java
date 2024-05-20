@@ -638,7 +638,6 @@ public class AnnotationController implements Controller {
 
     @FXML
     private void handleNoTipAction(ActionEvent event) {
-        List<Node> nodesToRemove = new ArrayList<>();
         List<String> selectedImageUrls = new ArrayList<>();
 
         for (Node node : uploadedImages.getChildren()) {
@@ -647,7 +646,6 @@ public class AnnotationController implements Controller {
                 if (checkBox.isSelected()) {
                     ImageView imageView = (ImageView) hbox.getChildren().get(0);
                     selectedImageUrls.add(imageView.getImage().getUrl());
-                    nodesToRemove.add(node);
                 }
             }
         }
@@ -667,21 +665,11 @@ public class AnnotationController implements Controller {
         }
 
         boolean allMarked = true;
-        StringBuilder successMessage = new StringBuilder("The following files have been marked as NoTipFound_<original name>:\n");
+        StringBuilder successMessage = new StringBuilder("The following files have been marked as No Tip Found in the application:\n");
         for (String imageUrl : selectedImageUrls) {
             try {
-                File selectedFile = new File(new URL(imageUrl).toURI());
-                String fileName = selectedFile.getName();
-                String newFileName = "NoTipFound_" + fileName;
-                File markedFile = new File(selectedFile.getParent(), newFileName);
-
-                if (selectedFile.renameTo(markedFile)) {
-                    successMessage.append(newFileName).append("\n");
-                    markImageAsNoTip(imageUrl);  // Only passing imageUrl now
-                } else {
-                    allMarked = false;
-                    showAlert("Error", "Failed to mark file: " + fileName);
-                }
+                markImageAsNoTip(imageUrl);
+                successMessage.append(imageUrl).append("\n");
             } catch (Exception e) {
                 allMarked = false;
                 showAlert("Error", "An error occurred: " + e.getMessage());
@@ -691,7 +679,6 @@ public class AnnotationController implements Controller {
             showAlert("Success", successMessage.toString());
         }
     }
-
 
     private void markImageAsNoTip(String imageUrl) {
         // Add "No Tip" annotation
@@ -719,6 +706,7 @@ public class AnnotationController implements Controller {
         }
         clearAnnotations();
     }
+
 
 
     private void removeImageFromApplication(String imageUrl, List<Node> nodesToRemove) {
