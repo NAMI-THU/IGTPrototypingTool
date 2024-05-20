@@ -508,15 +508,6 @@ public class AnnotationController implements Controller {
         }
     }
 
-
-    private void saveNoTipAnnotationToFile(File file) {
-        try (PrintWriter writer = new PrintWriter(file)) {
-            writer.println("0 0 0 0 0");
-        } catch (FileNotFoundException e) {
-            System.err.println("Error while saving No Tip Annotation to File: " + e.getMessage());
-        }
-    }
-
     private void showUnannotatedImagesAlert(List<String> unannotatedImages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Unannotated Images");
