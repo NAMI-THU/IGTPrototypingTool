@@ -31,6 +31,9 @@
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" onAction="#openAboutView" text="About"/>
             </Menu>
+            <Menu mnemonicParsing="false" text="Theme">
+                <MenuItem mnemonicParsing="false" onAction="#handleToggleTheme" text="Toggle Dark/Light Mode"/>
+            </Menu>
         </MenuBar>
     </top>
     <center>
@@ -43,6 +46,9 @@
             </Tab>
             <Tab closable="false" fx:id="visualizationTab" text="Visualization" onSelectionChanged="#onChangeView">
                 <fx:include fx:id="visualization" source="VisualizationView.fxml"/>
+            </Tab>
+                <Tab closable="false" fx:id="annotationTab" text="Annotation" onSelectionChanged="#onChangeView">
+                <fx:include fx:id="annotation" source="AnnotationView.fxml"/>
             </Tab>
         </TabPane>
     </center>
