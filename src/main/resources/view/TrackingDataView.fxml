@@ -100,6 +100,8 @@
 				</HBox>
 				<Button fx:id="loadCSVBtn" alignment="CENTER" mnemonicParsing="false" onAction="#loadCSVFile"
 						text="Load CSV" GridPane.columnIndex="1"/>
+				<Button fx:id="loadAIData" alignment="CENTER" mnemonicParsing="false" onAction="#loadAIData"
+						text="Load AI data" GridPane.columnIndex="2"/>
 				<Button fx:id="visualizeTrackingBtn" alignment="CENTER" mnemonicParsing="false"
 						onAction="#visualizeTracking" text="Start Tracking and Visualization" GridPane.rowIndex="1"/>
 				<ToggleButton fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization"

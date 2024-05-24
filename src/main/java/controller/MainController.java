@@ -23,6 +23,12 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class MainController implements Controller {
 
     @FXML
@@ -44,6 +50,8 @@ public class MainController implements Controller {
     private MeasurementController measurementController;
     private ThrombectomyController thrombectomyController;
     private AutoTrackController autoTrackController;
+
+    private AiController AiController;
     private SettingsController settingsController;
     private final VisualizationManager visualizationManager = new VisualizationManager();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -113,6 +121,28 @@ public class MainController implements Controller {
             t.setOnCloseRequest(e -> {
                 this.autoTrackController.close();
                 this.autoTrackController = null;
+            });
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Error loading AutoTrack View", e);
+        }
+    }
+
+    @FXML
+    private void openAIView(){
+        if (this.AiController != null) return;
+
+        try {
+            setupFXMLLoader("AiView");
+            Tab t = new Tab("AiView", this.loader.load());
+
+            this.AiController = this.loader.getController();
+            this.AiController.setStatusLabel(this.status);
+
+            this.tabPane.getTabs().add(t);
+            this.tabPane.getSelectionModel().select(t);
+            t.setOnCloseRequest(e -> {
+                this.AiController.close();
+                this.AiController = null;
             });
         } catch(IOException e) {
             logger.log(Level.SEVERE, "Error loading AutoTrack View", e);
