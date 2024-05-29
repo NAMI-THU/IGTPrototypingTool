@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import userinterface.PlottableImage?>
+<?import java.lang.String?>
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AiController">
+    <VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
+        <StackPane>
+            <alignment>
+                <Pos fx:value="CENTER"/>
+            </alignment>
+            <PlottableImage fx:id="videoImagePlot" horizontalGridLinesVisible="false" maxHeight="Infinity"
+                            maxWidth="Infinity" verticalGridLinesVisible="false">
+                <xAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
+                </yAxis>
+            </PlottableImage>
+            <LineChart fx:id="lineChart">
+                <xAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
+                </yAxis>
+            </LineChart>
+        </StackPane>
+
+        <HBox alignment="CENTER">
+            <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" text="Connections"
+                        textAlignment="CENTER">
+                <graphic>
+                    <ProgressIndicator fx:id="connectionProgressSpinner" prefHeight="15.0" prefWidth="15.0"/>
+                </graphic>
+                <VBox>
+                    <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308"
+                          maxWidth="1.7976931348623157E308" spacing="20.0">
+                        <padding>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </padding>
+                        <Label text="Video Input" textAlignment="CENTER"/>
+                        <ChoiceBox fx:id="sourceChoiceBox"/>
+                    </HBox>
+                    <HBox>
+                        <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false"
+                                  styleClass="red-green-checkbox"/>
+                        <Label text="Trackingsource">
+                            <padding>
+                                <Insets left="5.0"/>
+                            </padding>
+                        </Label>
+                        <padding>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </padding>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308"
+                          maxWidth="1.7976931348623157E308" spacing="20.0">
+                    <Label text="Reference mode" textAlignment="CENTER"/>
+                    <ChoiceBox fx:id="ModeSelection">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Single Point Mode" />
+                                <String fx:value="Path Mode" />
+                            </FXCollections>
+                        </items>
+
+                    </ChoiceBox>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+            <padding>
+                <Insets bottom="0.0" left="80.0" right="0.0" top="0.0"/>
+            </padding>
+            <TitledPane fx:id="PathControlPanel" animated="false" collapsible="false" graphicTextGap="10.0" text="Path Control Panel"
+            textAlignment="CENTER" minHeight="100" minWidth="100" visible="false">
+                <Button fx:id="clearAll" text="Clear All">
+
+                </Button>
+            </TitledPane>
+        </HBox>
+    </VBox>
+</ScrollPane>
