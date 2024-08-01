@@ -14,9 +14,9 @@ plugins {
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '6.0.18'
+    id 'com.github.spotbugs' version '6.0.19'
     // With this plugin, we can build a Windows executable
-    id 'edu.sc.seis.launch4j' version '3.0.5'
+    id 'edu.sc.seis.launch4j' version '3.0.6'
 }
 
 javafx {
