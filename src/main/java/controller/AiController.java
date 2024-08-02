@@ -36,6 +36,9 @@ public class AiController implements Controller {
 
     @FXML
     public ChoiceBox<String> sourceChoiceBox;
+
+    @FXML
+    public Label distanceLabel;
     @FXML
     public CheckBox trackingConnectedStatusBox;
     public ProgressIndicator connectionProgressSpinner;
@@ -80,6 +83,10 @@ public class AiController implements Controller {
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
 
+
+        lastPoint = null; // Reset lastPoint
+        currentLine = new XYChart.Series<>(); // Reset currentLine
+
         trackingService.registerObserver((sourceChanged,dataServiceChanged,timelineChanged) -> updateTrackingInformation());
 
         connectionProgressSpinner.setVisible(false);
@@ -123,6 +130,7 @@ public class AiController implements Controller {
                 redrawPointsPathMode();
                 trackingPoint = referencePointsListPath.get(0);
             }
+
             System.out.println("Selected item: " + newValue );
             // Add your custom code here...
         });
@@ -133,18 +141,75 @@ public class AiController implements Controller {
             lineDataSeries.clear();
         });
     }
+    private XYChart.Data<Number, Number> lastPoint = null;
+    private XYChart.Data<Number, Number> tempo = null;
+    private double tempX;
+    private double tempY;
+
+
+    private XYChart.Series<Number, Number> currentLine = new XYChart.Series<>();
+
+    /**
+     * Calculates the Euclidean distance between two points.
+     * @param point1 The tracking point.
+     * @param point2 The reference point.
+     * @return The distance between the two points.
+     */
+    public double calculateDistance(XYChart.Data<Number, Number> point1, XYChart.Data<Number, Number> point2) {
+
+        double x1 = point1.getXValue().doubleValue();
+        System.out.println("p1: "+ x1);
+        double y1 = point1.getYValue().doubleValue();
+        System.out.println("p1: "+ y1);
+        double x2 = point2.getXValue().doubleValue();
+        System.out.println("p2: "+ x2);
+        double y2 = point2.getYValue().doubleValue();
+        System.out.println("p2: "+ y2);
+
+        // Calculate the Euclidean distance
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+
 
     private void onSRM(double v, double v1) {
-        switch (ModeSelection.getValue()){
+        switch (ModeSelection.getValue()) {
             case "Single Point Mode":
-                System.out.println("Set reference point to "+v+" "+v1);
-                referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
-                trackingPoint.setData(referencePoint.getData());
+                System.out.println("Set reference point to " + v + " " + v1);
+
+                // Create a new point
+                XYChart.Data<Number, Number> newPoint = new XYChart.Data<>(v, v1);
+
+                // If there is a previous point, update the line
+                if (lastPoint != null) {
+                    // Clear previous line data
+                    currentLine.getData().clear();
+                }
+
+                // Add new point
+                currentLine.getData().add(newPoint);
+
+                // Update the chart with the new line
+                if (!lineDataSeries.contains(currentLine)) {
+                    lineDataSeries.add(currentLine);
+                }
+
+                // Update the reference point to the new point
+                referencePoint.setData(FXCollections.observableArrayList(newPoint));
+
+                // Update the last point
+                lastPoint = newPoint;
+
+                // Update the tracking point
+                trackingPoint.setData(FXCollections.observableArrayList(newPoint));
+
+                tempo = new XYChart.Data<>(tempX,tempY);
+                double distance = calculateDistance(tempo, newPoint);
+                distanceLabel.setText("distance: " + String.format("%.2f", distance));
                 break;
             case "Path Mode":
                 referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
-                //dataSeries.add(new XYChart.Series<>("Reference Funny",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
                 connectPointsPathMode();
                 trackingPoint = new XYChart.Series<>("hi",FXCollections.observableArrayList(new XYChart.Data<>(referencePointsListPath.get(0).getData().get(0).getXValue(),referencePointsListPath.get(0).getData().get(0).getXValue())));
 
@@ -273,13 +338,13 @@ public class AiController implements Controller {
             var selectedItem = sourceChoiceBox.getSelectionModel().getSelectedItem();
             int deviceId = deviceIdMapping.get(selectedItem);
             imageDataManager.closeConnection();
-            imageDataManager.openConnection(VideoSource.LIVESTREAM, 2);
+            imageDataManager.openConnection(VideoSource.LIVESTREAM, 1);
             if (videoTimeline == null) {
                 videoTimeline = new Timeline();
                 videoTimeline.setCycleCount(Animation.INDEFINITE);
                 videoTimeline.getKeyFrames().add(
-                        new KeyFrame(Duration.millis(100),
-                                event -> this.updateVideoImage())
+                        new KeyFrame(Duration.millis(100)
+                                , event -> this.updateVideoImage())
                 );
                 videoTimeline.play();
             }
@@ -329,68 +394,115 @@ public class AiController implements Controller {
     /**
      * Loads the next tracking data point and displays it on the image-plot
      */
-    private void updateTrackingData(){
+    private void updateTrackingData() {
+        // Get tracking data source and service
         var source = trackingService.getTrackingDataSource();
         var service = trackingService.getDataService();
-        if(source == null || service == null){return;}
 
+        // Early exit if either source or service is null
+        if (source == null || service == null) {
+            return;
+        }
+
+        // Update the source
         source.update();
+
+        // Load next data from the service
         List<Tool> tools = service.loadNextData(1);
 
-        if (tools.isEmpty()) return;
+        // Early exit if no tools are available
+        if (tools.isEmpty()) {
+            return;
+        }
 
+        // Clear the previous tracking data
         lastTrackingData.clear();
+
+        // Iterate through tools
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
-            if (dataSeries.size() <= i + 1) {
-                var series = new XYChart.Series<Number, Number>();
-                series.setName(tool.getName());
-                series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
-                dataSeries.add(series);
-                series.getData().remove(0);
-                // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
-//                videoImagePlot.initSensorCurve(series);
 
-
+            // Ensure dataSeries and lineDataSeries lists are properly initialized
+            if (dataSeries.size() <= i) {
+                // Initialize missing series
+                while (dataSeries.size() <= i) {
+                    var series = new XYChart.Series<Number, Number>();
+                    series.setName("Tool " + (dataSeries.size() + 1));  // Default name if not set
+                    series.getData().add(new XYChart.Data<>(0, 0));  // Workaround to display legend
+                    dataSeries.add(series);
+                    series.getData().remove(0);  // Remove workaround point
+                }
             }
 
             if (lineDataSeries.size() <= i) {
-                // create series for line
-                // this series will include the reference point and current point
-                var lineSeries = new XYChart.Series<Number, Number>();
-                lineDataSeries.add(lineSeries);
-                lineSeries.getData().remove(0);
+                // Initialize missing line series
+                while (lineDataSeries.size() <= i) {
+                    var lineSeries = new XYChart.Series<Number, Number>();
+                    lineDataSeries.add(lineSeries);
+                    lineSeries.getData().clear();  // Ensure line data is cleared
+                }
             }
 
-
-            var series = dataSeries.get(i + 1);
-            var measurements = tool.getMeasurement();
-            var point = measurements.get(measurements.size() - 1).getPos();
-            var data = series.getData();
-            var max_num_points = 6; // 1
-
+            var series = dataSeries.get(i);
             var lineSeries = lineDataSeries.get(i);
-            //var lineData = lineSeries.getData();
-            ObservableList<XYChart. Data<Number, Number>> lineData = FXCollections.observableArrayList();
-            var shifted_points = applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
-            var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
-            var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
-            lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
+            // Get measurements and point
+            var measurements = tool.getMeasurement();
+            if (measurements.isEmpty()) {
+                continue;  // Skip if no measurements available
+            }
+
+            var point = measurements.get(measurements.size() - 1).getPos();
+            tempX = point.getX();
+            tempY = point.getY();
+
+            // Transform point and normalize coordinates
+            var shifted_points = applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            var x_normalized = shifted_points[0] / (currentShowingImage != null ? currentShowingImage.getWidth() : 1); // Avoid division by zero
+            var y_normalized = shifted_points[1] / (currentShowingImage != null ? currentShowingImage.getHeight() : 1); // Avoid division by zero
+
+            // Update last tracking data
+            lastTrackingData.add(new ExportMeasurement(
+                    tool.getName(),
+                    point.getX(),
+                    point.getY(),
+                    point.getZ(),
+                    shifted_points[0],
+                    shifted_points[1],
+                    shifted_points[2],
+                    x_normalized,
+                    y_normalized
+            ));
+
+            // Update series data
+            ObservableList<XYChart.Data<Number, Number>> data = series.getData();
+            ObservableList<XYChart.Data<Number, Number>> lineData = FXCollections.observableArrayList();
 
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
-
             lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
-            lineData.add(new XYChart.Data<>(trackingPoint.getData().get(0).getXValue(), trackingPoint.getData().get(0).getYValue()));
+            lineData.add(new XYChart.Data<>(trackingPoint.getData().isEmpty() ? shifted_points[0] : trackingPoint.getData().get(0).getXValue(),
+                    trackingPoint.getData().isEmpty() ? shifted_points[1] : trackingPoint.getData().get(0).getYValue()));
+            if (!trackingPoint.getData().isEmpty()) {
+                XYChart.Data<Number, Number> lastTrackingPoint = trackingPoint.getData().get(trackingPoint.getData().size() - 1);
+
+                // Calculate distance between the last tracking point and the current shifted point
+                double distance = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), lastTrackingPoint);
+                distanceLabel.setText("Distance: " + String.format("%.2f", distance));
+            }
 
             lineSeries.setData(lineData);
 
-            if(data.size() > max_num_points){
+            // Maintain a maximum number of points in the series
+            final int max_num_points = 6; // Can be adjusted as needed
+            if (data.size() > max_num_points) {
                 data.remove(0);
-                //lineData.remove(0);
+            }
+            if (lineData.size() > max_num_points) {
+                lineData.remove(0);
             }
         }
     }
+
 
     /**
      * Applies the transformation matrix to the image

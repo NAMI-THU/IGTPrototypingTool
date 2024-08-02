@@ -36,6 +36,7 @@ public class App extends Application {
         Parent root = loader.load();
         primaryStage.setTitle("IGT Prototyping Tool");
         primaryStage.setMinHeight(400);
+        primaryStage.setHeight(800);
         primaryStage.setMinWidth(800);
         primaryStage.getIcons().add(new Image("icon/icon.png"));
         Scene scene = new Scene(root);

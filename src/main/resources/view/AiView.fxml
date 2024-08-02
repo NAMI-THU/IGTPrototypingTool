@@ -49,6 +49,7 @@
                         <Label text="Video Input" textAlignment="CENTER"/>
                         <ChoiceBox fx:id="sourceChoiceBox"/>
                     </HBox>
+                    <Label fx:id="distanceLabel" text="Distance: " textAlignment="CENTER"/>
                     <HBox>
                         <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false"
                                   styleClass="red-green-checkbox"/>
