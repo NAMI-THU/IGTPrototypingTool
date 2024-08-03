@@ -113,7 +113,7 @@ public class AiController implements Controller {
         lineChart.setData(lineDataSeries);
 
         ModeSelection.setValue("Single Point Mode");
-        dataSeries.add(referencePoint);
+
 
         //State machine for the choice box for point mode selection
         ModeSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -131,22 +131,20 @@ public class AiController implements Controller {
                 trackingPoint = referencePointsListPath.get(0);
             }
 
-            System.out.println("Selected item: " + newValue );
-            // Add your custom code here...
         });
 
         clearAll.setOnAction((event) -> {
+            trackingPoint.getData().clear();
             dataSeries.clear();
             referencePointsListPath.clear();
             lineDataSeries.clear();
         });
     }
+
     private XYChart.Data<Number, Number> lastPoint = null;
     private XYChart.Data<Number, Number> tempo = null;
     private double tempX;
     private double tempY;
-
-
     private XYChart.Series<Number, Number> currentLine = new XYChart.Series<>();
 
     /**
@@ -172,13 +170,13 @@ public class AiController implements Controller {
 
 
 
-    private void onSRM(double v, double v1) {
+    private void onSRM(double v1, double v2) {
         switch (ModeSelection.getValue()) {
             case "Single Point Mode":
-                System.out.println("Set reference point to " + v + " " + v1);
+                System.out.println("Set reference point to " + v1 + " " + v2);
 
                 // Create a new point
-                XYChart.Data<Number, Number> newPoint = new XYChart.Data<>(v, v1);
+                XYChart.Data<Number, Number> newPoint = new XYChart.Data<>(v1, v2);
 
                 // If there is a previous point, update the line
                 if (lastPoint != null) {
@@ -194,9 +192,6 @@ public class AiController implements Controller {
                     lineDataSeries.add(currentLine);
                 }
 
-                // Update the reference point to the new point
-                referencePoint.setData(FXCollections.observableArrayList(newPoint));
-
                 // Update the last point
                 lastPoint = newPoint;
 
@@ -207,11 +202,14 @@ public class AiController implements Controller {
                 double distance = calculateDistance(tempo, newPoint);
                 distanceLabel.setText("distance: " + String.format("%.2f", distance));
                 break;
+
             case "Path Mode":
-                referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v,v1))));
+                // Create a new point
+                XYChart.Data<Number, Number> newPoint2 = new XYChart.Data<>(v1, v2);
+                referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v1,v2))));
+                trackingPoint.setData(referencePointsListPath.get(0).getData());
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
                 connectPointsPathMode();
-                trackingPoint = new XYChart.Series<>("hi",FXCollections.observableArrayList(new XYChart.Data<>(referencePointsListPath.get(0).getData().get(0).getXValue(),referencePointsListPath.get(0).getData().get(0).getXValue())));
 
                 break;
         }
@@ -241,6 +239,7 @@ public class AiController implements Controller {
 
     }
     private void redrawPointsPathMode(){
+        trackingPoint.setData(referencePointsListPath.get(0).getData());
         for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
             XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
             XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
