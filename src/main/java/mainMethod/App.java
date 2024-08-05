@@ -9,7 +9,9 @@ import javafx.stage.Stage;
 import util.ControllerCollector;
 import util.CustomLogger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,8 @@ public class App extends Application {
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+
     }
 
     @Override

@@ -78,6 +78,7 @@ public class AiController implements Controller {
     NumberAxis xAxis = new NumberAxis(-500, 500, 100);
     NumberAxis yAxis = new NumberAxis(-500, 500, 100);
 
+    private String distanceCase = "signle";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -112,23 +113,30 @@ public class AiController implements Controller {
         lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         lineChart.setData(lineDataSeries);
 
-        ModeSelection.setValue("Single Point Mode");
+        ModeSelection.setValue("Select Mode");
+
+
+
 
 
         //State machine for the choice box for point mode selection
         ModeSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             dataSeries.clear();
             if (Objects.equals(newValue, "Single Point Mode")) {
+                distanceCase = "single";
                 dataSeries.add(referencePoint);
                 PathControlPanel.setVisible(false);
                 lineDataSeries.clear();
                 trackingPoint.setData(referencePoint.getData());
+
             }
             if (Objects.equals(newValue, "Path Mode")) {
+                distanceCase = "path";
                 dataSeries.addAll(referencePointsListPath);
                 PathControlPanel.setVisible(true);
                 redrawPointsPathMode();
                 trackingPoint = referencePointsListPath.get(0);
+
             }
 
         });
@@ -138,11 +146,15 @@ public class AiController implements Controller {
             dataSeries.clear();
             referencePointsListPath.clear();
             lineDataSeries.clear();
+            pathDistance = 0;
+            distanceLabel.setText("Distance: " + 0.0);
         });
     }
 
     private XYChart.Data<Number, Number> lastPoint = null;
     private XYChart.Data<Number, Number> tempo = null;
+    private XYChart.Data<Number, Number> tempoPath = null;
+    private  double pathDistance;
     private double tempX;
     private double tempY;
     private XYChart.Series<Number, Number> currentLine = new XYChart.Series<>();
@@ -156,17 +168,19 @@ public class AiController implements Controller {
     public double calculateDistance(XYChart.Data<Number, Number> point1, XYChart.Data<Number, Number> point2) {
 
         double x1 = point1.getXValue().doubleValue();
-        System.out.println("p1: "+ x1);
+
         double y1 = point1.getYValue().doubleValue();
-        System.out.println("p1: "+ y1);
+
         double x2 = point2.getXValue().doubleValue();
-        System.out.println("p2: "+ x2);
+
         double y2 = point2.getYValue().doubleValue();
-        System.out.println("p2: "+ y2);
+
 
         // Calculate the Euclidean distance
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
+
+
 
 
 
@@ -206,9 +220,19 @@ public class AiController implements Controller {
             case "Path Mode":
                 // Create a new point
                 XYChart.Data<Number, Number> newPoint2 = new XYChart.Data<>(v1, v2);
-                referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(new XYChart.Data<>(v1,v2))));
+                if (referencePointsListPath.isEmpty()){
+                    tempo = new XYChart.Data<>(tempX,tempY);
+                    pathDistance = calculateDistance(tempo, newPoint2);
+                    System.out.println("path distance: " + pathDistance);
+                }
+                //tempoPath = newPoint2;
+                pathDistance += calculateDistance(tempo, newPoint2);
+                distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
+                referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(newPoint2)));
+                System.out.println("first point is " + referencePointsListPath.get(0).getData());
                 trackingPoint.setData(referencePointsListPath.get(0).getData());
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
+
                 connectPointsPathMode();
 
                 break;
@@ -216,6 +240,23 @@ public class AiController implements Controller {
 
     }
 
+    public double calculatePathDistance(ArrayList<XYChart.Series<Number, Number>> list) {
+        double totalDistance;
+        if(list.isEmpty()){
+            return 0.0;
+        }
+        tempo = new XYChart.Data<>(tempX,tempY);
+        totalDistance = calculateDistance(tempo, referencePointsListPath.get(0).getData().get(0));
+        for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
+            XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
+            XYChart.Series<Number, Number> nextSeries = referencePointsListPath.get(i + 1);
+            totalDistance += calculateDistance(series.getData().get(0), nextSeries.getData().get(0));
+            //System.out.println("dist is " + totalDistance);
+        }
+        return totalDistance;
+    }
+
+    private static final String LINE_COLOR_STYLE = "-fx-stroke: #FF0000;"; // Red color
     private void connectPointsPathMode(){
         if(referencePointsListPath.size() == 1) {
             return;
@@ -233,6 +274,9 @@ public class AiController implements Controller {
             XYChart.Series<Number, Number> lineSeries = new XYChart.Series<>();
             lineSeries.getData().add(new XYChart.Data<>(lastPoint.getXValue(), lastPoint.getYValue()));
             lineSeries.getData().add(new XYChart.Data<>(firstPointNext.getXValue(), firstPointNext.getYValue()));
+
+        // Set the style for the line to ensure it has the desired color
+        lineSeries.nodeProperty().addListener((observable, oldValue, newValue) -> newValue.setStyle(LINE_COLOR_STYLE));
 
             // Add the line series to the line chart
             lineDataSeries.add(lineSeries);
@@ -253,19 +297,15 @@ public class AiController implements Controller {
             lineSeries.getData().add(new XYChart.Data<>(lastPoint.getXValue(), lastPoint.getYValue()));
             lineSeries.getData().add(new XYChart.Data<>(firstPointNext.getXValue(), firstPointNext.getYValue()));
 
+            // Set the style for the line to ensure it has the desired color
+            lineSeries.nodeProperty().addListener((observable, oldValue, newValue) -> newValue.setStyle(LINE_COLOR_STYLE));
+
             // Add the line series to the line chart
             lineDataSeries.add(lineSeries);
         }
     }
 
-    @Override
-    public void close() {
-        unregisterController();
-        if (videoTimeline != null) {
-            videoTimeline.stop();
-        }
-        imageDataManager.closeConnection();
-    }
+
 
     /**
      * Enables the Main View to inject the tracking data controller
@@ -484,9 +524,25 @@ public class AiController implements Controller {
             if (!trackingPoint.getData().isEmpty()) {
                 XYChart.Data<Number, Number> lastTrackingPoint = trackingPoint.getData().get(trackingPoint.getData().size() - 1);
 
-                // Calculate distance between the last tracking point and the current shifted point
-                double distance = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), lastTrackingPoint);
-                distanceLabel.setText("Distance: " + String.format("%.2f", distance));
+                switch (distanceCase) {
+                    case "single":
+                        //System.out.println("i'm single");
+                    // Calculate distance between the last tracking point and the current shifted point
+                    double distance = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), lastTrackingPoint);
+                    distanceLabel.setText("Distance: " + String.format("%.2f", distance));
+                    break;
+                    case "path":
+                        //System.out.println("i'm path");
+                        //double distancePath = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), tempoPath);
+                        //distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
+                        pathDistance = calculatePathDistance(referencePointsListPath);
+                        distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
+
+
+
+                        break;
+
+                }
             }
 
             lineSeries.setData(lineData);
@@ -508,6 +564,7 @@ public class AiController implements Controller {
      * @param mat The image to be transformed
      * @return The transformed image
      */
+    /*
     private Mat applyImageTransformations(Mat mat){
 //        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
 //        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
@@ -531,7 +588,7 @@ public class AiController implements Controller {
             mat = outMat;
             Imgproc.warpAffine(mat, outMat, transformationMatrix.getTranslationMat(), mat.size());
         }
-        */
+
 
         if(roiDirty){
             // Set noExecute to false if the Roi should be calculated (and thus, the image cropped)
@@ -541,7 +598,7 @@ public class AiController implements Controller {
         mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
         return mat;
     }
-
+*/
     /**
      * Applies the (2D) transformation on a tracking point
      * @param x X-Coordinate of the point
@@ -597,4 +654,14 @@ public class AiController implements Controller {
 
         }
     }
+
+    @Override
+    public void close() {
+        unregisterController();
+        if (videoTimeline != null) {
+            videoTimeline.stop();
+        }
+        imageDataManager.closeConnection();
+    }
+
 }
