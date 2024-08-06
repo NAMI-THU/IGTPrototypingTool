@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -234,11 +235,33 @@ public class AiController implements Controller {
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
 
                 connectPointsPathMode();
-
+                updateLastDataPointStyle(referencePointsListPath);
                 break;
         }
-
     }
+
+    private void updateLastDataPointStyle(List<XYChart.Series<Number, Number>> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+
+        // Clear the style class from all data points first
+        for (XYChart.Series<Number, Number> series : list) {
+            for (XYChart.Data<Number, Number> data : series.getData()) {
+                data.getNode().getStyleClass().remove("last-data-point");
+            }
+        }
+
+        // Get the last series
+        XYChart.Series<Number, Number> lastSeries = list.get(list.size() - 1);
+
+        // Apply the style class to the last data point in the last series
+        if (!lastSeries.getData().isEmpty()) {
+            XYChart.Data<Number, Number> lastDataPoint = lastSeries.getData().get(lastSeries.getData().size() - 1);
+            lastDataPoint.getNode().getStyleClass().add("last-data-point");
+        }
+    }
+
 
     public double calculatePathDistance(ArrayList<XYChart.Series<Number, Number>> list) {
         double totalDistance;
@@ -256,7 +279,12 @@ public class AiController implements Controller {
         return totalDistance;
     }
 
-    private static final String LINE_COLOR_STYLE = "-fx-stroke: #FF0000;"; // Red color
+    //private static final String LINE_COLOR_STYLE = "-fx-stroke: #FF0000;"; // Red color
+
+    //private static final String LINE_COLOR_STYLE = "-fx-stroke: rgba(255, 0, 0, 0.3);"; // Red color with 30% opacity
+    private static final String LINE_COLOR_STYLE = "-fx-stroke: rgba(255, 102, 102); -fx-stroke-dash-array: 10 5;"; // Lighter red with 50% opacity and dashed pattern
+
+
     private void connectPointsPathMode(){
         if(referencePointsListPath.size() == 1) {
             return;
@@ -291,6 +319,7 @@ public class AiController implements Controller {
             // Get the last point of the current series and the first point of the next series
             XYChart.Data<Number, Number> lastPoint = series.getData().get(series.getData().size() - 1);
             XYChart.Data<Number, Number> firstPointNext = nextSeries.getData().get(0);
+
 
             // Create a new series to represent the line between the two points
             XYChart.Series<Number, Number> lineSeries = new XYChart.Series<>();
@@ -427,6 +456,7 @@ public class AiController implements Controller {
             lineChart.minHeightProperty().bind(videoImagePlot.heightProperty());
             lineChart.maxWidthProperty().bind(videoImagePlot.widthProperty());
             lineChart.maxHeightProperty().bind(videoImagePlot.heightProperty());
+
         }
     }
 
@@ -546,6 +576,7 @@ public class AiController implements Controller {
             }
 
             lineSeries.setData(lineData);
+
 
             // Maintain a maximum number of points in the series
             final int max_num_points = 6; // Can be adjusted as needed
