@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -154,7 +153,6 @@ public class AiController implements Controller {
 
     private XYChart.Data<Number, Number> lastPoint = null;
     private XYChart.Data<Number, Number> tempo = null;
-    private XYChart.Data<Number, Number> tempoPath = null;
     private  double pathDistance;
     private double tempX;
     private double tempY;
@@ -181,6 +179,19 @@ public class AiController implements Controller {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
+
+    public boolean checkPointsCollision(XYChart.Data<Number, Number> point1, XYChart.Data<Number, Number> point2) {
+
+        double x1 = point1.getXValue().doubleValue();
+
+        double y1 = point1.getYValue().doubleValue();
+
+        double x2 = point2.getXValue().doubleValue();
+
+        double y2 = point2.getYValue().doubleValue();
+
+        return ((x1 >= x2 - 20) && (x1 <= x2 + 20)) && ((y1 <= y2 + 20) && (y2 >= y2 - 20));
+    }
 
 
 
@@ -224,16 +235,13 @@ public class AiController implements Controller {
                 if (referencePointsListPath.isEmpty()){
                     tempo = new XYChart.Data<>(tempX,tempY);
                     pathDistance = calculateDistance(tempo, newPoint2);
-                    System.out.println("path distance: " + pathDistance);
                 }
-                //tempoPath = newPoint2;
                 pathDistance += calculateDistance(tempo, newPoint2);
                 distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
                 referencePointsListPath.add(new XYChart.Series<>("point",FXCollections.observableArrayList(newPoint2)));
-                System.out.println("first point is " + referencePointsListPath.get(0).getData());
                 trackingPoint.setData(referencePointsListPath.get(0).getData());
+                //System.out.println("point ref is " + referencePointsListPath.get(0).getData());
                 dataSeries.add(referencePointsListPath.get(referencePointsListPath.size()-1));
-
                 connectPointsPathMode();
                 updateLastDataPointStyle(referencePointsListPath);
                 break;
@@ -259,6 +267,29 @@ public class AiController implements Controller {
         if (!lastSeries.getData().isEmpty()) {
             XYChart.Data<Number, Number> lastDataPoint = lastSeries.getData().get(lastSeries.getData().size() - 1);
             lastDataPoint.getNode().getStyleClass().add("last-data-point");
+        }
+    }
+
+
+    private void deletePointOnCollision(List<XYChart.Series<Number, Number>> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+        XYChart.Data<Number, Number> point;
+        tempo = new XYChart.Data<>(tempX,tempY);
+        for (int i = 0; i < referencePointsListPath.size() - 1; i++) {
+            XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
+            point = series.getData().get(0);
+            if(checkPointsCollision(point, tempo)){
+                System.out.println("collided");
+                //System.out.println("old size is " + referencePointsListPath.size());
+                referencePointsListPath.remove(referencePointsListPath.get(i));
+                //referencePointsListPath.remove(i);
+                System.out.println("point 1 " + point);
+                System.out.println("tempo point is " + tempo);
+                //System.out.println("removed point!!!");
+            }
+                //System.out.println("new size is " +referencePointsListPath.size());
         }
     }
 
@@ -289,6 +320,7 @@ public class AiController implements Controller {
         if(referencePointsListPath.size() == 1) {
             return;
         }
+
         int i = referencePointsListPath.size() - 2;
 
             XYChart.Series<Number, Number> series = referencePointsListPath.get(i);
@@ -563,13 +595,11 @@ public class AiController implements Controller {
                     break;
                     case "path":
                         //System.out.println("i'm path");
-                        //double distancePath = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), tempoPath);
-                        //distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
+                        distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
                         pathDistance = calculatePathDistance(referencePointsListPath);
                         distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
 
-
-
+                        deletePointOnCollision(referencePointsListPath);
                         break;
 
                 }
@@ -667,7 +697,6 @@ public class AiController implements Controller {
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
-        System.out.println("clicked on image");
         var trackingData = lastTrackingData;
         if(trackingData.size() > 0 && clicked_image_points.size() < 4) {
             // We also directly save the tracking-coordinates at this point.

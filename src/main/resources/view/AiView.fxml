@@ -10,7 +10,7 @@
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.AiController">
-    <VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
+    <HBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
         <StackPane>
             <alignment>
                 <Pos fx:value="CENTER"/>
@@ -34,9 +34,9 @@
             </LineChart>
         </StackPane>
 
-        <HBox alignment="CENTER">
+        <VBox alignment="CENTER">
             <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" text="Connections"
-                        textAlignment="CENTER">
+                        textAlignment="CENTER" alignment="CENTER">
                 <graphic>
                     <ProgressIndicator fx:id="connectionProgressSpinner" prefHeight="15.0" prefWidth="15.0"/>
                 </graphic>
@@ -86,6 +86,6 @@
 
                 </Button>
             </TitledPane>
-        </HBox>
-    </VBox>
+        </VBox>
+    </HBox>
 </ScrollPane>
