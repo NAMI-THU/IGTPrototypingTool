@@ -46,8 +46,8 @@
     -fx-shadow-offset-x: 2px; /* Subtle shadow offset */
     -fx-shadow-offset-y: 2px; /* Subtle shadow offset */
     -fx-shadow-blur: 4px; /* Softer shadow blur */
-    -fx-pref-width: 25px; /* Explicitly setting preferred width */
-    -fx-pref-height: 25px; /* Explicitly setting preferred height */
+    -fx-pref-width: 22px; /* Explicitly setting preferred width */
+    -fx-pref-height: 22px; /* Explicitly setting preferred height */
 }
 
 

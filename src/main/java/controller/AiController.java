@@ -39,6 +39,9 @@ public class AiController implements Controller {
 
     @FXML
     public Label distanceLabel;
+
+    @FXML
+    public Label navigationStatus;
     @FXML
     public CheckBox trackingConnectedStatusBox;
     public ProgressIndicator connectionProgressSpinner;
@@ -53,7 +56,7 @@ public class AiController implements Controller {
     @FXML
     public Button clearAll;
 
-    private Label statusLabel;
+    public Label statusLabel;
     private Timeline videoTimeline;
     private BufferedImage currentShowingImage;
     private List<ExportMeasurement> lastTrackingData = new ArrayList<>();
@@ -125,7 +128,7 @@ public class AiController implements Controller {
             if (Objects.equals(newValue, "Single Point Mode")) {
                 distanceCase = "single";
                 dataSeries.add(referencePoint);
-                PathControlPanel.setVisible(false);
+                PathControlPanel.setVisible(true);
                 lineDataSeries.clear();
                 trackingPoint.setData(referencePoint.getData());
 
@@ -226,7 +229,7 @@ public class AiController implements Controller {
 
                 tempo = new XYChart.Data<>(tempX,tempY);
                 double distance = calculateDistance(tempo, newPoint);
-                distanceLabel.setText("distance: " + String.format("%.2f", distance));
+                distanceLabel.setText("Distance: " + String.format("%.2f", distance));
                 break;
 
             case "Path Mode":
@@ -283,7 +286,7 @@ public class AiController implements Controller {
             if(checkPointsCollision(point, tempo)){
                 System.out.println("collided");
                 //System.out.println("old size is " + referencePointsListPath.size());
-                referencePointsListPath.remove(referencePointsListPath.get(i));
+                //referencePointsListPath.remove(referencePointsListPath.get(i));
                 //referencePointsListPath.remove(i);
                 System.out.println("point 1 " + point);
                 System.out.println("tempo point is " + tempo);
@@ -592,13 +595,30 @@ public class AiController implements Controller {
                     // Calculate distance between the last tracking point and the current shifted point
                     double distance = calculateDistance(new XYChart.Data<>(shifted_points[0], shifted_points[1]), lastTrackingPoint);
                     distanceLabel.setText("Distance: " + String.format("%.2f", distance));
+                        if (checkPointsCollision(new XYChart.Data<>(shifted_points[0], shifted_points[1]), lastTrackingPoint)){
+                            distanceLabel.setText("Distance: " + 0.0);
+                            navigationStatus.setText("Status: Thrombus reached!");
+                            distanceLabel.setText("Distance: " + 0.0);
+                        } else {
+                            navigationStatus.setText("Status: navigating...");
+                        }
                     break;
                     case "path":
                         //System.out.println("i'm path");
                         distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
                         pathDistance = calculatePathDistance(referencePointsListPath);
                         distanceLabel.setText("Distance: " + String.format("%.2f", pathDistance));
-
+                        if (checkPointsCollision(tempo, referencePointsListPath.get(referencePointsListPath.size()-1).getData().get(0))){
+                            distanceLabel.setText("Distance: " + 0.0);
+                            navigationStatus.setText("Status: Thrombus reached!");
+                            trackingPoint.getData().clear();
+                            dataSeries.clear();
+                            referencePointsListPath.clear();
+                            lineDataSeries.clear();
+                            distanceLabel.setText("Distance: " + 0.0);
+                        } else {
+                            navigationStatus.setText("Status: navigating...");
+                        }
                         deletePointOnCollision(referencePointsListPath);
                         break;
 
@@ -620,46 +640,6 @@ public class AiController implements Controller {
     }
 
 
-    /**
-     * Applies the transformation matrix to the image
-     * @param mat The image to be transformed
-     * @return The transformed image
-     */
-    /*
-    private Mat applyImageTransformations(Mat mat){
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getTranslationMat(), mat.size());
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getRotationMat(), mat.size());
-//        Imgproc.warpAffine(mat, mat, transformationMatrix.getScaleMat(), mat.size());
-
-        /*
-        var imagePoints = transformationMatrix.getImagePoints();
-        var trackingPoints = transformationMatrix.getTrackingPoints();
-        var outMat = new Mat();
-        if(!imagePoints.empty() && !trackingPoints.empty()) {
-            //Mat srcPoints = Converters.vector_Point_to_Mat(imagePoints, CvType.CV_64F);
-            //Mat dstPoints = Converters.vector_Point_to_Mat(trackingPoints, CvType.CV_64F);
-
-            var matrix = Imgproc.getPerspectiveTransform(imagePoints, trackingPoints);
-            //var matrix = Calib3d.findHomography(imagePoints, trackingPoints, Calib3d.RANSAC);
-
-            Imgproc.warpPerspective(mat, outMat, matrix, new Size());
-            mat = outMat;
-            mat = outMat;
-            Imgproc.warpAffine(mat, outMat, transformationMatrix.getScaleMat(), mat.size());
-            mat = outMat;
-            Imgproc.warpAffine(mat, outMat, transformationMatrix.getTranslationMat(), mat.size());
-        }
-
-
-        if(roiDirty){
-            // Set noExecute to false if the Roi should be calculated (and thus, the image cropped)
-            matrixRoi = MatHelper.calculateRoi(mat, true);
-            roiDirty = false;
-        }
-        mat = mat.submat(matrixRoi[0],matrixRoi[1], matrixRoi[2],matrixRoi[3]);
-        return mat;
-    }
-*/
     /**
      * Applies the (2D) transformation on a tracking point
      * @param x X-Coordinate of the point
@@ -685,8 +665,8 @@ public class AiController implements Controller {
         var pos_star = new Mat(2,1,CvType.CV_64F);
         Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
         double[] out = new double[3];
-        out[0] = pos_star.get(0,0)[0];
-        out[1] = pos_star.get(1,0)[0];
+        out[0] = pos_star.get(0,0)[0] + 18;
+        out[1] = pos_star.get(1,0)[0] - 30;
         out[2] = 0;
         return out;
     }
