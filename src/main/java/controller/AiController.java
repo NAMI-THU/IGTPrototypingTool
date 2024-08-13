@@ -668,6 +668,7 @@ public class AiController implements Controller {
         out[0] = pos_star.get(0,0)[0] + 18;
         out[1] = pos_star.get(1,0)[0] - 30;
         out[2] = 0;
+        System.out.println("test");
         return out;
     }
 
