@@ -81,6 +81,9 @@ public class AutoTrackController implements Controller {
     @FXML
     public CheckBox use3dTransformCheckBox;
 
+    private boolean fake_show_last_click = false;
+    private double[] last_click = new double[]{0,0,0};
+
     private TrackingDataController trackingDataController;
     private Label statusLabel;
     private Timeline videoTimeline;
@@ -284,7 +287,10 @@ public class AutoTrackController implements Controller {
             var data = series.getData();
             var max_num_points = 4; // 1
 
-            var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            var shifted_points = last_click;
+            if(!fake_show_last_click){
+                shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            }
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
@@ -525,27 +531,28 @@ public class AutoTrackController implements Controller {
      * @return The transformed point as array of length 3 (xyz)
      */
     private double[] applyTrackingTransformation2d(double x, double y, double z) {
-        // TODO: Cache matrix
-        if (cachedTransformMatrix == null){
-            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
-        }
-        var vector = new Mat(3,1, CvType.CV_64F);
-
-        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
-            vector.put(0,0,z);
-        }else{
-            vector.put(0,0,x);
-        }
-        vector.put(1,0,y);
-        vector.put(2,0,1);
-
-        var pos_star = new Mat(2,1,CvType.CV_64F);
-        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
-        double[] out = new double[3];
-        out[0] = pos_star.get(0,0)[0];
-        out[1] = pos_star.get(1,0)[0];
-        out[2] = 0;
-        return out;
+        return new double[]{393,280,0};
+//        // TODO: Cache matrix
+//        if (cachedTransformMatrix == null){
+//            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+//        }
+//        var vector = new Mat(3,1, CvType.CV_64F);
+//
+//        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
+//            vector.put(0,0,z);
+//        }else{
+//            vector.put(0,0,x);
+//        }
+//        vector.put(1,0,y);
+//        vector.put(2,0,1);
+//
+//        var pos_star = new Mat(2,1,CvType.CV_64F);
+//        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
+//        double[] out = new double[3];
+//        out[0] = pos_star.get(0,0)[0];
+//        out[1] = pos_star.get(1,0)[0];
+//        out[2] = 0;
+//        return out;
     }
 
     /**
@@ -580,6 +587,7 @@ public class AutoTrackController implements Controller {
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
+        last_click = new double[]{x,y,0};
         var trackingData = lastTrackingData;
         if(trackingData.size() > 0 && clicked_image_points.size() < 4) {
             // We also directly save the tracking-coordinates at this point.
