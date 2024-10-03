@@ -338,8 +338,11 @@ public class TrackingDataController implements Controller {
 
             // Absolute paths to the script and weights file
 
-            String scriptPath = "Python/AutomaticGuidewireDetection/src/yolov5/detect.py";
-            String weightsPath = "Python/AutomaticGuidewireDetection/weights/laboratory/weights/best.pt";
+            /*String scriptPath = "Python/AutomaticGuidewireDetection/src/yolov5/detect.py";
+            String weightsPath = "Python/AutomaticGuidewireDetection/weights/laboratory/weights/best.pt";*/
+
+            String scriptPath = "Python/local_opencv_demo.py";
+            String weightsPath = "Python/train_500/weights/best.pt";
 
             // Build the command
             ProcessBuilder pb = new ProcessBuilder(
