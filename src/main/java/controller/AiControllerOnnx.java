@@ -6,13 +6,16 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import algorithm.ImageDataProcessor;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import nu.pattern.OpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -29,31 +32,56 @@ import java.util.List;
 
 public class AiControllerOnnx {
     @FXML
+    private Button clearAllPoints;
+
+    @FXML
+    private Label distanceLabel;
+    @FXML
+    private Label navigationStatus;
+
+    @FXML
+    private CheckBox enablePathMode;
+    @FXML
     public ChoiceBox sourceChoiceBox;
 
     @FXML
-    private PlottableImage videoImagePlot;
+    private ImageView videoImagePlot;
     private int cameraSourceIndex;
     private VideoCapture capture;
     private YOLOv8Model yoloModel;
     private OrtEnvironment env;
+    private Image placeholderImage = new Image("C:\\Users\\Public\\Documents\\IGTPrototypingTool\\Python\\THU_Nami.jpg",640, 480, false, true);
+
+    private Point detectionPoint;
+    private List<Point> pathPoints = new ArrayList<>(); // List to hold the path points
+
+    private Mat frame;
+    private double totalDistance;
 
 
     public void initialize() {
+        OpenCV.loadLocally();
+        clearAllPoints.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                pathPoints.clear();
+                totalDistance = 0.0;
+                distanceLabel.setText("Distance: 0.0");
+            }
+        });
         sourceChoiceBox.setValue("Select Source");
+        videoImagePlot.setImage(placeholderImage);
+        //videoImagePlot.setLegendVisible(false);
+
+        // Set up mouse click event on the videoImagePlot
+        videoImagePlot.setOnMouseClicked(this::handleVideoImageClick);
+
         // Set up a listener for the ChoiceBox
         sourceChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            handleCameraSourceChange(newValue.intValue()); // Pass the index directly
+            handleCameraSourceChange(newValue.intValue()); // Pass the index as args
+            pathPoints.clear();
         });
 
-        videoImagePlot.setLegendVisible(true);
-        OpenCV.loadLocally();
-        //capture = new VideoCapture(0);  // Open default camera (index 0)
-
-        /*if (!capture.isOpened()) {
-            System.out.println("Error: Could not open video capture.");
-            return;
-        }*/
 
         // Initialize ONNX Runtime environment and YOLOv8 model
         try {
@@ -63,9 +91,8 @@ public class AiControllerOnnx {
             e.printStackTrace();
         }
 
-        // Start a background task for the video stream processing
-        //startVideoStream();
     }
+
 
     // Method to handle camera source changes
     private void handleCameraSourceChange(int newSourceIndex) {
@@ -80,10 +107,15 @@ public class AiControllerOnnx {
         // Try to open the selected camera
         capture = new VideoCapture(cameraSourceIndex);
         if (!capture.isOpened()) {
+            distanceLabel.setText("Distance: Invalid");
+            navigationStatus.setText("Status: Could not open camera source!");
+            // If the camera source is unavailable, set the placeholder image
             System.out.println("Error: Could not open camera source.");
+            Platform.runLater(() -> videoImagePlot.setImage(placeholderImage));
             return; // Exit if the camera source fails to open
         }
-
+        distanceLabel.setText("Distance: 0.0");
+        navigationStatus.setText("Status: navigating...");
         // Start the video stream with the new camera source
         startVideoStream();
     }
@@ -93,7 +125,7 @@ public class AiControllerOnnx {
         Task<Void> videoTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Mat frame = new Mat();
+                frame = new Mat();
                 while (!isCancelled()) {
                     if (capture.read(frame)) {
                         try {
@@ -167,9 +199,18 @@ public class AiControllerOnnx {
         return OnnxTensor.createTensor(env, floatBuffer, inputShape);
     }
 
-    // Post-process the model output (apply NMS and IoU filtering)
+
     // Post-process the model output (detect one object at a time)
     private void postProcess(OrtSession.Result result, Mat frame) {
+        // Draw path from detection point to first point, then between other points
+        if (!pathPoints.isEmpty()) {
+            drawPath(frame);
+        }
+        // Draw all the path points directly in postProcess
+        for (Point point : pathPoints) {
+            // Draw each point as a green filled circle
+            Imgproc.circle(frame, point, 5, new Scalar(0, 0, 255), -1); // Green point
+        }
         float frameWidth = frame.width();
         float frameHeight = frame.height();
         float widthScaleFactor= frameWidth/640.0f;
@@ -229,6 +270,26 @@ public class AiControllerOnnx {
         Detection bestDetection = detections.get(0);
 
 
+        // Set the detectionPoint to the center of the bounding box
+        detectionPoint = new Point(bestDetection.x + bestDetection.width / 2,
+                bestDetection.y + bestDetection.height / 2);
+        if (!pathPoints.isEmpty()){
+        drawLine(detectionPoint,pathPoints.get(0),frame);
+        totalDistance = calculateDistance();
+        checkCollision();
+        Platform.runLater(() ->distanceLabel.setText(String.format("Distance: %.2f", totalDistance)));
+        }
+
+        // Draw the center point of the detection box with a red outline
+        int radius = 6; // You can adjust the radius for size
+        int thickness = 2; // Thickness of the outline
+
+        // Draw the outer circle (red outline)
+        Imgproc.circle(frame, detectionPoint, radius, new Scalar(255, 0, 0), thickness);
+
+        // Draw the inner circle (white fill)
+        Imgproc.circle(frame, detectionPoint, radius - thickness, new Scalar(255, 255, 255), -15); // White fill
+
         // Draw bounding box for the highest confidence detection only
         Imgproc.rectangle(frame,
                 new Point(bestDetection.x, bestDetection.y),
@@ -240,6 +301,117 @@ public class AiControllerOnnx {
                 new Point(bestDetection.x, bestDetection.y - 5),
                 Imgproc.FONT_HERSHEY_SIMPLEX, 0.75,
                 new Scalar(255, 255, 255), 2); // White label
+
+    }
+
+
+    private void handleVideoImageClick(javafx.scene.input.MouseEvent event) {
+        if (enablePathMode.isSelected() && capture != null) {
+
+            // Create a new point and add to the path
+            Point newPoint = new Point(event.getX(), event.getY());
+            pathPoints.add(newPoint);
+        }
+    }
+    // Method to draw the entire path (all points and lines)
+    private void drawPath(Mat frame) {
+        // Iterate through the list of points and draw them
+        for (int i = 0; i < pathPoints.size(); i++) {
+            Point point = pathPoints.get(i);
+            int radius;
+            int thickness;
+
+            // Check if it's the last point in the list
+            if (i == pathPoints.size() - 1) {
+                // Make the last point bigger with an outline
+                radius = 8; // Adjust size for the last point
+                thickness = 3; // Outline thickness
+                // Draw the outer circle (red outline)
+                Imgproc.circle(frame, point, radius, new Scalar(255, 0, 0), thickness);
+                // Draw the inner circle (white fill)
+                Imgproc.circle(frame, point, radius - thickness, new Scalar(255, 255, 255), -15); // White fill
+            } else {
+                // Regular points
+                radius = 5; // Regular size for other points
+                thickness = -1; // Filled circle
+                Imgproc.circle(frame, point, radius, new Scalar(0, 255, 0), thickness);
+            }
+
+            // Draw line to the previous point if this is not the first point
+            if (i > 0) {
+                Point prevPoint = pathPoints.get(i - 1);
+                Imgproc.line(frame, prevPoint, point, new Scalar(255, 0, 0), 2);
+            }
+        }
+    }
+
+    private double calculateDistance() {
+        totalDistance = 0.0;
+        // Check if there are enough points to calculate distance
+        if (pathPoints.isEmpty()) {
+            return totalDistance;
+        }
+
+        // Check if the detection point is not null
+        if (detectionPoint == null) {
+            return totalDistance;
+        }
+
+        // Start from the detection point
+        Point previousPoint = detectionPoint;
+
+        // Iterate through the path points
+        for (Point currentPoint : pathPoints) {
+            totalDistance += calculateEuclideanDistance(previousPoint, currentPoint);
+            previousPoint = currentPoint; // Move to the next point
+        }
+
+        // Also add distance from the last path point back to the first path point
+        if (!pathPoints.isEmpty()) {
+            totalDistance += calculateEuclideanDistance(previousPoint, pathPoints.get(0));
+        }
+
+        return totalDistance;
+    }
+
+    // Helper method to calculate Euclidean distance between two points
+    private double calculateEuclideanDistance(Point pt1, Point pt2) {
+        double dx = pt2.x - pt1.x;
+        double dy = pt2.y - pt1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+
+    private boolean detectCollision(Point pt1, Point pt2) {
+        double x1 = pt1.x;
+        double y1 = pt1.y;
+        double x2 = pt2.x;
+        double y2 = pt2.y;
+
+        return ((x1 >= x2 - 20) && (x1 <= x2 + 20)) && ((y1 >= y2 - 20) && (y1 <= y2 + 20));
+    }
+
+    public void checkCollision() {
+        for (int i = 0; i < pathPoints.size(); i++) {
+            Point point = pathPoints.get(i);
+            if (detectCollision(point, detectionPoint)) {
+                if (i == pathPoints.size() - 1) {
+                    // Collision with the thrombus
+                    Platform.runLater(()->navigationStatus.setText("Status: Thrombus reached!"));
+                } else {
+                    Platform.runLater(()->navigationStatus.setText("Status: navigating"));
+                    // Collision with a point other than the last
+                    pathPoints.subList(0, i + 1).clear(); // Remove points from index 0 to i
+                }
+                break;
+            }
+        }
+    }
+
+
+    private void drawLine(Point start, Point end, Mat frame) {
+        // Draw a line between the start and end points
+        Imgproc.line(frame, start, end, new Scalar(255, 0, 0), 2);
 
     }
 
@@ -277,10 +449,6 @@ public class AiControllerOnnx {
             }
         }
     }
-
-
-
-
     public void setStatusLabel(Label status) {
         // Set the status label if needed
     }

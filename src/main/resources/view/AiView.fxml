@@ -1,97 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Pos?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import userinterface.PlottableImage?>
+<?import java.lang.String?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AiController">
-    <HBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
-        <StackPane>
+<?import javafx.scene.image.ImageView?>
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AiControllerOnnx">
+    <!--<LineChart fx:id="lineChart">
+        <xAxis>
+            <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0" />
+        </xAxis>
+        <yAxis>
+            <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0" />
+        </yAxis>
+    </LineChart>-->
+    <HBox  maxHeight="Infinity" maxWidth="Infinity" spacing="50.0">
+
             <alignment>
                 <Pos fx:value="CENTER" />
             </alignment>
-            <PlottableImage fx:id="videoImagePlot" horizontalGridLinesVisible="false" maxHeight="Infinity"
-                            maxWidth="Infinity" verticalGridLinesVisible="false">
-                <xAxis>
-                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
-                </xAxis>
-                <yAxis>
-                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
-                </yAxis>
-            </PlottableImage>
-            <LineChart fx:id="lineChart">
-                <xAxis>
-                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0" />
-                </xAxis>
-                <yAxis>
-                    <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0" />
-                </yAxis>
-            </LineChart>
-        </StackPane>
 
-        <VBox alignment="CENTER">
-            <TitledPane alignment="CENTER" animated="false" collapsible="false" graphicTextGap="10.0" text="Connections" textAlignment="CENTER">
-                <graphic>
-                    <ProgressIndicator fx:id="connectionProgressSpinner" prefHeight="15.0" prefWidth="15.0" />
-                </graphic>
-                <VBox>
-                    <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
-                        <padding>
-                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </padding>
+        <!--<PlottableImage fx:id="videoImagePlot" horizontalGridLinesVisible="false" verticalGridLinesVisible="false" >
+            <xAxis>
+                <NumberAxis lowerBound="0.0" upperBound="640.0" autoRanging="false" minorTickVisible="false" side="BOTTOM"/>
+            </xAxis>
+            <yAxis>
+                <NumberAxis lowerBound="0.0" upperBound="480.0" autoRanging="false" minorTickVisible="false" side="LEFT"/>
+            </yAxis>
+        </PlottableImage>-->
+
+        <ImageView fx:id="videoImagePlot" fitWidth="640" fitHeight="480" preserveRatio="true" />
+
+
+
+        <VBox alignment="CENTER" spacing="20.0">
+            <TitledPane prefHeight="300.0" alignment="CENTER" animated="false" collapsible="false" graphicTextGap="10.0" text="Control Panel" textAlignment="CENTER">
+                <VBox spacing="20.0">
+                    <HBox  alignment="CENTER_LEFT" spacing="20.0">
+
                         <Label text="Video Input" textAlignment="CENTER" />
-                        <ChoiceBox fx:id="sourceChoiceBox" />
-                    </HBox>
-                    <Label fx:id="distanceLabel" text="Distance: " textAlignment="CENTER" />
-                    <Label fx:id="navigationStatus" text="Status: " textAlignment="CENTER" />
-                    <HBox>
-                        <CheckBox fx:id="trackingConnectedStatusBox" disable="true" mnemonicParsing="false" styleClass="red-green-checkbox" />
-                        <Label text="Trackingsource">
-                            <padding>
-                                <Insets left="5.0" />
-                            </padding>
-                        </Label>
-                        <padding>
-                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </padding>
-                    </HBox>
-                    <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
-                    <Label text="Reference mode" textAlignment="CENTER" />
-                    <ChoiceBox fx:id="ModeSelection">
+                        <ChoiceBox fx:id="sourceChoiceBox">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Single Point Mode" />
-                                <String fx:value="Path Mode" />
+                                <String fx:value="Built-in Webcam"/>
+                                <String fx:value="External Camera 1"/>
+                                <String fx:value="External Camera 2"/>
                             </FXCollections>
                         </items>
+                        </ChoiceBox>
 
-                    </ChoiceBox>
                     </HBox>
+                    <Label fx:id="distanceLabel" text="Distance: 0.0" textAlignment="CENTER"/>
+                    <Label fx:id="navigationStatus" text="Status: Waiting for device selection" textAlignment="CENTER" />
+                    <HBox  alignment="CENTER_LEFT" spacing="20.0">
+
+                        <CheckBox fx:id="enablePathMode" text="Enable Path Mode" disable="false" mnemonicParsing="false" styleClass="red-green-checkbox" />
+                        <Button fx:id="clearAllPoints">Clear all </Button>
+                    </HBox>
+
+
                 </VBox>
             </TitledPane>
-            <TitledPane fx:id="PathControlPanel" animated="false" collapsible="false" graphicTextGap="10.0" maxWidth="150.0" minHeight="100" minWidth="200.0" prefWidth="200.0" text="Path Control Panel" textAlignment="CENTER" visible="false">
-                <Button fx:id="clearAll" text="Clear All">
-
-                </Button>
-            </TitledPane>
-            <padding>
-                <Insets bottom=".0" left="80.0" right="40.0" top="0.0" />
-            </padding>
         </VBox>
     </HBox>
 </ScrollPane>
