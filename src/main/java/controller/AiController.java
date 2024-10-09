@@ -1,6 +1,7 @@
 package controller;
 
 import algorithm.*;
+import controller.Controller;
 import inputOutput.ExportMeasurement;
 import inputOutput.TransformationMatrix;
 import inputOutput.VideoSource;
@@ -195,6 +196,8 @@ public class AiController implements Controller {
 
         return ((x1 >= x2 - 20) && (x1 <= x2 + 20)) && ((y1 <= y2 + 20) && (y2 >= y2 - 20));
     }
+
+
 
 
 
