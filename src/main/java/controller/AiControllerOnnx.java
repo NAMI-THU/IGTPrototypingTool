@@ -37,6 +37,8 @@ public class AiControllerOnnx {
     @FXML
     private Label distanceLabel;
     @FXML
+    private Label instructionsLabel;
+    @FXML
     private Label navigationStatus;
 
     @FXML
@@ -67,16 +69,17 @@ public class AiControllerOnnx {
                 pathPoints.clear();
                 totalDistance = 0.0;
                 distanceLabel.setText("Distance: 0.0");
+                navigationStatus.setText("Status: navigating...");
+                instructionsLabel.setText("Insructions: Unknown direction");
             }
         });
         sourceChoiceBox.setValue("Select Source");
         videoImagePlot.setImage(placeholderImage);
-        //videoImagePlot.setLegendVisible(false);
 
         // Set up mouse click event on the videoImagePlot
         videoImagePlot.setOnMouseClicked(this::handleVideoImageClick);
 
-        // Set up a listener for the ChoiceBox
+        // Set up a listener for the ChoiceBox to change camera source
         sourceChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             handleCameraSourceChange(newValue.intValue()); // Pass the index as args
             pathPoints.clear();
@@ -112,10 +115,11 @@ public class AiControllerOnnx {
             // If the camera source is unavailable, set the placeholder image
             System.out.println("Error: Could not open camera source.");
             Platform.runLater(() -> videoImagePlot.setImage(placeholderImage));
-            return; // Exit if the camera source fails to open
+            return;
         }
         distanceLabel.setText("Distance: 0.0");
         navigationStatus.setText("Status: navigating...");
+
         // Start the video stream with the new camera source
         startVideoStream();
     }
@@ -138,7 +142,7 @@ public class AiControllerOnnx {
                             // Post-process the output (apply NMS and IoU)
                             postProcess(result, frame);
 
-                            // Convert the frame to a format that PlottableImage can use
+                            // Convert the frame to a format the image view can use
                             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2RGB);  // Convert to RGB
                             Image imageToShow = matToImage(frame);
 
@@ -206,11 +210,8 @@ public class AiControllerOnnx {
         if (!pathPoints.isEmpty()) {
             drawPath(frame);
         }
-        // Draw all the path points directly in postProcess
-        for (Point point : pathPoints) {
-            // Draw each point as a green filled circle
-            Imgproc.circle(frame, point, 5, new Scalar(0, 0, 255), -1); // Green point
-        }
+
+
         float frameWidth = frame.width();
         float frameHeight = frame.height();
         float widthScaleFactor= frameWidth/640.0f;
@@ -239,7 +240,7 @@ public class AiControllerOnnx {
 
         List<Detection> detections = new ArrayList<>();
         for (int i = 0; i < numDetections; i++) {
-            if (outputTr[4][i] < 0.25) {
+            if (outputTr[4][i] < 0.3) {
                 continue;  // Filter out low-confidence detections
             }
 
@@ -274,20 +275,26 @@ public class AiControllerOnnx {
         detectionPoint = new Point(bestDetection.x + bestDetection.width / 2,
                 bestDetection.y + bestDetection.height / 2);
         if (!pathPoints.isEmpty()){
+        String instruction = getDirection(detectionPoint, pathPoints.get(pathPoints.size()-1));
+
         drawLine(detectionPoint,pathPoints.get(0),frame);
         totalDistance = calculateDistance();
         checkCollision();
+        if(!detectCollision(detectionPoint, pathPoints.get(pathPoints.size()-1))){
+                Platform.runLater(()->navigationStatus.setText("Status: navigating..."));
+        }
         Platform.runLater(() ->distanceLabel.setText(String.format("Distance: %.2f", totalDistance)));
+        Platform.runLater(() ->instructionsLabel.setText("Instructions: " + instruction));
         }
 
         // Draw the center point of the detection box with a red outline
-        int radius = 6; // You can adjust the radius for size
-        int thickness = 2; // Thickness of the outline
+        int radius = 6;
+        int thickness = 2;
 
-        // Draw the outer circle (red outline)
+        // Draw the outer circle
         Imgproc.circle(frame, detectionPoint, radius, new Scalar(255, 0, 0), thickness);
 
-        // Draw the inner circle (white fill)
+        // Draw the inner circle
         Imgproc.circle(frame, detectionPoint, radius - thickness, new Scalar(255, 255, 255), -15); // White fill
 
         // Draw bounding box for the highest confidence detection only
@@ -324,17 +331,17 @@ public class AiControllerOnnx {
             // Check if it's the last point in the list
             if (i == pathPoints.size() - 1) {
                 // Make the last point bigger with an outline
-                radius = 8; // Adjust size for the last point
-                thickness = 3; // Outline thickness
+                radius = 7;
+                thickness = 3;
                 // Draw the outer circle (red outline)
                 Imgproc.circle(frame, point, radius, new Scalar(255, 0, 0), thickness);
                 // Draw the inner circle (white fill)
-                Imgproc.circle(frame, point, radius - thickness, new Scalar(255, 255, 255), -15); // White fill
+                Imgproc.circle(frame, point, radius - thickness, new Scalar(255, 255, 255), -2); // White fill
             } else {
                 // Regular points
                 radius = 5; // Regular size for other points
                 thickness = -1; // Filled circle
-                Imgproc.circle(frame, point, radius, new Scalar(0, 255, 0), thickness);
+                Imgproc.circle(frame, point, radius, new Scalar(0, 0, 255), thickness);
             }
 
             // Draw line to the previous point if this is not the first point
@@ -388,7 +395,7 @@ public class AiControllerOnnx {
         double x2 = pt2.x;
         double y2 = pt2.y;
 
-        return ((x1 >= x2 - 20) && (x1 <= x2 + 20)) && ((y1 >= y2 - 20) && (y1 <= y2 + 20));
+        return ((x1 >= x2 - 10) && (x1 <= x2 + 10)) && ((y1 >= y2 - 10) && (y1 <= y2 + 10));
     }
 
     public void checkCollision() {
@@ -408,15 +415,47 @@ public class AiControllerOnnx {
         }
     }
 
+    public String getDirection(Point pt1, Point pt2) {
+        double x1 = pt1.x;
+        double x2 = pt2.x;
+        double y1 = pt1.y;
+        double y2 = pt2.y;
+        double dx = x2 - x1;
+        double dy = y2 - y1;
 
-    private void drawLine(Point start, Point end, Mat frame) {
-        // Draw a line between the start and end points
-        Imgproc.line(frame, start, end, new Scalar(255, 0, 0), 2);
+        if (detectCollision(detectionPoint, pathPoints.get(pathPoints.size()-1))) {
+            return "Already at the target";
+        }
 
+        if (dx > 0 && dy == 0) {
+            return "Move Right";
+        } else if (dx < 0 && dy == 0) {
+            return "Move Left";
+        } else if (dx == 0 && dy > 0) {
+            return "Move Down";
+        } else if (dx == 0 && dy < 0) {
+            return "Move Up";
+        } else if (dx > 0 && dy > 0) {
+            return "Move Down-Right";
+        } else if (dx > 0 && dy < 0) {
+            return "Move Up-Right";
+        } else if (dx < 0 && dy > 0) {
+            return "Move Down-Left";
+        } else if (dx < 0 && dy < 0) {
+            return "Move Up-Left";
+        }
+
+        return "Unknown direction";
     }
 
 
-    // Utility method to convert OpenCV Mat to JavaFX Image
+
+    private void drawLine(Point start, Point end, Mat frame) {
+        Imgproc.line(frame, start, end, new Scalar(255, 0, 0), 2);
+    }
+
+
+    // Borrowed utility method to convert OpenCV Mat to JavaFX Image
     private Image matToImage(Mat frame) {
         try {
             return ImageDataProcessor.Mat2Image(frame, ".png");
@@ -444,13 +483,13 @@ public class AiControllerOnnx {
             try {
                 yoloModel.close();
             } catch (OrtException e) {
-                // Handle exception as needed, for example log the error
+
                 e.printStackTrace();
             }
         }
     }
     public void setStatusLabel(Label status) {
-        // Set the status label if needed
+
     }
 
     public void close() {

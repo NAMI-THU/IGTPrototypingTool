@@ -36,6 +36,7 @@ repositories {
 
 dependencies {
     implementation 'com.microsoft.onnxruntime:onnxruntime:1.19.2'
+    implementation 'org.openpnp:opencv:4.9.0-0'
 
     implementation 'org.openpnp:opencv:4.9.0-0'
     implementation 'org.hamcrest:hamcrest-core:2.2'
