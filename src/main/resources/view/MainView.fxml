@@ -31,6 +31,7 @@
                                 <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement"/>
                                 <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy"/>
                                 <MenuItem mnemonicParsing="false" onAction="#openAutoTrackView" text="AutoTrack" />
+								<MenuItem mnemonicParsing="false" onAction="#openExampleView" text="Example" />
                             </items>
                         </Menu>
                     </items>
