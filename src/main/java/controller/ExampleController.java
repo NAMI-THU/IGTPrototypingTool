@@ -34,7 +34,7 @@ public class ExampleController implements Controller {
         if (t.getTrackingDataSource()!=null) {
             t.getTrackingDataSource().update();
             List<Measurement> li = t.getDataService().loadNextData(1).get(0).getMeasurement();
-            s = "Tracking Coordinates: " + li.get(li.size() - 1).getPoint();
+            s = "Tracking Coordinates: " + li.get(li.size() - 1).getPos();
         }
         else{
             s = "No tracker connected";

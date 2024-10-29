@@ -22,13 +22,10 @@
                 <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Window">
-                <Menu mnemonicParsing="false" text="Show View">
-                    <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement"/>
-                    <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy"/>
-                    <MenuItem mnemonicParsing="false" onAction="#openAutoTrackView" text="AutoTrack"/>
-                </Menu>
-                                <MenuItem mnemonicParsing="false" onAction="#openAutoTrackView" text="AutoTrack" />
-                                <MenuItem mnemonicParsing="false" onAction="#openExampleView" text="Example" />
+                <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement"/>
+                <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy"/>
+                <MenuItem mnemonicParsing="false" onAction="#openAutoTrackView" text="AutoTrack"/>
+                <MenuItem mnemonicParsing="false" onAction="#openExampleView" text="Example" />
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" onAction="#openAboutView" text="About"/>
