@@ -6,7 +6,7 @@ plugins {
     // Checkstyle enforces consistent formatting rules across the project.
     id 'checkstyle'
     // Spotbugs is a static analyzer for java
-    id 'com.github.spotbugs' version '6.0.21'
+    id 'com.github.spotbugs' version '6.0.26'
     // With this plugin, we can build a Windows executable
     id 'edu.sc.seis.launch4j' version '3.0.6'
 }
@@ -28,7 +28,7 @@ repositories {
 dependencies {
     implementation 'org.openpnp:opencv:4.9.0-0'
     implementation 'org.apache.commons:commons-math3:3.6.1'
-    implementation 'org.apache.commons:commons-csv:1.11.0'
+    implementation 'org.apache.commons:commons-csv:1.12.0'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.json:json:20240303'
 
@@ -36,9 +36,9 @@ dependencies {
     implementation 'us.ihmc:jimStlMeshImporterJFX:0.7'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.11.3'
 }
 
 // JUnit 5 support
@@ -61,7 +61,7 @@ application {
 checkstyle {
     // change path to use other checkstyle configuration
     configFile = rootProject.file('config/checkstyle/minimalcheck.xml')
-    toolVersion = '10.18.1'
+    toolVersion = '10.20.0'
 }
 
 tasks.withType(Checkstyle) {
