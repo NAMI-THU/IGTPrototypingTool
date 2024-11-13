@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.InfoController">
+   <Label text="Info">
+      <font>
+         <Font size="30.0" />
+      </font>
+   </Label>
+    <TextArea editable="false" wrapText="true">
+        This application was and currently is developed by students of THU.
+        It is actively supervised by Prof. Dr. Alfred Franz.
+        The source code can be found at https://github.com/NAMI-THU/IGTPrototypingTool
+    </TextArea>
+   <TitledPane text="Opensource Licenses">
+      <content>
+          <ScrollPane fitToHeight="true" fitToWidth="true">
+            <TextArea editable="false" fx:id="licensesArea">
+                License 1
+                License 2
+            </TextArea>
+          </ScrollPane>
+      </content>
+   </TitledPane>
+</VBox>

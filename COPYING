@@ -1,0 +1,12 @@
+This application uses the following 3rd party libraries.
+The respective license files can be accessed by the respective URL.
+
+org.openpnp:opencv. Jason von Nieda. BSD-3 License. https://github.com/openpnp/opencv/blob/develop/LICENSE
+org.apache.commons:commons-math3. Apache Commons. Apache 2.0 License. https://commons.apache.org/proper/commons-math/
+org.apache.commons:commons-csv. Apache Commons. Apache 2.0 License. https://commons.apache.org/proper/commons-csv/
+com.google.code.gson:gson. Google. Apache 2.0 License. https://github.com/google/gson
+org.json:json. Sean Leary. Public Domain. https://github.com/stleary/JSON-java
+us.ihmc:jimStlMeshImporterJFX. InteractiveMesh.org. InteractiveMesh License. http://www.interactivemesh.org/freeware.html
+org.junit.jupiter:junit-jupiter-api. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md
+org.junit.jupiter:junit-jupiter-engine. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md
+org.junit.jupiter:junit-platform-commons. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md

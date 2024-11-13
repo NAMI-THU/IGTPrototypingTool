@@ -170,10 +170,22 @@ public class MainController implements Controller {
      */
     @FXML
     public void openAboutView() {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle("About");
-        a.setHeaderText("IGT Prototyping Tool");
-        a.setContentText("This application was and currently is developed by students of THU.\nIt is actively supervised by Prof. Dr. Alfred Franz.\nThe source code can be found at https://github.com/Alfred-Franz/IGTPrototypingTool");
-        a.showAndWait();
+        try {
+            setupFXMLLoader("InfoView");
+            Stage newWindow = new Stage();
+            newWindow.setTitle("Info");
+            newWindow.setScene(new Scene(this.loader.load()));
+            // set main window as parent of new window
+            newWindow.initModality(Modality.WINDOW_MODAL);
+            newWindow.initOwner(tabPane.getScene().getWindow());
+            newWindow.show();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error loading Info View", e);
+        }
+//        Alert a = new Alert(Alert.AlertType.INFORMATION);
+//        a.setTitle("About");
+//        a.setHeaderText("IGT Prototyping Tool");
+//        a.setContentText("This application was and currently is developed by students of THU.\nIt is actively supervised by Prof. Dr. Alfred Franz.\nThe source code can be found at https://github.com/NAMI-THU/IGTPrototypingTool");
+//        a.showAndWait();
     }
 }

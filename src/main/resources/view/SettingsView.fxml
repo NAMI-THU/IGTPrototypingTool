@@ -13,6 +13,15 @@
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
     </padding>
     <VBox spacing="20">
+        <TitledPane text="Application">
+            <VBox>
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Font Size"/>
+                    <TextField fx:id="fontSizeInput" prefWidth="50.0"/>
+                </HBox>
+            </VBox>
+        </TitledPane>
+
         <TitledPane text="Logging">
             <VBox>
                 <CheckBox fx:id="consoleOutput" mnemonicParsing="false" onAction="#changeConsoleOutput"
