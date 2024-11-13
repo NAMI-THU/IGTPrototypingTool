@@ -64,10 +64,10 @@ checkstyle {
     toolVersion = '10.20.0'
 }
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
-        xml.required  = false
-        html.required  = true
+        xml.required = false
+        html.required = true
     }
 }
 
