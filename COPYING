@@ -10,3 +10,4 @@ us.ihmc:jimStlMeshImporterJFX. InteractiveMesh.org. InteractiveMesh License. htt
 org.junit.jupiter:junit-jupiter-api. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md
 org.junit.jupiter:junit-jupiter-engine. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md
 org.junit.jupiter:junit-platform-commons. The JUnit Team. Eclipse Public License v2.0. https://github.com/junit-team/junit5/blob/main/LICENSE.md
+org.medcare.igtl. Absynt Technologies Ltd. BSD License. https://github.com/WPI-AIM/OpenIGTLink-Java/blob/master/lib/OpenIGTLink/LICENSE.txt
