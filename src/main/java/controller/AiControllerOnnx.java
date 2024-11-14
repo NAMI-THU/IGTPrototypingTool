@@ -52,7 +52,7 @@ public class AiControllerOnnx {
     private VideoCapture capture;
     private YOLOv8Model yoloModel;
     private OrtEnvironment env;
-    private Image placeholderImage = new Image("C:\\Users\\Public\\Documents\\IGTPrototypingTool\\Python\\THU_Nami.jpg",640, 480, false, true);
+    private Image placeholderImage = new Image("THU_Nami.jpg",640, 480, false, true);
 
     private Point detectionPoint;
     private List<Point> pathPoints = new ArrayList<>(); // List to hold the path points
@@ -133,6 +133,12 @@ public class AiControllerOnnx {
                 while (!isCancelled()) {
                     if (capture.read(frame)) {
                         try {
+                            Mat grayscaleFrame = new Mat();
+                            Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
+
+                            // Convert grayscale frame back to BGR for colored overlays
+                            Imgproc.cvtColor(grayscaleFrame, frame, Imgproc.COLOR_GRAY2BGR);
+
                             // Pre-process the frame for YOLOv8
                             OnnxTensor inputTensor = preprocessFrame(frame, env);
 
@@ -210,7 +216,6 @@ public class AiControllerOnnx {
         if (!pathPoints.isEmpty()) {
             drawPath(frame);
         }
-
 
         float frameWidth = frame.width();
         float frameHeight = frame.height();
