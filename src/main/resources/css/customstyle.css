@@ -35,7 +35,27 @@
 	-fx-shape: "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,
 	10 L0,10 L0,8 L4,5 L0,2 L0,0 Z";
 }
-.default-color1.chart-symbol {
+
+.last-data-point {
+    -fx-background-color: #FF0000; /* Bright red for visibility */
+    -fx-border-color: #FFFFFF; /* White border for contrast */
+    -fx-border-width: 2px; /* Thinner border */
+    -fx-background-radius: 15px; /* Smaller radius for a smaller circle */
+    -fx-shape: "M0,0 A15,15 0 1,0 30,0 A15,15 0 1,0 0,0 Z"; /* Circle shape path */
+    -fx-shadow-color: rgba(0, 0, 0, 0.6); /* Slightly darker shadow for emphasis */
+    -fx-shadow-offset-x: 2px; /* Subtle shadow offset */
+    -fx-shadow-offset-y: 2px; /* Subtle shadow offset */
+    -fx-shadow-blur: 4px; /* Softer shadow blur */
+    -fx-pref-width: 22px; /* Explicitly setting preferred width */
+    -fx-pref-height: 22px; /* Explicitly setting preferred height */
+}
+
+
+
+
+
+
+/*.default-color1.chart-symbol {
 	-fx-background-color: #e23901;
 	-fx-background-radius: 0;
 	-fx-background-insets: 0;
@@ -55,4 +75,5 @@
 	-fx-background-insets: 0;
 	-fx-shape: "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,
 	10 L0,10 L0,8 L4,5 L0,2 L0,0 Z";
-}
+}*/
+

@@ -1,0 +1,176 @@
+Apr 11, 2024 2:04:20 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: TabPane[id=tabPane, styleClass=tab-pane], name: focused, value: true] focused=true
+Apr 11, 2024 2:04:20 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from null to TabPane[id=tabPane, styleClass=tab-pane]
+Apr 11, 2024 2:04:21 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: TabPane[id=tabPane, styleClass=tab-pane], name: focused, value: false] focused=false
+Apr 11, 2024 2:04:21 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)', name: focused, value: true] focused=true
+Apr 11, 2024 2:04:21 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from TabPane[id=tabPane, styleClass=tab-pane] to ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)'
+Apr 11, 2024 2:04:21 AM inputOutput.OpenIGTLinkConnection <init>
+INFO: Starting OIGTL client
+Apr 11, 2024 2:04:21 AM org.medcare.igtl.network.OpenIGTClient <init>
+SEVERE: OpenIGTClient Exception while creating socket
+java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.connect0(Native Method)
+	at java.base/sun.nio.ch.Net.connect(Net.java:579)
+	at java.base/sun.nio.ch.Net.connect(Net.java:568)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:588)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at java.base/java.net.Socket.connect(Socket.java:583)
+	at java.base/java.net.Socket.<init>(Socket.java:507)
+	at java.base/java.net.Socket.<init>(Socket.java:287)
+	at java.base/javax.net.DefaultSocketFactory.createSocket(SocketFactory.java:271)
+	at org.medcare.igtl.network.OpenIGTClient.<init>(OpenIGTClient.java:80)
+	at org.medcare.igtl.network.GenericIGTLinkClient.<init>(GenericIGTLinkClient.java:23)
+	at inputOutput.OpenIGTLinkConnection.<init>(OpenIGTLinkConnection.java:46)
+	at inputOutput.OIGTTrackingDataSource.connect(OIGTTrackingDataSource.java:31)
+	at controller.TrackingDataController.lambda$onConnectButtonClicked$1(TrackingDataController.java:157)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+
+Apr 11, 2024 2:04:21 AM org.medcare.igtl.network.GenericIGTLinkClient <init>
+FINE: Starting GenericIGTLinkClient
+Apr 11, 2024 2:04:21 AM mainMethod.App lambda$start$0
+SEVERE: Uncaught exception in thread Thread-4
+java.lang.NullPointerException: Cannot invoke "java.net.Socket.isClosed()" because "this.socket" is null
+	at org.medcare.igtl.network.OpenIGTClient.isConnected(OpenIGTClient.java:246)
+	at org.medcare.igtl.network.GenericIGTLinkClient$Sender.run(GenericIGTLinkClient.java:246)
+
+Apr 11, 2024 2:04:22 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)', name: focused, value: false] focused=false
+Apr 11, 2024 2:04:22 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: Button[id=visualizeTrackingBtn, styleClass=button]'Start Tracking and Visualization', name: focused, value: true] focused=true
+Apr 11, 2024 2:04:22 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)' to Button[id=visualizeTrackingBtn, styleClass=button]'Start Tracking and Visualization'
+Apr 11, 2024 2:04:22 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:22 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:22 AM algorithm.VisualizationManager loadLastSTLModels
+INFO: STL file read from: C:\GitHub\IGTPrototypingTool\src\test\resources\Tool13_v2.stl
+Apr 11, 2024 2:04:22 AM algorithm.VisualizationManager loadLastSTLModels
+INFO: STL file read from: C:\GitHub\IGTPrototypingTool\src\test\resources\Phantom_final-decimated25000.stl
+Apr 11, 2024 2:04:22 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:22 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:22 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: Button[id=visualizeTrackingBtn, styleClass=button]'Start Tracking and Visualization', name: focused, value: false] focused=false
+Apr 11, 2024 2:04:22 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from Button[id=visualizeTrackingBtn, styleClass=button]'Start Tracking and Visualization' to null
+Apr 11, 2024 2:04:22 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton[id=freezeTglBtn, styleClass=toggle-button]'Freeze / Unfreeze', name: focused, value: true] focused=true
+Apr 11, 2024 2:04:22 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from null to ToggleButton[id=freezeTglBtn, styleClass=toggle-button]'Freeze / Unfreeze'
+Apr 11, 2024 2:04:22 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton[id=freezeTglBtn, styleClass=toggle-button]'Freeze / Unfreeze', name: focused, value: false] focused=false
+Apr 11, 2024 2:04:23 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)', name: focused, value: true] focused=true
+Apr 11, 2024 2:04:23 AM javafx.scene.Scene$12 invalidated
+FINE: Changed focus from ToggleButton[id=freezeTglBtn, styleClass=toggle-button]'Freeze / Unfreeze' to ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)'
+Apr 11, 2024 2:04:23 AM algorithm.TrackingDataManager getNextData
+WARNING: Toollist is empty.
+Apr 11, 2024 2:04:23 AM mainMethod.App lambda$start$0
+SEVERE: Uncaught exception in thread JavaFX Application Thread
+java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1857)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1724)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:234)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Node.fireEvent(Node.java:8792)
+	at javafx.controls/javafx.scene.control.ToggleButton.fire(ToggleButton.java:257)
+	at javafx.controls/com.sun.javafx.scene.control.behavior.ButtonBehavior.mouseReleased(ButtonBehavior.java:208)
+	at javafx.controls/com.sun.javafx.scene.control.inputmap.InputMap.handle(InputMap.java:274)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler$NormalEventHandlerRecord.handleBubblingEvent(CompositeEventHandler.java:247)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:80)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:234)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$MouseHandler.process(Scene.java:3897)
+	at javafx.graphics/javafx.scene.Scene.processMouseEvent(Scene.java:1878)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.mouseEvent(Scene.java:2623)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:411)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:301)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleMouseEvent$2(GlassViewEventHandler.java:450)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:424)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleMouseEvent(GlassViewEventHandler.java:449)
+	at javafx.graphics/com.sun.glass.ui.View.handleMouseEvent(View.java:557)
+	at javafx.graphics/com.sun.glass.ui.View.notifyMouse(View.java:943)
+	at javafx.graphics/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:77)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:275)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:84)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1854)
+	... 58 more
+Caused by: java.lang.NullPointerException: Cannot invoke "org.medcare.igtl.network.ResponseQueueManager.destroy()" because "this.responseQueue" is null
+	at org.medcare.igtl.network.OpenIGTClient.interrupt(OpenIGTClient.java:207)
+	at org.medcare.igtl.network.GenericIGTLinkClient.stopClient(GenericIGTLinkClient.java:160)
+	at inputOutput.OpenIGTLinkConnection.stop(OpenIGTLinkConnection.java:145)
+	at inputOutput.OIGTTrackingDataSource.closeConnection(OIGTTrackingDataSource.java:91)
+	at controller.TrackingDataController.disconnectSource(TrackingDataController.java:185)
+	at controller.TrackingDataController.onConnectButtonClicked(TrackingDataController.java:152)
+	... 69 more
+
+Apr 11, 2024 2:04:24 AM javafx.scene.Node$FocusedProperty markInvalid
+FINE: ReadOnlyBooleanProperty [bean: ToggleButton@61665b10[styleClass=toggle-button green-toggle-button]'Connect via OpenIGTLink (localhost)', name: focused, value: false] focused=false

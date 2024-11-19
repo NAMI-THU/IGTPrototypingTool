@@ -26,10 +26,14 @@
                     <MenuItem mnemonicParsing="false" onAction="#openMeasurementView" text="Measurement"/>
                     <MenuItem mnemonicParsing="false" onAction="#openThrombectomyView" text="Thrombectomy"/>
                     <MenuItem mnemonicParsing="false" onAction="#openAutoTrackView" text="AutoTrack"/>
+                    <MenuItem mnemonicParsing="false" onAction="#openAIView" text="AI View"/>
                 </Menu>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" onAction="#openAboutView" text="About"/>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Theme">
+                <MenuItem mnemonicParsing="false" onAction="#handleToggleTheme" text="Toggle Dark/Light Mode"/>
             </Menu>
         </MenuBar>
     </top>
@@ -38,12 +42,17 @@
             <Tab closable="false" fx:id="trackingDataTab" text="Tracking Data Input" onSelectionChanged="#onChangeView">
                 <fx:include fx:id="trackingData" source="TrackingDataView.fxml"/>
             </Tab>
-            <Tab closable="false" text="Video Input">
+           <Tab closable="false" text="Video Input">
                 <fx:include fx:id="video" source="VideoView.fxml"/>
             </Tab>
             <Tab closable="false" fx:id="visualizationTab" text="Visualization" onSelectionChanged="#onChangeView">
                 <fx:include fx:id="visualization" source="VisualizationView.fxml"/>
             </Tab>
+
+            <Tab closable="false" fx:id="annotationTab" text="Annotation" onSelectionChanged="#onChangeView">
+                <fx:include fx:id="annotation" source="AnnotationView.fxml"/>
+            </Tab>
+
         </TabPane>
     </center>
     <bottom>

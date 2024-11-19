@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithm.*;
+import inputOutput.AIDataSource;
 import inputOutput.CSVFileReader;
 import inputOutput.OIGTTrackingDataSource;
 import javafx.animation.Animation;
@@ -119,6 +120,26 @@ public class TrackingDataController implements Controller {
                 logger.log(Level.SEVERE, "Error loading CSV file", e);
                 statusLabel.setText("Error loading CSV file");
             }
+        }
+    }
+
+    @FXML
+    public void loadAIData() {
+        System.out.println("AI DATA LOADING");
+
+        AIDataSource newSource = new AIDataSource();
+
+        if (trackingService.getTrackingDataSource() != null) {
+            disconnectSource();
+        }
+
+        try {
+            trackingService.changeTrackingSource(newSource);
+            sourceConnected.setValue(true);
+            visualizationController.setSourceConnected(true);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading AI DATA", e);
+            statusLabel.setText("Error loading AI DATA SOURCE");
         }
     }
 
@@ -303,9 +324,64 @@ public class TrackingDataController implements Controller {
         }
     }
 
+    Process pythonProcess;
+    @FXML
+    private void runPythonScript() {
+        if (pythonProcess != null && pythonProcess.isAlive()) {
+            // Process is already running, do not start a new one
+            System.out.println("Python script is already running.");
+            return;
+        }
+        try {
+            // Define the path to the Python executable
+            String pythonExe = "python"; // or "python3" depending on your setup
+
+            // Absolute paths to the script and weights file
+
+            String scriptPath = "Python/AutomaticGuidewireDetection/src/yolov5/detect.py";
+            String weightsPath = "Python/AutomaticGuidewireDetection/weights/laboratory/weights/best.pt";
+
+
+            // Build the command
+            ProcessBuilder pb = new ProcessBuilder(
+                    pythonExe,
+                    scriptPath,
+                    "--weights", weightsPath,
+                    "--source", "0",
+                    "--open-igt"
+            );
+
+            // Redirect the output to a file
+            File outputFile = new File("output.txt");
+            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(outputFile));
+            pb.redirectError(ProcessBuilder.Redirect.appendTo(outputFile)); // Redirect errors to the same file
+
+            // Start the process
+            pythonProcess = pb.start();
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Or use logger
+        }
+    }
+
+
+    @FXML
+    private void stopScriptProcess() {
+        if (pythonProcess != null) {
+            pythonProcess.destroy();
+        }
+    }
+
     @Override
     public void close() {
         disconnectSource();
         unregisterController();
+        stopScriptProcess();
     }
 }
+
+
+

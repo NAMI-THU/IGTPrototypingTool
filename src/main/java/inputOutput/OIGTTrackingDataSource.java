@@ -81,6 +81,7 @@ public class OIGTTrackingDataSource extends AbstractTrackingDataSource {
         newTempTool.setData(timestamp, valid, coordinate_x, coordinate_y,
                 coordinate_z, rotation_x, rotation_y, rotation_z, rotation_r,
                 name);
+
         this.tempToolList.add(newTempTool);
 
     }

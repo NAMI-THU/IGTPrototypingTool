@@ -9,7 +9,9 @@ import javafx.stage.Stage;
 import util.ControllerCollector;
 import util.CustomLogger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ public class App extends Application {
         Parent root = loader.load();
         primaryStage.setTitle("IGT Prototyping Tool");
         primaryStage.setMinHeight(400);
+        primaryStage.setHeight(800);
         primaryStage.setMinWidth(800);
         primaryStage.getIcons().add(new Image("icon/icon.png"));
         root.setStyle("-fx-font-size: "+fontSize+"pt;");
@@ -47,6 +50,8 @@ public class App extends Application {
         scene.getStylesheets().add("css/customstyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+
     }
 
     @Override
