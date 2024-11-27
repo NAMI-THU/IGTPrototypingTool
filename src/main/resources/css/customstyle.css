@@ -77,3 +77,24 @@
 	10 L0,10 L0,8 L4,5 L0,2 L0,0 Z";
 }*/
 
+
+/* Styling for the Distance Label */
+#distanceLabel {
+   -fx-background-color: #d9d9d9;
+   -fx-font-size: 13px;
+   -fx-padding: 5px;
+1
+}
+
+/* Styling for the Navigation Status Label */
+#navigationStatus {
+  -fx-background-color: #d9d9d9;
+  -fx-font-size: 13px;
+  -fx-padding: 5px;
+}
+
+#instructionsLabel {
+  -fx-background-color: #d9d9d9;
+   -fx-font-size: 13px;
+   -fx-padding: 5px;
+}
