@@ -24,13 +24,13 @@
 
         <!-- Control Panel -->
         <VBox alignment="CENTER" spacing="20.0">
-            <TitledPane prefHeight="300.0" alignment="CENTER" animated="false" collapsible="false" text="Control Panel">
+            <TitledPane prefHeight="300.0" alignment="CENTER" animated="false" collapsible="false" text="Control Panel" >
                 <VBox spacing="20.0">
                     <HBox alignment="CENTER_LEFT" spacing="20.0">
                         <Label text="Video Input" style="-fx-font-size: 13px;" />
-                        <ChoiceBox fx:id="sourceChoiceBox">
+                        <ChoiceBox fx:id="sourceChoiceBox" style="">
                             <items>
-                                <FXCollections fx:factory="observableArrayList">
+                                <FXCollections fx:factory="observableArrayList" >
                                     <String fx:value="Main Camera 1" />
                                     <String fx:value="External Camera 2" />
                                     <String fx:value="External Camera 3" />
@@ -38,13 +38,13 @@
                             </items>
                         </ChoiceBox>
                     </HBox>
-                    <Label fx:id="distanceLabel" text="Distance: 0.0" style="-fx-background-color: #d9d9d9; -fx-font-size: 13px;" />
-                    <Label fx:id="navigationStatus" text="Status: Waiting for device selection" style="-fx-background-color: #d9d9d9; -fx-font-size: 13px;" />
+                    <Label fx:id="distanceLabel" text="Distance: 0.0"/>
+                    <Label fx:id="navigationStatus" text="Status: Waiting for device selection"/>
                     <HBox alignment="CENTER_LEFT" spacing="20.0">
                         <CheckBox fx:id="enablePathMode" text="Enable Path Mode" style="-fx-font-size: 13px;" />
                         <Button fx:id="clearAllPoints">Clear all</Button>
                     </HBox>
-                    <Label fx:id="instructionsLabel" text="Instructions: Unknown direction" style="-fx-background-color: #d9d9d9; -fx-font-size: 13px;" />
+                    <Label fx:id="instructionsLabel" text="Instructions: Unknown direction"/>
                 </VBox>
             </TitledPane>
         </VBox>

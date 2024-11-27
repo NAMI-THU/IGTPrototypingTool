@@ -6,6 +6,7 @@
 .button {
     -fx-background-color: #333333;
     -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
 }
 
 .scroll-pane {
@@ -46,3 +47,97 @@
 .red-green-checkbox{
     -fx-border-color: red;
 }
+
+/*Mohamed style changes*/
+
+.choice-box {
+    -fx-background-color: #333333;
+    -fx-text-fill: red;
+}
+
+.choice-box .label {
+    -fx-text-fill: white;
+    /* Text color for the head (including hint text) */
+}
+
+.choice-box .list-view {
+    -fx-background-color: #333333; /* Darker background for drop-down */
+    -fx-text-fill: black; /* Ensure the text is white */
+}
+
+
+
+/* Styling the title area */
+.titled-pane > .title {
+-fx-border-color: white;
+-fx-border-width: 1px;
+ -fx-padding: 10px; /* Padding for inner content */
+    -fx-background-color: #333333; /* Darker background for the title */
+    -fx-text-fill: white; /* Title text color */
+    -fx-padding: 5px; /* Padding for spacing */
+    -fx-font-weight: bold; /* Bold text for title */
+}
+
+.titled-pane > .title > .text {
+    -fx-fill: white; /* Changes the color of the title text */
+    -fx-font-size: 14px; /* Adjust font size */
+    -fx-font-weight: bold; /* Make it bold */
+}
+
+/* Styling the content area */
+.titled-pane > .content {
+-fx-border-width: 1px;
+    -fx-text-fill: white;
+    -fx-background-color: #555555; /* Background for content area */
+    -fx-padding: 10px; /* Padding for inner content */
+}
+
+/* Styling for the Distance Label */
+#distanceLabel {
+   -fx-background-color: #333333;
+     -fx-font-size: 13px;
+     -fx-text-fill: white;
+     -fx-padding: 5px;
+}
+
+/* Styling for the Navigation Status Label */
+#navigationStatus {
+  -fx-background-color: #333333;
+  -fx-font-size: 13px;
+  -fx-text-fill: white;
+  -fx-padding: 5px;
+}
+
+#instructionsLabel {
+  -fx-background-color: #333333;
+  -fx-font-size: 13px;
+  -fx-text-fill: white;
+  -fx-padding: 5px;
+}
+
+.toggle-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+/* Hover state for ToggleButton */
+.toggle-button:hover {
+    -fx-background-color: #222222; /* Darker shade on hover */
+}
+
+/* Selected (pressed) state for ToggleButton */
+.toggle-button:selected {
+    -fx-background-color: #0077cc; /* Blue color when selected */
+    -fx-text-fill: white; /* White text on selected state */
+}
+
+/* When ToggleButton is focused */
+.toggle-button:focused {
+    -fx-background-color: #555555; /* Slightly lighter background when focused */
+}
+
+.button:hover {
+    -fx-background-color: #222222; /* Darker background on hover */
+    -fx-text-fill: white; /* Ensure text color remains white */
+}
+
