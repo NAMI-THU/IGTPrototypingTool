@@ -5,35 +5,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import userinterface.PlottableImage?>
-<?import javafx.scene.chart.LineChart?>
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.AutoTrackController">
-   <VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity">
-      <StackPane>
-         <alignment>
-            <Pos fx:value="CENTER"/>
-         </alignment>
-         <PlottableImage fx:id="videoImagePlot" horizontalGridLinesVisible="false" maxHeight="Infinity"
-                         maxWidth="Infinity" verticalGridLinesVisible="false">
-            <xAxis>
-               <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
-            </xAxis>
-            <yAxis>
-               <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
-            </yAxis>
-         </PlottableImage>
-         <LineChart fx:id="lineChart">
-            <xAxis>
-               <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
-            </xAxis>
-            <yAxis>
-               <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
-            </yAxis>
-         </LineChart>
-      </StackPane>
-
-      <HBox alignment="CENTER" spacing="20.0">
+   <VBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" spacing="20.0">
+      <padding>
+         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+      </padding>
+      <PlottableImage fx:id="videoImagePlot" horizontalGridLinesVisible="false" maxHeight="Infinity"
+                      maxWidth="Infinity" verticalGridLinesVisible="false">
+         <xAxis>
+            <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="BOTTOM" upperBound="500.0"/>
+         </xAxis>
+         <yAxis>
+            <NumberAxis autoRanging="false" lowerBound="-500.0" minorTickVisible="false" side="LEFT" upperBound="500.0"/>
+         </yAxis>
+      </PlottableImage>
+      <TitledPane text="Controls">
+         <HBox alignment="CENTER" spacing="20.0">
          <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" text="Connections"
                      textAlignment="CENTER">
             <graphic>
@@ -94,12 +83,6 @@
                      <Insets left="10.0" right="10.0" top="5.0"/>
                   </padding>
                </CheckBox>
-               <CheckBox fx:id="inSetReferenceMode" mnemonicParsing="false"
-                         text="Set reference mode">
-                  <padding>
-                     <Insets left="10.0" right="10.0" top="5.0"/>
-                  </padding>
-               </CheckBox>
             </VBox>
          </TitledPane>
          <TitledPane animated="false" collapsible="false" graphicTextGap="10.0" layoutX="10.0" layoutY="10.0"
@@ -144,5 +127,6 @@
             </VBox>
          </TitledPane>
       </HBox>
+      </TitledPane>
    </VBox>
 </ScrollPane>

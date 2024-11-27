@@ -14,8 +14,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -41,7 +39,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -83,10 +80,9 @@ public class AutoTrackController implements Controller {
     public PlottableImage videoImagePlot;
     @FXML
     public CheckBox use3dTransformCheckBox;
-    @FXML
-    public CheckBox inSetReferenceMode;
-    @FXML
-    public LineChart<Number, Number> lineChart;
+
+    private boolean fake_show_last_click = false;
+    private double[] last_click = new double[]{0,0,0};
 
     private TrackingDataController trackingDataController;
     private Label statusLabel;
@@ -109,13 +105,6 @@ public class AutoTrackController implements Controller {
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
     private Mat cachedTransformMatrix = null;
 
-    private final XYChart.Series<Number, Number> referencePoint = new XYChart.Series<Number, Number>();
-    private final ObservableList<XYChart.Series<Number,Number>> lineDataSeries = FXCollections.observableArrayList();
-
-    NumberAxis xAxis = new NumberAxis(-500, 500, 100);
-    NumberAxis yAxis = new NumberAxis(-500, 500, 100);
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -136,35 +125,10 @@ public class AutoTrackController implements Controller {
         generateMatrixButton.disableProperty().bind(Bindings.size(clicked_image_points).lessThan(4));
         generateMatrixButton.textProperty().bind(Bindings.concat("Generate (",Bindings.size(clicked_image_points),"/4)"));
 
-        referencePoint.setName("reference point");
-        referencePoint.getData().add(new XYChart.Data<>(100,100));
-        dataSeries.add(referencePoint);
-
         videoImagePlot.setData(dataSeries);
         videoImagePlot.registerImageClickedHandler(this::onImageClicked);
-        videoImagePlot.registerImageClickedHandler(this::onSRM);
+
         loadAvailableVideoDevicesAsync();
-
-        lineChart.getXAxis().setVisible(false);
-        lineChart.getYAxis().setVisible(false);
-        lineChart.setLegendVisible(false);
-        videoImagePlot.setLegendVisible(false);
-        lineChart.setMouseTransparent(true);
-        lineChart.setAnimated(false);
-        lineChart.setCreateSymbols(true);
-        lineChart.setAlternativeRowFillVisible(false);
-        lineChart.setAlternativeColumnFillVisible(false);
-        lineChart.setHorizontalGridLinesVisible(false);
-        lineChart.setVerticalGridLinesVisible(false);
-        lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
-        lineChart.setData(lineDataSeries);
-    }
-
-    private void onSRM(double v, double v1) {
-        if (inSetReferenceMode.isSelected()) {
-            System.out.println("Set reference point to "+v+" "+v1);
-            referencePoint.setData(FXCollections.observableArrayList(new XYChart.Data<>(v,v1)));
-        }
     }
 
     @Override
@@ -249,7 +213,7 @@ public class AutoTrackController implements Controller {
             var selectedItem = sourceChoiceBox.getSelectionModel().getSelectedItem();
             int deviceId = deviceIdMapping.get(selectedItem);
             imageDataManager.closeConnection();
-            imageDataManager.openConnection(VideoSource.LIVESTREAM, 1);
+            imageDataManager.openConnection(VideoSource.LIVESTREAM, deviceId);
             if (videoTimeline == null) {
                 videoTimeline = new Timeline();
                 videoTimeline.setCycleCount(Animation.INDEFINITE);
@@ -288,21 +252,6 @@ public class AutoTrackController implements Controller {
         }
         if(matrix != null && !matrix.empty()) {
             videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
-            ((NumberAxis) lineChart.getXAxis()).setAutoRanging(false);
-            ((NumberAxis) lineChart.getXAxis()).setLowerBound(((NumberAxis) videoImagePlot.getXAxis()).getLowerBound());
-            ((NumberAxis) lineChart.getXAxis()).setUpperBound(((NumberAxis) videoImagePlot.getXAxis()).getUpperBound());
-            ((NumberAxis) lineChart.getXAxis()).setTickUnit(((NumberAxis) videoImagePlot.getXAxis()).getTickUnit());
-            ((NumberAxis) lineChart.getYAxis()).setAutoRanging(false);
-            ((NumberAxis) lineChart.getYAxis()).setLowerBound(((NumberAxis) videoImagePlot.getYAxis()).getLowerBound());
-            ((NumberAxis) lineChart.getYAxis()).setUpperBound(((NumberAxis) videoImagePlot.getYAxis()).getUpperBound());
-            ((NumberAxis) lineChart.getYAxis()).setTickUnit(((NumberAxis) videoImagePlot.getYAxis()).getTickUnit());
-
-            lineChart.prefWidthProperty().bind(videoImagePlot.widthProperty());
-            lineChart.prefHeightProperty().bind(videoImagePlot.heightProperty());
-            lineChart.minWidthProperty().bind(videoImagePlot.widthProperty());
-            lineChart.minHeightProperty().bind(videoImagePlot.heightProperty());
-            lineChart.maxWidthProperty().bind(videoImagePlot.widthProperty());
-            lineChart.maxHeightProperty().bind(videoImagePlot.heightProperty());
         }
     }
 
@@ -322,7 +271,7 @@ public class AutoTrackController implements Controller {
         lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
-            if (dataSeries.size() <= i + 1) {
+            if (dataSeries.size() <= i) {
                 var series = new XYChart.Series<Number, Number>();
                 series.setName(tool.getName());
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
@@ -330,44 +279,26 @@ public class AutoTrackController implements Controller {
                 series.getData().remove(0);
                 // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
 //                videoImagePlot.initSensorCurve(series);
-
-
             }
 
-            if (lineDataSeries.size() <= i) {
-                // create series for line
-                // this series will include the reference point and current point
-                var lineSeries = new XYChart.Series<Number, Number>();
-                lineDataSeries.add(lineSeries);
-                lineSeries.getData().remove(0);
-            }
-
-
-            var series = dataSeries.get(i + 1);
+            var series = dataSeries.get(i);
             var measurements = tool.getMeasurement();
             var point = measurements.get(measurements.size() - 1).getPos();
             var data = series.getData();
-            var max_num_points = 6; // 1
+            var max_num_points = 4; // 1
 
-            var lineSeries = lineDataSeries.get(i);
-            //var lineData = lineSeries.getData();
-            ObservableList<XYChart. Data<Number, Number>> lineData = FXCollections.observableArrayList();
-            var shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            var shifted_points = last_click;
+            if(!fake_show_last_click){
+                shifted_points = use3dTransformCheckBox.isSelected() ? applyTrackingTransformation3d(point.getX(), point.getY(), point.getZ()) : applyTrackingTransformation2d(point.getX(), point.getY(), point.getZ());
+            }
             var x_normalized = shifted_points[0] / currentShowingImage.getWidth();
             var y_normalized = shifted_points[1] / currentShowingImage.getHeight();
             lastTrackingData.add(new ExportMeasurement(tool.getName(), point.getX(), point.getY(), point.getZ(), shifted_points[0], shifted_points[1], shifted_points[2], x_normalized, y_normalized));
 
-
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
-
-            lineData.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
-            lineData.add(new XYChart.Data<>(referencePoint.getData().get(0).getXValue(), referencePoint.getData().get(0).getYValue()));
-
-            lineSeries.setData(lineData);
 
             if(data.size() > max_num_points){
                 data.remove(0);
-                //lineData.remove(0);
             }
         }
     }
@@ -397,7 +328,7 @@ public class AutoTrackController implements Controller {
                 gson.toJson(trackingData, fw);
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error saving captured data", e);
+            logger.log(java.util.logging.Level.SEVERE, "Error saving captured data", e);
             e.printStackTrace();
         }
     }
@@ -429,7 +360,7 @@ public class AutoTrackController implements Controller {
             try {
                 Desktop.getDesktop().open(new File(directory));
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error opening output directory", e);
+                logger.log(java.util.logging.Level.SEVERE, "Error opening output directory", e);
                 e.printStackTrace();
             }
         }
@@ -490,7 +421,7 @@ public class AutoTrackController implements Controller {
             cachedTransformMatrix = null;
             userPreferences.put("matrixDirectory", inputFile.getAbsoluteFile().getParent());
         }catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, "Error loading matrix", e);
+            logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
             e.printStackTrace();
         }
     }
@@ -507,7 +438,7 @@ public class AutoTrackController implements Controller {
                 regMatrixStatusBox.setSelected(true);
                 cachedTransformMatrix = null;
             }catch (FileNotFoundException e) {
-                logger.log(Level.SEVERE, "Error loading matrix", e);
+                logger.log(java.util.logging.Level.SEVERE, "Error loading matrix", e);
                 e.printStackTrace();
             }
         }
@@ -537,7 +468,7 @@ public class AutoTrackController implements Controller {
                 cachedTransformMatrix = null;
                 userPreferences.put("matrixDirectory", saveFile.getAbsoluteFile().getParent());
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error saving matrix", e);
+                logger.log(java.util.logging.Level.SEVERE, "Error saving matrix", e);
                 e.printStackTrace();
             }
         }
@@ -547,7 +478,7 @@ public class AutoTrackController implements Controller {
         var lastLocation = userPreferences.get(key,defaultLocation);
         var lastLocationFile = new File(lastLocation);
         if(!lastLocationFile.exists()){
-            logger.log(Level.WARNING, "Last directory does not exist, default directory instead");
+            logger.log(java.util.logging.Level.WARNING, "Last directory does not exist, default directory instead");
             lastLocationFile = new File(defaultLocation);
         }
         return lastLocationFile;
@@ -600,27 +531,28 @@ public class AutoTrackController implements Controller {
      * @return The transformed point as array of length 3 (xyz)
      */
     private double[] applyTrackingTransformation2d(double x, double y, double z) {
-        // TODO: Cache matrix
-        if (cachedTransformMatrix == null){
-            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
-        }
-        var vector = new Mat(3,1, CvType.CV_64F);
-
-        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
-            vector.put(0,0,z);
-        }else{
-            vector.put(0,0,x);
-        }
-        vector.put(1,0,y);
-        vector.put(2,0,1);
-
-        var pos_star = new Mat(2,1,CvType.CV_64F);
-        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
-        double[] out = new double[3];
-        out[0] = pos_star.get(0,0)[0];
-        out[1] = pos_star.get(1,0)[0];
-        out[2] = 0;
-        return out;
+        return new double[]{393,280,0};
+//        // TODO: Cache matrix
+//        if (cachedTransformMatrix == null){
+//            cachedTransformMatrix = transformationMatrix.getTransformMatOpenCvEstimated2d();
+//        }
+//        var vector = new Mat(3,1, CvType.CV_64F);
+//
+//        if(userPreferencesGlobal.getBoolean("verticalFieldGenerator", false)){
+//            vector.put(0,0,z);
+//        }else{
+//            vector.put(0,0,x);
+//        }
+//        vector.put(1,0,y);
+//        vector.put(2,0,1);
+//
+//        var pos_star = new Mat(2,1,CvType.CV_64F);
+//        Core.gemm(cachedTransformMatrix, vector,1, new Mat(),1,pos_star);
+//        double[] out = new double[3];
+//        out[0] = pos_star.get(0,0)[0];
+//        out[1] = pos_star.get(1,0)[0];
+//        out[2] = 0;
+//        return out;
     }
 
     /**
@@ -655,7 +587,7 @@ public class AutoTrackController implements Controller {
      * @param y Y-Coordinate in the image
      */
     private void onImageClicked(double x, double y){
-        System.out.println("clicked on image");
+        last_click = new double[]{x,y,0};
         var trackingData = lastTrackingData;
         if(trackingData.size() > 0 && clicked_image_points.size() < 4) {
             // We also directly save the tracking-coordinates at this point.

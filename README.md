@@ -8,7 +8,7 @@ Tracker can be connected using OpenIGTLink, and the reported information can be 
 
 This tool started as a student project and is currently actively maintained by various students of [Ulm University of Applied Sciences (THU)](https://www.thu.de).
 
-Currently, at least **Java 11** is required, but all LTS versions upwards (Java 15, Java 17) and also Java 20 are supported.
+Currently, at least **Java 17** or **Java 21** are supported.
 
 # Building
 

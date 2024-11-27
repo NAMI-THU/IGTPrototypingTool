@@ -13,6 +13,8 @@ import util.CustomLogger;
 public class SettingsController implements Controller {
     private static final Preferences userPreferences = Preferences.userRoot().node("IGT_Settings");
 
+    @FXML public TextField fontSizeInput;
+
     @FXML public CheckBox consoleOutput;
     @FXML public CheckBox searchForMoreVideos;
     @FXML public CheckBox verticalFG;
@@ -40,6 +42,17 @@ public class SettingsController implements Controller {
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
 
+        var fontSizePreference = userPreferences.getInt("font-size", 12);
+        fontSizeInput.setText(String.valueOf(fontSizePreference));
+        fontSizeInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                fontSizeInput.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            if(!fontSizeInput.getText().isEmpty()) {
+                userPreferences.putInt("font-size", Integer.parseInt(fontSizeInput.getText()));
+            }
+        });
+
         var consolePreference = userPreferences.getBoolean("logToConsole", true);
         consoleOutput.setSelected(consolePreference);
         if (!CustomLogger.isConsoleOn() && consolePreference) {
@@ -64,14 +77,18 @@ public class SettingsController implements Controller {
             if (!newValue.matches("\\d*")) {
                 videoWidth.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            userPreferences.putInt("videoWidth", Integer.parseInt(videoWidth.getText()));
+            if(!videoWidth.getText().isEmpty()) {
+                userPreferences.putInt("videoWidth", Integer.parseInt(videoWidth.getText()));
+            }
         });
 
         videoHeight.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 videoHeight.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            userPreferences.putInt("videoHeight", Integer.parseInt(videoHeight.getText()));
+            if(!videoHeight.getText().isEmpty()) {
+                userPreferences.putInt("videoHeight", Integer.parseInt(videoHeight.getText()));
+            }
         });
     }
 
