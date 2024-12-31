@@ -140,10 +140,16 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#injectStatusLabel(javafx.scene.control.Label)" class="member-name-link">injectStatusLabel</a><wbr>(javafx.scene.control.Label&nbsp;statusLabel)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIvSize()" class="member-name-link">setIvSize</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAiController(controller.AiControllerOnnx)" class="member-name-link">setAiController</a><wbr>(<a href="AiControllerOnnx.html" title="class in controller">AiControllerOnnx</a>&nbsp;aiController)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIvSize()" class="member-name-link">setIvSize</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Change ImageView size.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMainController(controller.MainController)" class="member-name-link">setMainController</a><wbr>(<a href="MainController.html" title="class in controller">MainController</a>&nbsp;mainController)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startVideo()" class="member-name-link">startVideo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -152,6 +158,9 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stopVideo()" class="member-name-link">stopVideo</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -186,6 +195,18 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="setAiController(controller.AiControllerOnnx)">
+<h3>setAiController</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAiController</span><wbr><span class="parameters">(<a href="AiControllerOnnx.html" title="class in controller">AiControllerOnnx</a>&nbsp;aiController)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="setMainController(controller.MainController)">
+<h3>setMainController</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMainController</span><wbr><span class="parameters">(<a href="MainController.html" title="class in controller">MainController</a>&nbsp;mainController)</span></div>
+</section>
+</li>
 <li>
 <section class="detail" id="initialize(java.net.URL,java.util.ResourceBundle)">
 <h3>initialize</h3>
@@ -244,6 +265,12 @@ implements <a href="Controller.html" title="interface in controller">Controller<
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setIvSize</span>()</div>
 <div class="block">Change ImageView size. If preserveRatio is not explicitly set to true,
  height and width can be changed independently of each other.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="update()">
+<h3>update</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
 </section>
 </li>
 </ul>
