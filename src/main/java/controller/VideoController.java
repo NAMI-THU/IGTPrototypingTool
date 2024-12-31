@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import algorithm.ImageDataManager;
+import algorithm.ImageDataProcessor;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -13,10 +14,15 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.opencv.core.Mat;
+
+import static inputOutput.VideoSource.LIVESTREAM;
+import static inputOutput.VideoSource.OPENIGTLINK;
 
 public class VideoController implements Controller {
 
@@ -38,6 +44,21 @@ public class VideoController implements Controller {
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private Label statusLabel;
+
+    private AiControllerOnnx aiController;
+    private int sourceTracker;
+
+    public void setAiController(AiControllerOnnx aiController) {
+        this.aiController = aiController;
+    }
+
+    private MainController mainController;
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,10 +90,10 @@ public class VideoController implements Controller {
         connectionIndicator.setVisible(true);
         switch(sourceChoiceBox.getValue()) {
         case "Video Source":
-            connectToSourceAsync(VideoSource.LIVESTREAM, 0);
+            connectToSourceAsync(LIVESTREAM, 0);
             break;
         case "OpenIGTLink":
-            connectToSourceAsync(VideoSource.OPENIGTLINK);
+            connectToSourceAsync(OPENIGTLINK);
             break;
         case "Video File":
             File file = this.loadFile();
@@ -93,8 +114,18 @@ public class VideoController implements Controller {
             Platform.runLater(() -> {
                 connectionIndicator.setVisible(false);
                 if(success) {
+                    if (connectionId == LIVESTREAM) {
+                        // Video Source case
+                        sourceTracker = 0;
+                        mainController.handleChangeStatus(0, 1); // Not Connected (initial state)
+                    } else if (connectionId == OPENIGTLINK) {
+                        // OpenIGTLink case
+                        sourceTracker = 1;
+                        mainController.handleChangeStatus(1, 1); // Not Connected (initial state)
+                    }
                     startButton.setDisable(false);
                     startButton.requestFocus();
+
                 }else{
                     statusLabel.setText("Unable to establish connection.");
                     logger.warning("Unable to esatblish connection for connection-id "+connectionId+", openConnection returned false.");
@@ -110,6 +141,15 @@ public class VideoController implements Controller {
     @FXML
     public void startVideo() {
         if(dataManager.getDataProcessor() != null && dataManager.getDataProcessor().isConnected()) {
+            switch (sourceTracker){
+                case 0:
+                    mainController.handleChangeStatus(0,2);
+                    break;
+                case 1:
+                    mainController.handleChangeStatus(1,2);
+                    break;
+            }
+
             this.setInitialImageSize();
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().add(
@@ -125,6 +165,14 @@ public class VideoController implements Controller {
 
     @FXML
     public void stopVideo() {
+        switch (sourceTracker){
+            case 0:
+                mainController.handleChangeStatus(0,0);
+                break;
+            case 1:
+                mainController.handleChangeStatus(1,0);
+                break;
+        }
         dataManager.closeConnection();
         timeline.stop();
         // Need to reconnect first
@@ -140,10 +188,36 @@ public class VideoController implements Controller {
     public void setIvSize() {
         iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
         iv.setFitWidth(Double.parseDouble(ivWidth.getText()));
+
+        // Notify AiControllerOnnx of the new resolution
+        if (aiController != null) {
+            aiController.updateResolution(Double.parseDouble(ivHeight.getText()), Double.parseDouble(ivWidth.getText()));
+        }
     }
 
-    private void update() {
-        iv.setImage(dataManager.readImg());
+    public void update() {
+        Mat matrix = dataManager.readMat();
+
+        // Create a copy of the matrix for the ImageView to prevent modifications in AI processing
+        Mat matrixCopy = matrix.clone();
+
+        // Convert the frame to Image for ImageView without any processing
+        Image frame = matToImage(matrixCopy);
+        iv.setImage(frame);
+
+        // Send the original matrix for AI processing
+        if (aiController != null) {
+            aiController.processFrame(matrix);
+        }
+    }
+
+    private Image matToImage(Mat frame) {
+        try {
+            return ImageDataProcessor.Mat2Image(frame, ".png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private File loadFile() {

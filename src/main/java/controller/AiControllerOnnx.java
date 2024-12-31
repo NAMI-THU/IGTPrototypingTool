@@ -23,7 +23,6 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
-import userinterface.PlottableImage;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -43,13 +42,10 @@ public class AiControllerOnnx {
 
     @FXML
     private CheckBox enablePathMode;
-    @FXML
-    public ChoiceBox sourceChoiceBox;
 
     @FXML
-    private ImageView videoImagePlot;
+    private ImageView videoImagePlot = new ImageView();
     private int cameraSourceIndex;
-    private VideoCapture capture;
     private YOLOv8Model yoloModel;
     private OrtEnvironment env;
     private Image placeholderImage = new Image("THU_Nami.jpg",640, 480, false, true);
@@ -57,8 +53,8 @@ public class AiControllerOnnx {
     private Point detectionPoint;
     private List<Point> pathPoints = new ArrayList<>(); // List to hold the path points
 
-    private Mat frame;
     private double totalDistance;
+
 
 
     public void initialize() {
@@ -73,18 +69,10 @@ public class AiControllerOnnx {
                 instructionsLabel.setText("Insructions: Unknown direction");
             }
         });
-        sourceChoiceBox.setValue("Select Source");
         videoImagePlot.setImage(placeholderImage);
 
         // Set up mouse click event on the videoImagePlot
         videoImagePlot.setOnMouseClicked(this::handleVideoImageClick);
-
-        // Set up a listener for the ChoiceBox to change camera source
-        sourceChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            handleCameraSourceChange(newValue.intValue()); // Pass the index as args
-            pathPoints.clear();
-        });
-
 
         // Initialize ONNX Runtime environment and YOLOv8 model
         try {
@@ -93,84 +81,64 @@ public class AiControllerOnnx {
         } catch (OrtException e) {
             e.printStackTrace();
         }
-
     }
 
-
-    // Method to handle camera source changes
-    private void handleCameraSourceChange(int newSourceIndex) {
-        // Stop the current video stream if already running
-        if (capture != null && capture.isOpened()) {
-            stopCam();
-        }
-
-        // Update the camera source index based on the selection
-        cameraSourceIndex = newSourceIndex;
-
-        // Try to open the selected camera
-        capture = new VideoCapture(cameraSourceIndex);
-        if (!capture.isOpened()) {
-            distanceLabel.setText("Distance: Invalid");
-            navigationStatus.setText("Status: Could not open camera source!");
-            // If the camera source is unavailable, set the placeholder image
-            System.out.println("Error: Could not open camera source.");
-            Platform.runLater(() -> videoImagePlot.setImage(placeholderImage));
-            return;
-        }
-        distanceLabel.setText("Distance: 0.0");
-        navigationStatus.setText("Status: navigating...");
-
-        // Start the video stream with the new camera source
-        startVideoStream();
-    }
-
-    // Method to start the video stream in a background thread
-    private void startVideoStream() {
+    // The method processFrame is called from videoController to update the videoimageplot of the current instance of this class
+    public void processFrame(Mat frame) {
+        // Task to handle AI processing and UI updates asynchronously
         Task<Void> videoTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                frame = new Mat();
-                while (!isCancelled()) {
-                    if (capture.read(frame)) {
-                        try {
-                            Mat grayscaleFrame = new Mat();
-                            Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
+                try {
+                    // Step 1: Convert the frame to grayscale if needed (optional)
+                    Mat grayscaleFrame = new Mat();
+                    Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
 
-                            // Convert grayscale frame back to BGR for colored overlays
-                            Imgproc.cvtColor(grayscaleFrame, frame, Imgproc.COLOR_GRAY2BGR);
+                    // Step 2: Keep the grayscale frame separate for the AI processing part
+                    Mat processedFrame = new Mat();
+                    // Only convert back to BGR for overlay or AI processing if necessary
+                    Imgproc.cvtColor(grayscaleFrame, processedFrame, Imgproc.COLOR_GRAY2BGR);
 
-                            // Pre-process the frame for YOLOv8
-                            OnnxTensor inputTensor = preprocessFrame(frame, env);
+                    // Step 3: Pre-process the frame for YOLOv8 model (use processed frame here)
+                    OnnxTensor inputTensor = preprocessFrame(processedFrame, env);
 
-                            // Run the YOLOv8 model on the frame
-                            OrtSession.Result result = yoloModel.runOnnxModel(inputTensor);
+                    // Step 4: Run YOLOv8 model on the frame, with a session check
+                    if (yoloModel.isSessionOpen()) {  // Check if the session is open before running the model
+                        OrtSession.Result result = yoloModel.runOnnxModel(inputTensor);
 
-                            // Post-process the output (apply NMS and IoU)
-                            postProcess(result, frame);
+                        // Step 5: Post-process the result (apply NMS, IoU, etc.)
+                        postProcess(result, processedFrame);
 
-                            // Convert the frame to a format the image view can use
-                            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2RGB);  // Convert to RGB
-                            Image imageToShow = matToImage(frame);
+                        // Step 6: Convert the processed frame to RGB for JavaFX ImageView
+                        Imgproc.cvtColor(processedFrame, processedFrame, Imgproc.COLOR_BGR2RGB);
 
+                        // Step 7: Convert the processed Mat frame to Image for JavaFX
+                        Image imageToShow = matToImage(processedFrame);
 
-                            // Update the PlottableImage with the new frame
-                            Platform.runLater(() -> videoImagePlot.setImage(imageToShow));
+                        // Step 8: Update the JavaFX ImageView on the JavaFX Application Thread
+                        Platform.runLater(() -> videoImagePlot.setImage(imageToShow));
 
-                            inputTensor.close();
-                            result.close();
-                        } catch (OrtException e) {
-                            e.printStackTrace();
-                        }
+                        // Clean up resources
+                        inputTensor.close();
+                        result.close();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 return null;
             }
         };
-
-        Thread videoThread = new Thread(videoTask);
-        videoThread.setDaemon(true);  // This ensures the thread closes when the application closes
-        videoThread.start();
+        // Start the task in a background thread to avoid blocking the UI
+        new Thread(videoTask).start();
     }
+
+
+    // the method updateResolution is called from videoController to update the resolution of the videoImagePlot
+    public void updateResolution(double width, double height) {
+        videoImagePlot.setFitWidth(width);
+        videoImagePlot.setFitHeight(height);
+    }
+
 
     // Pre-process the frame for YOLOv8 (resize, normalize, etc.)
     private OnnxTensor preprocessFrame(Mat frame, OrtEnvironment env) throws OrtException {
@@ -318,13 +286,72 @@ public class AiControllerOnnx {
 
 
     private void handleVideoImageClick(javafx.scene.input.MouseEvent event) {
-        if (enablePathMode.isSelected() && capture != null) {
+        if (enablePathMode.isSelected()) {
+            // Get the image currently displayed in the ImageView
+            Image image = videoImagePlot.getImage();
+            if (image == null) {
+                System.out.println("No image loaded.");
+                return;
+            }
 
-            // Create a new point and add to the path
-            Point newPoint = new Point(event.getX(), event.getY());
+            // Image dimensions (actual resolution)
+            double imageWidth = image.getWidth();
+            double imageHeight = image.getHeight();
+
+            // ImageView dimensions
+            double viewWidth = videoImagePlot.getBoundsInLocal().getWidth();
+            double viewHeight = videoImagePlot.getBoundsInLocal().getHeight();
+
+
+            // Calculate aspect ratios
+            double imageAspectRatio = imageWidth / imageHeight;
+            double viewAspectRatio = viewWidth / viewHeight;
+
+            // Calculate displayed image dimensions within the ImageView
+            double displayedImageWidth, displayedImageHeight;
+            double offsetX = 0, offsetY = 0;
+
+            if (viewAspectRatio > imageAspectRatio) {
+                // Image is constrained by height; black bars on the sides
+                displayedImageHeight = viewHeight;
+                displayedImageWidth = imageAspectRatio * displayedImageHeight;
+                offsetX = (viewWidth - displayedImageWidth) / 2; // Horizontal padding
+            } else {
+                // Image is constrained by width; black bars on the top/bottom
+                displayedImageWidth = viewWidth;
+                displayedImageHeight = displayedImageWidth / imageAspectRatio;
+                offsetY = (viewHeight - displayedImageHeight) / 2; // Vertical padding
+            }
+
+
+            // Map mouse click coordinates to the image coordinates
+            double clickX = event.getX();
+            double clickY = event.getY();
+
+            // Check if click is within the displayed image area
+            if (clickX < offsetX || clickX > offsetX + displayedImageWidth ||
+                    clickY < offsetY || clickY > offsetY + displayedImageHeight) {
+                return;
+            }
+
+            // Adjust click coordinates to image space
+            double adjustedX = (clickX - offsetX) * (imageWidth / displayedImageWidth);
+            double adjustedY = (clickY - offsetY) * (imageHeight / displayedImageHeight);
+
+
+            // Ensure adjusted coordinates are within the image bounds
+            if (adjustedX < 0 || adjustedX > imageWidth || adjustedY < 0 || adjustedY > imageHeight) {
+                return;
+            }
+
+            // Add the adjusted point to the path
+            Point newPoint = new Point(adjustedX, adjustedY);
             pathPoints.add(newPoint);
+
         }
     }
+
+
     // Method to draw the entire path (all points and lines)
     private void drawPath(Mat frame) {
         // Iterate through the list of points and draw them
@@ -454,7 +481,6 @@ public class AiControllerOnnx {
     }
 
 
-
     private void drawLine(Point start, Point end, Mat frame) {
         Imgproc.line(frame, start, end, new Scalar(255, 0, 0), 2);
     }
@@ -470,34 +496,11 @@ public class AiControllerOnnx {
         return null;
     }
 
-    public void stopCam() {
-        // Close the video capture if it's open
-        if (capture != null && capture.isOpened()) {
-            capture.release();
-        }
-    }
-    // Stop the video stream when exiting
-    public void stopVideo() {
-        // Close the video capture if it's open
-        if (capture != null && capture.isOpened()) {
-            capture.release();
-        }
-
-        // Close the YOLO model if it is initialized and not already closed
-        if (yoloModel != null) {
-            try {
-                yoloModel.close();
-            } catch (OrtException e) {
-
-                e.printStackTrace();
-            }
-        }
-    }
     public void setStatusLabel(Label status) {
-
     }
+
 
     public void close() {
-        stopVideo();
+
     }
 }

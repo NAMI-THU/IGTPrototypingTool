@@ -12,6 +12,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Button?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MainController">
     <top>
@@ -56,16 +58,44 @@
         </TabPane>
     </center>
     <bottom>
-        <HBox maxHeight="20">
+        <HBox styleClass="hbox-class" maxHeight="40" spacing="15" alignment="CENTER"
+              style="-fx-border: 2px; -fx-border-color: black;">
             <padding>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+                <Insets bottom="5.0" left="20.0" right="20.0" top="5.0"/>
             </padding>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="status" prefHeight="12.0" textAlignment="RIGHT" HBox.hgrow="ALWAYS">
+
+            <HBox spacing="10" alignment="CENTER">
+            <!-- Video status label -->
+            <Label fx:id="currentState" text="Video: Not connected" prefHeight="20.0" prefWidth="300.0">
                 <padding>
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
                 </padding>
             </Label>
+
+            <!-- Video Traffic Light Circle -->
+            <Circle fx:id="videoStatusCircle" radius="10" fill="rgba(255,0,0,1.0)" stroke="black"/>
+            </HBox>
+
+            <!-- Spacer -->
+            <Region prefWidth="200"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <!-- OpenIGTLink Status Label -->
+                <Label fx:id="igtLinkState" text="OpenIGTLink: Not connected" prefHeight="20.0" prefWidth="350.0">
+                    <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+                    </padding>
+                </Label>
+
+                <!-- OpenIGTLink Traffic Light Circle -->
+                <Circle fx:id="igtLinkCircle" radius="10" fill="rgba(255,0,0,1.0)" stroke="black"/>
+            </HBox>
+            <!-- Status Message -->
+            <Label fx:id="status" prefHeight="20.0" textAlignment="LEFT">
+
+            </Label>
         </HBox>
+
     </bottom>
+
 </BorderPane>
