@@ -11,7 +11,7 @@
 <?import javafx.scene.Group?>
 
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity"
-            xmlns="http://javafx.com/javafx/21"
+            xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AnnotationController">
    <BorderPane>
       <bottom>
