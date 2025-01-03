@@ -10,10 +10,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import nu.pattern.OpenCV;
@@ -55,11 +52,18 @@ public class AiControllerOnnx {
 
     private double totalDistance;
 
-
+    @FXML
+    TextField widthInput;
+    @FXML
+    TextField heightInput;
+    @FXML
+    Button resizeButton;
 
     public void initialize() {
+
         OpenCV.loadLocally();
         clearAllPoints.setOnAction(new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent actionEvent) {
                 pathPoints.clear();
@@ -70,6 +74,21 @@ public class AiControllerOnnx {
             }
         });
         videoImagePlot.setImage(placeholderImage);
+        resizeButton.setOnAction(event -> {
+            String widthText = widthInput.getText();
+            String heightText = heightInput.getText();
+
+            if (widthText != null && !widthText.isEmpty() && heightText != null && !heightText.isEmpty()) {
+                double width = Double.parseDouble(widthText);
+                double height = Double.parseDouble(heightText);
+                updateResolution(width, height);
+
+            } else {
+                System.out.println("Width and height must not be empty.");
+            }
+        });
+
+
 
         // Set up mouse click event on the videoImagePlot
         videoImagePlot.setOnMouseClicked(this::handleVideoImageClick);

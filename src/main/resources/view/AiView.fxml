@@ -25,6 +25,19 @@
                         <Button fx:id="clearAllPoints">Clear all</Button>
                     </HBox>
                     <Label fx:id="instructionsLabel" text="Instructions: Unknown direction"/>
+
+
+                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                        <Label text="Width:" />
+                        <TextField fx:id="widthInput" prefWidth="60" />
+                        <Label text="Height:" />
+                        <TextField fx:id="heightInput" prefWidth="60" />
+                    </HBox>
+
+                    <Button fx:id="resizeButton" text="Resize" />
+
+
+
                 </VBox>
             </TitledPane>
         </VBox>
