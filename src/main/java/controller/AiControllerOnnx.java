@@ -4,7 +4,7 @@ import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
-import algorithm.ImageDataProcessor;
+import algorithm.VideoDataProcessor;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -19,7 +19,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -508,7 +507,7 @@ public class AiControllerOnnx {
     // Borrowed utility method to convert OpenCV Mat to JavaFX Image
     private Image matToImage(Mat frame) {
         try {
-            return ImageDataProcessor.Mat2Image(frame, ".png");
+            return VideoDataProcessor.Mat2Image(frame, ".png");
         } catch (Exception e) {
             e.printStackTrace();
         }

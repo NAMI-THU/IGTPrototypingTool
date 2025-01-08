@@ -51,7 +51,7 @@
                   <ChoiceBox fx:id="sourceChoiceBox">
                      <items>
                         <FXCollections fx:factory="observableArrayList">
-                           <String fx:value="Video Source" />
+                           <String fx:value="Camera" />
                            <String fx:value="OpenIGTLink" />
                            <String fx:value="Video File" />
                         </FXCollections>

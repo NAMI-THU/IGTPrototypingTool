@@ -44,7 +44,7 @@ import java.util.prefs.Preferences;
 
 public class AutoTrackController implements Controller {
 
-    private final ImageDataManager imageDataManager = new ImageDataManager();
+    private final VideoService videoService = new VideoService();
     private final TrackingService trackingService = TrackingService.getInstance();
     private final Map<String, Integer> deviceIdMapping = new LinkedHashMap<>();
     private final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -140,7 +140,7 @@ public class AutoTrackController implements Controller {
         if (autoCaptureTimeline != null) {
             autoCaptureTimeline.stop();
         }
-        imageDataManager.closeConnection();
+        videoService.closeConnection();
     }
 
     /**
@@ -195,13 +195,13 @@ public class AutoTrackController implements Controller {
         }
 
         int currentDevice = 0;
-        boolean deviceExists = imageDataManager.openConnection(VideoSource.LIVESTREAM, currentDevice);
-        imageDataManager.closeConnection();
+        boolean deviceExists = videoService.openConnection(VideoSource.LIVESTREAM, currentDevice);
+        videoService.closeConnection();
         while (deviceExists) {
             deviceIdMapping.put("Camera " + currentDevice, currentDevice);
             currentDevice++;
-            deviceExists = imageDataManager.openConnection(VideoSource.LIVESTREAM, currentDevice);
-            imageDataManager.closeConnection();
+            deviceExists = videoService.openConnection(VideoSource.LIVESTREAM, currentDevice);
+            videoService.closeConnection();
         }
     }
 
@@ -212,8 +212,8 @@ public class AutoTrackController implements Controller {
         if (!sourceChoiceBox.getSelectionModel().isEmpty()) {
             var selectedItem = sourceChoiceBox.getSelectionModel().getSelectedItem();
             int deviceId = deviceIdMapping.get(selectedItem);
-            imageDataManager.closeConnection();
-            imageDataManager.openConnection(VideoSource.LIVESTREAM, deviceId);
+            videoService.closeConnection();
+            videoService.openConnection(VideoSource.LIVESTREAM, deviceId);
             if (videoTimeline == null) {
                 videoTimeline = new Timeline();
                 videoTimeline.setCycleCount(Animation.INDEFINITE);
@@ -234,11 +234,11 @@ public class AutoTrackController implements Controller {
      * If a measurement is scheduled, it queries the current tracking data and saves the data.
      */
     private void updateVideoImage() {
-        var matrix = imageDataManager.readMat();
+        var matrix = videoService.readMat();
         if(matrix != null && !matrix.empty()) {
             // Currently, we don't do image transformations, only tracking transformations
             // matrix = applyImageTransformations(matrix);
-            currentShowingImage = ImageDataProcessor.Mat2BufferedImage(matrix);
+            currentShowingImage = VideoDataProcessor.Mat2BufferedImage(matrix);
         }
 
         // Show Tracking Data
@@ -251,7 +251,7 @@ public class AutoTrackController implements Controller {
             saveCapturedData(currentShowingImage, lastTrackingData);
         }
         if(matrix != null && !matrix.empty()) {
-            videoImagePlot.setImage(ImageDataProcessor.Mat2Image(matrix, ".png"));
+            videoImagePlot.setImage(VideoDataProcessor.Mat2Image(matrix, ".png"));
         }
     }
 

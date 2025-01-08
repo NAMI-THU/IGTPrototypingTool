@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import util.HardwareStatus;
 
 public class MainController implements Controller {
 
@@ -53,61 +54,37 @@ public class MainController implements Controller {
     private int selectedSource;
 
     @FXML
-    private Label igtLinkState;
+    private Label trackerState;
 
     @FXML
-    private Circle igtLinkCircle;
+    private Circle trackerStateCircle;
 
     @FXML
-    private Label currentState;
+    private Label videoState;
 
     @FXML
-    private Circle videoStatusCircle;
+    private Circle videoStateCircle;
 
 
-    private int statusIndex = 0; // Tracks the current state
-
-
-
-    @FXML
-    public void handleChangeStatus(int sourceOrdinal, int statusIndex) {
-        // Determine the source type based on the sourceOrdinal
-        if (sourceOrdinal == 0) { // VideoController source
-            switch (statusIndex) {
-                case 0: // Not connected
-                    currentState.setText("Video: Not Connected");
-                    updateCircleColors(videoStatusCircle, Color.rgb(255, 0, 0, 1.0)); // Red bright
-                    break;
-                case 1: // Connected but not yet tracking
-                    currentState.setText("Video: Connected (Not Yet Tracking)");
-                    updateCircleColors(videoStatusCircle, Color.rgb(255, 173, 51, 1.0)); // Yellow bright
-                    break;
-                case 2: // Connected and tracking
-                    currentState.setText("Video: Connected and Tracking");
-                    updateCircleColors(videoStatusCircle, Color.rgb(0, 255, 0, 1.0)); // Green bright
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid status index for VideoController");
-            }
-        } else if (sourceOrdinal == 1) { // OpenIGTLink source
-            switch (statusIndex) {
-                case 0: // Not connected
-                    igtLinkState.setText("OpenIGTLink: Not Connected");
-                    updateCircleColors(igtLinkCircle, Color.rgb(255, 0, 0, 1.0)); // Red bright
-                    break;
-                case 1: // Connected but not yet tracking
-                    igtLinkState.setText("OpenIGTLink: Connected (Not Yet Tracking)");
-                    updateCircleColors(igtLinkCircle, Color.rgb(255, 173, 51, 1.0)); // Yellow bright
-                    break;
-                case 2: // Connected and tracking
-                    igtLinkState.setText("OpenIGTLink: Connected and Tracking");
-                    updateCircleColors(igtLinkCircle, Color.rgb(0, 255, 0, 1.0)); // Green bright
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid status index for OpenIGTLink");
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid source ordinal");
+    public void onVideoChanged(HardwareStatus status){
+        switch(status){
+            case DISCONNECTED:
+                videoState.setText("Video: Not Connected");
+                updateCircleColors(videoStateCircle, Color.rgb(255, 0, 0, 1.0)); // Red bright
+                break;
+            case CONNECTED_NO_STREAM: // Connected but not yet tracking
+                videoState.setText("Video: Connected (Not Yet Streaming)");
+                updateCircleColors(videoStateCircle, Color.rgb(255, 173, 51, 1.0)); // Yellow bright
+                break;
+            case CONNECTED_AND_STREAMING: // Connected and tracking
+                videoState.setText("Video: Connected and Streaming");
+                updateCircleColors(videoStateCircle, Color.rgb(0, 255, 0, 1.0)); // Green bright
+                break;
+            case ERROR:
+                videoState.setText("Video: Error");
+                updateCircleColors(videoStateCircle, Color.rgb(0, 0, 100, 1.0));
+            default:
+                throw new IllegalArgumentException("Invalid status index for VideoController");
         }
     }
 
@@ -132,6 +109,8 @@ public class MainController implements Controller {
         visualizationManager.injectStatusLabel(status);
 
         videoController.setMainController(this);
+
+        onVideoChanged(HardwareStatus.DISCONNECTED);
     }
 
     @FXML

@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import algorithm.ImageDataManager;
-import algorithm.ImageDataProcessor;
+import algorithm.VideoService;
+import algorithm.VideoDataProcessor;
 import inputOutput.VideoSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -20,6 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.opencv.core.Mat;
+import util.HardwareStatus;
 
 import static inputOutput.VideoSource.LIVESTREAM;
 import static inputOutput.VideoSource.OPENIGTLINK;
@@ -39,14 +40,13 @@ public class VideoController implements Controller {
     @FXML Spinner<Integer> rightSpinner;
     @FXML Spinner<Integer> leftSpinner;
 
-    ImageDataManager dataManager = new ImageDataManager();
+    VideoService dataManager = new VideoService();
     Timeline timeline = new Timeline();
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private Label statusLabel;
 
     private AiControllerOnnx aiController;
-    private int sourceTracker;
 
     public void setAiController(AiControllerOnnx aiController) {
         this.aiController = aiController;
@@ -89,7 +89,7 @@ public class VideoController implements Controller {
     public void connectToSource() {
         connectionIndicator.setVisible(true);
         switch(sourceChoiceBox.getValue()) {
-        case "Video Source":
+        case "Camera":
             connectToSourceAsync(LIVESTREAM, 0);
             break;
         case "OpenIGTLink":
@@ -114,21 +114,13 @@ public class VideoController implements Controller {
             Platform.runLater(() -> {
                 connectionIndicator.setVisible(false);
                 if(success) {
-                    if (connectionId == LIVESTREAM) {
-                        // Video Source case
-                        sourceTracker = 0;
-                        mainController.handleChangeStatus(0, 1); // Not Connected (initial state)
-                    } else if (connectionId == OPENIGTLINK) {
-                        // OpenIGTLink case
-                        sourceTracker = 1;
-                        mainController.handleChangeStatus(1, 1); // Not Connected (initial state)
-                    }
+                    mainController.onVideoChanged(HardwareStatus.CONNECTED_NO_STREAM);
                     startButton.setDisable(false);
                     startButton.requestFocus();
-
                 }else{
                     statusLabel.setText("Unable to establish connection.");
-                    logger.warning("Unable to esatblish connection for connection-id "+connectionId+", openConnection returned false.");
+                    logger.warning("Unable to establish connection for connection-id "+connectionId+", openConnection returned false.");
+                    mainController.onVideoChanged(HardwareStatus.ERROR);
                     new Alert(Alert.AlertType.ERROR, "Unable to establish a connection!").show();
                 }
             });
@@ -141,14 +133,7 @@ public class VideoController implements Controller {
     @FXML
     public void startVideo() {
         if(dataManager.getDataProcessor() != null && dataManager.getDataProcessor().isConnected()) {
-            switch (sourceTracker){
-                case 0:
-                    mainController.handleChangeStatus(0,2);
-                    break;
-                case 1:
-                    mainController.handleChangeStatus(1,2);
-                    break;
-            }
+            mainController.onVideoChanged(HardwareStatus.CONNECTED_AND_STREAMING);
 
             this.setInitialImageSize();
             timeline.setCycleCount(Animation.INDEFINITE);
@@ -165,14 +150,7 @@ public class VideoController implements Controller {
 
     @FXML
     public void stopVideo() {
-        switch (sourceTracker){
-            case 0:
-                mainController.handleChangeStatus(0,0);
-                break;
-            case 1:
-                mainController.handleChangeStatus(1,0);
-                break;
-        }
+        mainController.onVideoChanged(HardwareStatus.DISCONNECTED);
         dataManager.closeConnection();
         timeline.stop();
         // Need to reconnect first
@@ -213,7 +191,7 @@ public class VideoController implements Controller {
 
     private Image matToImage(Mat frame) {
         try {
-            return ImageDataProcessor.Mat2Image(frame, ".png");
+            return VideoDataProcessor.Mat2Image(frame, ".png");
         } catch (Exception e) {
             e.printStackTrace();
         }

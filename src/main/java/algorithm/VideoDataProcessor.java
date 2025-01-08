@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * ImageDataProcessor accesses AbstractImageSource to control the connection and read images.
  *
  */
-public class ImageDataProcessor {
+public class VideoDataProcessor {
 
     AbstractImageSource imgSrc;
     String filePath;
@@ -108,22 +108,27 @@ public class ImageDataProcessor {
      * @param deviceId ID of the device (default: 0)
      */
     public boolean openConnection(VideoSource source, int deviceId){
-        switch (source) {
-            case LIVESTREAM:
-                imgSrc = LivestreamSource.forDevice(deviceId);
-                break;
-            case OPENIGTLINK:
-                imgSrc = new OIGTImageSource();
-                break;
-            case FILE:
-                imgSrc = new FilestreamSource(filePath);
-                break;
-        }
+        try {
+            switch (source) {
+                case LIVESTREAM:
+                    imgSrc = LivestreamSource.forDevice(deviceId);
+                    break;
+                case OPENIGTLINK:
+                    imgSrc = new OIGTImageSource();
+                    break;
+                case FILE:
+                    imgSrc = new FilestreamSource(filePath);
+                    break;
+            }
 
-       if(imgSrc != null) {
-            return imgSrc.openConnection();
-        } else {
-            logger.log(Level.WARNING, "Image source could not be set.");
+            if (imgSrc != null) {
+                return imgSrc.openConnection();
+            } else {
+                logger.log(Level.WARNING, "Image source could not be set.");
+                return false;
+            }
+        }catch (Exception e){
+            logger.log(Level.SEVERE, e.getMessage());
             return false;
         }
     }
