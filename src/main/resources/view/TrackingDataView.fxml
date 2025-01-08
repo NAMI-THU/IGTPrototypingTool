@@ -94,8 +94,6 @@
 				<Button fx:id="loadAIData" alignment="CENTER" mnemonicParsing="false" onAction="#loadAIData" text="Load AI Data" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 				<Button fx:id="visualizeTrackingBtn" alignment="CENTER" mnemonicParsing="false" onAction="#visualizeTracking" text="Start Tracking and Visualization" GridPane.rowIndex="1" />
 				<ToggleButton fx:id="freezeTglBtn" mnemonicParsing="false" onAction="#freezeVisualization" text="Freeze / Unfreeze" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <!--<Button mnemonicParsing="false" onAction="#runPythonScript" prefHeight="27.0" prefWidth="85.0" text="Run Script" GridPane.columnIndex="2" />
-            <Button mnemonicParsing="false" onAction="#stopScriptProcess" prefHeight="26.0" prefWidth="85.0" text="Stop Script" GridPane.columnIndex="2" GridPane.rowIndex="1" />-->
 			</GridPane>
    		</VBox>
       <padding>

@@ -202,7 +202,7 @@ public class AnnotationController implements Controller {
      * @param actionEvent The event triggered by the upload button.
      */
     @FXML
-    public void Handle_Upload_Functionality(ActionEvent actionEvent) {
+    public void handleUploadFunctionality(ActionEvent actionEvent) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Images");

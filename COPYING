@@ -1,6 +1,7 @@
 This application uses the following 3rd party libraries.
 The respective license files can be accessed by the respective URL.
 
+com.microsoft.onnxruntime:onnxruntime. Microsoft. MIT License. https://github.com/microsoft/onnxruntime/blob/main/LICENSE
 org.openpnp:opencv. Jason von Nieda. BSD-3 License. https://github.com/openpnp/opencv/blob/develop/LICENSE
 org.apache.commons:commons-math3. Apache Commons. Apache 2.0 License. https://commons.apache.org/proper/commons-math/
 org.apache.commons:commons-csv. Apache Commons. Apache 2.0 License. https://commons.apache.org/proper/commons-csv/

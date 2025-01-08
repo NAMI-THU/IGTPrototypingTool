@@ -324,62 +324,10 @@ public class TrackingDataController implements Controller {
         }
     }
 
-    Process pythonProcess;
-    @FXML
-    private void runPythonScript() {
-        if (pythonProcess != null && pythonProcess.isAlive()) {
-            // Process is already running, do not start a new one
-            System.out.println("Python script is already running.");
-            return;
-        }
-        try {
-            // Define the path to the Python executable
-            String pythonExe = "python"; // or "python3" depending on your setup
-
-            // Absolute paths to the script and weights file
-
-            String scriptPath = "Python/AutomaticGuidewireDetection/src/yolov5/detect.py";
-            String weightsPath = "Python/AutomaticGuidewireDetection/weights/laboratory/weights/best.pt";
-
-
-            // Build the command
-            ProcessBuilder pb = new ProcessBuilder(
-                    pythonExe,
-                    scriptPath,
-                    "--weights", weightsPath,
-                    "--source", "0",
-                    "--open-igt"
-            );
-
-            // Redirect the output to a file
-            File outputFile = new File("output.txt");
-            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(outputFile));
-            pb.redirectError(ProcessBuilder.Redirect.appendTo(outputFile)); // Redirect errors to the same file
-
-            // Start the process
-            pythonProcess = pb.start();
-
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Or use logger
-        }
-    }
-
-
-    @FXML
-    private void stopScriptProcess() {
-        if (pythonProcess != null) {
-            pythonProcess.destroy();
-        }
-    }
-
     @Override
     public void close() {
         disconnectSource();
         unregisterController();
-        stopScriptProcess();
     }
 }
 
