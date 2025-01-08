@@ -1,0 +1,241 @@
+.root {
+    -fx-background-color: #424242;
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
+}
+
+.scroll-pane {
+    -fx-background: #424242;
+    -fx-border-color: #333333;
+}
+
+.border-pane {
+    -fx-background-color: #424242;
+}
+
+.vbox {
+    -fx-background-color: #424242;
+}
+.scroll-bar {
+    -fx-background-color: #333333;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #555555;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #444444;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: #333333;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.red-green-checkbox{
+    -fx-border-color: red;
+}
+
+/* Added dark mode style changes*/
+
+.choice-box {
+    -fx-background-color: #333333;
+    -fx-text-fill: red;
+}
+
+.choice-box .label {
+    -fx-text-fill: white;
+
+}
+
+.choice-box .list-view {
+    -fx-background-color: #333333;
+    -fx-text-fill: black;
+}
+
+
+.titled-pane > .title {
+-fx-border-color: white;
+-fx-border-width: 1px;
+ -fx-padding: 10px;
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-padding: 5px;
+    -fx-font-weight: bold;
+}
+
+.titled-pane > .title > .text {
+    -fx-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+
+.titled-pane > .content {
+-fx-border-width: 1px;
+    -fx-text-fill: white;
+    -fx-background-color: #555555;
+    -fx-padding: 10px;
+}
+
+
+#distanceLabel {
+   -fx-background-color: #333333;
+     -fx-font-size: 13px;
+     -fx-text-fill: white;
+     -fx-padding: 5px;
+}
+
+
+#navigationStatus {
+  -fx-background-color: #333333;
+  -fx-font-size: 13px;
+  -fx-text-fill: white;
+  -fx-padding: 5px;
+}
+
+#instructionsLabel {
+  -fx-background-color: #333333;
+  -fx-font-size: 13px;
+  -fx-text-fill: white;
+  -fx-padding: 5px;
+}
+
+.toggle-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
+}
+
+
+.toggle-button:hover {
+    -fx-background-color: #222222;
+}
+
+
+.toggle-button:selected {
+    -fx-background-color: #0077cc;
+    -fx-text-fill: white;
+}
+
+
+.toggle-button:focused {
+    -fx-background-color: #555555;
+}
+
+.button:hover {
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+}
+
+.button-bar{
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+}
+
+.tool-bar {
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+}
+
+.tree-view {
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+}
+
+.tree-cell {
+    -fx-background-color: #555555;
+    -fx-text-fill: white;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #444444;
+}
+
+.tree-cell:hover {
+    -fx-background-color: #444444;
+}
+
+
+.choice-box:hover {
+    -fx-background-color: #222222;
+}
+
+.menu-bar {
+    -fx-background-color: #333;
+    -fx-text-fill: white;
+}
+
+
+/* MenuBar styling */
+.menu-bar {
+    -fx-background-color: #333;
+}
+
+/* Menu text styling */
+.menu {
+    -fx-text-fill: white;
+}
+
+.menu .label {
+    -fx-text-fill: white;
+}
+
+/* MenuItem styling */
+.menu-item .label {
+    -fx-text-fill: white;
+}
+
+
+.context-menu {
+    -fx-background-color: #222222;
+
+}
+
+/* Style unselected tabs */
+.tab {
+    -fx-background-color: #2B2B2B;
+
+}
+
+/* Style the selected tab */
+.tab:selected {
+    -fx-text-fill: white;
+}
+
+
+.tab .tab-label {
+    -fx-text-fill: white;
+}
+
+/* Hover effect on tabs */
+.tab:hover {
+    -fx-background-color: #444444;
+}
+
+
+/* status bar styling*/
+
+.hbox-class .label {
+    -fx-text-fill: black;
+}
+
+.hbox-class {
+    -fx-background-color:  #bfbfbf;
+    -fx-padding: 5 10 5 10;
+}
+
+
+
