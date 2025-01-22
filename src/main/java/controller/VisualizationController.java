@@ -1,7 +1,5 @@
 package controller;
 
-import algorithm.Tool;
-import algorithm.TrackingService;
 import algorithm.VisualizationManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,6 +15,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 import shapes.STLModel;
+import tracking.Tool;
+import tracking.TrackingService;
+import util.HardwareStatus;
 import util.Persistence;
 
 import java.io.File;
@@ -87,7 +88,6 @@ public class VisualizationController implements Controller {
     private final TreeItem<String> treeItemRoot = new TreeItem<>("Root");
     TreeItem<String> stlBranch = new TreeItem<>("Files");
 
-    private String[] trackerNames;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -129,7 +129,7 @@ public class VisualizationController implements Controller {
      * Method to add one or more STL Files to the existing ones
      */
     public void addSTLFile() {
-        if (trackingService.getTrackingDataSource() == null) {
+        if (trackingService.getStatus() == HardwareStatus.DISCONNECTED) {
             statusLabel.setText("Select Tracking Data Source first");
             return;
         }
@@ -181,7 +181,7 @@ public class VisualizationController implements Controller {
      */
     @FXML
     private void addPathVisualisation() {
-        if (trackingService.getTrackingDataSource() == null) {
+        if (trackingService.getStatus() == HardwareStatus.DISCONNECTED) {
             statusLabel.setText("Select Tracking Data Source first");
             return;
         }
@@ -198,10 +198,8 @@ public class VisualizationController implements Controller {
         TreeItem<String> trackerBranch = new TreeItem<>("Tracker");
         treeItemRoot.getChildren().add(trackerBranch);
         if (tools != null) {
-            trackerNames = new String[tools.size()];
             for (int i = 0; i < tools.size(); i++) {
                 String name = tools.get(i).getName();
-                trackerNames[i] = name;
                 TreeItem<String> stlFile = new TreeItem<>(name);
                 trackerBranch.getChildren().add(stlFile);
             }
@@ -253,7 +251,8 @@ public class VisualizationController implements Controller {
 
         trackerTextField.setText(name);
 
-        List<Tool> tools = trackingService.getDataService().loadNextData(1);
+        trackingService.updateSingle();
+        var tools = trackingService.getToolsForRender();
 
         int index = getSelectedTracker();
         trackingVisibleCB.setSelected(tools.get(index).coneIsVisible());
@@ -300,10 +299,10 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerColor() {
         if (visualizationManager.visualizeCone().get()) {
-            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            var tools = trackingService.getToolsForRender();
 
             int index = getSelectedTracker();
-            tools.get(index).setConeColor(new PhongMaterial(trackerColorPicker.getValue()));
+            tools.get(index).updateMaterial(new PhongMaterial(trackerColorPicker.getValue()));
         }
     }
 
@@ -313,7 +312,7 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerSize() {
         if (visualizationManager.visualizeCone().get()) {
-            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            var tools = trackingService.getToolsForRender();
 
             int index = getSelectedTracker();
             tools.get(index).setConeSize(trackerSlider.getValue());
@@ -326,7 +325,7 @@ public class VisualizationController implements Controller {
     @FXML
     private void setTrackerVisibility() {
         if (visualizationManager.visualizeCone().get()) {
-            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            var tools = trackingService.getToolsForRender();
 
             int index = getSelectedTracker();
             boolean visible = tools.get(index).coneIsVisible();
@@ -344,7 +343,7 @@ public class VisualizationController implements Controller {
     @FXML
     private void setProjectionVisibility() {
         if (visualizationManager.visualizeCone().get()) {
-            List<Tool> tools = trackingService.getDataService().loadNextData(1);
+            var tools = trackingService.getToolsForRender();
             int index = getSelectedTracker();
             boolean visible = tools.get(index).projectionIsVisible();
             tools.get(index).setProjectionVisibility(!visible);

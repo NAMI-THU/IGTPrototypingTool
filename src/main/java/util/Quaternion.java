@@ -455,6 +455,10 @@ public class Quaternion {
         return this;
     }
 
+    public static Quaternion identity(){
+        return new Quaternion(1,0,0,0);
+    }
+
     /**
      * Helper function to print the values of the quaternion
      */

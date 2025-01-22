@@ -26,7 +26,13 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point3;
+import tracking.Measurement;
+import tracking.Tool;
+import tracking.TrackingService;
+import tracking.observers.TrackingMeasurementObserver;
+import tracking.observers.TrackingSourceObserver;
 import userinterface.PlottableImage;
+import util.HardwareStatus;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -105,11 +111,14 @@ public class AutoTrackController implements Controller {
     private final ObservableList<Point3> clicked_tracker_points = FXCollections.observableArrayList();
     private Mat cachedTransformMatrix = null;
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
 
-        trackingService.registerObserver((sourceChanged,dataServiceChanged,timelineChanged) -> updateTrackingInformation());
+//        trackingService.registerObserver((sourceChanged,dataServiceChanged,timelineChanged) -> updateTrackingInformation());
+        trackingService.subscribe((TrackingMeasurementObserver) m -> updateTrackingData());
+        trackingService.subscribe((TrackingSourceObserver) this::updateTrackingInformation);
 
         connectionProgressSpinner.setVisible(false);
         captureProgressSpinner.setVisible(false);
@@ -147,8 +156,9 @@ public class AutoTrackController implements Controller {
      * Enables the Main View to inject the tracking data controller
      *
      */
-    public void updateTrackingInformation() {
-        var selected = trackingService.getTrackingDataSource() != null && trackingService.getTimeline() != null;
+    public void updateTrackingInformation(HardwareStatus status) {
+//        var selected = trackingService.getTrackingDataSource() != null && trackingService.getTimeline() != null;
+        var selected = status == HardwareStatus.CONNECTED_AND_STREAMING;
         trackingConnectedStatusBox.setSelected(selected);
     }
 
@@ -259,15 +269,7 @@ public class AutoTrackController implements Controller {
      * Loads the next tracking data point and displays it on the image-plot
      */
     private void updateTrackingData(){
-        var source = trackingService.getTrackingDataSource();
-        var service = trackingService.getDataService();
-        if(source == null || service == null){return;}
-
-        source.update();
-        List<Tool> tools = service.loadNextData(1);
-
-        if (tools.isEmpty()) return;
-
+        var tools = trackingService.getTools();
         lastTrackingData.clear();
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
@@ -276,14 +278,13 @@ public class AutoTrackController implements Controller {
                 series.setName(tool.getName());
                 series.getData().add(new XYChart.Data<>(0,0));  // Workaround to display legend
                 dataSeries.add(series);
-                series.getData().remove(0);
+                series.getData().removeFirst();
                 // TODO: The sensor curve needs reworking (apply on transformed data and dont shrink)
 //                videoImagePlot.initSensorCurve(series);
             }
 
             var series = dataSeries.get(i);
-            var measurements = tool.getMeasurement();
-            var point = measurements.get(measurements.size() - 1).getPos();
+            var point = tool.getLatestMeasurement().getPosition();
             var data = series.getData();
             var max_num_points = 4; // 1
 
@@ -298,7 +299,7 @@ public class AutoTrackController implements Controller {
             data.add(new XYChart.Data<>(shifted_points[0], shifted_points[1]));
 
             if(data.size() > max_num_points){
-                data.remove(0);
+                data.removeFirst();
             }
         }
     }

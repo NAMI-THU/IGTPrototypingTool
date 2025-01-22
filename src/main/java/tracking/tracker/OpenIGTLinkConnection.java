@@ -1,17 +1,17 @@
-package inputOutput;
+package tracking.tracker;
+
+import org.medcare.igtl.messages.ImageMessage;
+import org.medcare.igtl.network.GenericIGTLinkClient;
+import org.medcare.igtl.network.IOpenIgtPacketListener;
+import org.medcare.igtl.util.Status;
+import org.medcare.igtl.util.TransformNR;
+import org.medcare.igtl.util.Matrix3D;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.medcare.igtl.messages.ImageMessage;
-import org.medcare.igtl.network.GenericIGTLinkClient;
-import org.medcare.igtl.network.IOpenIgtPacketListener;
-import org.medcare.igtl.util.Status;
-import util.Matrix3D;
-import util.TransformNR;
 
 /**
  * builds a connection based on OpenIGTLink for tracking data and image data.
@@ -215,6 +215,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
         String msg1 = "<Command Name=\"SomeCommandName\" SomeAttribute1=\"attribute value 1\" SomeAttribute2=\"123\"><Param name=\"Param1\"/><Param name=\"Param2\"/></Command>";
     }
 
+
     /**
      * The methods below are not used during a connection over MITK
      */
@@ -236,6 +237,7 @@ public class OpenIGTLinkConnection implements IOpenIgtPacketListener {
     public String onTxString(String name) {
         return null;
     }
+
 
     @Override
     public void onRxDataArray(String name, Matrix3D data) {

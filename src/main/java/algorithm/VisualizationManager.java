@@ -23,6 +23,9 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shapes.Target;
+import tracking.Tool;
+import tracking.TrackingService;
+import util.HardwareStatus;
 import util.Vector3D;
 
 import javax.xml.XMLConstants;
@@ -286,27 +289,26 @@ public class VisualizationManager {
      * the tracking data read from CSV or IGT connection
      */
     public void visualizeTracking() {
-        if (trackingService.getTrackingDataSource() == null) {
+        if (trackingService.getStatus() == HardwareStatus.DISCONNECTED) {
             statusLabel.setText("No Tracking Data Source");
             return;
         }
 
         // timeline has not been started in trackingData view
-        if (trackingService.getTimeline() == null) {
+        if (trackingService.getStatus() == HardwareStatus.CONNECTED_NO_STREAM) {
             statusLabel.setText("Start Tracking in Tracking Data View first");
             return;
         }
         statusLabel.setText("");
 
         // loads the next set of tracking data
-        trackingService.getTrackingDataSource().update();
-        List<Tool> tools = trackingService.getDataService().loadNextData(1);
-
-        for (Tool tool : tools) {
+        var toolMeasures = trackingService.updateSingle();
+        for (var tool : trackingService.getToolsForRender()) {
             if (flagReloadMatrix) {
                 tool.loadTransformationMatrix();
             }
-            tool.show();
+            tool.updateDisplay();
+//            tool.show();
             tool.checkBounds(stlModels);
         }
         flagReloadMatrix = false;
@@ -323,7 +325,7 @@ public class VisualizationManager {
      * Adds the Nodes and Controls to the Scene
      */
     public void showFigure() {
-        if (trackingService.getTrackingDataSource() == null) {
+        if (trackingService.getStatus() == HardwareStatus.DISCONNECTED) {
             return;
         }
         statusLabel.setText("");
@@ -365,10 +367,11 @@ public class VisualizationManager {
             root.getChildren().addAll(targets);
         }
 
-        if (trackingService.getDataService() != null) {
-            List<Tool> tools = trackingService.getDataService().loadNextData(1);
-            for (Tool tool : tools) {
-                tool.addVisualizationToRoot(root);
+        if (trackingService.getStatus() == HardwareStatus.CONNECTED_AND_STREAMING) {
+            trackingService.updateSingle();
+            var tools = trackingService.getToolsForRender();
+            for (var tool : tools) {
+                tool.installInScene(root);
                 if (targets != null) {
                     tool.setTargets(targets);
                 }

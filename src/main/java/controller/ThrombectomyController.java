@@ -9,9 +9,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import algorithm.Measurement;
-import algorithm.Tool;
-import algorithm.TrackingService;
 import javafx.animation.KeyFrame;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -27,9 +24,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
+import tracking.Measurement;
+import tracking.Tool;
+import tracking.TrackingService;
+import tracking.observers.TrackingMeasurementObserver;
 import userinterface.ImageScatterChart;
 import userinterface.TrackingDataDisplay;
 import util.FormatManager;
+import util.HardwareStatus;
 
 public class ThrombectomyController implements Controller {
 
@@ -168,20 +170,18 @@ public class ThrombectomyController implements Controller {
      */
     @FXML
     private void showTrackingData() {
-        if (trackingService.getTrackingDataSource() == null) {
+        var status = trackingService.getStatus();
+        if (status == HardwareStatus.DISCONNECTED) {
             statusLabel.setText("No Tracking Data Source");
             return;
         }
         // timeline has not been started in trackingdata view
-        if (trackingService.getTimeline() == null) {
+        if (status == HardwareStatus.CONNECTED_NO_STREAM) {
             statusLabel.setText("Start Tracking in Tracking Data View first");
             return;
         }
         statusLabel.setText("");
-        trackingService.getTimeline().getKeyFrames().add(
-                new KeyFrame(Duration.millis(100),
-                    event2 -> updateThrombectomyDiagrams())
-                );
+        trackingService.subscribe((TrackingMeasurementObserver) m -> updateThrombectomyDiagrams());
     }
 
     /**
@@ -190,26 +190,23 @@ public class ThrombectomyController implements Controller {
      * uses last 5 measurements for blending.
      */
     private void updateThrombectomyDiagrams() {
-
-        List<Tool> tools = trackingService.getDataService().loadNextData(1);
-        if (tools.isEmpty()) return;
-
+        var tools = trackingService.getTools();
         for (Tool tool : tools) {
 
             TrackingDataDisplay display = checkToolDisplayList(tool.getName());
             // clear old data
             display.clearData();
 
-            List<Measurement> measurements = tool.getMeasurement();
+            List<Measurement> measurements = tool.getMeasurementHistory();
             //use the last 10 measurements, otherwise blending will be a problem during motion
             for (int i = 1; i < 10; i++) {
                 if (measurements.size() - i < 0) {
                     break;
                 }
                 // invert tracking data, so display fits the experiment's setup
-                double x = measurements.get(measurements.size() - i).getPos().getX();
-                double y = measurements.get(measurements.size() - i).getPos().getY();
-                double z = measurements.get(measurements.size() - i).getPos().getZ() * -1;
+                double x = measurements.get(measurements.size() - i).getPosition().getX();
+                double y = measurements.get(measurements.size() - i).getPosition().getY();
+                double z = measurements.get(measurements.size() - i).getPosition().getZ() * -1;
 
                 display.addDataToSeries1(new XYChart.Data<>(x, y));
                 display.addDataToSeries2(new XYChart.Data<>(x, z));
@@ -223,7 +220,7 @@ public class ThrombectomyController implements Controller {
      * create display data if it does not exist
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
-        if (toolDisplayList.size() > 0) {
+        if (!toolDisplayList.isEmpty()) {
             for (TrackingDataDisplay d : toolDisplayList) {
                 if (d.getToolName().equals(toolName)) return d;
             }

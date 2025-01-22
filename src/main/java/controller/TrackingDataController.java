@@ -11,10 +11,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import algorithm.*;
-import inputOutput.AIDataSource;
-import inputOutput.CSVFileReader;
-import inputOutput.OIGTTrackingDataSource;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,7 +27,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import algorithm.VisualizationManager;
+import tracking.Measurement;
+import tracking.Tool;
+import tracking.TrackingService;
+import tracking.observers.TrackingMeasurementObserver;
+import tracking.observers.TrackingSourceObserver;
+import tracking.tracker.CSVFileReader;
+import tracking.tracker.OIGTTrackingDataSource;
 import userinterface.TrackingDataDisplay;
+import util.HardwareStatus;
 
 public class TrackingDataController implements Controller {
 
@@ -66,8 +70,10 @@ public class TrackingDataController implements Controller {
     VisualizationManager visualizationManager;
     VisualizationController visualizationController;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
-    private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
+//    private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
+//    private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
+
+    private TrackingMeasurementObserver measurementObserver;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,8 +82,9 @@ public class TrackingDataController implements Controller {
         position = new HashMap<>();
         rotation = new HashMap<>();
 
-        loadCSVBtn.disableProperty().bind(visualizationRunning);
-        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
+        trackingService.subscribe((TrackingSourceObserver) this::on_hardwareStatusChanged);
+//        loadCSVBtn.disableProperty().bind(visualizationRunning);
+//        visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -90,6 +97,19 @@ public class TrackingDataController implements Controller {
 
     public void injectVisualizationController(VisualizationController visualizationController) {
         this.visualizationController = visualizationController;
+    }
+
+    private void on_hardwareStatusChanged(HardwareStatus status) {
+        if(status == HardwareStatus.DISCONNECTED) {
+            loadCSVBtn.setDisable(false);
+            visualizeTrackingBtn.setDisable(true);
+        }else if(status == HardwareStatus.CONNECTED_NO_STREAM){
+            loadCSVBtn.setDisable(false);
+            visualizeTrackingBtn.setDisable(false);
+        }else if(status == HardwareStatus.CONNECTED_AND_STREAMING){
+            loadCSVBtn.setDisable(true);
+            visualizeTrackingBtn.setDisable(false);
+        }
     }
 
     /**
@@ -106,14 +126,13 @@ public class TrackingDataController implements Controller {
 
 
         if (file != null) {
-            if (trackingService.getTrackingDataSource() != null) {
+            if (trackingService.isConnected()) {
                 disconnectSource();
             }
             try {
-                newSource = new CSVFileReader(file.getAbsolutePath());
-                newSource.setRepeatMode(true);
-                trackingService.changeTrackingSource(newSource);
-                sourceConnected.setValue(true);
+                newSource = new CSVFileReader(file.getAbsolutePath(), true);
+                trackingService.connect(newSource);
+//                sourceConnected.setValue(true);
                 visualizationController.setSourceConnected(true);
                 logger.log(Level.INFO, "CSV file read from: " + file.getAbsolutePath());
             } catch (IOException e) {
@@ -123,32 +142,32 @@ public class TrackingDataController implements Controller {
         }
     }
 
-    @FXML
-    public void loadAIData() {
-        System.out.println("AI DATA LOADING");
-
-        AIDataSource newSource = new AIDataSource();
-
-        if (trackingService.getTrackingDataSource() != null) {
-            disconnectSource();
-        }
-
-        try {
-            trackingService.changeTrackingSource(newSource);
-            sourceConnected.setValue(true);
-            visualizationController.setSourceConnected(true);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error loading AI DATA", e);
-            statusLabel.setText("Error loading AI DATA SOURCE");
-        }
-    }
+//    @FXML
+//    public void loadAIData() {
+//        System.out.println("AI DATA LOADING");
+//
+//        AIDataSource newSource = new AIDataSource();
+//
+//        if (trackingService.isConnected()) {
+//            disconnectSource();
+//        }
+//
+//        try {
+//            trackingService.connect(newSource);
+//            sourceConnected.setValue(true);
+//            visualizationController.setSourceConnected(true);
+//        } catch (Exception e) {
+//            logger.log(Level.SEVERE, "Error loading AI DATA", e);
+//            statusLabel.setText("Error loading AI DATA SOURCE");
+//        }
+//    }
 
     /**
      * Connect via OpenIGTLink.
      */
     @FXML
     public void onConnectButtonClicked() {
-        if (trackingService.getTrackingDataSource() != null) { // bit hacky
+        if (trackingService.isConnected()) { // bit hacky
             disconnectSource();
         }
         connectionIndicator.setVisible(true);
@@ -156,10 +175,14 @@ public class TrackingDataController implements Controller {
         new Thread(() -> {
             newSource.connect();
             Platform.runLater(() -> {
-                trackingService.changeTrackingSource(newSource);
+                try {
+                    trackingService.connect(newSource);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 connectionIndicator.setVisible(false);
-                sourceConnected.setValue(true);
-                visualizationController.setSourceConnected(true);
+//                sourceConnected.setValue(true);
+//                visualizationController.setSourceConnected(true);
             });
         }).start();
     }
@@ -168,30 +191,31 @@ public class TrackingDataController implements Controller {
      * This method disconnects the current source, closes the connection and resets the timeline.
      */
     private void disconnectSource() {
-        var timeline = trackingService.getTimeline();
-        if (timeline != null) {
-            if (timeline.getStatus() == Animation.Status.PAUSED) {
-                statusLabel.setText("");    // To remove the label
-                freezeTglBtn.setSelected(false);
-            }
-            timeline.stop();
-            trackingService.changeTimeline(null);
-        }
-        visualizationRunning.setValue(false);
-        visualizationController.setVisualizationRunning(false);
-
-        var source = trackingService.getTrackingDataSource();
-        if (source != null) {
-            source.closeConnection();
-            trackingService.changeTrackingSource(null);
-        }
-
-        if (trackingService.getDataService() != null) {
-            trackingService.changeDataService(null);
-        }
-
-        sourceConnected.setValue(false);
-        visualizationController.setSourceConnected(false);
+//        var timeline = trackingService.getTimeline();
+//        if (timeline != null) {
+//            if (timeline.getStatus() == Animation.Status.PAUSED) {
+//                statusLabel.setText("");    // To remove the label
+//                freezeTglBtn.setSelected(false);
+//            }
+//            timeline.stop();
+//            trackingService.changeTimeline(null);
+//        }
+//        visualizationRunning.setValue(false);
+//        visualizationController.setVisualizationRunning(false);
+//
+//        var source = trackingService.getTrackingDataSource();
+//        if (source != null) {
+//            source.closeConnection();
+//            trackingService.changeTrackingSource(null);
+//        }
+//
+//        if (trackingService.getDataService() != null) {
+//            trackingService.changeDataService(null);
+//        }
+//
+//        sourceConnected.setValue(false);
+//        visualizationController.setSourceConnected(false);
+        trackingService.disconnect();
     }
 
     /**
@@ -199,68 +223,63 @@ public class TrackingDataController implements Controller {
      */
     @FXML
     public void visualizeTracking() {
-        var timeline = trackingService.getTimeline();
-        var source = trackingService.getTrackingDataSource();
-
-        if (timeline == null && source != null) {
-            // this is used to load tracking data from source
-            trackingService.changeDataService(new DataService(source));
-
-            timeline = new Timeline();
-            timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.getKeyFrames().addAll(
-                    new KeyFrame(Duration.millis(100),
-                            event2 -> updateDiagrams()));
-
-            timeline.play();
-            TrackingService.getInstance().changeTimeline(timeline);
-
-            updateDiagrams();
-            visualizationRunning.setValue(true);
-            visualizationController.setVisualizationRunning(true);
-            visualizationController.addTrackerToTreeView(trackingService.getDataService().loadNextData(1));
-            visualizationManager.loadLastSTLModels();
-            visualizationController.addSTLToTreeView();
-            visualizationManager.showFigure();
+        if(measurementObserver == null) {
+            measurementObserver = trackingService.subscribe((TrackingMeasurementObserver) m -> updateDiagrams());
         }
-        if (timeline != null) {
-            timeline.play();
-        }
+        trackingService.scheduleUpdates(100);
+//        var timeline = trackingService.getTimeline();
+//        var source = trackingService.getTrackingDataSource();
+//
+//        if (timeline == null && source != null) {
+//            // this is used to load tracking data from source
+//            trackingService.changeDataService(new DataService(source));
+//
+//            timeline = new Timeline();
+//            timeline.setCycleCount(Animation.INDEFINITE);
+//            timeline.getKeyFrames().addAll(
+//                    new KeyFrame(Duration.millis(100),
+//                            event2 -> updateDiagrams()));
+//
+//            timeline.play();
+//            TrackingService.getInstance().changeTimeline(timeline);
+//
+//            updateDiagrams();
+//            visualizationRunning.setValue(true);
+//            visualizationController.setVisualizationRunning(true);
+//            visualizationController.addTrackerToTreeView(trackingService.getDataService().loadNextData(1));
+//            visualizationManager.loadLastSTLModels();
+//            visualizationController.addSTLToTreeView();
+//            visualizationManager.showFigure();
+//        }
+//        if (timeline != null) {
+//            timeline.play();
+//        }
     }
 
     public void updateDiagrams() {
-        if (trackingService.getTrackingDataSource() == null) {
-            return;
-        }
-        // loads the next set of tracking data
-        trackingService.getTrackingDataSource().update();
-        // this returns tracking data from all tools at one point in time
-        List<Tool> tools = trackingService.getDataService().loadNextData(1);
-
-        if (tools.isEmpty()) return;
-
+        var tools = trackingService.getTools();
         for (Tool tool : tools) {
 
             TrackingDataDisplay display = checkToolDisplayList(tool.getName());
             display.clearData();
 
-            List<Measurement> li = tool.getMeasurement();
+            List<Measurement> li = tool.getMeasurementHistory();
             //use the last 5 measurements, otherwise blending will be a problem during motion
             for (int i = 1; i < 5; i++) {
                 if (li.size() - i < 0) {
                     break;
                 }
-                double x = li.get(li.size() - i).getPos().getX();
-                double y = li.get(li.size() - i).getPos().getY();
-                double z = li.get(li.size() - i).getPos().getZ();
+                double x = li.get(li.size() - i).getPosition().getX();
+                double y = li.get(li.size() - i).getPosition().getY();
+                double z = li.get(li.size() - i).getPosition().getZ();
 
                 // display position and rotation of tool
                 if (i == 1) {
                     DecimalFormat df = new DecimalFormat("0.00");
-                    double qX = li.get(li.size() - i).getRotation().getX();
-                    double qY = li.get(li.size() - i).getRotation().getY();
-                    double qZ = li.get(li.size() - i).getRotation().getZ();
-                    double qR = li.get(li.size() - i).getRotation().getW();
+                    double qX = li.get(li.size() - i).getOrientation().getX();
+                    double qY = li.get(li.size() - i).getOrientation().getY();
+                    double qZ = li.get(li.size() - i).getOrientation().getZ();
+                    double qR = li.get(li.size() - i).getOrientation().getW();
 
                     position.get(tool.getName()).setText(tool.getName() + ": ["
                             + df.format(x) + ";"
@@ -286,7 +305,7 @@ public class TrackingDataController implements Controller {
      * and position and rotation labels for one tool.
      */
     private TrackingDataDisplay checkToolDisplayList(String toolName) {
-        if (this.toolDisplayList.size() > 0) {
+        if (!this.toolDisplayList.isEmpty()) {
             for (TrackingDataDisplay d : this.toolDisplayList) {
                 if (d.getToolName().equals(toolName)) return d;
             }
@@ -307,21 +326,22 @@ public class TrackingDataController implements Controller {
 
     @FXML
     public void freezeVisualization() {
-        var timeline = trackingService.getTimeline();
-        if (timeline != null) {
-            switch (timeline.getStatus()) {
-                case RUNNING:
-                    timeline.pause();
-                    statusLabel.setText("Visualization paused");
-                    break;
-                case PAUSED:
-                    timeline.play();
-                    statusLabel.setText("");
-                    break;
-                default:
-                    break;
-            }
-        }
+        trackingService.cancelUpdates();
+//        var timeline = trackingService.getTimeline();
+//        if (timeline != null) {
+//            switch (timeline.getStatus()) {
+//                case RUNNING:
+//                    timeline.pause();
+//                    statusLabel.setText("Visualization paused");
+//                    break;
+//                case PAUSED:
+//                    timeline.play();
+//                    statusLabel.setText("");
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
     }
 
     @Override
