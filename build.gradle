@@ -43,6 +43,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.11.3'
 }
 
+// Bad style, would be better to make this a java-module along with a igtprototypingtool-module
+sourceSets.main.java.srcDirs += ['openigtlink']
 
 // JUnit 5 support
 test {

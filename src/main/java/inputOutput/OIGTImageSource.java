@@ -1,11 +1,12 @@
 package inputOutput;
 
 
+import org.medcare.igtl.messages.ImageMessage;
 import org.opencv.core.Mat;
 
 import nu.pattern.OpenCV;
 
-import org.medcare.igtl.messages.ImageMessage;
+import tracking.tracker.OpenIGTLinkConnection;
 
 /**
  * provides the basic functionalities for the application like opening and closing the connection, and an image converted to a Mat object from OpenCV.

@@ -137,7 +137,7 @@ public final class TrackingService {
     }
 
     public HardwareStatus getStatus(){
-        if(!trackingSource.isConnected()){
+        if(!isConnected()){
             return HardwareStatus.DISCONNECTED;
         }
         if(updateSchedulerFuture == null || updateSchedulerFuture.isCancelled()){
@@ -149,6 +149,6 @@ public final class TrackingService {
 
 
     public boolean isConnected(){
-        return (trackingSource != null && trackingSource.isConnected());
+        return trackingSource != null && trackingSource.isConnected();
     }
 }

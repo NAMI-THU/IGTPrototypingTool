@@ -1,5 +1,6 @@
 package tracking.tracker;
 
+import org.medcare.igtl.util.Header;
 import tracking.Measurement;
 import util.Quaternion;
 import util.Vector3D;
@@ -30,7 +31,7 @@ public class OIGTTrackingDataSource implements TrackingSource {
             map.put(dataItem.name,
                     new Measurement(
                             dataItem.name,
-                            org.medcare.igtl.util.Header.getTimeStamp(),
+                            Header.getTimeStamp(),
                             new Vector3D(dataItem.t.getX(),dataItem.t.getY(),dataItem.t.getZ()),
                             new Quaternion(dataItem.t.getRotation().getW(), dataItem.t.getRotation().getX(), dataItem.t.getRotation().getY(), dataItem.t.getRotation().getZ())
                     ));

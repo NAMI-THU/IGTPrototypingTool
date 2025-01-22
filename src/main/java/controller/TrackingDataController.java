@@ -224,7 +224,7 @@ public class TrackingDataController implements Controller {
     @FXML
     public void visualizeTracking() {
         if(measurementObserver == null) {
-            measurementObserver = trackingService.subscribe((TrackingMeasurementObserver) m -> updateDiagrams());
+            measurementObserver = trackingService.subscribe(m -> Platform.runLater(this::updateDiagrams));
         }
         trackingService.scheduleUpdates(100);
 //        var timeline = trackingService.getTimeline();
