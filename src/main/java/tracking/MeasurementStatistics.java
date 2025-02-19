@@ -28,7 +28,7 @@ public class MeasurementStatistics {
      */
     private static Quaternion getMeanRotationBetweenFirstAndLast(List<Measurement> measurements) {
         Quaternion firstRotation = measurements.getFirst().getOrientation();
-        Quaternion lastRotation = measurements.getLast().getOrientation();
+        Quaternion lastRotation = measurements.get(measurements.size()-1).getOrientation();
 
         float positionAtTime = 1f / measurements.size();
 

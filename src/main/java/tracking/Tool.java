@@ -16,7 +16,7 @@ public class Tool {
     }
 
     public Measurement getLatestMeasurement(){
-        return history.getLast();
+        return history.get(history.size()-1);
     }
 
     public List<Measurement> getLatestNMeasurements(int n){
