@@ -1,6 +1,3 @@
-[submodule "src/main/java/openigtlink"]
-	path = src/main/java/openigtlink
-	url = https://github.com/NAMI-THU/OpenIGTLink-Java
 [submodule "openigtlink"]
 	path = openigtlink
 	url = https://github.com/NAMI-THU/OpenIGTLink-Java
