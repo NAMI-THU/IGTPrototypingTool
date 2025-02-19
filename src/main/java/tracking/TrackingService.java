@@ -129,7 +129,7 @@ public final class TrackingService {
 
     public void disconnect(){
         cancelUpdates();
-        trackingSource.disconnect();
+        if(trackingSource != null) trackingSource.disconnect();
         trackingSource = null;
         // This will clear all tools to avoid mixtures when switching sources
         tools.clear();
