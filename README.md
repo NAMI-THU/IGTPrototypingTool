@@ -10,9 +10,19 @@ This tool started as a student project and is currently actively maintained by v
 
 Currently, at least **Java 17** or **Java 21** are supported.
 
-# Building
+# Cloning
+Be sure to clone the repository with its submodules. This can be done via
+```bash
+git clone --recurse-submodules https://github.com/NAMI-THU/IGTPrototypingTool.git
+```
 
-\
+If you already cloned it, make sure to also pull the submodules:
+```bash
+git submodule init 
+git submodule update
+```
+
+# Building
 For building, you can import this project as a *Gradle project* into your IDE, or you
 can run in a terminal:
 ```bash
