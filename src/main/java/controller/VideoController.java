@@ -1,7 +1,11 @@
 package controller;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -48,6 +52,13 @@ public class VideoController implements Controller {
     private AiControllerOnnx aiController;
     private int sourceTracker;
 
+    // measurement variables
+    private int frameCount = 0;
+    private long lastSecondTime = System.currentTimeMillis();
+    private long lastMinuteTime = System.currentTimeMillis();
+    private final List<Integer> fpsBuffer = new ArrayList<>();
+    private final String fpsLogFile = "logs/logs2.txt";
+
     public void setAiController(AiControllerOnnx aiController) {
         this.aiController = aiController;
     }
@@ -57,8 +68,6 @@ public class VideoController implements Controller {
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
-
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -75,39 +84,31 @@ public class VideoController implements Controller {
     @Override
     public void close() {
         if(this.dataManager.getDataProcessor().isConnected()) {
-            // Stop the video stream and also the timeline
             stopVideo();
         }
         unregisterController();
     }
 
-    /**
-     * The connection to an image source is created according to the selected
-     * option of the choice box.
-     */
     @FXML
     public void connectToSource() {
         connectionIndicator.setVisible(true);
         switch(sourceChoiceBox.getValue()) {
-        case "Video Source":
-            connectToSourceAsync(LIVESTREAM, 0);
-            break;
-        case "OpenIGTLink":
-            connectToSourceAsync(OPENIGTLINK);
-            break;
-        case "Video File":
-            File file = this.loadFile();
-            if(file != null) {
-                this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
-                connectToSourceAsync(VideoSource.FILE);
+            case "Video Source" -> connectToSourceAsync(LIVESTREAM, 0);
+            case "OpenIGTLink" -> connectToSourceAsync(OPENIGTLINK);
+            case "Video File" -> {
+                File file = this.loadFile();
+                if(file != null) {
+                    this.dataManager.getDataProcessor().setFilePath(file.getAbsolutePath());
+                    connectToSourceAsync(VideoSource.FILE);
+                }
             }
-            break;
         }
     }
 
     private void connectToSourceAsync(VideoSource connectionId){
         connectToSourceAsync(connectionId, 0);
     }
+
     private void connectToSourceAsync(VideoSource connectionId, int deviceId){
         new Thread(() -> {
             var success = dataManager.openConnection(connectionId, deviceId);
@@ -115,46 +116,35 @@ public class VideoController implements Controller {
                 connectionIndicator.setVisible(false);
                 if(success) {
                     if (connectionId == LIVESTREAM) {
-                        // Video Source case
                         sourceTracker = 0;
-                        mainController.handleChangeStatus(0, 1); // Not Connected (initial state)
+                        mainController.handleChangeStatus(0, 1);
                     } else if (connectionId == OPENIGTLINK) {
-                        // OpenIGTLink case
                         sourceTracker = 1;
-                        mainController.handleChangeStatus(1, 1); // Not Connected (initial state)
+                        mainController.handleChangeStatus(1, 1);
                     }
                     startButton.setDisable(false);
                     startButton.requestFocus();
-
-                }else{
+                } else {
                     statusLabel.setText("Unable to establish connection.");
-                    logger.warning("Unable to esatblish connection for connection-id "+connectionId+", openConnection returned false.");
+                    logger.warning("Unable to establish connection for connection-id " + connectionId);
                     new Alert(Alert.AlertType.ERROR, "Unable to establish a connection!").show();
                 }
             });
         }).start();
     }
 
-    /**
-     * If an image source is connected, image transmission starts.
-     */
     @FXML
     public void startVideo() {
         if(dataManager.getDataProcessor() != null && dataManager.getDataProcessor().isConnected()) {
             switch (sourceTracker){
-                case 0:
-                    mainController.handleChangeStatus(0,2);
-                    break;
-                case 1:
-                    mainController.handleChangeStatus(1,2);
-                    break;
+                case 0 -> mainController.handleChangeStatus(0,2);
+                case 1 -> mainController.handleChangeStatus(1,2);
             }
 
             this.setInitialImageSize();
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.getKeyFrames().add(
-                new KeyFrame(Duration.millis(100),
-                         event -> this.update())
+                    new KeyFrame(Duration.millis(100), event -> this.update())
             );
             timeline.play();
             stopButton.setDisable(false);
@@ -166,30 +156,19 @@ public class VideoController implements Controller {
     @FXML
     public void stopVideo() {
         switch (sourceTracker){
-            case 0:
-                mainController.handleChangeStatus(0,0);
-                break;
-            case 1:
-                mainController.handleChangeStatus(1,0);
-                break;
+            case 0 -> mainController.handleChangeStatus(0,0);
+            case 1 -> mainController.handleChangeStatus(1,0);
         }
         dataManager.closeConnection();
         timeline.stop();
-        // Need to reconnect first
         connectButton.setDisable(false);
         stopButton.setDisable(true);
     }
 
-    /**
-     * Change ImageView size. If preserveRatio is not explicitly set to true,
-     * height and width can be changed independently of each other.
-     */
     @FXML
     public void setIvSize() {
         iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
         iv.setFitWidth(Double.parseDouble(ivWidth.getText()));
-
-        // Notify AiControllerOnnx of the new resolution
         if (aiController != null) {
             aiController.updateResolution(Double.parseDouble(ivHeight.getText()), Double.parseDouble(ivWidth.getText()));
         }
@@ -197,15 +176,47 @@ public class VideoController implements Controller {
 
     public void update() {
         Mat matrix = dataManager.readMat();
+        if (matrix == null || matrix.empty()) return;
 
-        // Create a copy of the matrix for the ImageView to prevent modifications in AI processing
+        // Update FPS logic
+        frameCount++;
+        long now = System.currentTimeMillis();
+
+        if (now - lastSecondTime >= 1000) {
+            fpsBuffer.add(frameCount);
+            frameCount = 0;
+            lastSecondTime = now;
+        }
+
+        if (now - lastMinuteTime >= 60_000) {
+            double avgFps = fpsBuffer.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+            fpsBuffer.clear();
+            lastMinuteTime = now;
+
+            String logLine = String.format("%s - Average FPS: %.2f%n",
+                    new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()),
+                    avgFps);
+
+            System.out.print(logLine);
+
+            File logFile = new File(fpsLogFile);
+            try {
+                logFile.getParentFile().mkdirs();
+            } catch (Exception ignored) {}
+
+            try (FileWriter writer = new FileWriter(fpsLogFile, true)) {
+                writer.append(logLine);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Create a copy of the matrix for ImageView
         Mat matrixCopy = matrix.clone();
-
-        // Convert the frame to Image for ImageView without any processing
         Image frame = matToImage(matrixCopy);
         iv.setImage(frame);
 
-        // Send the original matrix for AI processing
+        // Send original matrix to AI controller
         if (aiController != null) {
             aiController.processFrame(matrix);
         }
@@ -222,16 +233,12 @@ public class VideoController implements Controller {
 
     private File loadFile() {
         FileChooser fc = new FileChooser();
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Video files","*.avi","*.mp4", "*.mkv", "*.mov", "*.3GP", "*.mpg");
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
+                "Video files","*.avi","*.mp4", "*.mkv", "*.mov", "*.3GP", "*.mpg");
         fc.setSelectedExtensionFilter(filter);
-
         return fc.showOpenDialog(new Stage());
     }
 
-    /**
-     * Set size of imageview according to size of the first transmitted image
-     * and display values in text fields that are used to scale the image.
-     */
     private void setInitialImageSize() {
         var image = dataManager.readImg();
         var height = image.getHeight();
@@ -246,14 +253,9 @@ public class VideoController implements Controller {
         rightSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width-1));
         leftSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,(int) width-1));
 
-        // We don't need to remove the old listeners since the valueProperty will be a new one than before (because of the new ValueFactory)
         setCropListener();
     }
 
-    /**
-     * Add ChangeListeners to all spinners, so images from source are being cropped
-     * before they are displayed.
-     */
     private void setCropListener() {
         this.topSpinner.valueProperty().addListener((observable, oldValue, newValue) -> this.dataManager.getDataProcessor().setTopCrop(newValue));
         this.bottomSpinner.valueProperty().addListener((observable ,oldValue, newValue) -> this.dataManager.getDataProcessor().setBottomCrop(newValue));

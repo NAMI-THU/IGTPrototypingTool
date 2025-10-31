@@ -7,8 +7,6 @@ import ai.onnxruntime.OrtSession;
 import algorithm.ImageDataProcessor;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -19,14 +17,20 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
+
 public class AiControllerOnnx {
+
     @FXML
     private Button clearAllPoints;
 
@@ -42,14 +46,13 @@ public class AiControllerOnnx {
 
     @FXML
     private ImageView videoImagePlot = new ImageView();
-    private int cameraSourceIndex;
+
     private YOLOv8Model yoloModel;
     private OrtEnvironment env;
-    private Image placeholderImage = new Image("THU_Nami.jpg",640, 480, false, true);
+    private Image placeholderImage = new Image("THU_Nami.jpg", 640, 480, false, true);
 
     private Point detectionPoint;
-    private List<Point> pathPoints = new ArrayList<>(); // List to hold the path points
-
+    private List<Point> pathPoints = new ArrayList<>();
     private double totalDistance;
 
     @FXML
@@ -59,21 +62,34 @@ public class AiControllerOnnx {
     @FXML
     Button resizeButton;
 
+    // Buffers to accumulate metrics for logging
+    private final List<Double> latencyBuffer = new ArrayList<>();
+    private final List<Long> memoryBuffer = new ArrayList<>();
+    private long lastLogTime = System.currentTimeMillis();
+    private static final long LOG_INTERVAL_MS = 60_000; // 1 minute
+
+    // logs file path
+    private final String logFilePath = "logs/performance_log.txt";
+
     public void initialize() {
-
         OpenCV.loadLocally();
-        clearAllPoints.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                pathPoints.clear();
-                totalDistance = 0.0;
-                distanceLabel.setText("Distance: 0.0");
-                navigationStatus.setText("Status: navigating...");
-                instructionsLabel.setText("Insructions: Unknown direction");
-            }
+        // folder check
+        File logDir = new File("logs");
+        if (!logDir.exists()) {
+            logDir.mkdir();
+        }
+
+        clearAllPoints.setOnAction(actionEvent -> {
+            pathPoints.clear();
+            totalDistance = 0.0;
+            distanceLabel.setText("Distance: 0.0 px");
+            navigationStatus.setText("Status: navigating...");
+            instructionsLabel.setText("Instructions: Unknown direction");
         });
+
         videoImagePlot.setImage(placeholderImage);
+
         resizeButton.setOnAction(event -> {
             String widthText = widthInput.getText();
             String heightText = heightInput.getText();
@@ -82,18 +98,13 @@ public class AiControllerOnnx {
                 double width = Double.parseDouble(widthText);
                 double height = Double.parseDouble(heightText);
                 updateResolution(width, height);
-
             } else {
                 System.out.println("Width and height must not be empty.");
             }
         });
 
-
-
-        // Set up mouse click event on the videoImagePlot
         videoImagePlot.setOnMouseClicked(this::handleVideoImageClick);
 
-        // Initialize ONNX Runtime environment and YOLOv8 model
         try {
             env = OrtEnvironment.getEnvironment();
             yoloModel = new YOLOv8Model("Python/best.onnx");
@@ -102,55 +113,78 @@ public class AiControllerOnnx {
         }
     }
 
-    // The method processFrame is called from videoController to update the videoimageplot of the current instance of this class
     public void processFrame(Mat frame) {
-        // Task to handle AI processing and UI updates asynchronously
-        Task<Void> videoTask = new Task<Void>() {
+        Task<Void> videoTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 try {
-                    // Step 1: Convert the frame to grayscale if needed (optional)
                     Mat grayscaleFrame = new Mat();
                     Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
 
-                    // Step 2: Keep the grayscale frame separate for the AI processing part
                     Mat processedFrame = new Mat();
-                    // Only convert back to BGR for overlay or AI processing if necessary
                     Imgproc.cvtColor(grayscaleFrame, processedFrame, Imgproc.COLOR_GRAY2BGR);
 
-                    // Step 3: Pre-process the frame for YOLOv8 model (use processed frame here)
                     OnnxTensor inputTensor = preprocessFrame(processedFrame, env);
 
-                    // Step 4: Run YOLOv8 model on the frame, with a session check
-                    if (yoloModel.isSessionOpen()) {  // Check if the session is open before running the model
+                    if (yoloModel.isSessionOpen()) {
+                        long startTime = System.nanoTime();
                         OrtSession.Result result = yoloModel.runOnnxModel(inputTensor);
+                        long endTime = System.nanoTime();
 
-                        // Step 5: Post-process the result (apply NMS, IoU, etc.)
+                        double inferenceMs = (endTime - startTime) / 1_000_000.0;
+                        logPerformanceMetrics(inferenceMs);
+
                         postProcess(result, processedFrame);
 
-                        // Step 6: Convert the processed frame to RGB for JavaFX ImageView
                         Imgproc.cvtColor(processedFrame, processedFrame, Imgproc.COLOR_BGR2RGB);
-
-                        // Step 7: Convert the processed Mat frame to Image for JavaFX
                         Image imageToShow = matToImage(processedFrame);
-
-                        // Step 8: Update the JavaFX ImageView on the JavaFX Application Thread
                         Platform.runLater(() -> videoImagePlot.setImage(imageToShow));
 
-                        // Clean up resources
-                        inputTensor.close();
                         result.close();
                     }
+
+                    inputTensor.close();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
             }
         };
-        // Start the task in a background thread to avoid blocking the UI
+
         new Thread(videoTask).start();
     }
 
+    private void logPerformanceMetrics(double inferenceMs) {
+        Runtime runtime = Runtime.getRuntime();
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+
+        latencyBuffer.add(inferenceMs);
+        memoryBuffer.add(usedMemory);
+
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastLogTime >= LOG_INTERVAL_MS) {
+            double avgLatency = latencyBuffer.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+            double avgMemory = memoryBuffer.stream().mapToLong(Long::longValue).average().orElse(0.0);
+
+            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+            try (FileWriter writer = new FileWriter(logFilePath, true)) {
+                writer.append("============================================\n");
+                writer.append("Performance Log - ").append(timestamp).append("\n");
+                writer.append(String.format("Average Inference Latency: %.2f ms%n", avgLatency));
+                writer.append(String.format("Average Memory Usage: %.2f MB%n", avgMemory / (1024.0 * 1024.0)));
+                writer.append("============================================\n\n");
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            latencyBuffer.clear();
+            memoryBuffer.clear();
+            lastLogTime = currentTime;
+        }
+    }
 
     // the method updateResolution is called from videoController to update the resolution of the videoImagePlot
     public void updateResolution(double width, double height) {
@@ -275,7 +309,7 @@ public class AiControllerOnnx {
         if(!detectCollision(detectionPoint, pathPoints.get(pathPoints.size()-1))){
                 Platform.runLater(()->navigationStatus.setText("Status: navigating..."));
         }
-        Platform.runLater(() ->distanceLabel.setText(String.format("Distance: %.2f", totalDistance)));
+        Platform.runLater(() ->distanceLabel.setText(String.format("Distance: %.2f px", totalDistance)));
         Platform.runLater(() ->instructionsLabel.setText("Instructions: " + instruction));
         }
 
