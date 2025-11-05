@@ -134,9 +134,12 @@ public class TrackingDataController implements Controller {
         }
 
         try {
+            newSource.update();
             trackingService.changeTrackingSource(newSource);
             sourceConnected.setValue(true);
             visualizationController.setSourceConnected(true);
+            statusLabel.setText("AI Data Source connected");
+            logger.log(Level.INFO, "AI Data Source loaded successfully");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error loading AI DATA", e);
             statusLabel.setText("Error loading AI DATA SOURCE");
