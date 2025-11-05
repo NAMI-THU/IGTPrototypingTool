@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdvancedTrackingController">
+    <VBox maxHeight="Infinity" maxWidth="Infinity">
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        </padding>
+        
+        <!-- Control Panel -->
+        <VBox spacing="10.0" prefWidth="400.0">
+            <Label text="Control Panel" style="-fx-font-size: 14pt; -fx-font-weight: bold;"/>
+            <Separator/>
+            
+            <!-- Tool Selection -->
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label text="Tool:" minWidth="100.0"/>
+                <ComboBox fx:id="toolSelector" prefWidth="200.0" />
+            </HBox>
+            
+            <Separator/>
+            
+            <!-- Target Position -->
+            <Label text="Target Position:" style="-fx-font-weight: bold;"/>
+            <HBox spacing="4.0" alignment="CENTER_LEFT">
+                <Label text="X:" minWidth="30.0"/>
+                <TextField fx:id="targetX" promptText="0.0" prefWidth="80.0"/>
+                <Label text="Y:" minWidth="30.0"/>
+                <TextField fx:id="targetY" promptText="0.0" prefWidth="80.0"/>
+                <Label text="Z:" minWidth="30.0"/>
+                <TextField fx:id="targetZ" promptText="0.0" prefWidth="80.0"/>
+                <Button text="Set Target" onAction="#setTarget" minWidth="90.0"/>
+            </HBox>
+            
+            <Separator/>
+            
+            <!-- Current Tool Position -->
+            <Label text="Current Tool Position:" style="-fx-font-weight: bold;"/>
+            <HBox spacing="4.0" alignment="CENTER_LEFT">
+                <Label text="X:" minWidth="30.0"/>
+                <Label fx:id="toolX" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+                <Label text="Y:" minWidth="30.0"/>
+                <Label fx:id="toolY" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+                <Label text="Z:" minWidth="30.0"/>
+                <Label fx:id="toolZ" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+            </HBox>
+            
+            <Separator/>
+            
+            <!-- Difference -->
+            <Label text="Difference (Target - Tool):" style="-fx-font-weight: bold;"/>
+            <HBox spacing="4.0" alignment="CENTER_LEFT">
+                <Label text="X:" minWidth="30.0"/>
+                <Label fx:id="diffX" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+                <Label text="Y:" minWidth="30.0"/>
+                <Label fx:id="diffY" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+                <Label text="Z:" minWidth="30.0"/>
+                <Label fx:id="diffZ" text="-" minWidth="80.0" style="-fx-font-weight: bold;"/>
+            </HBox>
+            
+            <Separator/>
+            
+            <!-- Distance and Direction -->
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="Distance to Target:" minWidth="120.0"/>
+                <Label fx:id="distanceLabel" text="-" style="-fx-font-weight: bold; -fx-font-size: 12pt;" minWidth="100.0"/>
+            </HBox>
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="Direction Hint:" minWidth="120.0"/>
+                <Label fx:id="hintLabel" text="-" style="-fx-font-weight: bold;" minWidth="200.0"/>
+            </HBox>
+        </VBox>
+        
+        <Separator/>
+        
+        <!-- 2D Views -->
+        <Label text="2D Views" style="-fx-font-size: 14pt; -fx-font-weight: bold;"/>
+        <Separator/>
+        
+        <GridPane hgap="10.0" vgap="10.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="400.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="400.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="400.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="400.0" prefHeight="400.0" vgrow="ALWAYS"/>
+            </rowConstraints>
+            
+            <!-- XY View  -->
+            <VBox GridPane.columnIndex="0">
+                <Label text="XY View" style="-fx-font-weight: bold;" alignment="CENTER">
+                    <VBox.margin>
+                        <Insets bottom="5.0"/>
+                    </VBox.margin>
+                </Label>
+                <AnchorPane minHeight="350.0" minWidth="350.0">
+                    <Canvas fx:id="canvasXY" height="350.0" width="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                </AnchorPane>
+            </VBox>
+            
+            <!-- XZ View -->
+            <VBox GridPane.columnIndex="1">
+                <Label text="XZ View" style="-fx-font-weight: bold;" alignment="CENTER">
+                    <VBox.margin>
+                        <Insets bottom="5.0"/>
+                    </VBox.margin>
+                </Label>
+                <AnchorPane minHeight="350.0" minWidth="350.0">
+                    <Canvas fx:id="canvasXZ" height="350.0" width="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                </AnchorPane>
+            </VBox>
+            
+            <!-- YZ View -->
+            <VBox GridPane.columnIndex="2">
+                <Label text="YZ View" style="-fx-font-weight: bold;" alignment="CENTER">
+                    <VBox.margin>
+                        <Insets bottom="5.0"/>
+                    </VBox.margin>
+                </Label>
+                <AnchorPane minHeight="350.0" minWidth="350.0">
+                    <Canvas fx:id="canvasYZ" height="350.0" width="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                </AnchorPane>
+            </VBox>
+        </GridPane>
+    </VBox>
+</ScrollPane>
+

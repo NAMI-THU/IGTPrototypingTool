@@ -55,6 +55,10 @@
                 <fx:include fx:id="annotation" source="AnnotationView.fxml"/>
             </Tab>
 
+            <Tab closable="false" fx:id="advancedTrackingTab" text="Advanced Tracking" onSelectionChanged="#onChangeView">
+                <fx:include fx:id="advancedTracking" source="AdvancedTrackingView.fxml"/>
+            </Tab>
+
         </TabPane>
     </center>
     <bottom>

@@ -39,6 +39,8 @@ public class MainController implements Controller {
     @FXML
     VisualizationController visualizationController;
     @FXML
+    AdvancedTrackingController advancedTrackingController;
+    @FXML
     Label status;
     private FXMLLoader loader;
     private MeasurementController measurementController;
@@ -130,6 +132,10 @@ public class MainController implements Controller {
         visualizationController.injectTrackingDataController(trackingDataController);
         visualizationController.injectVisualizationManager(visualizationManager);
         visualizationManager.injectStatusLabel(status);
+        
+        if (advancedTrackingController != null) {
+            advancedTrackingController.injectStatusLabel(status);
+        }
 
         videoController.setMainController(this);
     }
