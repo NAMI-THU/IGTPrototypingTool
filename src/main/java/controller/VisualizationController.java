@@ -13,11 +13,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 import shapes.STLModel;
 import util.Persistence;
+import util.Vector3D;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,6 +92,23 @@ public class VisualizationController implements Controller {
     TreeItem<String> stlBranch = new TreeItem<>("Files");
 
     private String[] trackerNames;
+
+    // Targeting UI elements
+    @FXML
+    private ComboBox<String> toolSelector;
+    @FXML
+    private TextField targetX;
+    @FXML
+    private TextField targetY;
+    @FXML
+    private TextField targetZ;
+    @FXML
+    private Label distanceLabel;
+    @FXML
+    private Label hintLabel;
+
+    private Vector3D targetPosition = null;
+    private Timeline targetingTimeline;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -100,6 +121,10 @@ public class VisualizationController implements Controller {
         var userPreferences = Preferences.userRoot().node("IGT_Settings");
         var matrixFile = userPreferences.get("visualisationTransformMatrix", "None selected!");
         selectedMatrixFile.setText(Path.of(matrixFile).getFileName().toString());
+
+        // defaults
+        if (distanceLabel != null) distanceLabel.setText("-");
+        if (hintLabel != null) hintLabel.setText("-");
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -205,6 +230,14 @@ public class VisualizationController implements Controller {
                 TreeItem<String> stlFile = new TreeItem<>(name);
                 trackerBranch.getChildren().add(stlFile);
             }
+            // Populate tool selector for targeting
+            if (toolSelector != null) {
+                toolSelector.getItems().clear();
+                toolSelector.getItems().addAll(trackerNames);
+                if (!toolSelector.getItems().isEmpty()) {
+                    toolSelector.getSelectionModel().select(0);
+                }
+            }
         }
     }
 
@@ -292,6 +325,7 @@ public class VisualizationController implements Controller {
     @FXML
     private void startTracking() {
         trackingDataController.visualizeTracking();
+        startTargetingLoop();
     }
 
     /**
@@ -559,6 +593,144 @@ public class VisualizationController implements Controller {
     @Override
     public void close() {
         statusLabel.setText("");
+        if (targetingTimeline != null) {
+            targetingTimeline.stop();
+            targetingTimeline = null;
+        }
         unregisterController();
+    }
+
+    @FXML
+    private void setTarget() {
+        try {
+            double x = Double.parseDouble(targetX.getText());
+            double y = Double.parseDouble(targetY.getText());
+            double z = Double.parseDouble(targetZ.getText());
+            targetPosition = new Vector3D(x, y, z);
+            
+            // activate targeting loop 
+            if (visualizationRunning.get()) {
+                if (targetingTimeline == null || targetingTimeline.getStatus() != Animation.Status.RUNNING) {
+                    startTargetingLoop();
+                }
+                updateTargetingUI();
+            } else {
+                if (distanceLabel != null) {
+                    distanceLabel.setText("Target set - Start visualization");
+                }
+            }
+        // catch invalid inputs
+        } catch (NumberFormatException e) {
+            if (distanceLabel != null) {
+                distanceLabel.setText("Invalid coordinates");
+                distanceLabel.setTextFill(Color.RED);
+            }
+        } catch (Exception e) {
+            if (distanceLabel != null) {
+                distanceLabel.setText("Error setting target");
+                distanceLabel.setTextFill(Color.RED);
+            }
+        }
+    }
+
+    private void startTargetingLoop() {
+        if (targetingTimeline != null) {
+            targetingTimeline.stop();
+        }
+        targetingTimeline = new Timeline(
+                new KeyFrame(javafx.util.Duration.millis(100), e -> updateTargetingUI())
+        );
+        targetingTimeline.setCycleCount(Animation.INDEFINITE);
+        targetingTimeline.play();
+    }
+
+    private void updateTargetingUI() {
+        if (distanceLabel == null || hintLabel == null) return;
+        
+        // no target set
+        if (targetPosition == null) {
+            distanceLabel.setText("-");
+            hintLabel.setText("-");
+            distanceLabel.setTextFill(Color.BLACK);
+            return;
+        }
+        
+        // no tool available
+        if (trackingService.getDataService() == null) {
+            distanceLabel.setText("No tracking data");
+            hintLabel.setText("-");
+            distanceLabel.setTextFill(Color.GRAY);
+            return;
+        }
+        
+        var tools = trackingService.getDataService().getDataManager().getToolMeasures();
+        if (tools == null || tools.isEmpty()) {
+            distanceLabel.setText("No tools available");
+            hintLabel.setText("-");
+            distanceLabel.setTextFill(Color.GRAY);
+            return;
+        }
+
+        // get selected tool
+        String selectedTool = toolSelector != null ? toolSelector.getSelectionModel().getSelectedItem() : null;
+        Tool toolToUse = null;
+        if (selectedTool != null) {
+            for (var t : tools) {
+                if (t.getName().equals(selectedTool)) {
+                    toolToUse = t;
+                    break;
+                }
+            }
+        }
+        if (toolToUse == null && !tools.isEmpty()) {
+            toolToUse = tools.get(0);
+        }
+
+        if (toolToUse == null) {
+            distanceLabel.setText("No tool selected");
+            hintLabel.setText("-");
+            distanceLabel.setTextFill(Color.GRAY);
+            return;
+        }
+
+        Vector3D pos = toolToUse.getCurrentPosition();
+        if (pos == null) {
+            distanceLabel.setText("Tool position unknown");
+            hintLabel.setText("-");
+            distanceLabel.setTextFill(Color.GRAY);
+            return;
+        }
+
+        // calculate distance and direction
+        double dx = targetPosition.getX() - pos.getX();
+        double dy = targetPosition.getY() - pos.getY();
+        double dz = targetPosition.getZ() - pos.getZ();
+        double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+        // add colour coding (green, orange, red)
+        // ToDo: make thresholds configurable in UI
+        distanceLabel.setText(String.format(java.util.Locale.ENGLISH, "%.1f mm", dist));
+        if (dist < 2.0) {
+            distanceLabel.setTextFill(Color.GREEN);
+        } else if (dist < 5.0) {
+            distanceLabel.setTextFill(Color.ORANGE);
+        } else {
+            distanceLabel.setTextFill(Color.RED);
+        }
+
+        String hint = directionHint(dx, dy, dz);
+        hintLabel.setText(hint);
+    }
+
+    private String directionHint(double dx, double dy, double dz) {
+        String xDir = dx > 1 ? "right" : (dx < -1 ? "left" : "");
+        String yDir = dy > 1 ? "down" : (dy < -1 ? "up" : "");
+        String zDir = dz > 1 ? "forward" : (dz < -1 ? "back" : "");
+        StringBuilder sb = new StringBuilder();
+        if (!yDir.isEmpty()) sb.append(yDir).append(" ");
+        if (!xDir.isEmpty()) sb.append(xDir).append(" ");
+        if (!zDir.isEmpty()) sb.append(zDir);
+        String txt = sb.toString().trim();
+        return txt.isEmpty() ? "on target" : txt;
     }
 }

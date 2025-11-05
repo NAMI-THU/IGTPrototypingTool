@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -15,6 +16,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -138,6 +140,34 @@
                               <Separator minHeight="10" />
                               <HBox alignment="CENTER">
                                   <Button fx:id="clearFiles" mnemonicParsing="false" onAction="#clearFiles" text="Remove all" textFill="RED" />
+                              </HBox>
+                          </VBox>
+                      </TitledPane>
+                      <TitledPane collapsible="false" text="Targeting">
+                          <VBox spacing="8.0" alignment="CENTER_LEFT">
+                              <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                  <Label text="Tool:" minWidth="70.0"/>
+                                  <ComboBox fx:id="toolSelector" prefWidth="140.0" />
+                              </HBox>
+                              <Separator/>
+                              <Label text="Target Position:" style="-fx-font-weight: bold;"/>
+                              <HBox spacing="4.0" alignment="CENTER_LEFT">
+                                  <Label text="X:" minWidth="25.0"/>
+                                  <TextField fx:id="targetX" promptText="0.0" prefWidth="70.0"/>
+                                  <Label text="Y:" minWidth="25.0"/>
+                                  <TextField fx:id="targetY" promptText="0.0" prefWidth="70.0"/>
+                                  <Label text="Z:" minWidth="25.0"/>
+                                  <TextField fx:id="targetZ" promptText="0.0" prefWidth="70.0"/>
+                                  <Button text="Set Target" onAction="#setTarget" minWidth="80.0"/>
+                              </HBox>
+                              <Separator/>
+                              <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                  <Label text="Distance to Target:" minWidth="120.0"/>
+                                  <Label fx:id="distanceLabel" text="-" style="-fx-font-weight: bold; -fx-font-size: 12pt;" minWidth="80.0"/>
+                              </HBox>
+                              <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                  <Label text="Direction Hint:" minWidth="120.0"/>
+                                  <Label fx:id="hintLabel" text="-" style="-fx-font-weight: bold;" minWidth="150.0"/>
                               </HBox>
                           </VBox>
                       </TitledPane>

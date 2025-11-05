@@ -154,6 +154,14 @@ public class Tool {
     }
 
     /**
+     * Returns the current transformed tool position in tracking coordinates
+     * after applying rotation, translation and offset.
+     */
+    public Vector3D getCurrentPosition() {
+        return pos;
+    }
+
+    /**
      * Add a vector to the current position, effectivly moving it by this vector
      * @param vec the vector to be added to the current position
      */
