@@ -57,6 +57,12 @@ public class TrackingDataController implements Controller {
     Group meshGroup;
     @FXML
     ScrollPane scrollPane;
+    @FXML
+    TextField formulaFieldX;
+    @FXML
+    TextField formulaFieldY;
+    @FXML
+    TextField formulaFieldZ;
 
     private final TrackingService trackingService = TrackingService.getInstance();
     List<TrackingDataDisplay> toolDisplayList;
@@ -78,6 +84,11 @@ public class TrackingDataController implements Controller {
 
         loadCSVBtn.disableProperty().bind(visualizationRunning);
         visualizeTrackingBtn.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
+
+        // Set default formulas
+        formulaFieldX.setText("10 + 5 * sin(t)");
+        formulaFieldY.setText("10 + 5 * cos(t)");
+        formulaFieldZ.setText("10 + 2 * sin(t * 0.5)");
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -128,6 +139,22 @@ public class TrackingDataController implements Controller {
         System.out.println("AI DATA LOADING");
 
         AIDataSource newSource = new AIDataSource();
+
+        try {
+            if (formulaFieldX != null && !formulaFieldX.getText().isEmpty()) {
+                newSource.setFormulaX(formulaFieldX.getText());
+            }
+            if (formulaFieldY != null && !formulaFieldY.getText().isEmpty()) {
+                newSource.setFormulaY(formulaFieldY.getText());
+            }
+            if (formulaFieldZ != null && !formulaFieldZ.getText().isEmpty()) {
+                newSource.setFormulaZ(formulaFieldZ.getText());
+            }
+        } catch (IllegalArgumentException | ArithmeticException e) {
+             logger.log(Level.SEVERE, "Invalid formula", e);
+             statusLabel.setText("Invalid formula: " + e.getMessage());
+             return;
+        }
 
         if (trackingService.getTrackingDataSource() != null) {
             disconnectSource();
