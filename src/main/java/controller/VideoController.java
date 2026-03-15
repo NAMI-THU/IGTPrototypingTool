@@ -45,7 +45,7 @@ public class VideoController implements Controller {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private Label statusLabel;
 
-
+    private AiControllerOnnx AiController;
     private int sourceTracker;
 
    private MainController mainController;
@@ -54,6 +54,10 @@ public class VideoController implements Controller {
         this.mainController = mainController;
     }
 
+
+    public void setAiController(AiControllerOnnx aiController) {
+        this.AiController = aiController;
+    }
 
 
     @Override
@@ -184,18 +188,23 @@ public class VideoController implements Controller {
     public void setIvSize() {
         iv.setFitHeight(Double.parseDouble(ivHeight.getText()));
         iv.setFitWidth(Double.parseDouble(ivWidth.getText()));
-
+        if (AiController != null) {
+            AiController.updateResolution(Double.parseDouble(ivHeight.getText()), Double.parseDouble(ivWidth.getText()));
+        }
     }
 
+
     public void update() {
+
         Mat matrix = dataManager.readMat();
 
-        // Create a copy of the matrix for the ImageView to prevent modifications in AI processing
-        Mat matrixCopy = matrix.clone();
-
-        // Convert the frame to Image for ImageView without any processing
-        Image frame = matToImage(matrixCopy);
+        Image frame = matToImage(matrix);
         iv.setImage(frame);
+        if (AiController != null) {
+            AiController.receiveFrame(matrix);
+        }
+
+        matrix.release(); // release OpenCV Mat to prevent memory leak
 
     }
 

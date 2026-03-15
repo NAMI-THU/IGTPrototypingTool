@@ -48,6 +48,8 @@ public class MainController implements Controller {
 
     private int selectedSource;
 
+    private controller.AiControllerOnnx AiController;
+
     @FXML
     private Label igtLinkState;
 
@@ -62,6 +64,8 @@ public class MainController implements Controller {
 
 
     private int statusIndex = 0; // Tracks the current state
+
+
 
 
 
@@ -115,6 +119,7 @@ public class MainController implements Controller {
     }
 
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
@@ -149,6 +154,29 @@ public class MainController implements Controller {
             });
         } catch(IOException e) {
             logger.log(Level.SEVERE, "Error loading Example View", e);
+        }
+    }
+
+    @FXML
+    private void openAIView(){
+        if (this.AiController != null) return;
+
+        try {
+            setupFXMLLoader("AiView");
+            Tab t = new Tab("AiView", this.loader.load());
+
+            this.AiController = this.loader.getController();
+            this.AiController.setStatusLabel(this.status);
+
+            this.tabPane.getTabs().add(t);
+            this.tabPane.getSelectionModel().select(t);
+            videoController.setAiController(this.AiController);
+            t.setOnCloseRequest(e -> {
+                this.AiController.close();
+                this.AiController = null;
+            });
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, "Error loading AutoTrack View", e);
         }
     }
 

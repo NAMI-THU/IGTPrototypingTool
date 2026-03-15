@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="Infinity" maxWidth="Infinity" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AiControllerOnnx">
+
+    <HBox maxHeight="Infinity" maxWidth="Infinity" spacing="50.0" alignment="CENTER">
+
+        <!-- Image view for video feed -->
+        <VBox alignment="CENTER" spacing="5.0">
+            <ImageView fx:id="videoImagePlot" fitWidth="640" fitHeight="480" preserveRatio="true" />
+        </VBox>
+
+        <!-- Control Panel -->
+        <VBox alignment="CENTER" spacing="20.0">
+            <TitledPane prefHeight="300.0" alignment="CENTER" animated="false" collapsible="false" text="Control Panel" >
+                <VBox spacing="20.0">
+                    <Label fx:id="distanceLabel" text="Distance: 0.0"/>
+                    <Label fx:id="navigationStatus" text="Status: Waiting for device selection"/>
+                    <HBox alignment="CENTER_LEFT" spacing="20.0">
+                        <CheckBox fx:id="enablePathMode" text="Enable Path Mode" style="-fx-font-size: 13px;" />
+                        <Button fx:id="clearAllPoints">Clear all</Button>
+                    </HBox>
+                    <Label fx:id="instructionsLabel" text="Instructions: Unknown direction"/>
+
+
+                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                        <Label text="Width:" />
+                        <TextField fx:id="widthInput" prefWidth="60" />
+                        <Label text="Height:" />
+                        <TextField fx:id="heightInput" prefWidth="60" />
+                    </HBox>
+
+                    <Button fx:id="resizeButton" text="Resize" />
+
+
+
+                </VBox>
+            </TitledPane>
+        </VBox>
+
+    </HBox>
+
+</ScrollPane>

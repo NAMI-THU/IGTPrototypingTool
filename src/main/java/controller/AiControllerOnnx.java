@@ -5,17 +5,16 @@ import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import algorithm.ImageDataProcessor;
+import algorithm.YOLOv8Model;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import model.Detection;
 import nu.pattern.OpenCV;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -27,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class AiControllerOnnx {
@@ -55,6 +57,17 @@ public class AiControllerOnnx {
     private List<Point> pathPoints = new ArrayList<>();
     private double totalDistance;
 
+
+    // AtomicReference to store the latest frame
+    private final AtomicReference<Mat> latestFrame = new AtomicReference<>();
+
+    // Thread to execute the video processing task
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    // check if done processing
+    private volatile boolean isProcessing = false;
+
+
     @FXML
     TextField widthInput;
     @FXML
@@ -62,23 +75,8 @@ public class AiControllerOnnx {
     @FXML
     Button resizeButton;
 
-    // Buffers to accumulate metrics for logging
-    private final List<Double> latencyBuffer = new ArrayList<>();
-    private final List<Long> memoryBuffer = new ArrayList<>();
-    private long lastLogTime = System.currentTimeMillis();
-    private static final long LOG_INTERVAL_MS = 60_000; // 1 minute
-
-    // logs file path
-    private final String logFilePath = "logs/performance_log.txt";
-
     public void initialize() {
         OpenCV.loadLocally();
-
-        // folder check
-        File logDir = new File("logs");
-        if (!logDir.exists()) {
-            logDir.mkdir();
-        }
 
         clearAllPoints.setOnAction(actionEvent -> {
             pathPoints.clear();
@@ -107,84 +105,75 @@ public class AiControllerOnnx {
 
         try {
             env = OrtEnvironment.getEnvironment();
-            yoloModel = new YOLOv8Model("Python/best.onnx");
+            yoloModel = new YOLOv8Model("Weights/best.onnx");
         } catch (OrtException e) {
             e.printStackTrace();
         }
     }
 
-    public void processFrame(Mat frame) {
-        Task<Void> videoTask = new Task<>() {
-            @Override
-            protected Void call() {
-                try {
-                    Mat grayscaleFrame = new Mat();
-                    Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
 
-                    Mat processedFrame = new Mat();
-                    Imgproc.cvtColor(grayscaleFrame, processedFrame, Imgproc.COLOR_GRAY2BGR);
+    /**
+     * Receive a new frame from VideoController.
+     * This method only stores the frame;
+     */
+    public void receiveFrame(Mat frame) {
+        Mat copy = frame.clone();
+        Mat old = latestFrame.getAndSet(copy);
+        if (old != null) old.release(); // release old frame if it exists
 
-                    OnnxTensor inputTensor = preprocessFrame(processedFrame, env);
+        // Trigger processing if idle
+        startProcessingIfIdle();
+    }
 
-                    if (yoloModel.isSessionOpen()) {
-                        long startTime = System.nanoTime();
-                        OrtSession.Result result = yoloModel.runOnnxModel(inputTensor);
-                        long endTime = System.nanoTime();
 
-                        double inferenceMs = (endTime - startTime) / 1_000_000.0;
-                        logPerformanceMetrics(inferenceMs);
+    private void startProcessingIfIdle() {
+        if (isProcessing) return; // already processing
 
-                        postProcess(result, processedFrame);
+        isProcessing = true;
 
-                        Imgproc.cvtColor(processedFrame, processedFrame, Imgproc.COLOR_BGR2RGB);
-                        Image imageToShow = matToImage(processedFrame);
-                        Platform.runLater(() -> videoImagePlot.setImage(imageToShow));
-
-                        result.close();
-                    }
-
-                    inputTensor.close();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+        executor.submit(() -> {
+            try {
+                Mat frameToProcess = latestFrame.getAndSet(null); // get latest frame
+                if (frameToProcess != null) {
+                    processFrameInternal(frameToProcess);
                 }
-                return null;
-            }
-        };
-
-        new Thread(videoTask).start();
-    }
-
-    private void logPerformanceMetrics(double inferenceMs) {
-        Runtime runtime = Runtime.getRuntime();
-        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
-
-        latencyBuffer.add(inferenceMs);
-        memoryBuffer.add(usedMemory);
-
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastLogTime >= LOG_INTERVAL_MS) {
-            double avgLatency = latencyBuffer.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            double avgMemory = memoryBuffer.stream().mapToLong(Long::longValue).average().orElse(0.0);
-
-            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-
-            try (FileWriter writer = new FileWriter(logFilePath, true)) {
-                writer.append("============================================\n");
-                writer.append("Performance Log - ").append(timestamp).append("\n");
-                writer.append(String.format("Average Inference Latency: %.2f ms%n", avgLatency));
-                writer.append(String.format("Average Memory Usage: %.2f MB%n", avgMemory / (1024.0 * 1024.0)));
-                writer.append("============================================\n\n");
-                writer.flush();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                isProcessing = false; // release flag so next frame can be processed
             }
-
-            latencyBuffer.clear();
-            memoryBuffer.clear();
-            lastLogTime = currentTime;
-        }
+        });
     }
+
+    private void processFrameInternal(Mat frame) {
+
+        Mat grayscaleFrame = new Mat();
+        Imgproc.cvtColor(frame, grayscaleFrame, Imgproc.COLOR_BGR2GRAY);
+        Mat processedFrame = new Mat();
+        Imgproc.cvtColor(grayscaleFrame, processedFrame, Imgproc.COLOR_GRAY2BGR);
+
+        try (OnnxTensor inputTensor = preprocessFrame(processedFrame, env)) {
+            if (yoloModel.isSessionOpen()) {
+
+                try (OrtSession.Result result = yoloModel.runOnnxModel(inputTensor)) {
+
+                    postProcess(result, processedFrame);
+
+                    Imgproc.cvtColor(processedFrame, processedFrame, Imgproc.COLOR_BGR2RGB);
+                    Image imageToShow = matToImage(processedFrame);
+                    Platform.runLater(() -> videoImagePlot.setImage(imageToShow));
+                }
+            }
+        } catch (OrtException e) {
+            e.printStackTrace();
+        } finally {
+            grayscaleFrame.release();
+            processedFrame.release();
+            frame.release(); // release original frame
+        }
+
+    }
+
 
     // the method updateResolution is called from videoController to update the resolution of the videoImagePlot
     public void updateResolution(double width, double height) {
@@ -195,39 +184,36 @@ public class AiControllerOnnx {
 
     // Pre-process the frame for YOLOv8 (resize, normalize, etc.)
     private OnnxTensor preprocessFrame(Mat frame, OrtEnvironment env) throws OrtException {
-        // Step 1: Resize the image to 640x640
-        Mat resizedImage = new Mat();
-        Imgproc.resize(frame, resizedImage, new Size(640, 640));
 
-        // Step 2: Convert the image to a float array (normalized between 0 and 1)
-        int width = resizedImage.width();
-        int height = resizedImage.height();
-        int channels = resizedImage.channels();  // RGB -> 3 channels
+        // Resize to 640x640
+        Mat resized = new Mat();
+        Imgproc.resize(frame, resized, new Size(640, 640));
 
-        float[][][] imageData = new float[channels][height][width];
+        // Convert BGR -> RGB
+        Imgproc.cvtColor(resized, resized, Imgproc.COLOR_BGR2RGB);
+
+        // Convert to float 32, scale 0-1
+        Mat floatMat = new Mat();
+        resized.convertTo(floatMat, CvType.CV_32FC3, 1.0 / 255.0);
+
+        // Convert HWC -> CHW for YOLO
+        int channels = 3;
+        int height = 640;
+        int width = 640;
+        float[] chwData = new float[channels * height * width];
+
+        float[] hwcData = new float[channels * height * width];
+        floatMat.get(0, 0, hwcData);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                double[] pixel = resizedImage.get(y, x);  // Get pixel values (BGR format in OpenCV)
-                imageData[0][y][x] = (float) (pixel[2] / 255.0);  // R channel
-                imageData[1][y][x] = (float) (pixel[1] / 255.0);  // G channel
-                imageData[2][y][x] = (float) (pixel[0] / 255.0);  // B channel
-            }
-        }
-
-        long[] inputShape = {1, 3, 640, 640};
-
-        FloatBuffer floatBuffer = FloatBuffer.allocate(1 * 3 * 640 * 640);
-        for (int c = 0; c < 3; c++) {
-            for (int y = 0; y < 640; y++) {
-                for (int x = 0; x < 640; x++) {
-                    floatBuffer.put(imageData[c][y][x]);
+                for (int c = 0; c < channels; c++) {
+                    chwData[c * height * width + y * width + x] = hwcData[y * width * channels + x * channels + c];
                 }
             }
         }
-        floatBuffer.rewind();
-
-        return OnnxTensor.createTensor(env, floatBuffer, inputShape);
+        FloatBuffer buffer = FloatBuffer.wrap(chwData);
+        return OnnxTensor.createTensor(env, buffer, new long[]{1, 3, height, width});
     }
 
 
