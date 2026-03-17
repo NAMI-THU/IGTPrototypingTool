@@ -10,6 +10,10 @@ This tool started as a student project and is currently actively maintained by v
 
 Currently, at least **Java 17** or **Java 21** are supported.
 
+The software was presented at the German Conference for Medical Image Computing 2026 (Software Demonstration S03). You can find the conference paper here:
+
+Tababi, M., Baumgärtner, T., Morales, C., Komposch, J., Roßkopf, J., Malzacher, T., Braun, M., Schmitz, B. and Franz, A.M. (2026). Software Prototyping for IGT Research in Java - Examples on Automatic Annotation and AI-based Instrument Tracking for Stroke Treatment. In: Handels, H., et al. Bildverarbeitung für die Medizin 2026. BVM 2026. Informatik aktuell. Springer Vieweg, Wiesbaden. [https://doi.org/10.1007/978-3-658-51100-5_47](https://doi.org/10.1007/978-3-658-51100-5_47)
+
 # Building
 
 \
