@@ -64,6 +64,7 @@ public class TrackingController implements Controller {
     Label statusLabel;
     VisualizationManager visualizationManager;
     VisualizationController visualizationController;
+    private GuidanceHandler guidanceHandler;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final BooleanProperty visualizationRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty sourceConnected = new SimpleBooleanProperty(false);
@@ -95,6 +96,10 @@ public class TrackingController implements Controller {
 
     public void injectVisualizationController(VisualizationController visualizationController) {
         this.visualizationController = visualizationController;
+    }
+
+    public void injectGuidanceHandler(GuidanceHandler guidanceHandler) {
+        this.guidanceHandler = guidanceHandler;
     }
 
     /**
@@ -267,6 +272,7 @@ public class TrackingController implements Controller {
             }
         }
         visualizationManager.visualizeTracking();
+        guidanceHandler.guidance(trackingTools);
     }
 
     /**
