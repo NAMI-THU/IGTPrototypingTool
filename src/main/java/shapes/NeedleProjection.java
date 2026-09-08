@@ -73,6 +73,10 @@ public class NeedleProjection extends Group {
      * @return true if the projection intersects the target
      */
     public boolean intersectsTarget(Target target, Vector3D startPos) {
+        if (direction == null) {
+            return false;
+        }
+
         Vector3D targetCenter = new Vector3D(target.getTranslateX(), target.getTranslateY(), target.getTranslateZ());
 
         double r = target.getSphere().getRadius();

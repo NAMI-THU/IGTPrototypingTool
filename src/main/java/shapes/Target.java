@@ -37,4 +37,8 @@ public class Target extends Group {
     public Sphere getSphere() {
         return sphere;
     }
+
+    public Vector3D getPos() {
+        return pos;
+    }
 }
