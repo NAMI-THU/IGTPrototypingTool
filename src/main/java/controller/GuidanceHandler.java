@@ -225,8 +225,8 @@ public class GuidanceHandler {
      * @return The {@link GuidanceAlignmentController}.
      * */
     private GuidanceAlignmentController getGuidanceAlignmentControllerIfActive() {
-        if (guidanceControllers.getFirst() instanceof GuidanceAlignmentController) {
-            return ((GuidanceAlignmentController) guidanceControllers.getFirst());
+        if (guidanceControllers.get(0) instanceof GuidanceAlignmentController) {
+            return ((GuidanceAlignmentController) guidanceControllers.get(0));
         }
         throw new IllegalStateException("GuidanceAlignmentController is not active");
     }
@@ -240,8 +240,8 @@ public class GuidanceHandler {
      * @return The {@link GuidancePlanningController}.
      * */
     private GuidancePlanningController getGuidancePlanningControllerIfActive() {
-        if (guidanceControllers.getFirst() instanceof GuidancePlanningController) {
-            return ((GuidancePlanningController) guidanceControllers.getFirst());
+        if (guidanceControllers.get(0) instanceof GuidancePlanningController) {
+            return ((GuidancePlanningController) guidanceControllers.get(0));
         }
         throw new IllegalStateException("GuidancePlanningController is not active");
     }

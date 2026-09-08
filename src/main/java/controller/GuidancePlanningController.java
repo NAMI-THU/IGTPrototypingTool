@@ -93,7 +93,7 @@ public class GuidancePlanningController implements GuidanceController {
         // If a new point set is being added, always select the first one in the combo box
         DataService.getInstance().getPointSet().addListener((ListChangeListener<PointSet>) change -> {
             if (!DataService.getInstance().getPointSet().isEmpty()) {
-                pathComboBox.setValue(DataService.getInstance().getPointSet().getFirst());
+                pathComboBox.setValue(DataService.getInstance().getPointSet().get(0));
             }
         });
 
