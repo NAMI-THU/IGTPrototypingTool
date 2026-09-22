@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
@@ -31,7 +32,8 @@ public class MainController implements Controller {
     Tab trackingDataTab;
     @FXML
     Tab visualizationTab;
-    // These three controller will be automatically injected since we annotated the "trackingData", "video" and "visual" element in the fxml
+    @FXML
+    Tab guidanceTab;
     @FXML
     TrackingController trackingController;
     @FXML
@@ -39,11 +41,15 @@ public class MainController implements Controller {
     @FXML
     VisualizationController visualizationController;
     @FXML
+    GuidancePlanningController guidancePlanningController;
+
+    @FXML
     Label status;
     private FXMLLoader loader;
 	private ExampleController exampleController;
     private SettingsController settingsController;
     private final VisualizationManager visualizationManager = new VisualizationManager();
+    private final GuidanceHandler guidanceHandler = new GuidanceHandler();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private int selectedSource;
@@ -121,6 +127,7 @@ public class MainController implements Controller {
         trackingController.injectStatusLabel(status);
         trackingController.injectVisualizationManager(visualizationManager);
         trackingController.injectVisualizationController(visualizationController);
+        trackingController.injectGuidanceHandler(guidanceHandler);
         videoController.injectStatusLabel(status);
         visualizationController.injectStatusLabel(status);
         visualizationController.injectTrackingDataController(trackingController);
@@ -129,6 +136,8 @@ public class MainController implements Controller {
 
         videoController.setMainController(this);
         trackingController.setMainController(this);
+
+        initializeGuidance();
     }
 	
 	@FXML
@@ -163,7 +172,6 @@ public class MainController implements Controller {
             newWindow.initModality(Modality.WINDOW_MODAL);
             newWindow.initOwner(tabPane.getScene().getWindow());
             newWindow.show();
-
             this.settingsController = this.loader.getController();
             newWindow.setOnCloseRequest(e -> this.settingsController.close());
         } catch (IOException e) {
@@ -268,4 +276,52 @@ public class MainController implements Controller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+
+
+    /**
+     * This method gives needed references to classes. It is used to maintain the guidance architecture.
+     * */
+    private void initializeGuidance() {
+        guidanceHandler.setMainController(this);
+        guidancePlanningController.setGuidanceHandler(guidanceHandler);
+    }
+
+    /**
+     * This method makes sure, whenever a guidance controller is being called
+     * to set references of the {@link GuidanceHandler}.
+     * This is especially needed, because the loader returns a new instance of the controller.
+     * */
+    private void updateGuidanceControllers() {
+        if (loader.getController() instanceof GuidanceController) {
+            GuidanceController guidanceController = loader.getController();
+            guidanceController.setGuidanceHandler(guidanceHandler);
+        }
+    }
+
+    /**
+     * This method is used to switch out the content of the tab.
+     * @param fileName The file name of the .fxml file.
+     * */
+    public void switchContentOfTab(String fileName) {
+        setupFXMLLoader(fileName);
+
+        try {
+            Node content = loader.load();
+
+            Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+            currentTab.setContent(content);
+
+            guidanceHandler.resetControllers();
+
+            guidanceHandler.updateKeyHandler(currentTab);
+            guidanceHandler.registerKeyHandler(content.getScene());
+
+            updateGuidanceControllers();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

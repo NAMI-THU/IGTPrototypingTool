@@ -13,7 +13,7 @@ public class CameraContainer {
 
     public CameraContainer(boolean fixedAtZero) {
         perspectiveCamera = new PerspectiveCamera(fixedAtZero);
-        perspectiveCamera.setNearClip(0.1);
+        perspectiveCamera.setNearClip(1.0);
         perspectiveCamera.setFarClip(2000.0);
 
         pos = new Vector3D();

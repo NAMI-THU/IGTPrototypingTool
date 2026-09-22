@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ComboBox?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Label?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.GuidancePlanningController" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/guidance.css">
+    <BorderPane>
+        <top>
+            <Text id="title" BorderPane.alignment="TOP_CENTER" text="Phase 1: Planning">
+                <BorderPane.margin>
+                    <Insets bottom="0" left="0" right="0" top="15"/>
+                </BorderPane.margin>
+            </Text>
+        </top>
+        <center>
+            <VBox spacing="20" alignment="CENTER">
+                <HBox spacing="10"  alignment="CENTER">
+                    <Button text="Start Visualization" onAction="#onStartVisualizationClicked"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER" >
+                    <ToggleButton fx:id="xyPlane" text="XY-Plane" onAction="#onXYClicked"/>
+                    <ToggleButton fx:id="zxPlane" text="ZX-Plane" onAction="#onZXClicked"/>
+                    <ToggleButton fx:id="yzPlane" text="YZ-Plane" onAction="#onYZClicked"/>
+                </HBox>
+                <GridPane hgap="10" vgap="20" alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" minWidth="200.0"/>
+                        <ColumnConstraints halignment="LEFT"/>
+                    </columnConstraints>
+
+                    <Label text="Puncture path:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="pathComboBox" id="comboBox" prefWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Smooth camera rotation:" alignment="CENTER_RIGHT" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <CheckBox fx:id="slerpCheckBox" onAction="#onSlerpToggled" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="Smoothness factor:" alignment="CENTER_RIGHT" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Spinner fx:id="slerpSpinner" editable="true" disable="true" prefWidth="90.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                </GridPane>
+            </VBox>
+        </center>
+        <bottom>
+        </bottom>
+    </BorderPane>
+</StackPane>

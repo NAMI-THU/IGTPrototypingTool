@@ -1,0 +1,90 @@
+#outerCircle {
+    -fx-fill: transparent;
+    -fx-stroke: black;
+    -fx-stroke-width: 4;
+    -fx-stroke-type: outside;
+}
+
+#innerCircle {
+    -fx-fill: #a89032;
+    -fx-stroke: black;
+    -fx-stroke-width: 4;
+    -fx-stroke-type: outside;
+}
+
+#innerLine {
+    -fx-fill: #808080;
+    -fx-stroke-width: 2;
+}
+
+#trafficLight1 {
+    -fx-fill: #FF0000;
+}
+
+#trafficLight2 {
+    -fx-fill: #f3e03b;
+}
+
+#trafficLight3 {
+    -fx-fill: #308446;
+}
+
+#glowTrafficLight1 {
+    -fx-fill: #FF0000;
+    -fx-effect: dropshadow(three-pass-box, #FF0000, 20, 0.5, 0, 0)
+}
+
+#glowTrafficLight2 {
+    -fx-fill: #f3e03b;
+    -fx-effect: dropshadow(three-pass-box, #f3e03b, 20, 0.5, 0, 0)
+}
+
+#glowTrafficLight3 {
+    -fx-fill: #308446;
+    -fx-effect: dropshadow(three-pass-box, #308446, 20, 0.5, 0, 0)
+}
+
+#targetCircle {
+       -fx-fill: transparent;
+       -fx-stroke: black;
+       -fx-stroke-width: 2;
+       -fx-stroke-type: outside;
+}
+
+#trafficLightVBox {
+    -fx-border-color: black;
+    -fx-border-width: 3;
+}
+
+#depthSeparator {
+    -fx-fill: #808080;
+    -fx-stroke-width: 2;
+}
+
+#depthVBox {
+     -fx-border-color: black;
+     -fx-border-width: 3;
+}
+
+#title {
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+#comboBox .list-cell {
+    -fx-cell-size: 35;
+}
+
+#boldSizedDataLabel {
+    -fx-font-size: 17;
+    -fx-font-weight: bold;
+}
+
+#SizedDataLabel {
+    -fx-font-size: 17;
+}
+
+#boldDataLabel {
+    -fx-font-weight: bold;
+}

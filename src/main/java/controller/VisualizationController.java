@@ -1,5 +1,6 @@
 package controller;
 
+import algorithm.DataService;
 import algorithm.TrackingTool;
 import algorithm.TrackingService;
 import algorithm.VisualizationManager;
@@ -13,8 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import org.json.JSONObject;
 import shapes.STLModel;
 import util.Persistence;
@@ -22,30 +21,22 @@ import util.Persistence;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class VisualizationController implements Controller {
 
     @FXML
-    Button resetView;
+    public Button loadPointSet;
+    @FXML
+    public Button clearPointSets;
     @FXML
     Group meshGroup;
     @FXML
-    Button selectMatrixFile;
-    @FXML
-    Button clearFiles;
+    Button clearSTLFiles;
     @FXML
     Button addStlFile;
-    @FXML
-    Button addPath;
-    @FXML
-    Button start;
-    @FXML
-    ToggleButton pause;
     @FXML
     ToggleButton cullBack;
     @FXML
@@ -74,8 +65,6 @@ public class VisualizationController implements Controller {
     CheckBox trackingVisibleCB;
     @FXML
     CheckBox needleProjectionCB;
-    @FXML
-    Label selectedMatrixFile;
     TrackingController trackingController;
     VisualizationManager visualizationManager;
     TrackingService trackingService = TrackingService.getInstance();
@@ -91,15 +80,10 @@ public class VisualizationController implements Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerController();
-        start.disableProperty().bind(visualizationRunning.or(sourceConnected.not()));
 
         stlTreeView.setShowRoot(false);
         stlTreeView.setRoot(treeItemRoot);
         treeItemRoot.getChildren().add(stlBranch);
-
-        var userPreferences = Preferences.userRoot().node("IGT_Settings");
-        var matrixFile = userPreferences.get("visualisationTransformMatrix", "None selected!");
-        selectedMatrixFile.setText(Path.of(matrixFile).getFileName().toString());
     }
 
     public void injectStatusLabel(Label statusLabel) {
@@ -180,19 +164,6 @@ public class VisualizationController implements Controller {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Method to call the addPathVisualisation from the VisualisationManager class
-     */
-    @FXML
-    private void addPathVisualisation() {
-        if (trackingService.getTrackingDataSource() == null) {
-            statusLabel.setText("Select Tracking Data Source first");
-            return;
-        }
-        visualizationManager.addPathVisualisation();
-        visualizationManager.showFigure();
     }
 
     /**
@@ -295,11 +266,6 @@ public class VisualizationController implements Controller {
         }
     }
 
-    @FXML
-    private void startTracking() {
-        trackingController.visualizeTracking();
-    }
-
     /**
      * Set a color for the selected tracker in the visualisation view
      */
@@ -365,8 +331,12 @@ public class VisualizationController implements Controller {
         int pos = getSelectedSTL();
         if (pos != -1) {
             ArrayList<STLModel> stlModels = visualizationManager.getSTLModels();
-            stlModels.get(pos).setColor(new PhongMaterial(stlColorPicker.getValue()));
-            changeAttributeOfSTL(pos, "Color", String.valueOf(stlColorPicker.getValue()));
+            Color newColor = stlColorPicker.getValue();
+
+            stlModels.get(pos).setColor(new PhongMaterial(newColor));
+            changeAttributeOfSTL(pos, "Color", String.valueOf(newColor));
+
+            DataService.getInstance().updateMeshColor(pos, newColor);
         }
     }
 
@@ -385,15 +355,15 @@ public class VisualizationController implements Controller {
     }
 
     @FXML
-    private void clearFiles(){
+    private void clearSTLFiles(){
         Alert alert = new Alert(Alert.AlertType.WARNING ,"", ButtonType.YES, ButtonType.NO);
-        alert.setTitle("Clear Files");
+        alert.setTitle("Clear STl Files");
         alert.setHeaderText("Are you sure you want to clear all files?");
-        alert.setContentText("This will remove all STL files from the visualization.");
+        alert.setContentText("This will remove all STL files from visualization and guidance.");
 
         if (alert.showAndWait().get() == ButtonType.YES) {
             try {
-                visualizationManager.clearSTLModelsAndPaths();
+                visualizationManager.clearSTLModels();
                 stlBranch.getChildren().clear();
                 visualizationManager.showFigure();
                 Persistence.writeStlSaveFile(new JSONObject());
@@ -403,17 +373,15 @@ public class VisualizationController implements Controller {
         }
     }
 
-    @FXML
-    private void selectMatrixFile(){
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Select transformation matrix");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-        File file = fc.showOpenDialog(new Stage());
-        if(file!=null){
-            var userPreferences = Preferences.userRoot().node("IGT_Settings");
-            userPreferences.put("visualisationTransformMatrix", file.getAbsolutePath());
-            selectedMatrixFile.setText(file.getName());
-            visualizationManager.scheduleReloadMatrix();
+    public void clearPointSets() {
+        Alert alert = new Alert(Alert.AlertType.WARNING ,"", ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Clear point sets");
+        alert.setHeaderText("Are you sure you want to clear all point sets?");
+        alert.setContentText("This will remove all point sets from visualization and guidance.");
+
+        if (alert.showAndWait().get() == ButtonType.YES) {
+            visualizationManager.clearTargetPoints();
+            visualizationManager.showFigure();
         }
     }
 
@@ -491,14 +459,6 @@ public class VisualizationController implements Controller {
     }
 
     /**
-     * Pauses the visualization
-     */
-    @FXML
-    private void pauseVisualization() {
-        trackingController.freezeVisualization();
-    }
-
-    /**
      * Set CullFace to none for every MeshView in the scene
      */
     @FXML
@@ -554,17 +514,22 @@ public class VisualizationController implements Controller {
         meshGroup.requestFocus();
     }
 
-    /**
-     * Resets the camera view back to the starting point
-     */
-    @FXML
-    private void resetView() {
-        visualizationManager.resetView();
-    }
-
     @Override
     public void close() {
         statusLabel.setText("");
         unregisterController();
+    }
+
+    public void addLoadPointSets() {
+        if (trackingService.getTrackingDataSource() == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information");
+            alert.setHeaderText(null);
+            alert.setContentText("Select Tracking Data Source first!");
+            alert.showAndWait();
+            return;
+        }
+        visualizationManager.loadPointSet();
+        visualizationManager.showFigure();
     }
 }
