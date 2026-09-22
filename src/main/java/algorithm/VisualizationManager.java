@@ -282,9 +282,11 @@ public class VisualizationManager {
                     }
                 }
 
-                DataService.getInstance().addPointSet(new PointSet(
-                        targets.getFirst().getPos(), targets.getLast().getPos(), name
-                ));
+                if (!targets.isEmpty()) {
+                    DataService.getInstance().addPointSet(new PointSet(
+                            targets.get(0).getPos(), targets.get(targets.size() - 1).getPos(), name
+                    ));
+                }
             } catch (ParserConfigurationException | SAXException | IOException e) {
                 e.printStackTrace();
             }
